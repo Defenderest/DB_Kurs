@@ -281,13 +281,14 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
     // --- Заполнение таблиц ---
 
     // 1. Customer
-    qInfo() << "Заповнення таблиці customer...";
+    qInfo() << "Populating table customer..."; // Changed log to English
     QString insertCustomerSQL = R"(
         INSERT INTO customer (first_name, last_name, email, phone, address, loyalty_program, join_date, loyalty_points)
-        VALUES (:first_name, :last_name, :email, :phone, :address, :loyalty_program, :join_date, :loyalty_points);
-    )";
+        VALUES (:first_name, :last_name, :email, :phone, :address, :loyalty_program, :join_date, :loyalty_points)
+        RETURNING customer_id;
+    )"; // Added RETURNING
     if (!query.prepare(insertCustomerSQL)) {
-        qCritical() << "Помилка підготовки запиту для customer:" << query.lastError().text();
+        qCritical() << "Error preparing query for customer:" << query.lastError().text(); // Changed log to English
         success = false;
     } else {
         for (int i = 0; i < numberOfRecords && success; ++i) {
@@ -319,12 +320,13 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
     // 2. Publisher
     if (success) {
-        qInfo() << "Заповнення таблиці publisher...";
+        qInfo() << "Populating table publisher..."; // Changed log to English
         QString insertPublisherSQL = R"(
-             INSERT INTO publisher (name, contact_info) VALUES (:name, :contact_info);
-         )";
+             INSERT INTO publisher (name, contact_info) VALUES (:name, :contact_info)
+             RETURNING publisher_id;
+         )"; // Added RETURNING
         if (!query.prepare(insertPublisherSQL)) {
-            qCritical() << "Помилка підготовки запиту для publisher:" << query.lastError().text();
+            qCritical() << "Error preparing query for publisher:" << query.lastError().text(); // Changed log to English
             success = false;
         } else {
             QSet<QString> usedPublisherNames; // Для уникальности
@@ -347,13 +349,14 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
     // 3. Author
     if (success) {
-        qInfo() << "Заповнення таблиці author...";
+        qInfo() << "Populating table author..."; // Changed log to English
         QString insertAuthorSQL = R"(
              INSERT INTO author (first_name, last_name, birth_date, nationality)
-             VALUES (:first_name, :last_name, :birth_date, :nationality);
-         )";
+             VALUES (:first_name, :last_name, :birth_date, :nationality)
+             RETURNING author_id;
+         )"; // Added RETURNING
         if (!query.prepare(insertAuthorSQL)) {
-            qCritical() << "Помилка підготовки запиту для author:" << query.lastError().text();
+            qCritical() << "Error preparing query for author:" << query.lastError().text(); // Changed log to English
             success = false;
         } else {
             for (int i = 0; i < numberOfRecords && success; ++i) {
@@ -373,14 +376,15 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
 
     // 4. Book
-    if (success && !publisherIds.isEmpty()) { // Нужен хотя бы один издатель
-        qInfo() << "Заповнення таблиці book...";
+    if (success && !publisherIds.isEmpty()) { // At least one publisher is needed
+        qInfo() << "Populating table book..."; // Changed log to English
         QString insertBookSQL = R"(
              INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count)
-             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count);
-         )";
+             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count)
+             RETURNING book_id;
+         )"; // Added RETURNING
         if (!query.prepare(insertBookSQL)) {
-            qCritical() << "Помилка підготовки запиту для book:" << query.lastError().text();
+            qCritical() << "Error preparing query for book:" << query.lastError().text(); // Changed log to English
             success = false;
         } else {
             for (int i = 0; i < numberOfRecords * 2 && success; ++i) { // Генерируем больше книг
@@ -417,14 +421,15 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
     // 5. "order"
     if (success && !customerIds.isEmpty()) {
-        qInfo() << "Заповнення таблиці \"order\"...";
+        qInfo() << "Populating table \"order\"..."; // Changed log to English
         QString insertOrderSQL = R"(
              INSERT INTO "order" (customer_id, order_date, total_amount, shipping_address, payment_method)
-             VALUES (:customer_id, :order_date, :total_amount, :shipping_address, :payment_method);
-         )";
-        // Обратите внимание на кавычки вокруг "order" в SQL запросе!
+             VALUES (:customer_id, :order_date, :total_amount, :shipping_address, :payment_method)
+             RETURNING order_id;
+         )"; // Added RETURNING
+        // Note the quotes around "order" in the SQL query!
         if (!query.prepare(insertOrderSQL)) {
-            qCritical() << "Помилка підготовки запиту для \"order\":" << query.lastError().text();
+            qCritical() << "Error preparing query for \"order\":" << query.lastError().text(); // Changed log to English
             success = false;
         } else {
             for (int i = 0; i < numberOfRecords && success; ++i) {
