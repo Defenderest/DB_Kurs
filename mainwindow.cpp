@@ -57,6 +57,22 @@ MainWindow::MainWindow(QWidget *parent)
         }
         // --- КОНЕЦ ВРЕМЕННОГО БЛОКА ---
 
+        // --- Завантаження та відображення книг ---
+        QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
+        if (!books.isEmpty()) {
+            displayBooks(books);
+            ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
+        } else {
+            qWarning() << "Не вдалося завантажити книги для відображення.";
+            // Показати повідомлення користувачу в booksContainerWidget
+            clearLayout(ui->booksContainerLayout); // Очистити перед додаванням повідомлення
+            QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних. Спробуйте пізніше."), ui->booksContainerWidget);
+            noBooksLabel->setAlignment(Qt::AlignCenter);
+            noBooksLabel->setWordWrap(true);
+            ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки
+        }
+        // --- Кінець завантаження книг ---
+
     } else {
         ui->statusBar->showMessage(tr("Помилка підключення до бази даних!"), 0); // Постоянное сообщение об ошибке
         QMessageBox::critical(this, tr("Помилка підключення"),
