@@ -865,6 +865,5 @@ bool DatabaseManager::printAllData() const
 
 
         return overallSuccess; // Возвращаем true, если не было критических ошибок при SELECT
-
 }
 
