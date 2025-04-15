@@ -2,11 +2,16 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QList> // Для списку книг
 
-// Forward declaration to avoid including database.h here if possible
-// If we need DatabaseManager methods directly in the header, include it.
-// For now, a pointer is enough.
+// Forward declarations
 class DatabaseManager;
+struct BookDisplayInfo; // Потрібно для типу списку
+class QLabel;
+class QVBoxLayout;
+class QGridLayout;
+class QPushButton;
+class QFrame; // Для створення "картки"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,8 +27,17 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void displayBooks(const QList<BookDisplayInfo> &books); // Слот для відображення книг
+
 private:
     Ui::MainWindow *ui;
     DatabaseManager *m_dbManager; // Указатель на менеджер БД
+
+    // Допоміжна функція для очищення layout
+    void clearLayout(QLayout* layout);
+    // Допоміжна функція для створення картки книги
+    QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
+
 };
 #endif // MAINWINDOW_H

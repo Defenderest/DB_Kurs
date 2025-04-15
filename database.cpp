@@ -60,6 +60,16 @@ struct BookData {
     QList<int> authorDbIds; // ID авторів з БД
 };
 
+// Структура для передачі даних книги в UI
+struct BookDisplayInfo {
+    int bookId;
+    QString title;
+    QString authors; // Об'єднані імена авторів
+    double price;
+    QString coverImagePath;
+    int stockQuantity;
+};
+
 
 DatabaseManager::DatabaseManager(QObject *parent) : QObject(parent)
 {
@@ -861,5 +871,72 @@ bool DatabaseManager::printAllData() const
 
 
         return overallSuccess; // Возвращаем true, если не было критических ошибок при SELECT
+}
+
+
+// Реалізація нового методу для отримання книг для UI
+QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
+{
+    QList<BookDisplayInfo> books;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо отримати книги: немає активного з'єднання з БД.";
+        return books; // Повертаємо порожній список
+    }
+
+    // Використовуємо LEFT JOIN, щоб отримати книги навіть без авторів або обкладинок
+    // Використовуємо STRING_AGG для об'єднання авторів в один рядок
+    // Додаємо publisher.name
+    const QString sql = R"(
+        SELECT
+            b.book_id,
+            b.title,
+            b.price,
+            b.cover_image_path,
+            b.stock_quantity,
+            COALESCE(p.name, 'Невідомий видавець') AS publisher_name, -- Додано ім'я видавця
+            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
+        FROM book b
+        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id -- Додано JOIN для видавця
+        LEFT JOIN book_author ba ON b.book_id = ba.book_id
+        LEFT JOIN author a ON ba.author_id = a.author_id
+        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, p.name -- Додано p.name в GROUP BY
+        ORDER BY b.title;
+    )";
+
+    QSqlQuery query(m_db);
+    qInfo() << "Executing SQL to get books for display...";
+    if (!query.exec(sql)) {
+        qCritical() << "Помилка при отриманні списку книг для відображення:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << sql;
+        return books; // Повертаємо порожній список у разі помилки
+    }
+
+    qInfo() << "Successfully fetched books. Processing results...";
+    int count = 0;
+    while (query.next()) {
+        BookDisplayInfo bookInfo;
+        bookInfo.bookId = query.value("book_id").toInt();
+        bookInfo.title = query.value("title").toString();
+        bookInfo.price = query.value("price").toDouble();
+        bookInfo.coverImagePath = query.value("cover_image_path").toString();
+        bookInfo.stockQuantity = query.value("stock_quantity").toInt();
+        bookInfo.authors = query.value("authors").toString(); // Отримуємо об'єднаних авторів
+
+        // Якщо автори відсутні (був LEFT JOIN), встановлюємо рядок за замовчуванням
+        if (bookInfo.authors.isEmpty() && !query.value("authors").isNull()) {
+             // Це може статися, якщо STRING_AGG повернув NULL (хоча зазвичай повертає порожній рядок)
+             bookInfo.authors = tr("Невідомий автор");
+        } else if (query.value("authors").isNull()) {
+             bookInfo.authors = tr("Невідомий автор");
+        }
+
+
+        books.append(bookInfo);
+        count++;
+    }
+    qInfo() << "Processed" << count << "books for display.";
+
+    return books;
 }
 

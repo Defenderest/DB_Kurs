@@ -34,6 +34,9 @@ public:
     void closeConnection();
     bool printAllData() const;
 
+    // Новий метод для отримання книг для відображення
+    QList<BookDisplayInfo> getAllBooksForDisplay() const;
+
 private:
     QSqlDatabase m_db;
     bool m_isConnected = false;
