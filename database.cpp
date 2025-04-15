@@ -60,16 +60,6 @@ struct BookData {
     QList<int> authorDbIds; // ID авторів з БД
 };
 
-// Структура для передачі даних книги в UI
-struct BookDisplayInfo {
-    int bookId;
-    QString title;
-    QString authors; // Об'єднані імена авторів
-    double price;
-    QString coverImagePath;
-    int stockQuantity;
-};
-
 
 DatabaseManager::DatabaseManager(QObject *parent) : QObject(parent)
 {

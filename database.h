@@ -9,6 +9,17 @@
 #include <QVariant> // Нужно для lastInsertId() или query.value()
 #include <QVector>  // Для хранения сгенерированных ID
 #include <QDebug>
+#include <QList>    // Потрібно для QList<BookDisplayInfo>
+
+// Структура для передачі даних книги в UI (перенесено з .cpp)
+struct BookDisplayInfo {
+    int bookId;
+    QString title;
+    QString authors; // Об'єднані імена авторів
+    double price;
+    QString coverImagePath;
+    int stockQuantity;
+};
 
 class DatabaseManager : public QObject
 {
