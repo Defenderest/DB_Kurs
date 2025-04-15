@@ -66,7 +66,7 @@ bool DatabaseManager::connectToDatabase(const QString &host,
         return false;
     }
 
-    QDebug() << "Успешно подключено к базе данных" << dbName << "на" << host << ":" << port;
+    qDebug() << "Успешно подключено к базе данных" << dbName << "на" << host << ":" << port;
     m_isConnected = true;
     return true;
 }
