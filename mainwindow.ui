@@ -380,21 +380,11 @@
           <string>Обране</string> <!-- Tooltip -->
          </property>
          <property name="text">
-          <string/> <!-- No text, only icon -->
+          <string>❤️</string> <!-- Replaced icon with emoji -->
          </property>
-         <property name="icon">
-          <iconset resource="resources.qrc"> <!-- Assuming your qrc file is named resources.qrc -->
-           <normalon>:/icons/heart.svg</normalon> <!-- Use resource path -->
-          </iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>20</width>
-           <height>20</height>
-          </size>
-         </property>
+         <!-- Icon properties removed -->
          <property name="flat">
-          <bool>true</bool> <!-- Makes background transparent initially -->
+          <bool>false</bool> <!-- Make it look like a normal button -->
          </property>
         </widget>
        </item>
@@ -405,21 +395,11 @@
           <string>Кошик</string> <!-- Tooltip -->
          </property>
          <property name="text">
-          <string/>
+          <string>🛒</string> <!-- Replaced icon with emoji -->
          </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normalon>:/icons/cart.svg</normalon>
-          </iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>20</width>
-           <height>20</height>
-          </size>
-         </property>
+         <!-- Icon properties removed -->
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool> <!-- Make it look like a normal button -->
          </property>
         </widget>
        </item>
@@ -430,21 +410,11 @@
           <string>Мій профіль</string> <!-- Tooltip -->
          </property>
          <property name="text">
-          <string/>
+          <string>👤</string> <!-- Replaced icon with emoji -->
          </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normalon>:/icons/user.svg</normalon>
-          </iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>20</width>
-           <height>20</height>
-          </size>
-         </property>
+         <!-- Icon properties removed -->
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool> <!-- Make it look like a normal button -->
          </property>
         </widget>
        </item>
@@ -466,13 +436,9 @@
 
       <!-- Discover Tab (Homepage) -->
       <widget class="QWidget" name="discoverTab">
-       <attribute name="icon">
-        <iconset resource="resources.qrc">
-         <normalon>:/icons/home.svg</normalon> <!-- Home icon -->
-        </iconset>
-       </attribute>
+       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>Головна</string> <!-- Tab title -->
+        <string>🏠 Головна</string> <!-- Added emoji to title -->
        </attribute>
        <layout class="QVBoxLayout" name="discoverTabLayout">
         <property name="spacing">
@@ -851,13 +817,9 @@
 
       <!-- Books Tab -->
       <widget class="QWidget" name="booksTab">
-       <attribute name="icon">
-        <iconset resource="resources.qrc">
-         <normalon>:/icons/book.svg</normalon> <!-- Book icon -->
-        </iconset>
-       </attribute>
+       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>Книги</string> <!-- Tab title -->
+        <string>📚 Книги</string> <!-- Added emoji to title -->
        </attribute>
        <layout class="QVBoxLayout" name="booksTabLayout">
         <property name="spacing">
@@ -957,19 +919,9 @@
               <string>Фільтри</string>
              </property>
              <property name="text">
-              <string/>
+              <string>Ф</string> <!-- Replaced icon with letter -->
              </property>
-             <property name="icon">
-              <iconset resource="resources.qrc">
-               <normalon>:/icons/filter.svg</normalon>
-              </iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>18</width>
-               <height>18</height>
-              </size>
-             </property>
+             <!-- Icon properties removed -->
             </widget>
            </item>
            <item>
@@ -991,20 +943,9 @@
               <string>Сортування</string>
              </property>
              <property name="text">
-              <string/>
+              <string>↓</string> <!-- Replaced icon with symbol -->
              </property>
-             <property name="icon">
-              <iconset resource="resources.qrc">
-               <!-- Icon indicates default sort direction -->
-               <normalon>:/icons/sort-amount-down.svg</normalon>
-              </iconset>
-             </property>
-              <property name="iconSize">
-              <size>
-               <width>18</width>
-               <height>18</height>
-              </size>
-             </property>
+             <!-- Icon properties removed -->
             </widget>
            </item>
            <item>
@@ -1040,20 +981,9 @@
               <string>Вигляд: Сітка/Список</string>
              </property>
              <property name="text">
-              <string/>
+              <string>▦</string> <!-- Replaced icon with symbol -->
              </property>
-             <property name="icon">
-              <iconset resource="resources.qrc">
-               <!-- Default to grid view icon -->
-               <normalon>:/icons/grid.svg</normalon>
-              </iconset>
-             </property>
-              <property name="iconSize">
-              <size>
-               <width>18</width>
-               <height>18</height>
-              </size>
-             </property>
+             <!-- Icon properties removed -->
              <property name="checkable">
               <bool>true</bool> <!-- Make it a toggle button -->
              </property>
@@ -1106,13 +1036,9 @@
 
       <!-- Authors Tab -->
       <widget class="QWidget" name="authorsTab">
-       <attribute name="icon">
-        <iconset resource="resources.qrc">
-         <normalon>:/icons/users.svg</normalon> <!-- Users icon -->
-        </iconset>
-       </attribute>
+       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>Автори</string> <!-- Tab title -->
+        <string>👥 Автори</string> <!-- Added emoji to title -->
        </attribute>
        <layout class="QVBoxLayout" name="authorsTabLayout">
         <property name="spacing">
@@ -1234,13 +1160,9 @@
 
       <!-- My Orders Tab -->
       <widget class="QWidget" name="ordersTab">
-       <attribute name="icon">
-        <iconset resource="resources.qrc">
-         <normalon>:/icons/shopping-bag.svg</normalon> <!-- Bag icon -->
-        </iconset>
-       </attribute>
+       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>Мої замовлення</string> <!-- Tab title -->
+        <string>🛍️ Мої замовлення</string> <!-- Added emoji to title -->
        </attribute>
        <layout class="QVBoxLayout" name="ordersTabLayout">
         <property name="spacing">
