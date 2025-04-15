@@ -762,8 +762,8 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
             qInfo() << "Data population transaction successfully rolled back."; // Changed log to English
         }
         return false;
-    }
-}
+    } // Closes else block for 'if (success)'
+} // Closes populateTestData function body
 
 
 QSqlError DatabaseManager::lastError() const
