@@ -31,10 +31,10 @@ QDateTime randomDateTime(const QDateTime &minDateTime, const QDateTime &maxDateT
 DatabaseManager::DatabaseManager(QObject *parent) : QObject(parent)
 {
     if (!QSqlDatabase::isDriverAvailable("QPSQL")) {
-        qCritical() << "Ошибка: Драйвер QPSQL для PostgreSQL недоступен!";
-        qCritical() << "Доступные драйверы:" << QSqlDatabase::drivers();
+        qCritical() << "Error: QPSQL driver for PostgreSQL is not available!";
+        qCritical() << "Available drivers:" << QSqlDatabase::drivers();
     }
-    // Инициализация генератора случайных чисел (опционально, QRandomGenerator::global() самоинициализируется)
+    // Initialization of the random number generator (optional, QRandomGenerator::global() self-initializes)
     // qsrand(QTime::currentTime().msec());
 }
 
