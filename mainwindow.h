@@ -3,6 +3,11 @@
 
 #include <QMainWindow>
 
+// Forward declaration to avoid including database.h here if possible
+// If we need DatabaseManager methods directly in the header, include it.
+// For now, a pointer is enough.
+class DatabaseManager;
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -19,5 +24,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    DatabaseManager *m_dbManager; // Указатель на менеджер БД
 };
 #endif // MAINWINDOW_H
