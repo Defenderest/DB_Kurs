@@ -7,11 +7,12 @@
 #include <QVector>
 #include <QDate>
 #include <QDateTime>
-#include <QRandomGenerator> // Более современный генератор случайных чисел
-#include <QSet> // Для генерации уникальных пар в связующих таблицах
+#include <QRandomGenerator> // Для генерації клієнтів/замовлень
+#include <QSet>
 #include <QSqlRecord>
+#include <QMap> // Для зберігання ID
 
-// Вспомогательная функция для генерации случайной даты в диапазоне
+// Вспомогательная функция для генерации случайной даты в диапазоне (залишаємо для клієнтів/замовлень)
 QDate randomDate(const QDate &minDate, const QDate &maxDate) {
     qint64 minJulian = minDate.toJulianDay();
     qint64 maxJulian = maxDate.toJulianDay();
@@ -19,13 +20,45 @@ QDate randomDate(const QDate &minDate, const QDate &maxDate) {
     return QDate::fromJulianDay(randomJulian);
 }
 
-// Вспомогательная функция для генерации случайного времени
+// Вспомогательная функция для генерации случайного времени (залишаємо для клієнтів/замовлень)
 QDateTime randomDateTime(const QDateTime &minDateTime, const QDateTime &maxDateTime) {
     qint64 minSecs = minDateTime.toSecsSinceEpoch();
     qint64 maxSecs = maxDateTime.toSecsSinceEpoch();
     qint64 randomSecs = QRandomGenerator::global()->bounded(minSecs, maxSecs + 1);
     return QDateTime::fromSecsSinceEpoch(randomSecs);
 }
+
+// Структури для зберігання реальних даних
+struct PublisherData {
+    QString name;
+    QString contactInfo;
+    int dbId = -1; // Для збереження ID після вставки
+};
+
+struct AuthorData {
+    QString firstName;
+    QString lastName;
+    QDate birthDate;
+    QString nationality;
+    int dbId = -1; // Для збереження ID після вставки
+};
+
+struct BookData {
+    QString title;
+    QString isbn;
+    QDate publicationDate;
+    QString publisherName; // Посилання на видавця за іменем
+    double price;
+    int stockQuantity;
+    QString description;
+    QString language;
+    int pageCount;
+    QString coverImagePath;
+    QStringList authorLastNames; // Посилання на авторів за прізвищем (спрощено)
+    int dbId = -1; // Для збереження ID книги
+    int publisherDbId = -1; // ID видавця з БД
+    QList<int> authorDbIds; // ID авторів з БД
+};
 
 
 DatabaseManager::DatabaseManager(QObject *parent) : QObject(parent)
@@ -255,35 +288,259 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
     QSqlQuery query(m_db);
     bool success = true;
-    QVariant lastId; // Для хранения последнего вставленного ID
+    QVariant lastId; // Для зберігання останнього вставленого ID
 
-    // --- Списки тестовых данных на украинском ---
+    // --- Списки для генерації КЛІЄНТІВ та ЗАМОВЛЕНЬ (залишаємо) ---
     QStringList firstNames = {"Олександр", "Андрій", "Сергій", "Володимир", "Дмитро", "Максим", "Іван", "Артем", "Денис", "Віктор", "Олена", "Наталія", "Тетяна", "Юлія", "Ірина", "Анна", "Оксана", "Марія", "Світлана", "Катерина"};
     QStringList lastNames = {"Мельник", "Шевченко", "Коваленко", "Бондаренко", "Бойко", "Ткаченко", "Кравченко", "Ковальчук", "Коваль", "Олійник", "Шевчук", "Поліщук", "Лисенко", "Бондар", "Мороз", "Марченко", "Ткачук", "Павленко", "Савченко", "Іванова"};
     QStringList cities = {"Київ", "Харків", "Одеса", "Дніпро", "Львів", "Запоріжжя", "Кривий Ріг", "Миколаїв", "Вінниця", "Херсон"};
     QStringList streets = {"вул. Хрещатик", "просп. Свободи", "вул. Сумська", "вул. Пушкінська", "бул. Шевченка", "вул. Городоцька", "вул. Дерибасівська", "просп. Науки", "вул. Соборна", "вул. Центральна"};
-    QStringList bookNouns = {"Таємниця", "Спадщина", "Подорож", "Тінь", "Полум'я", "Доля", "Мрія", "Код", "Острів", "Ліс"};
-    QStringList bookAdjectives = {"Забута", "Крижане", "Незвідана", "Темна", "Вічне", "Незламна", "Остання", "Прихований", "Чарівний", "Золотий"};
-    QStringList bookGenres = {"Детектив", "Фентезі", "Пригоди", "Роман", "Трилер", "Наукова фантастика", "Історичний роман"};
-    QStringList publisherNames = {"А-ба-ба-га-ла-ма-га", "Видавництво Старого Лева", "Клуб Сімейного Дозвілля", "Наш Формат", "Фабула", "Ранок", "Віват", "КМ-Букс", "Фоліо", "Нора-Друк"};
-    QStringList roles = {"Автор", "Ілюстратор", "Перекладач"};
     QStringList orderStatuses = {"Очікує підтвердження", "В обробці", "Комплектується", "Передано до служби доставки", "Надіслано", "Доставлено", "Скасовано"};
     QStringList paymentMethods = {"Карткою онлайн", "Готівкою при отриманні", "Переказ на рахунок"};
-    QStringList languages = {"українська", "англійська"};
-    QStringList nationalities = {"українець/українка", "поляк/полька", "американець/американка", "британець/британка"};
 
-    // Хранилища для сгенерированных ID
-    QVector<int> customerIds;
-    QVector<int> publisherIds;
-    QVector<int> authorIds;
-    QVector<int> bookIds;
-    QVector<int> orderIds;
+    // --- Реальні дані ---
+    QList<PublisherData> publishers = {
+        {"А-ба-ба-га-ла-ма-га", "Київ, вул. Басейна, 1/2А", -1},
+        {"Видавництво Старого Лева", "Львів, вул. Старознесенська, 24-26", -1},
+        {"Клуб Сімейного Дозвілля", "Харків, вул. Плеханівська, 117", -1},
+        {"Наш Формат", "Київ, пров. Алли Горської, 5", -1},
+        {"Фабула", "Харків, вул. Сумська, 1", -1},
+        {"Vivat", "Харків, вул. Гоголя, 2А", -1},
+        {"Penguin Books", "London, UK", -1},
+        {"HarperCollins", "New York, USA", -1}
+    };
+
+    QList<AuthorData> authors = {
+        // Українські (6 -> 40% of 15 total authors)
+        {"Сергій", "Жадан", QDate(1974, 8, 23), "українець", -1},
+        {"Оксана", "Забужко", QDate(1960, 9, 19), "українка", -1},
+        {"Юрій", "Андрухович", QDate(1960, 3, 13), "українець", -1},
+        {"Ліна", "Костенко", QDate(1930, 3, 19), "українка", -1},
+        {"Андрій", "Кокотюха", QDate(1970, 11, 17), "українець", -1},
+        {"Макс", "Кідрук", QDate(1984, 4, 1), "українець", -1},
+        // Зарубіжні (9)
+        {"George", "Orwell", QDate(1903, 6, 25), "британець", -1},
+        {"J.K.", "Rowling", QDate(1965, 7, 31), "британка", -1},
+        {"Stephen", "King", QDate(1947, 9, 21), "американець", -1},
+        {"Haruki", "Murakami", QDate(1949, 1, 12), "японець", -1},
+        {"Neil", "Gaiman", QDate(1960, 11, 10), "британець", -1},
+        {"Margaret", "Atwood", QDate(1939, 11, 18), "канадка", -1},
+        {"Yuval Noah", "Harari", QDate(1976, 2, 24), "ізраїльтянин", -1},
+        {"Andrzej", "Sapkowski", QDate(1948, 6, 21), "поляк", -1},
+        {"J.R.R.", "Tolkien", QDate(1892, 1, 3), "британець", -1}
+    };
+
+    QList<BookData> books = {
+        // Українські автори (8 книг -> 40% of 20 total books)
+        {"Ворошиловград", "978-966-14-2218-7", QDate(2010, 1, 1), "Клуб Сімейного Дозвілля", 250.00, 50, "Роман про повернення", "українська", 320, "covers/978-966-14-2218-7.jpg", {"Жадан"}},
+        {"Інтернат", "978-617-7558-04-6", QDate(2017, 1, 1), "Meridian Czernowitz", 300.00, 30, "Роман про війну", "українська", 336, "covers/978-617-7558-04-6.jpg", {"Жадан"}}, // Note: Publisher not in list, will cause warning or need adding
+        {"Музей покинутих секретів", "978-966-8476-27-7", QDate(2009, 1, 1), "Фабула", 450.00, 25, "Сага трьох поколінь", "українська", 832, "covers/978-966-8476-27-7.jpg", {"Забужко"}},
+        {"Польові дослідження з українського сексу", "978-966-10-0090-8", QDate(1996, 1, 1), "Комора", 220.00, 40, "Культовий роман", "українська", 160, "covers/978-966-10-0090-8.jpg", {"Забужко"}}, // Note: Publisher not in list
+        {"Московіада", "978-966-2649-30-8", QDate(1993, 1, 1), "Лілея-НВ", 180.00, 60, "Роман жахів", "українська", 144, "covers/978-966-2649-30-8.jpg", {"Андрухович"}}, // Note: Publisher not in list
+        {"Записки українського самашедшого", "978-966-7041-68-7", QDate(2000, 1, 1), "А-ба-ба-га-ла-ма-га", 350.00, 70, "Історичний роман", "українська", 416, "covers/978-966-7041-68-7.jpg", {"Костенко"}},
+        {"Червоний", "978-617-679-149-0", QDate(2012, 1, 1), "Клуб Сімейного Дозвілля", 280.00, 35, "Історичний трилер", "українська", 352, "covers/978-617-679-149-0.jpg", {"Кокотюха"}},
+        {"Не озирайся і мовчи", "978-617-679-311-1", QDate(2016, 1, 1), "Клуб Сімейного Дозвілля", 260.00, 55, "Підлітковий трилер", "українська", 384, "covers/978-617-679-311-1.jpg", {"Кідрук"}},
+        // Зарубіжні автори (12 книг)
+        {"1984", "978-0-452-28423-4", QDate(1949, 6, 8), "Penguin Books", 150.00, 100, "Dystopian classic", "англійська", 328, "covers/978-0-452-28423-4.jpg", {"Orwell"}},
+        {"Animal Farm", "978-0-451-52634-2", QDate(1945, 8, 17), "Penguin Books", 120.00, 120, "Political allegory", "англійська", 144, "covers/978-0-451-52634-2.jpg", {"Orwell"}},
+        {"Harry Potter and the Philosopher's Stone", "978-0-7475-3269-9", QDate(1997, 6, 26), "Bloomsbury", 350.00, 80, "Fantasy novel", "англійська", 223, "covers/978-0-7475-3269-9.jpg", {"Rowling"}}, // Note: Publisher not in list
+        {"The Shining", "978-0-385-12167-5", QDate(1977, 1, 28), "Doubleday", 280.00, 65, "Horror novel", "англійська", 447, "covers/978-0-385-12167-5.jpg", {"King"}}, // Note: Publisher not in list
+        {"It", "978-0-670-81302-5", QDate(1986, 9, 15), "Viking", 450.00, 45, "Horror novel", "англійська", 1138, "covers/978-0-670-81302-5.jpg", {"King"}}, // Note: Publisher not in list
+        {"Norwegian Wood", "978-0-375-70402-4", QDate(1987, 1, 1), "Vintage International", 240.00, 70, "Coming-of-age novel", "англійська", 296, "covers/978-0-375-70402-4.jpg", {"Murakami"}}, // Note: Publisher not in list
+        {"American Gods", "978-0-380-97365-1", QDate(2001, 6, 19), "HarperCollins", 320.00, 50, "Fantasy novel", "англійська", 465, "covers/978-0-380-97365-1.jpg", {"Gaiman"}},
+        {"The Handmaid's Tale", "978-0-385-49081-8", QDate(1985, 1, 1), "McClelland and Stewart", 270.00, 75, "Dystopian novel", "англійська", 311, "covers/978-0-385-49081-8.jpg", {"Atwood"}}, // Note: Publisher not in list
+        {"Sapiens: A Brief History of Humankind", "978-0-06-231609-7", QDate(2011, 1, 1), "HarperCollins", 400.00, 90, "Non-fiction", "англійська", 464, "covers/978-0-06-231609-7.jpg", {"Harari"}},
+        {"The Last Wish (The Witcher)", "978-0-316-43896-9", QDate(1993, 1, 1), "Orbit", 290.00, 60, "Fantasy short stories", "англійська", 400, "covers/978-0-316-43896-9.jpg", {"Sapkowski"}}, // Note: Publisher not in list
+        {"The Hobbit", "978-0-547-92822-7", QDate(1937, 9, 21), "Houghton Mifflin Harcourt", 220.00, 110, "Fantasy novel", "англійська", 310, "covers/978-0-547-92822-7.jpg", {"Tolkien"}}, // Note: Publisher not in list
+        {"The Lord of the Rings", "978-0-618-26027-9", QDate(1954, 7, 29), "Allen & Unwin", 600.00, 40, "High-fantasy novel", "англійська", 1178, "covers/978-0-618-26027-9.jpg", {"Tolkien"}} // Note: Publisher not in list
+    };
+
+
+    // Хранилища для ID (використовуємо Map для зручного пошуку)
+    QMap<QString, int> publisherNameToId;
+    QMap<QString, int> authorLastNameToId; // Увага: спрощення, може бути не унікальним!
+    QVector<int> customerIds; // Залишаємо для клієнтів
+    QVector<int> bookIds;     // Буде заповнено реальними ID книг
+    QVector<double> bookPrices; // Зберігаємо ціни для order_item
+    QVector<int> orderIds;    // Залишаємо для замовлень
+
 
     // --- Заполнение таблиц ---
 
-    // 1. Customer
-    qInfo() << "Populating table customer..."; // Changed log to English
-    QString insertCustomerSQL = R"(
+    // 1. Publishers (Вставка реальних видавців)
+    qInfo() << "Populating table publisher with real data...";
+    QString insertPublisherSQL = R"(
+         INSERT INTO publisher (name, contact_info) VALUES (:name, :contact_info)
+         RETURNING publisher_id;
+     )";
+    if (!query.prepare(insertPublisherSQL)) {
+        qCritical() << "Error preparing query for publisher:" << query.lastError().text();
+        success = false;
+    } else {
+        for (PublisherData &pub : publishers) {
+            query.bindValue(":name", pub.name);
+            query.bindValue(":contact_info", pub.contactInfo);
+            if (executeInsertQuery(query, QString("Publisher %1").arg(pub.name), lastId)) {
+                pub.dbId = lastId.toInt();
+                publisherNameToId[pub.name] = pub.dbId;
+            } else {
+                // Перевірка на дублікат (якщо запускаємо повторно без очищення)
+                 if (query.lastError().text().contains("duplicate key value violates unique constraint")) {
+                    qWarning() << "Publisher" << pub.name << "already exists. Fetching ID...";
+                    QSqlQuery fetchQuery(m_db);
+                    fetchQuery.prepare("SELECT publisher_id FROM publisher WHERE name = :name");
+                    fetchQuery.bindValue(":name", pub.name);
+                    if (fetchQuery.exec() && fetchQuery.next()) {
+                        pub.dbId = fetchQuery.value(0).toInt();
+                        publisherNameToId[pub.name] = pub.dbId;
+                        qInfo() << "Found existing Publisher ID:" << pub.dbId;
+                    } else {
+                         qCritical() << "Failed to fetch existing publisher ID for" << pub.name << ":" << fetchQuery.lastError().text();
+                         success = false;
+                         break;
+                    }
+                } else {
+                    success = false; // Інша помилка є критичною
+                    break;
+                }
+            }
+        }
+    }
+
+    // 2. Authors (Вставка реальних авторів)
+    if (success) {
+        qInfo() << "Populating table author with real data...";
+        QString insertAuthorSQL = R"(
+             INSERT INTO author (first_name, last_name, birth_date, nationality)
+             VALUES (:first_name, :last_name, :birth_date, :nationality)
+             RETURNING author_id;
+         )";
+        if (!query.prepare(insertAuthorSQL)) {
+            qCritical() << "Error preparing query for author:" << query.lastError().text();
+            success = false;
+        } else {
+            for (AuthorData &auth : authors) {
+                query.bindValue(":first_name", auth.firstName);
+                query.bindValue(":last_name", auth.lastName);
+                query.bindValue(":birth_date", auth.birthDate.isValid() ? QVariant(auth.birthDate) : QVariant(QVariant::Date));
+                query.bindValue(":nationality", auth.nationality);
+
+                if (executeInsertQuery(query, QString("Author %1 %2").arg(auth.firstName, auth.lastName), lastId)) {
+                    auth.dbId = lastId.toInt();
+                    // Увага: ключ - прізвище. Якщо є однакові, буде перезаписано!
+                    authorLastNameToId[auth.lastName] = auth.dbId;
+                } else {
+                    // Припускаємо, що автори унікальні і помилка вставки є критичною
+                    success = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    // 3. Books and Book_Author (Вставка реальних книг та зв'язків)
+    if (success) {
+        qInfo() << "Populating table book and book_author with real data...";
+        QString insertBookSQL = R"(
+             INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count, cover_image_path)
+             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count, :cover_image_path)
+             RETURNING book_id;
+         )";
+         QString insertBookAuthorSQL = R"(
+             INSERT INTO book_author (book_id, author_id) VALUES (:book_id, :author_id);
+         )"; // Спрощено, без ролі
+
+        QSqlQuery bookQuery(m_db); // Окремий запит для книг
+        QSqlQuery bookAuthorQuery(m_db); // Окремий запит для зв'язків
+
+        if (!bookQuery.prepare(insertBookSQL)) {
+             qCritical() << "Error preparing query for book:" << bookQuery.lastError().text();
+             success = false;
+        }
+        if (!bookAuthorQuery.prepare(insertBookAuthorSQL)) {
+             qCritical() << "Error preparing query for book_author:" << bookAuthorQuery.lastError().text();
+             success = false;
+        }
+
+        if(success) {
+            for (BookData &book : books) {
+                // Знайти ID видавця
+                if (publisherNameToId.contains(book.publisherName)) {
+                    book.publisherDbId = publisherNameToId.value(book.publisherName);
+                } else {
+                    qWarning() << "Publisher '" << book.publisherName << "' for book '" << book.title << "' not found in the database. Setting publisher_id to NULL.";
+                    book.publisherDbId = -1; // Або інше значення для NULL
+                }
+
+                // Знайти ID авторів
+                book.authorDbIds.clear();
+                for (const QString &lastName : book.authorLastNames) {
+                    if (authorLastNameToId.contains(lastName)) {
+                        book.authorDbIds.append(authorLastNameToId.value(lastName));
+                    } else {
+                        qWarning() << "Author with last name '" << lastName << "' for book '" << book.title << "' not found. Skipping author link.";
+                    }
+                }
+
+                // Вставити книгу
+                bookQuery.bindValue(":title", book.title);
+                bookQuery.bindValue(":isbn", book.isbn);
+                bookQuery.bindValue(":publication_date", book.publicationDate.isValid() ? QVariant(book.publicationDate) : QVariant(QVariant::Date));
+                // Обробка NULL для publisher_id
+                if (book.publisherDbId != -1) {
+                     bookQuery.bindValue(":publisher_id", book.publisherDbId);
+                } else {
+                     bookQuery.bindValue(":publisher_id", QVariant(QVariant::Int)); // Вставка NULL
+                }
+                bookQuery.bindValue(":price", book.price);
+                bookQuery.bindValue(":stock_quantity", book.stockQuantity);
+                bookQuery.bindValue(":description", book.description);
+                bookQuery.bindValue(":language", book.language);
+                bookQuery.bindValue(":page_count", book.pageCount);
+                bookQuery.bindValue(":cover_image_path", book.coverImagePath.isEmpty() ? QVariant(QVariant::String) : book.coverImagePath);
+
+                if (executeInsertQuery(bookQuery, QString("Book %1").arg(book.title), lastId)) {
+                    book.dbId = lastId.toInt();
+                    bookIds.append(book.dbId); // Зберігаємо ID для замовлень
+                    bookPrices.append(book.price); // Зберігаємо ціну
+
+                    // Вставити зв'язки книга-автор
+                    if (!book.authorDbIds.isEmpty()) {
+                        for (int authorId : book.authorDbIds) {
+                            bookAuthorQuery.bindValue(":book_id", book.dbId);
+                            bookAuthorQuery.bindValue(":author_id", authorId);
+                            if (!bookAuthorQuery.exec()) {
+                                // Перевірка на дублікат зв'язку
+                                if (bookAuthorQuery.lastError().text().contains("duplicate key value violates unique constraint")) {
+                                     qWarning() << "Book-author link (" << book.dbId << "," << authorId << ") already exists. Skipping.";
+                                } else {
+                                     qCritical() << "Error inserting book_author link:" << bookAuthorQuery.lastError().text();
+                                     qCritical() << "Values:" << book.dbId << authorId;
+                                     success = false;
+                                     break; // Зупиняємо вставку зв'язків для цієї книги
+                                }
+                            }
+                        }
+                    }
+                } else {
+                     // Перевірка на дублікат ISBN
+                    if (bookQuery.lastError().text().contains("duplicate key value violates unique constraint")) {
+                         qWarning() << "Book with ISBN" << book.isbn << "already exists. Skipping insertion.";
+                         // Можна спробувати знайти існуючу книгу і її ID, якщо потрібно
+                    } else {
+                        success = false; // Інша помилка критична
+                    }
+                }
+                if (!success) break; // Зупиняємо весь процес, якщо була помилка
+            }
+        }
+    }
+
+
+    // 4. Customer (Генерація тестових клієнтів, як раніше)
+    if (success) {
+        qInfo() << "Populating table customer (generating test data)...";
+        QString insertCustomerSQL = R"(
         INSERT INTO customer (first_name, last_name, email, phone, address, loyalty_program, join_date, loyalty_points)
         VALUES (:first_name, :last_name, :email, :phone, :address, :loyalty_program, :join_date, :loyalty_points)
         RETURNING customer_id;
@@ -319,112 +576,9 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
     }
 
 
-    // 2. Publisher
-    if (success) {
-        qInfo() << "Populating table publisher..."; // Changed log to English
-        QString insertPublisherSQL = R"(
-             INSERT INTO publisher (name, contact_info) VALUES (:name, :contact_info)
-             RETURNING publisher_id;
-         )"; // Added RETURNING
-        if (!query.prepare(insertPublisherSQL)) {
-            qCritical() << "Error preparing query for publisher:" << query.lastError().text(); // Changed log to English
-            success = false;
-        } else {
-            QSet<QString> usedPublisherNames; // Для уникальности
-            for (int i = 0; i < qMin(numberOfRecords, publisherNames.size()) && success; ++i) { // Берем уникальные названия
-                QString pubName = publisherNames.at(i);
-                // if (usedPublisherNames.contains(pubName)) continue; // Пропускаем, если имя уже есть (хотя тут берем по индексу)
-                // usedPublisherNames.insert(pubName);
-
-                query.bindValue(":name", pubName);
-                query.bindValue(":contact_info", QString("Контактна інформація для %1").arg(pubName));
-
-                if (executeInsertQuery(query, QString("Publisher %1").arg(i+1), lastId)) {
-                    publisherIds.append(lastId.toInt());
-                } else {
-                    success = false;
-                }
-            }
-        }
-    }
-
-    // 3. Author
-    if (success) {
-        qInfo() << "Populating table author..."; // Changed log to English
-        QString insertAuthorSQL = R"(
-             INSERT INTO author (first_name, last_name, birth_date, nationality)
-             VALUES (:first_name, :last_name, :birth_date, :nationality)
-             RETURNING author_id;
-         )"; // Added RETURNING
-        if (!query.prepare(insertAuthorSQL)) {
-            qCritical() << "Error preparing query for author:" << query.lastError().text(); // Changed log to English
-            success = false;
-        } else {
-            for (int i = 0; i < numberOfRecords && success; ++i) {
-                query.bindValue(":first_name", firstNames.at(QRandomGenerator::global()->bounded(firstNames.size())));
-                query.bindValue(":last_name", lastNames.at(QRandomGenerator::global()->bounded(lastNames.size())));
-                query.bindValue(":birth_date", randomDate(QDate(1950, 1, 1), QDate(2000, 1, 1)));
-                query.bindValue(":nationality", nationalities.at(QRandomGenerator::global()->bounded(nationalities.size())));
-
-                if (executeInsertQuery(query, QString("Author %1").arg(i+1), lastId)) {
-                    authorIds.append(lastId.toInt());
-                } else {
-                    success = false;
-                }
-            }
-        }
-    }
-
-
-    // 4. Book
-    if (success && !publisherIds.isEmpty()) { // At least one publisher is needed
-        qInfo() << "Populating table book..."; // Changed log to English
-        QString insertBookSQL = R"(
-             INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count, cover_image_path)
-             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count, :cover_image_path)
-             RETURNING book_id;
-         )"; // Added RETURNING and cover_image_path
-        if (!query.prepare(insertBookSQL)) {
-            qCritical() << "Error preparing query for book:" << query.lastError().text(); // Changed log to English
-            success = false;
-        } else {
-            for (int i = 0; i < numberOfRecords * 2 && success; ++i) { // Генерируем больше книг
-                QString title = QString("%1 %2")
-                                    .arg(bookAdjectives.at(QRandomGenerator::global()->bounded(bookAdjectives.size())))
-                                    .arg(bookNouns.at(QRandomGenerator::global()->bounded(bookNouns.size())));
-                query.bindValue(":title", title);
-                query.bindValue(":isbn", QString("978-966-%1-%2-%3").arg(QRandomGenerator::global()->bounded(1000, 10000))
-                                             .arg(QRandomGenerator::global()->bounded(100, 1000))
-                                             .arg(i)); // Уникальный ISBN
-                query.bindValue(":publication_date", randomDate(QDate(2000, 1, 1), QDate::currentDate()));
-                query.bindValue(":publisher_id", publisherIds.at(QRandomGenerator::global()->bounded(publisherIds.size())));
-                query.bindValue(":price", 600);
-                query.bindValue(":stock_quantity", QRandomGenerator::global()->bounded(0, 101));
-                query.bindValue(":description", QString("Чудовий опис для книги '%1'").arg(title));
-                query.bindValue(":language", languages.at(QRandomGenerator::global()->bounded(languages.size())));
-                query.bindValue(":page_count", QRandomGenerator::global()->bounded(100, 801));
-                // Пока просто устанавливаем NULL или пустой путь для обложки
-                query.bindValue(":cover_image_path", QVariant(QVariant::String)); // Устанавливаем NULL
-
-                if (executeInsertQuery(query, QString("Book %1").arg(i+1), lastId)) {
-                    bookIds.append(lastId.toInt());
-                } else {
-                    // ISBN может быть не уникальным при перезапуске, игнорируем ошибку UNIQUE constraint
-                    if (!query.lastError().text().contains("duplicate key value violates unique constraint")) {
-                        success = false; // Провалить транзакцию при других ошибках
-                    } else {
-                        qWarning() << "Пропуск дубліката ISBN для книги" << (i+1);
-                    }
-                }
-            }
-        }
-    } else if (publisherIds.isEmpty()) {
-        qWarning() << "Пропуск заповнення 'book', оскільки немає видавців (publisher).";
-    }
-
-    // 5. "order"
+    // 5. "order" (Генерація тестових замовлень)
     if (success && !customerIds.isEmpty()) {
-        qInfo() << "Populating table \"order\"..."; // Changed log to English
+        qInfo() << "Populating table \"order\" (generating test data)...";
         QString insertOrderSQL = R"(
              INSERT INTO "order" (customer_id, order_date, total_amount, shipping_address, payment_method)
              VALUES (:customer_id, :order_date, :total_amount, :shipping_address, :payment_method)
@@ -457,53 +611,9 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
         qWarning() << "Пропуск заповнення 'order', оскільки немає клієнтів (customer).";
     }
 
-
-    // 6. book_author (Связующая таблица)
-    if (success && !bookIds.isEmpty() && !authorIds.isEmpty()) {
-        qInfo() << "Заповнення таблиці book_author...";
-        QString insertBookAuthorSQL = R"(
-             INSERT INTO book_author (book_id, author_id, role) VALUES (:book_id, :author_id, :role);
-         )";
-        if (!query.prepare(insertBookAuthorSQL)) {
-            qCritical() << "Помилка підготовки запиту для book_author:" << query.lastError().text();
-            success = false;
-        } else {
-            QSet<QPair<int, int>> usedPairs; // Для уникальности пар (книга, автор)
-            int linksCreated = 0;
-            for (int bookId : bookIds) { // Для каждой книги добавим 1-2 автора
-                int authorsCount = QRandomGenerator::global()->bounded(1, 3); // 1 или 2 автора
-                for (int j = 0; j < authorsCount && success; ++j) {
-                    int authorId = authorIds.at(QRandomGenerator::global()->bounded(authorIds.size()));
-                    QPair<int, int> currentPair = qMakePair(bookId, authorId);
-
-                    if (usedPairs.contains(currentPair)) continue; // Пропускаем, если такая связь уже есть
-
-                    query.bindValue(":book_id", bookId);
-                    query.bindValue(":author_id", authorId);
-                    query.bindValue(":role", roles.at(QRandomGenerator::global()->bounded(roles.size()))); // Random role
-
-                    // Execute the prepared query directly
-                    if (query.exec()) {
-                        usedPairs.insert(currentPair);
-                        linksCreated++;
-                    } else {
-                        // Ignore PRIMARY KEY violation error if the pair already exists
-                        if (!query.lastError().text().contains("duplicate key value violates unique constraint")) {
-                            success = false;
-                        } else {
-                            qWarning() << "Пропуск дубліката зв'язку book_author для" << currentPair;
-                        }
-                    }
-                }
-                if (linksCreated >= numberOfRecords * 1.5) break; // Ограничим общее кол-во связей
-            }
-            qInfo() << "Створено" << linksCreated << "зв'язків книга-автор.";
-        }
-    }
-
-    // 7. order_item
+    // 6. order_item (Генерація позицій замовлення з РЕАЛЬНИМИ книгами)
     if (success && !orderIds.isEmpty() && !bookIds.isEmpty()) {
-        qInfo() << "Заповнення таблиці order_item...";
+        qInfo() << "Populating table order_item (using real books)...";
         QString insertOrderItemSQL = R"(
              INSERT INTO order_item (order_id, book_id, quantity, price_per_unit)
              VALUES (:order_id, :book_id, :quantity, :price_per_unit);
@@ -519,14 +629,21 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 QSet<int> booksInOrder; // Книги в текущем заказе
                 for (int j = 0; j < itemsCount && success; ++j) {
                     int bookId = bookIds.at(QRandomGenerator::global()->bounded(bookIds.size()));
-                    if (booksInOrder.contains(bookId)) continue; // Не добавляем одну и ту же книгу дважды
+                    if (booksInOrder.contains(bookId)) continue; // Не додаємо одну й ту саму книгу двічі
 
                     int quantity = QRandomGenerator::global()->bounded(1, 4); // 1-3 шт.
-                    // Получим цену книги (для примера возьмем случайную, в реальности надо SELECT цену из book)
-                    double price = 200;
+                    // Беремо реальну ціну книги зі збереженого списку
+                    double price = 0.0;
+                    int bookIndex = bookIds.indexOf(bookId); // Знаходимо індекс книги
+                    if (bookIndex != -1 && bookIndex < bookPrices.size()) {
+                        price = bookPrices.at(bookIndex);
+                    } else {
+                        qWarning() << "Could not find price for book ID" << bookId << "in order" << orderId << ". Using 0.0.";
+                    }
+
 
                     query.bindValue(":order_id", orderId);
-                    query.bindValue(":book_id", bookId);
+                    query.bindValue(":book_id", bookId); // Використовуємо ID реальної книги
                     query.bindValue(":quantity", quantity);
                     query.bindValue(":price_per_unit", price);
 
@@ -544,13 +661,13 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 }
                 if (itemsCreated >= numberOfRecords * 2.5) break; // Ограничение
             }
-            qInfo() << "Створено" << itemsCreated << "позицій замовлень.";
+            qInfo() << "Created" << itemsCreated << "order items."; // Changed log to English
 
             // Обновляем total_amount в таблице "order"
-            qInfo() << "Оновлення total_amount в таблиці \"order\"...";
+            qInfo() << "Updating total_amount in table \"order\"..."; // Changed log to English
             QString updateOrderTotalSQL = R"(UPDATE "order" SET total_amount = :total WHERE order_id = :id;)";
             if (!query.prepare(updateOrderTotalSQL)) {
-                qCritical() << "Помилка підготовки запиту для оновлення total_amount:" << query.lastError().text();
+                qCritical() << "Error preparing query for updating total_amount:" << query.lastError().text(); // Changed log to English
                 success = false;
             } else {
                 for (auto it = orderTotals.constBegin(); it != orderTotals.constEnd() && success; ++it) {
@@ -566,11 +683,14 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 }
             }
         }
+    } else if (bookIds.isEmpty()) {
+         qWarning() << "Skipping order_item population because no books were added.";
     }
 
-    // 8. order_status
+
+    // 7. order_status (Генерація статусів замовлень, як раніше)
     if (success && !orderIds.isEmpty()) {
-        qInfo() << "Заповнення таблиці order_status...";
+        qInfo() << "Populating table order_status (generating test data)...";
         QString insertOrderStatusSQL = R"(
             INSERT INTO order_status (order_id, status, status_date, tracking_number)
             VALUES (:order_id, :status, :status_date, :tracking_number);
@@ -619,27 +739,27 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 }
                 if (statusesCreated >= numberOfRecords * 2) break; // Ограничение
             }
-            qInfo() << "Створено" << statusesCreated << "статусів замовлень.";
+            qInfo() << "Created" << statusesCreated << "order statuses."; // Changed log to English
         }
     }
 
 
-    // Завершаем транзакцию
+    // Завершуємо транзакцію
     if (success) {
         if (m_db.commit()) {
-            qInfo() << "Транзакція заповнення даних успішно завершена. Додано приблизно по" << numberOfRecords << "записів.";
+            qInfo() << "Data population transaction committed successfully. Added real books/authors and ~" << numberOfRecords << "customers/orders."; // Changed log to English
             return true;
         } else {
-            qCritical() << "Помилка при коміті транзакції заповнення даних:" << m_db.lastError().text();
+            qCritical() << "Error committing data population transaction:" << m_db.lastError().text(); // Changed log to English
             m_db.rollback();
             return false;
         }
     } else {
-        qWarning() << "Произошла ошибка при заполнении данных. Откат транзакции...";
+        qWarning() << "An error occurred during data population. Rolling back transaction..."; // Changed log to English
         if (!m_db.rollback()) {
-            qCritical() << "Помилка при відкаті транзакції заповнення даних:" << m_db.lastError().text();
+            qCritical() << "Error rolling back data population transaction:" << m_db.lastError().text(); // Changed log to English
         } else {
-            qInfo() << "Транзакція заповнення даних успішно скасована.";
+            qInfo() << "Data population transaction successfully rolled back."; // Changed log to English
         }
         return false;
     }
