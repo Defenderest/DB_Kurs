@@ -16,9 +16,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 2. Подключаемся к базе данных (замените на ваши реальные данные)
     bool connected = m_dbManager->connectToDatabase(
-        "localhost",      // Хост
+        "127.127.126.49",      // Хост
         5432,             // Порт
-        "bookstore_db",   // Имя базы данных
+        "postgres",   // Имя базы данных
         "postgres",       // Имя пользователя
         "1234"            // Пароль (ВНИМАНИЕ: Не храните пароли в коде в реальных приложениях!)
     );
