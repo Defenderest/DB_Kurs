@@ -574,6 +574,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
             }
         }
     }
+    } // <- Добавлена недостающая скобка для закрытия 'if (success)' для Customer
 
 
     // 5. "order" (Генерація тестових замовлень)
