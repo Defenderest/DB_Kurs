@@ -1,0 +1,22 @@
+{
+	"BUILD_DIR" : "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_llvm_mingw_64_bit-Debug/untitled_autogen",
+	"CMAKE_BINARY_DIR" : "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_llvm_mingw_64_bit-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_llvm_mingw_64_bit-Debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "D:/projects/DB_Kurs/QtAPP/untitled",
+	"CMAKE_SOURCE_DIR" : "D:/projects/DB_Kurs/QtAPP/untitled",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "Ninja",
+	"INCLUDE_DIR" : "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_llvm_mingw_64_bit-Debug/untitled_autogen/include",
+	"INPUTS" : [],
+	"LOCK_FILE" : "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_llvm_mingw_64_bit-Debug/CMakeFiles/untitled_autogen.dir/AutoRcc_resourses_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "--no-zstd", "-name", "resourses" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_resourses.cpp",
+	"RCC_EXECUTABLE" : "D:/Qt/6.8.0/llvm-mingw_64/bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_llvm_mingw_64_bit-Debug/CMakeFiles/untitled_autogen.dir/AutoRcc_resourses_EWIEGA46WW_Used.txt",
+	"SOURCE" : "D:/projects/DB_Kurs/QtAPP/untitled/resourses.qrc",
+	"USE_BETTER_GRAPH" : true,
+	"VERBOSITY" : 0
+}
