@@ -1,1 +1,51 @@
+# Aider files
 .aider*
+
+# Build directories
+/build/
+/*_Debug/
+/*_Release/
+/debug/
+/release/
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+
+# Qt Creator files
+*.user
+*.qtcreator
+*.pro.user
+.qtc_clangd/
+
+# Executables and libraries
+*.exe
+*.dll
+*.lib
+*.a
+*.so
+*.dylib
+
+# Object files
+*.o
+*.obj
+
+# Generated Qt files (keep source .ui, .qrc)
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+*_autogen/
+
+# Ninja files
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Other generated files
+*.log
+*.tmp
+*.bak
+*.swp
