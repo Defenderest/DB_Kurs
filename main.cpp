@@ -2,8 +2,7 @@
 #include <QDebug>
 #include <QElapsedTimer> // Для замера времени
 #include "database.h"
-#include <windows.h>
-
+#include "mainwindow.h"
 int main(int argc, char *argv[])
 {
     // Set console code pages for correct output (optional, but good practice if needed)
@@ -14,7 +13,7 @@ int main(int argc, char *argv[])
     // For purely English output, these are less critical.
 
     QCoreApplication a(argc, argv);
-
+    MainWindow w;
     qInfo() << "Starting the program to create schema and populate PostgreSQL DB...";
 
     // --- Connection Parameters ---
