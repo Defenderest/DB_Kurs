@@ -133,6 +133,7 @@ bool DatabaseManager::createSchemaTables()
             publication_date DATE, publisher_id INTEGER, price NUMERIC(10, 2) CHECK (price >= 0),
             stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0), description TEXT, language VARCHAR(50),
             page_count INTEGER CHECK (page_count > 0),
+            cover_image_path VARCHAR(512), -- Добавлено поле для пути к обложке
             CONSTRAINT fk_publisher FOREIGN KEY (publisher_id) REFERENCES publisher(publisher_id) ON DELETE SET NULL ); )";
     if(success) success &= executeQuery(query, createBookSQL, "Создание book");
 
@@ -379,10 +380,10 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
     if (success && !publisherIds.isEmpty()) { // At least one publisher is needed
         qInfo() << "Populating table book..."; // Changed log to English
         QString insertBookSQL = R"(
-             INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count)
-             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count)
+             INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count, cover_image_path)
+             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count, :cover_image_path)
              RETURNING book_id;
-         )"; // Added RETURNING
+         )"; // Added RETURNING and cover_image_path
         if (!query.prepare(insertBookSQL)) {
             qCritical() << "Error preparing query for book:" << query.lastError().text(); // Changed log to English
             success = false;
@@ -402,6 +403,8 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 query.bindValue(":description", QString("Чудовий опис для книги '%1'").arg(title));
                 query.bindValue(":language", languages.at(QRandomGenerator::global()->bounded(languages.size())));
                 query.bindValue(":page_count", QRandomGenerator::global()->bounded(100, 801));
+                // Пока просто устанавливаем NULL или пустой путь для обложки
+                query.bindValue(":cover_image_path", QVariant(QVariant::String)); // Устанавливаем NULL
 
                 if (executeInsertQuery(query, QString("Book %1").arg(i+1), lastId)) {
                     bookIds.append(lastId.toInt());
