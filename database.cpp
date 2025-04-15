@@ -203,25 +203,16 @@ bool DatabaseManager::executeQuery(QSqlQuery &query, const QString &sql, const Q
     return true;
 }
 
-// Вспомогательная функция для выполнения INSERT с возвратом ID (использует RETURNING)
-bool DatabaseManager::executeInsertQuery(QSqlQuery &query, const QString &sql, const QString &description, QVariant &insertedId)
+// Вспомогательная функция для выполнения ПОДГОТОВЛЕННОГО INSERT с возвратом ID
+bool DatabaseManager::executeInsertQuery(QSqlQuery &query, const QString &description, QVariant &insertedId)
 {
-    // Добавляем RETURNING id к запросу, если его там еще нет
-    QString querySQL = sql.trimmed();
-    if (!querySQL.toLower().contains("returning ")) {
-        if (querySQL.endsWith(';')) {
-            querySQL.chop(1); // Убираем последнюю точку с запятой
-        }
-        querySQL.append(" RETURNING *;"); // Возвращаем все поля, ID обычно первый
-    }
+    qInfo().noquote() << QString("Executing prepared INSERT (%1)...").arg(description); // Логируем только описание
 
-    qInfo().noquote() << QString("Виконання INSERT (%1): %2").arg(description, querySQL.left(100).replace("\n", " ").simplified().append("..."));
-
-    if (!query.exec(querySQL)) {
-        qCritical().noquote() << QString("Помилка при INSERT (%1):").arg(description);
+    if (!query.exec()) { // Выполняем подготовленный запрос
+        qCritical().noquote() << QString("Error executing prepared INSERT (%1):").arg(description);
         qCritical() << query.lastError().text();
-        qCritical() << "SQL запит:" << querySQL;
-        qCritical() << "Пов'язані значення:" << query.boundValues(); // Показываем значения, которые пытались вставить
+        qCritical() << "Prepared query:" << query.lastQuery(); // Показываем подготовленный запрос
+        qCritical() << "Bound values:" << query.boundValues(); // Показываем значения, которые пытались вставить
         return false;
     }
 
@@ -481,14 +472,14 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
                     query.bindValue(":book_id", bookId);
                     query.bindValue(":author_id", authorId);
-                    query.bindValue(":role", roles.at(QRandomGenerator::global()->bounded(roles.size()))); // Случайная роль
+                    query.bindValue(":role", roles.at(QRandomGenerator::global()->bounded(roles.size()))); // Random role
 
-                    // Для связующих таблиц RETURNING не так важен, используем executeQuery
-                    if (executeQuery(query, query.lastQuery(), QString("BookAuthor Link %1").arg(linksCreated + 1))) {
+                    // Execute the prepared query directly
+                    if (query.exec()) {
                         usedPairs.insert(currentPair);
                         linksCreated++;
                     } else {
-                        // Игнорируем ошибку PRIMARY KEY violation, если пара уже есть
+                        // Ignore PRIMARY KEY violation error if the pair already exists
                         if (!query.lastError().text().contains("duplicate key value violates unique constraint")) {
                             success = false;
                         } else {
@@ -531,13 +522,16 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                     query.bindValue(":quantity", quantity);
                     query.bindValue(":price_per_unit", price);
 
-                    // Для этой таблицы ID не нужен, используем executeQuery
-                    if (executeQuery(query, query.lastQuery(), QString("OrderItem %1").arg(itemsCreated + 1))) {
-                        orderTotals[orderId] += quantity * price; // Суммируем стоимость
+                    // Execute the prepared query directly
+                    if (query.exec()) {
+                        orderTotals[orderId] += quantity * price; // Sum up the cost
                         booksInOrder.insert(bookId);
                         itemsCreated++;
                     } else {
-                        success = false; // Любая ошибка здесь критична
+                        qCritical().noquote() << QString("Error executing prepared INSERT (OrderItem %1):").arg(itemsCreated + 1);
+                        qCritical() << query.lastError().text();
+                        qCritical() << "Bound values:" << query.boundValues();
+                        success = false; // Any error here is critical
                     }
                 }
                 if (itemsCreated >= numberOfRecords * 2.5) break; // Ограничение
@@ -554,8 +548,12 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 for (auto it = orderTotals.constBegin(); it != orderTotals.constEnd() && success; ++it) {
                     query.bindValue(":total", it.value());
                     query.bindValue(":id", it.key());
-                    if (!executeQuery(query, query.lastQuery(), QString("Update Order Total %1").arg(it.key()))) {
-                        success = false;
+                    // Execute the prepared query directly
+                    if (!query.exec()) {
+                         qCritical().noquote() << QString("Error executing prepared UPDATE (Update Order Total %1):").arg(it.key());
+                         qCritical() << query.lastError().text();
+                         qCritical() << "Bound values:" << query.boundValues();
+                         success = false;
                     }
                 }
             }
@@ -598,13 +596,16 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                     query.bindValue(":order_id", orderId);
                     query.bindValue(":status", status);
                     query.bindValue(":status_date", statusDate);
-                    query.bindValue(":tracking_number", tracking.isEmpty() ? QVariant(QVariant::String) : tracking); // Передаем NULL если пусто
+                    query.bindValue(":tracking_number", tracking.isEmpty() ? QVariant(QVariant::String) : tracking); // Pass NULL if empty
 
-                    // ID не нужен, используем executeQuery
-                    if (executeQuery(query, query.lastQuery(), QString("OrderStatus %1").arg(statusesCreated + 1))) {
-                        lastStatusDate = statusDate; // Обновляем дату последнего статуса
+                    // Execute the prepared query directly
+                    if (query.exec()) {
+                        lastStatusDate = statusDate; // Update the last status date
                         statusesCreated++;
                     } else {
+                        qCritical().noquote() << QString("Error executing prepared INSERT (OrderStatus %1):").arg(statusesCreated + 1);
+                        qCritical() << query.lastError().text();
+                        qCritical() << "Bound values:" << query.boundValues();
                         success = false;
                     }
                 }

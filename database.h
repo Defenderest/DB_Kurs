@@ -41,8 +41,8 @@ private:
     // Вспомогательная функция для выполнения запроса с проверкой ошибки
     bool executeQuery(QSqlQuery &query, const QString &sql, const QString &description);
 
-    // Вспомогательная функция для выполнения INSERT с возвратом ID
-    bool executeInsertQuery(QSqlQuery &query, const QString &sql, const QString &description, QVariant &insertedId);
+    // Вспомогательная функция для выполнения подготовленного INSERT с возвратом ID
+    bool executeInsertQuery(QSqlQuery &query, const QString &description, QVariant &insertedId);
 };
 
 #endif // DATABASE_H
