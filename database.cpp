@@ -675,10 +675,10 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                     query.bindValue(":id", it.key());
                     // Execute the prepared query directly
                     if (!query.exec()) {
-                         qCritical().noquote() << QString("Error executing prepared UPDATE (Update Order Total %1):").arg(it.key());
+                         qCritical().noquote() << QString("Error executing prepared UPDATE (Update Order Total %1):").arg(it.key()); // Changed log to English
                          qCritical() << query.lastError().text();
                          qCritical() << "Bound values:" << query.boundValues();
-                         success = false;
+                         success = false; // Changed log to English
                     }
                 }
             }
