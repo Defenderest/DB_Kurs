@@ -383,9 +383,8 @@
           <string/> <!-- No text, only icon -->
          </property>
          <property name="icon">
-          <iconset>
-           <!-- Define icon path (use resource system in real app) -->
-           <normalon>icons/heart.svg</normalon>
+          <iconset resource="resources.qrc"> <!-- Assuming your qrc file is named resources.qrc -->
+           <normalon>:/icons/heart.svg</normalon> <!-- Use resource path -->
           </iconset>
          </property>
          <property name="iconSize">
@@ -409,8 +408,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normalon>icons/cart.svg</normalon>
+          <iconset resource="resources.qrc">
+           <normalon>:/icons/cart.svg</normalon>
           </iconset>
          </property>
          <property name="iconSize">
@@ -434,8 +433,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normalon>icons/user.svg</normalon>
+          <iconset resource="resources.qrc">
+           <normalon>:/icons/user.svg</normalon>
           </iconset>
          </property>
          <property name="iconSize">
@@ -468,8 +467,8 @@
       <!-- Discover Tab (Homepage) -->
       <widget class="QWidget" name="discoverTab">
        <attribute name="icon">
-        <iconset>
-         <normalon>icons/home.svg</normalon> <!-- Home icon -->
+        <iconset resource="resources.qrc">
+         <normalon>:/icons/home.svg</normalon> <!-- Home icon -->
         </iconset>
        </attribute>
        <attribute name="title">
@@ -853,8 +852,8 @@
       <!-- Books Tab -->
       <widget class="QWidget" name="booksTab">
        <attribute name="icon">
-        <iconset>
-         <normalon>icons/book.svg</normalon> <!-- Book icon -->
+        <iconset resource="resources.qrc">
+         <normalon>:/icons/book.svg</normalon> <!-- Book icon -->
         </iconset>
        </attribute>
        <attribute name="title">
@@ -961,8 +960,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
-               <normalon>icons/filter.svg</normalon>
+              <iconset resource="resources.qrc">
+               <normalon>:/icons/filter.svg</normalon>
               </iconset>
              </property>
              <property name="iconSize">
@@ -995,9 +994,9 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="resources.qrc">
                <!-- Icon indicates default sort direction -->
-               <normalon>icons/sort-amount-down.svg</normalon>
+               <normalon>:/icons/sort-amount-down.svg</normalon>
               </iconset>
              </property>
               <property name="iconSize">
@@ -1044,9 +1043,9 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="resources.qrc">
                <!-- Default to grid view icon -->
-               <normalon>icons/grid.svg</normalon>
+               <normalon>:/icons/grid.svg</normalon>
               </iconset>
              </property>
               <property name="iconSize">
@@ -1108,8 +1107,8 @@
       <!-- Authors Tab -->
       <widget class="QWidget" name="authorsTab">
        <attribute name="icon">
-        <iconset>
-         <normalon>icons/users.svg</normalon> <!-- Users icon -->
+        <iconset resource="resources.qrc">
+         <normalon>:/icons/users.svg</normalon> <!-- Users icon -->
         </iconset>
        </attribute>
        <attribute name="title">
@@ -1236,8 +1235,8 @@
       <!-- My Orders Tab -->
       <widget class="QWidget" name="ordersTab">
        <attribute name="icon">
-        <iconset>
-         <normalon>icons/shopping-bag.svg</normalon> <!-- Bag icon -->
+        <iconset resource="resources.qrc">
+         <normalon>:/icons/shopping-bag.svg</normalon> <!-- Bag icon -->
         </iconset>
        </attribute>
        <attribute name="title">
