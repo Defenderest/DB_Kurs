@@ -309,7 +309,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
             query.bindValue(":join_date", randomDate(QDate::currentDate().addYears(-5), QDate::currentDate()));
             query.bindValue(":loyalty_points", QRandomGenerator::global()->bounded(0, 501));
 
-            if (executeInsertQuery(query, query.lastQuery(), QString("Customer %1").arg(i+1), lastId)) {
+            if (executeInsertQuery(query, QString("Customer %1").arg(i+1), lastId)) {
                 customerIds.append(lastId.toInt());
             } else {
                 success = false;
@@ -338,7 +338,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 query.bindValue(":name", pubName);
                 query.bindValue(":contact_info", QString("Контактна інформація для %1").arg(pubName));
 
-                if (executeInsertQuery(query, query.lastQuery(), QString("Publisher %1").arg(i+1), lastId)) {
+                if (executeInsertQuery(query, QString("Publisher %1").arg(i+1), lastId)) {
                     publisherIds.append(lastId.toInt());
                 } else {
                     success = false;
@@ -365,7 +365,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 query.bindValue(":birth_date", randomDate(QDate(1950, 1, 1), QDate(2000, 1, 1)));
                 query.bindValue(":nationality", nationalities.at(QRandomGenerator::global()->bounded(nationalities.size())));
 
-                if (executeInsertQuery(query, query.lastQuery(), QString("Author %1").arg(i+1), lastId)) {
+                if (executeInsertQuery(query, QString("Author %1").arg(i+1), lastId)) {
                     authorIds.append(lastId.toInt());
                 } else {
                     success = false;
@@ -403,7 +403,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 query.bindValue(":language", languages.at(QRandomGenerator::global()->bounded(languages.size())));
                 query.bindValue(":page_count", QRandomGenerator::global()->bounded(100, 801));
 
-                if (executeInsertQuery(query, query.lastQuery(), QString("Book %1").arg(i+1), lastId)) {
+                if (executeInsertQuery(query, QString("Book %1").arg(i+1), lastId)) {
                     bookIds.append(lastId.toInt());
                 } else {
                     // ISBN может быть не уникальным при перезапуске, игнорируем ошибку UNIQUE constraint
@@ -443,7 +443,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                                                          .arg(QRandomGenerator::global()->bounded(1, 51)));
                 query.bindValue(":payment_method", paymentMethods.at(QRandomGenerator::global()->bounded(paymentMethods.size())));
 
-                if (executeInsertQuery(query, query.lastQuery(), QString("Order %1").arg(i+1), lastId)) {
+                if (executeInsertQuery(query, QString("Order %1").arg(i+1), lastId)) {
                     orderIds.append(lastId.toInt());
                 } else {
                     success = false;
