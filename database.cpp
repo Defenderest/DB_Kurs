@@ -40,6 +40,7 @@ struct AuthorData {
     QString lastName;
     QDate birthDate;
     QString nationality;
+    QString imagePath; // Додано поле для шляху до зображення
     int dbId = -1; // Для збереження ID після вставки
 };
 
@@ -159,7 +160,7 @@ bool DatabaseManager::createSchemaTables()
 
     const QString createAuthorSQL = R"(
         CREATE TABLE author ( author_id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL,
-            birth_date DATE, nationality VARCHAR(100) ); )";
+            birth_date DATE, nationality VARCHAR(100), image_path VARCHAR(512) ); )"; // Додано image_path
     if(success) success &= executeQuery(query, createAuthorSQL, "Создание author");
 
     const QString createBookSQL = R"(
@@ -314,19 +315,19 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
     QList<AuthorData> authors = {
         // Українські класики (3)
-        {"Тарас", "Шевченко", QDate(1814, 3, 9), "українець", -1},
-        {"Леся", "Українка", QDate(1871, 2, 25), "українка", -1},
-        {"Іван", "Франко", QDate(1856, 8, 27), "українець", -1},
-        // Зарубіжні (9 - кількість залишається, але загальна кількість авторів зміниться)
-        {"George", "Orwell", QDate(1903, 6, 25), "британець", -1},
-        {"J.K.", "Rowling", QDate(1965, 7, 31), "британка", -1},
-        {"Stephen", "King", QDate(1947, 9, 21), "американець", -1},
-        {"Haruki", "Murakami", QDate(1949, 1, 12), "японець", -1},
-        {"Neil", "Gaiman", QDate(1960, 11, 10), "британець", -1},
-        {"Margaret", "Atwood", QDate(1939, 11, 18), "канадка", -1},
-        {"Yuval Noah", "Harari", QDate(1976, 2, 24), "ізраїльтянин", -1},
-        {"Andrzej", "Sapkowski", QDate(1948, 6, 21), "поляк", -1},
-        {"J.R.R.", "Tolkien", QDate(1892, 1, 3), "британець", -1}
+        {"Тарас", "Шевченко", QDate(1814, 3, 9), "українець", "", -1}, // Додано порожній imagePath
+        {"Леся", "Українка", QDate(1871, 2, 25), "українка", "", -1}, // Додано порожній imagePath
+        {"Іван", "Франко", QDate(1856, 8, 27), "українець", "", -1}, // Додано порожній imagePath
+        // Зарубіжні (9)
+        {"George", "Orwell", QDate(1903, 6, 25), "британець", "", -1}, // Додано порожній imagePath
+        {"J.K.", "Rowling", QDate(1965, 7, 31), "британка", "", -1}, // Додано порожній imagePath
+        {"Stephen", "King", QDate(1947, 9, 21), "американець", "", -1}, // Додано порожній imagePath
+        {"Haruki", "Murakami", QDate(1949, 1, 12), "японець", "", -1}, // Додано порожній imagePath
+        {"Neil", "Gaiman", QDate(1960, 11, 10), "британець", "", -1}, // Додано порожній imagePath
+        {"Margaret", "Atwood", QDate(1939, 11, 18), "канадка", "", -1}, // Додано порожній imagePath
+        {"Yuval Noah", "Harari", QDate(1976, 2, 24), "ізраїльтянин", "", -1}, // Додано порожній imagePath
+        {"Andrzej", "Sapkowski", QDate(1948, 6, 21), "поляк", "", -1}, // Додано порожній imagePath
+        {"J.R.R.", "Tolkien", QDate(1892, 1, 3), "британець", "", -1} // Додано порожній imagePath
     };
 
     QList<BookData> books = {
@@ -408,10 +409,10 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
     if (success) {
         qInfo() << "Populating table author with real data...";
         QString insertAuthorSQL = R"(
-             INSERT INTO author (first_name, last_name, birth_date, nationality)
-             VALUES (:first_name, :last_name, :birth_date, :nationality)
+             INSERT INTO author (first_name, last_name, birth_date, nationality, image_path)
+             VALUES (:first_name, :last_name, :birth_date, :nationality, :image_path)
              RETURNING author_id;
-         )";
+         )"; // Додано image_path
         if (!query.prepare(insertAuthorSQL)) {
             qCritical() << "Error preparing query for author:" << query.lastError().text();
             success = false;
@@ -421,6 +422,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 query.bindValue(":last_name", auth.lastName);
                 query.bindValue(":birth_date", auth.birthDate.isValid() ? QVariant(auth.birthDate) : QVariant(QVariant::Date));
                 query.bindValue(":nationality", auth.nationality);
+                query.bindValue(":image_path", auth.imagePath.isEmpty() ? QVariant(QVariant::String) : auth.imagePath); // Додано прив'язку image_path
 
                 if (executeInsertQuery(query, QString("Author %1 %2").arg(auth.firstName, auth.lastName), lastId)) {
                     auth.dbId = lastId.toInt();
@@ -933,6 +935,54 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
     qInfo() << "Processed" << count << "books for display.";
 
     return books;
+}
+
+
+// Реалізація нового методу для отримання авторів для UI
+QList<AuthorDisplayInfo> DatabaseManager::getAllAuthorsForDisplay() const
+{
+    QList<AuthorDisplayInfo> authors;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо отримати авторів: немає активного з'єднання з БД.";
+        return authors; // Повертаємо порожній список
+    }
+
+    const QString sql = R"(
+        SELECT
+            author_id,
+            first_name,
+            last_name,
+            nationality,
+            image_path
+        FROM author
+        ORDER BY last_name, first_name; -- Сортуємо за прізвищем та ім'ям
+    )";
+
+    QSqlQuery query(m_db);
+    qInfo() << "Executing SQL to get authors for display...";
+    if (!query.exec(sql)) {
+        qCritical() << "Помилка при отриманні списку авторів для відображення:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << sql;
+        return authors; // Повертаємо порожній список у разі помилки
+    }
+
+    qInfo() << "Successfully fetched authors. Processing results...";
+    int count = 0;
+    while (query.next()) {
+        AuthorDisplayInfo authorInfo;
+        authorInfo.authorId = query.value("author_id").toInt();
+        authorInfo.firstName = query.value("first_name").toString();
+        authorInfo.lastName = query.value("last_name").toString();
+        authorInfo.nationality = query.value("nationality").toString();
+        authorInfo.imagePath = query.value("image_path").toString();
+
+        authors.append(authorInfo);
+        count++;
+    }
+    qInfo() << "Processed" << count << "authors for display.";
+
+    return authors;
 }
 
 

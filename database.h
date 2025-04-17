@@ -22,6 +22,16 @@ struct BookDisplayInfo {
     QString genre; // Додано поле жанру
 };
 
+// Структура для передачі даних автора в UI
+struct AuthorDisplayInfo {
+    int authorId;
+    QString firstName;
+    QString lastName;
+    QString nationality;
+    QString imagePath; // Шлях до зображення автора
+};
+
+
 class DatabaseManager : public QObject
 {
     Q_OBJECT
@@ -51,6 +61,9 @@ public:
 
     // Новий метод для отримання книг за жанром
     QList<BookDisplayInfo> getBooksByGenre(const QString &genre, int limit = 10) const;
+
+    // Новий метод для отримання авторів для відображення
+    QList<AuthorDisplayInfo> getAllAuthorsForDisplay() const;
 
 
 private:
