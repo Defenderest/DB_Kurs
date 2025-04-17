@@ -1463,14 +1463,7 @@ border-bottom: 1px solid #eeeeee;</string>
            <bool>true</bool>
           </property>
           <widget class="QWidget" name="ordersContainerWidget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1118</width>
-             <height>509</height>
-            </rect>
-           </property>
+           <!-- Геометрія буде керуватися QScrollArea та layout'ом -->
            <!-- Layout буде встановлено програмно в mainwindow.cpp -->
           </widget>
          </widget>
