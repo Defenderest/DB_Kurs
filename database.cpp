@@ -570,8 +570,9 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
             // Генерація та хешування пароля (приклад: "password" + email)
             QString plainPassword = "password" + query.boundValue(":email").toString();
-            QByteArray passwordHash = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
-            query.bindValue(":password_hash", passwordHash.toHex()); // Зберігаємо хеш у hex форматі
+            QByteArray passwordHashBytes = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
+            QString passwordHashHex = QString::fromUtf8(passwordHashBytes.toHex()); // Перетворюємо в QString
+            query.bindValue(":password_hash", passwordHashHex); // Прив'язуємо QString
 
             if (executeInsertQuery(query, QString("Customer %1").arg(i+1), lastId)) {
                 customerIds.append(lastId.toInt());
