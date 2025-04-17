@@ -28,6 +28,8 @@ set(PROJECT_SOURCES
     mainwindow.h
     database.cpp
     database.h
+    logindialog.cpp
+    logindialog.h
 )
 
 # --- Создание исполняемого файла ---
@@ -39,6 +41,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION # Нужно, если используем qt_finalize_executable позже
         ${PROJECT_SOURCES}
         mainwindow.ui
+        logindialog.ui # Додано UI файл діалогу входу
         resourses.qrc # Убедитесь, что имя файла правильное (resources?)
     )
 else()
