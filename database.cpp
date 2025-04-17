@@ -576,6 +576,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
             if (executeInsertQuery(query, QString("Customer %1").arg(i+1), lastId)) {
                 customerIds.append(lastId.toInt());
+                // Цей рядок виводить email та пароль у лог при генерації даних
                 qDebug() << "Generated customer" << query.boundValue(":email").toString() << "with password:" << plainPassword; // Тільки для тестування!
             } else {
                 success = false;
