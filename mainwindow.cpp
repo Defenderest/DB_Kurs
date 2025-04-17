@@ -111,6 +111,15 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     // Кнопка navHomeButton вже позначена як активна в .ui файлі (checked=true)
     // --- Кінець підключення сигналів навігації ---
 
+    // --- Створення та налаштування layout для сторінки замовлень ---
+    QVBoxLayout *ordersListLayout = new QVBoxLayout(ui->ordersContainerWidget); // Встановлюємо батьківський віджет
+    ordersListLayout->setSpacing(16);
+    ordersListLayout->setContentsMargins(5, 10, 5, 10);
+    ui->ordersContainerWidget->setLayout(ordersListLayout); // Явно встановлюємо layout
+    // Додаємо розширювач, щоб притиснути елементи вгору (якщо потрібно)
+    ordersListLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    // --- Кінець налаштування layout для замовлень ---
+
 
     // Блок else для помилки підключення більше не потрібен тут,
     // оскільки dbManager передається і перевіряється на початку конструктора.

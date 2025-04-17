@@ -1471,25 +1471,7 @@ border-bottom: 1px solid #eeeeee;</string>
              <height>509</height>
             </rect>
            </property>
-           <layout class="QVBoxLayout" name="ordersListLayout">
-            <property name="spacing">
-             <number>16</number>
-            </property>
-            <property name="leftMargin">
-             <number>5</number>
-            </property>
-            <property name="topMargin">
-             <number>10</number>
-            </property>
-            <property name="rightMargin">
-             <number>5</number>
-            </property>
-            <property name="bottomMargin">
-             <number>10</number>
-            </property>
-            <!-- Елементи замовлень будуть додані сюди динамічно -->
-            <!-- Розширювач знизу видалено, QVBoxLayout повинен впоратися -->
-           </layout>
+           <!-- Layout буде встановлено програмно в mainwindow.cpp -->
           </widget>
          </widget>
         </item>
