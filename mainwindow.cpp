@@ -115,8 +115,8 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     cardFrame->setFrameShadow(QFrame::Raised);     // Додає тінь
     cardFrame->setLineWidth(1);
     cardFrame->setMinimumSize(200, 300); // Мінімальний розмір картки
-    cardFrame->setMaximumSize(250, 350); // Максимальний розмір картки
-    cardFrame->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed); // Висота фіксована
+    // cardFrame->setMaximumSize(250, 350); // Максимальний розмір можна прибрати або залишити, якщо потрібно обмеження
+    cardFrame->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred); // Дозволяємо розтягуватись в комірці
     cardFrame->setStyleSheet("QFrame { background-color: white; border-radius: 8px; }"); // Стиль картки
 
     // Вертикальний layout для вмісту картки
@@ -204,16 +204,35 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
         }
     }
 
-    // Додаємо розтягувач в кінці, щоб картки не розтягувалися вертикально
-    // Спочатку видаляємо старий розтягувач, якщо він є
+    // Встановлюємо однакове розтягування для колонок з картками
+    for (int c = 0; c < maxColumns; ++c) {
+        ui->booksContainerLayout->setColumnStretch(c, 1);
+    }
+    // Встановлюємо розтягування для колонки після карток (де горизонтальний спейсер)
+    // Це гарантує, що колонки з картками будуть однакової ширини, а зайвий простір піде в останню колонку.
+    ui->booksContainerLayout->setColumnStretch(maxColumns, 99); // Велике значення, щоб забрати весь зайвий простір
+
+    // Видаляємо попередні розширювачі, якщо вони були додані раніше (про всяк випадок)
     QLayoutItem* item;
-    while ((item = ui->booksContainerLayout->takeAt(ui->booksContainerLayout->count() -1)) != nullptr && item->spacerItem()) {
+    // Видаляємо вертикальний розширювач знизу (якщо він є)
+    item = ui->booksContainerLayout->itemAtPosition(row + 1, 0);
+    if (item && item->spacerItem()) {
+        ui->booksContainerLayout->removeItem(item);
         delete item;
     }
-    // Додаємо новий вертикальний розтягувач в останній рядок
-    ui->booksContainerLayout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
-    // Додаємо горизонтальний розтягувач в останній стовпець
-    ui->booksContainerLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns);
+     // Видаляємо горизонтальний розширювач справа (якщо він є)
+    item = ui->booksContainerLayout->itemAtPosition(0, maxColumns);
+     if (item && item->spacerItem()) {
+        ui->booksContainerLayout->removeItem(item);
+        delete item;
+    }
+
+    // Додаємо горизонтальний розширювач в першому рядку після останньої колонки карток,
+    // щоб притиснути картки вліво.
+    ui->booksContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns);
+    // Додаємо вертикальний розширювач під останнім рядком карток,
+    // щоб притиснути картки вгору.
+    ui->booksContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
 
 
     // Переконуємося, що контейнер оновився
