@@ -14,262 +14,279 @@
    <string>Книгарня</string>
   </property>
   <property name="styleSheet">
-   <string>
-    QMainWindow {
-      background-color: #f8f9fa; /* Light gray background */
-      color: #212529; /* Dark text */
-    }
+   <string>/* === Base Styles (Light Theme) === */
+QMainWindow {
+    background-color: #ffffff; /* White background */
+    color: #333333; /* Dark gray text */
+}
 
-    QWidget {
-      font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
-      font-size: 10pt;
-    }
+QWidget {
+    font-family: &quot;Segoe UI&quot;, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 10pt;
+}
 
-    /* Styling for the main content area of the tabs */
-    QTabWidget::pane {
-      border: none; /* Remove border around the content */
-      background-color: #ffffff; /* White background for tab content */
-      border-radius: 0 0 8px 8px; /* Round bottom corners */
-      padding: 20px; /* Padding inside the tab content */
-    }
-    /* Styling for individual tabs */
-    QTabBar::tab {
-      padding: 14px 24px; /* Generous padding */
-      margin-right: 2px; /* Small space between tabs */
-      background-color: #e9ecef; /* Light gray inactive tab */
-      border: 1px solid #dee2e6; /* Subtle border */
-      border-bottom: none; /* Remove bottom border for inactive */
-      border-top-left-radius: 8px; /* Round top-left corner */
-      border-top-right-radius: 8px; /* Round top-right corner */
-      color: #495057; /* Medium gray text for inactive */
-      font-weight: 500; /* Medium font weight */
-    }
-    /* Styling for the selected tab */
-    QTabBar::tab:selected {
-      background-color: #ffffff; /* White background for active tab */
-      color: #000000; /* Black text for active tab */
-      font-weight: 600; /* Bolder font weight */
-      border-color: #dee2e6; /* Match pane border */
-    }
-    /* Styling for hovered tabs (not selected) */
-    QTabBar::tab:hover:!selected {
-        background-color: #f1f3f5; /* Slightly lighter gray on hover */
-        color: #343a40; /* Darker text on hover */
-    }
-    /* Align tabs to the left */
-    QTabWidget::tab-bar {
-        alignment: left;
-        left: 10px; /* Indent the tab bar slightly */
-    }
+/* === Tab Widget === */
+QTabWidget::pane {
+    border: 1px solid #e0e0e0; /* Light border */
+    border-top: none; /* Remove top border as it's handled by tab */
+    background-color: #ffffff; /* White content background */
+    border-radius: 0 0 6px 6px;
+    padding: 20px;
+}
 
-    /* Styling for input fields */
-    QLineEdit, QComboBox, QDateEdit {
-      padding: 10px 12px;
-      border: 1px solid #ced4da; /* Standard border */
-      border-radius: 6px; /* Slightly rounded corners */
-      background-color: #ffffff; /* White background */
-      color: #212529; /* Dark text */
-      min-height: 38px; /* Consistent height */
-    }
-    QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
-      border-color: #80bdff; /* Blue border on focus (Bootstrap-like) */
-    }
-    QLineEdit::placeholder {
-      color: #6c757d; /* Gray placeholder text */
-    }
-    /* Styling for ComboBox dropdown arrow area */
-    QComboBox::drop-down {
-        subcontrol-origin: padding;
-        subcontrol-position: top right;
-        width: 20px;
-        border-left-width: 1px;
-        border-left-color: #ced4da;
-        border-left-style: solid;
-        border-top-right-radius: 6px; /* Match parent radius */
-        border-bottom-right-radius: 6px; /* Match parent radius */
-    }
-    /* Arrow icon for ComboBox */
-    QComboBox::down-arrow {
-        /* Assuming you have an icon file icons/chevron-down.svg */
-        image: url(icons/chevron-down.svg);
-        width: 12px;
-        height: 12px;
-    }
+QTabBar::tab {
+    padding: 12px 20px;
+    margin-right: 1px;
+    background-color: #f5f5f5; /* Very light gray for inactive tabs */
+    border: 1px solid #e0e0e0; /* Light border */
+    border-bottom: none; /* Remove bottom border for inactive */
+    color: #555555; /* Medium gray text */
+    font-weight: 500;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
 
-    /* General Button Styling */
-    QPushButton {
-      padding: 10px 18px;
-      background-color: #007bff; /* Primary blue */
-      color: white;
-      border: none;
-      border-radius: 6px; /* Rounded corners */
-      font-weight: 500; /* Medium weight */
-      min-height: 38px; /* Match input field height */
-    }
-    QPushButton:hover {
-      background-color: #0056b3; /* Darker blue on hover */
-    }
-    QPushButton:pressed {
-      background-color: #004085; /* Even darker blue when pressed */
-    }
+QTabBar::tab:selected {
+    background-color: #ffffff; /* White background for selected tab */
+    color: #0078d4; /* Slightly softer blue for selected text */
+    font-weight: 600;
+    border-color: #e0e0e0; /* Match pane border */
+    /* border-bottom: 1px solid #ffffff; /* Make bottom border white to blend */
+}
 
-    /* Specific styling for header icon buttons */
-    QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
-      background-color: transparent; /* No background */
-      border: none;
-      padding: 8px;
-      border-radius: 18px; /* Circular hover effect */
-      min-height: 36px; min-width: 36px; /* Fixed size */
-      max-width: 36px; max-height: 36px;
-    }
-    QPushButton#cartButton:hover, QPushButton#wishlistButton:hover, QPushButton#profileButton:hover {
-      background-color: #e9ecef; /* Light gray background on hover */
-    }
-    QPushButton#cartButton:pressed, QPushButton#wishlistButton:pressed, QPushButton#profileButton:pressed {
-      background-color: #dee2e6; /* Darker gray when pressed */
-    }
+QTabBar::tab:hover:!selected {
+    background-color: #eeeeee; /* Slightly darker gray on hover */
+    color: #333333;
+    border-color: #dcdcdc; /* Slightly darker border */
+}
 
-    /* Specific styling for filter/sort icon buttons */
-    QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
-        background-color: #f8f9fa; /* Match main background */
-        border: 1px solid #ced4da; /* Standard border */
-        color: #495057; /* Medium gray icon color (if needed) */
-        min-width: 40px; max-width: 40px; /* Fixed size */
-        padding: 8px; /* Padding around icon */
-        border-radius: 6px; /* Match input fields */
-    }
-     QPushButton#filterButton:hover, QPushButton#sortButton:hover, QPushButton#viewModeButton:hover {
-        background-color: #e9ecef; /* Light gray on hover */
-        border-color: #adb5bd; /* Darker border on hover */
-     }
-    QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#viewModeButton:pressed {
-        background-color: #dee2e6; /* Darker gray when pressed */
-     }
+QTabWidget::tab-bar {
+    alignment: left;
+    left: 5px;
+}
 
-    /* Scroll Area Styling */
-    QScrollArea {
-      border: none; /* No border around scroll areas */
-      background-color: transparent; /* Inherit background */
-    }
-    /* Vertical Scroll Bar Track */
-    QScrollBar:vertical {
-        border: none;
-        background: #f1f3f5; /* Light gray track */
-        width: 10px; /* Width of the scrollbar */
-        margin: 0px 0px 0px 0px;
-        border-radius: 5px; /* Rounded track */
-    }
-    /* Vertical Scroll Bar Handle */
-    QScrollBar::handle:vertical {
-        background: #ced4da; /* Medium gray handle */
-        min-height: 20px; /* Minimum handle size */
-        border-radius: 5px; /* Rounded handle */
-    }
-    QScrollBar::handle:vertical:hover {
-        background: #adb5bd; /* Darker handle on hover */
-    }
-    /* Hide scroll bar arrows */
-    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-        border: none;
-        background: none;
-        height: 0px;
-    }
-     /* Hide space below/above handle */
-     QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-         background: none;
-     }
-     /* Horizontal Scroll Bar (similar styling, adapt if needed) */
-     QScrollBar:horizontal {
-        border: none;
-        background: #f1f3f5;
-        height: 10px;
-        margin: 0px 0px 0px 0px;
-        border-radius: 5px;
-     }
-     QScrollBar::handle:horizontal {
-        background: #ced4da;
-        min-width: 20px;
-        border-radius: 5px;
-     }
-     QScrollBar::handle:horizontal:hover {
-        background: #adb5bd;
-     }
-     QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
-        border: none;
-        background: none;
-        width: 0px;
-     }
-     QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
-         background: none;
-     }
+/* === Input Fields === */
+QLineEdit, QComboBox, QDateEdit {
+    padding: 8px 12px;
+    border: 1px solid #dcdcdc; /* Lighter border */
+    border-radius: 5px;
+    background-color: #ffffff; /* White background */
+    color: #333333;
+    min-height: 36px;
+    font-size: 10pt;
+}
+
+QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
+    border-color: #7bbfff; /* Lighter blue focus border */
+    /* box-shadow: 0 0 0 1px #cce5ff; /* Optional: subtle glow */
+}
+
+QLineEdit::placeholder {
+    color: #aaaaaa; /* Lighter placeholder text */
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 25px;
+    border-left: 1px solid #dcdcdc;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+QComboBox::down-arrow {
+    /* image: url(:/icons/chevron-down-light.svg); /* Consider a lighter icon */
+     width: 10px;
+     height: 10px;
+}
+QComboBox QAbstractItemView {
+    border: 1px solid #dcdcdc;
+    background-color: #ffffff;
+    selection-background-color: #e6f2ff; /* Very light blue selection */
+    selection-color: #0078d4;
+    padding: 4px;
+}
+
+/* === Buttons === */
+/* General Button */
+QPushButton {
+    padding: 8px 16px;
+    background-color: #0078d4; /* Softer blue */
+    color: white;
+    border: 1px solid #0078d4; /* Add border for definition */
+    border-radius: 5px;
+    font-weight: 500;
+    min-height: 36px;
+    font-size: 10pt;
+}
+QPushButton:hover {
+    background-color: #106ebe; /* Slightly darker blue */
+    border-color: #106ebe;
+}
+QPushButton:pressed {
+    background-color: #005a9e; /* Darker blue */
+    border-color: #005a9e;
+}
+QPushButton:disabled {
+    background-color: #f0f0f0; /* Light gray disabled */
+    color: #aaaaaa;
+    border-color: #e0e0e0;
+}
+
+/* Header Icon Buttons */
+QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
+    background-color: transparent;
+    border: none;
+    padding: 6px;
+    border-radius: 50%;
+    min-height: 38px; min-width: 38px;
+    max-width: 38px; max-height: 38px;
+    color: #555555; /* Medium gray icon */
+    font-size: 14pt;
+}
+QPushButton#cartButton:hover, QPushButton#wishlistButton:hover, QPushButton#profileButton:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+    color: #333333;
+}
+QPushButton#cartButton:pressed, QPushButton#wishlistButton:pressed, QPushButton#profileButton:pressed {
+    background-color: #e0e0e0; /* Darker gray when pressed */
+}
+
+/* Filter/Sort/View Icon Buttons */
+QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
+    background-color: #ffffff; /* White background */
+    border: 1px solid #dcdcdc; /* Light border */
+    color: #555555; /* Icon color */
+    min-width: 38px; max-width: 38px;
+    min-height: 36px; max-height: 36px;
+    padding: 6px;
+    border-radius: 5px;
+    font-size: 12pt;
+}
+QPushButton#filterButton:hover, QPushButton#sortButton:hover, QPushButton#viewModeButton:hover {
+    background-color: #f5f5f5; /* Very light gray on hover */
+    border-color: #c8c8c8;
+    color: #333333;
+}
+QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#viewModeButton:pressed {
+    background-color: #e8e8e8; /* Darker gray when pressed */
+}
+QPushButton#viewModeButton:checked {
+    background-color: #e6f2ff; /* Light blue when checked */
+    border-color: #7bbfff;
+    color: #0078d4;
+}
 
 
-    /* Status Bar Styling */
-    QStatusBar {
-      background-color: #f8f9fa; /* Match main background */
-      color: #6c757d; /* Medium gray text */
-      font-size: 9pt; /* Slightly smaller font */
-      border-top: 1px solid #dee2e6; /* Separator line */
-    }
+/* === Scroll Area & Scroll Bars === */
+QScrollArea {
+    border: none;
+    background-color: transparent;
+}
+QScrollBar:vertical {
+    border: none;
+    background: #f5f5f5; /* Track color */
+    width: 8px;
+    margin: 0px 0px 0px 0px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background: #dcdcdc; /* Handle color */
+    min-height: 25px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #c8c8c8; /* Darker handle on hover */
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: none; background: none; height: 0px;
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+/* Horizontal Scroll Bar (similar styling) */
+QScrollBar:horizontal {
+    border: none; background: #f5f5f5; height: 8px; margin: 0px 0px 0px 0px; border-radius: 4px;
+}
+QScrollBar::handle:horizontal {
+    background: #dcdcdc; min-width: 25px; border-radius: 4px;
+}
+QScrollBar::handle:horizontal:hover {
+    background: #c8c8c8;
+}
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    border: none; background: none; width: 0px;
+}
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
 
-    /* General Label Styling */
-    QLabel {
-       color: #212529; /* Dark text */
-       background-color: transparent; /* No background unless specified */
-    }
+/* === Status Bar === */
+QStatusBar {
+    background-color: #f5f5f5; /* Light gray background */
+    color: #555555; /* Medium gray text */
+    font-size: 9pt;
+    border-top: 1px solid #e0e0e0; /* Light separator line */
+}
 
-    /* Specific Label Styling */
-    QLabel#logoLabel {
-       font-size: 20px; /* Larger font for logo */
-       font-weight: bold; /* Bold */
-       color: #000000; /* Black */
-       padding-left: 5px; /* Small padding */
-    }
+/* === Labels === */
+QLabel {
+   color: #333333; /* Default dark gray text */
+   background-color: transparent;
+}
+QLabel#logoLabel {
+   font-size: 18px;
+   font-weight: 600;
+   color: #000000; /* Black for logo */
+   padding-left: 0px;
+}
+QLabel#bannerLabel {
+   /* Lighter gradient or solid color */
+   background-color: qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 #e6f2ff, stop:1 #d0e7ff); /* Light blue gradient */
+   border-radius: 8px;
+   color: #005a9e; /* Darker blue text for contrast */
+   font-size: 24px;
+   font-weight: 600;
+   padding: 30px;
+}
+QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel {
+   font-size: 16px;
+   font-weight: 600;
+   color: #444444; /* Slightly lighter dark gray */
+   margin-top: 20px;
+   margin-bottom: 10px;
+   padding-bottom: 5px;
+   border-bottom: 1px solid #eeeeee; /* Very light border */
+}
+QLabel#dateFilterLabel {
+    color: #777777; /* Lighter gray for less emphasis */
+}
 
-    /* Styling for the main banner on Discover tab */
-    QLabel#bannerLabel {
-      /* Example gradient background */
-      background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 123, 255, 0.8), stop:1 rgba(0, 86, 179, 0.9));
-      border-radius: 12px; /* Rounded corners */
-      color: #ffffff; /* White text */
-      font-size: 28px; /* Large font */
-      font-weight: bold; /* Bold */
-      padding: 40px; /* Large padding */
-      /* text-align: center; Property not available directly, use Alignment property */
-    }
+/* === Category Buttons (Discover Tab) === */
+QWidget#categoriesWidget QPushButton {
+    background-color: #ffffff;
+    color: #0078d4; /* Blue text */
+    border: 1px solid #dcdcdc; /* Light border */
+    font-weight: 500;
+    text-align: center;
+    padding: 15px;
+    min-height: 110px;
+    border-radius: 6px;
+}
+QWidget#categoriesWidget QPushButton:hover {
+    background-color: #f5f5f5; /* Very light gray hover */
+    color: #106ebe;
+    border-color: #c8c8c8;
+}
+QWidget#categoriesWidget QPushButton:pressed {
+    background-color: #e8e8e8; /* Darker gray press */
+}
 
-    /* Styling for section headers */
-    QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel {
-       font-size: 18px; /* Larger font for headers */
-       font-weight: 600; /* Semi-bold */
-       color: #343a40; /* Dark gray text */
-       margin-top: 24px; /* Space above header */
-       margin-bottom: 8px; /* Space below header */
-       padding-bottom: 4px; /* Space before border */
-       border-bottom: 1px solid #e9ecef; /* Subtle bottom border */
-    }
-
-    /* Styling for category buttons on Discover tab */
-    QWidget#categoriesWidget QPushButton {
-        background-color: #ffffff; /* White background */
-        color: #007bff; /* Blue text */
-        border: 1px solid #007bff; /* Blue border */
-        font-weight: 600; /* Semi-bold */
-        text-align: center; /* Center text */
-        padding: 15px; /* Generous padding */
-        min-height: 100px; /* Fixed height */
-        border-radius: 8px; /* Rounded corners */
-    }
-    QWidget#categoriesWidget QPushButton:hover {
-        background-color: #e7f3ff; /* Light blue background on hover */
-        color: #0056b3; /* Darker blue text */
-        border-color: #0056b3; /* Darker blue border */
-    }
-     QWidget#categoriesWidget QPushButton:pressed {
-        background-color: #cce5ff; /* Even lighter blue when pressed */
-     }
-
-   </string>
+/* === Specific Widget Adjustments === */
+QLineEdit#globalSearchLineEdit {
+    min-height: 38px;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
