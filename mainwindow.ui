@@ -1495,12 +1495,7 @@ border-bottom: 1px solid #eeeeee;</string>
               <property name="sizeType">
                <enum>QSizePolicy::Policy::Expanding</enum>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
+              <!-- sizeHint часто є зайвим, коли sizeType встановлено в Expanding -->
              </spacer>
             </item>
            </layout>
