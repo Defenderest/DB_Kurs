@@ -12,6 +12,8 @@
 #include <QFrame>          // Для рамки картки
 #include <QSizePolicy>     // Для налаштування розмірів
 #include <QScrollArea>     // Щоб переконатися, що вміст прокручується
+#include <QPainter>        // Додано для малювання круглої маски
+#include <QBitmap>         // Додано для QBitmap (використовується з QPainter)
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
