@@ -1,6 +1,7 @@
 #include "profiledialog.h"
 #include "ui_profiledialog.h"
 #include <QDate> // Для форматування дати
+#include <QDialogButtonBox> // Потрібно для доступу до buttonBox
 
 ProfileDialog::ProfileDialog(const CustomerProfileInfo &profileInfo, QWidget *parent) :
     QDialog(parent),
@@ -12,17 +13,10 @@ ProfileDialog::ProfileDialog(const CustomerProfileInfo &profileInfo, QWidget *pa
     // Заповнюємо поля даними
     populateProfileData(profileInfo);
 
-    // Можна додати кнопку "Закрити" або використовувати стандартні кнопки QDialogButtonBox
-    // Наприклад, якщо в .ui додали QDialogButtonBox з кнопкою Close:
-    // connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ProfileDialog::reject);
-    // Або якщо є кнопка "Закрити":
-    // connect(ui->closeButton, &QPushButton::clicked, this, &ProfileDialog::accept);
-
     // Підключаємо стандартну кнопку Close з QDialogButtonBox до слота reject() діалогу
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ProfileDialog::reject);
-    // Підключаємо стандартну кнопку Accept (якщо вона є) до слота accept()
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ProfileDialog::accept);
-
+    // (Це вже зроблено автоматично через connections в .ui файлі, але можна і вручну)
+    // connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ProfileDialog::reject);
+    // connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ProfileDialog::accept); // Якщо є кнопка OK/Accept
 }
 
 ProfileDialog::~ProfileDialog()

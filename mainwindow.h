@@ -8,7 +8,7 @@
 #include <QWidget> // Додано для QWidget* у конструкторі та типів повернення
 #include <QLayout> // Додано для QLayout* у clearLayout
 #include <QDate>   // Додано для QDate у CustomerProfileInfo
-#include <QPropertyAnimation> // Додано для анімації
+// #include <QPropertyAnimation> // Більше не потрібен
 
 // Forward declarations
 class DatabaseManager;
@@ -38,12 +38,12 @@ public:
 private slots:
     void displayBooks(const QList<BookDisplayInfo> &books); // Слот для відображення книг
     void on_profileButton_clicked(); // Слот для кнопки профілю
-    void hideProfilePanel();         // Слот для закриття панелі профілю
+    // void hideProfilePanel(); // Більше не потрібен
 
 private:
     Ui::MainWindow *ui;
-    QFrame *m_profilePanel;       // Вказівник на панель профілю
-    QPropertyAnimation *m_profileAnimation; // Анімація для панелі
+    // QFrame *m_profilePanel; // Більше не потрібен
+    // QPropertyAnimation *m_profileAnimation; // Більше не потрібен
     DatabaseManager *m_dbManager; // Вказівник на менеджер БД (передається ззовні)
     int m_currentCustomerId;      // ID поточного користувача
 
@@ -58,10 +58,10 @@ private:
     QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
     void displayAuthors(const QList<AuthorDisplayInfo> &authors);
 
-    // Допоміжні функції для панелі профілю
-    void setupProfilePanelAnimation();
-    void showProfilePanel();
-    void populateProfilePanel(const CustomerProfileInfo &profileInfo);
+    // Допоміжні функції для панелі профілю більше не потрібні
+    // void setupProfilePanelAnimation();
+    // void showProfilePanel();
+    // void populateProfilePanel(const CustomerProfileInfo &profileInfo);
 
 };
 #endif // MAINWINDOW_H
