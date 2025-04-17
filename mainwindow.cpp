@@ -441,15 +441,7 @@ void MainWindow::on_profileButton_clicked()
     // 2. Перевіряємо, чи знайдені дані
     if (!profile.found) {
         QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
-        // Очищаємо поля на вкладці профілю (про всяк випадок)
-        ui->profileFirstNameLabel->setText(tr("(помилка завантаження)"));
-        ui->profileLastNameLabel->setText(tr("(помилка завантаження)"));
-        ui->profileEmailLabel->setText(tr("(помилка завантаження)"));
-        ui->profilePhoneLabel->setText(tr("(помилка завантаження)"));
-        ui->profileAddressLabel->setText(tr("(помилка завантаження)"));
-        ui->profileJoinDateLabel->setText(tr("(помилка завантаження)"));
-        ui->profileLoyaltyLabel->setText(tr("(помилка завантаження)"));
-        ui->profilePointsLabel->setText(tr("(помилка завантаження)"));
+        // Більше не потрібно очищати поля, оскільки вони в окремому діалозі
         return;
     }
 
