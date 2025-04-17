@@ -15,7 +15,8 @@
 #include <QPainter>        // Додано для малювання круглої маски
 #include <QBitmap>         // Додано для QBitmap (використовується з QPainter)
 #include <QDate>           // Додано для форматування дати
-#include "profiledialog.h" // Додано для нового діалогу профілю
+#include <QPropertyAnimation> // Додано для анімації
+// #include "profiledialog.h" // Більше не потрібен
 
 // Змінено конструктор: приймає DatabaseManager та ID користувача
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
@@ -46,6 +47,18 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Підключаємо сигнал кнопки профілю до слота
     connect(ui->profileButton, &QPushButton::clicked, this, &MainWindow::on_profileButton_clicked);
+
+    // Знаходимо панель профілю та налаштовуємо її
+    m_profilePanel = ui->profilePanel; // Отримуємо вказівник на панель з UI
+    if (m_profilePanel) {
+        m_profilePanel->setVisible(true); // Панель має бути видимою для анімації ширини
+        m_profilePanel->setMaximumWidth(0); // Початкова ширина 0
+        setupProfilePanelAnimation(); // Налаштовуємо анімацію
+        // Підключаємо кнопку закриття панелі
+        connect(ui->closeProfileButton, &QPushButton::clicked, this, &MainWindow::hideProfilePanel);
+    } else {
+        qWarning() << "Не вдалося знайти profilePanel в UI!";
+    }
 
 
     // --- Завантаження та відображення книг (логіка залишається, але без створення/підключення БД) ---
@@ -420,6 +433,83 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 }
 
 
+// --- Методи для панелі профілю ---
+
+// Налаштування анімації для панелі профілю
+void MainWindow::setupProfilePanelAnimation()
+{
+    if (!m_profilePanel) return;
+
+    m_profileAnimation = new QPropertyAnimation(m_profilePanel, "maximumWidth", this);
+    m_profileAnimation->setDuration(300); // Тривалість анімації в мс
+    m_profileAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Тип анімації
+}
+
+// Показ панелі профілю з анімацією
+void MainWindow::showProfilePanel()
+{
+    if (!m_profilePanel || !m_profileAnimation) return;
+
+    const int targetWidth = 350; // Бажана ширина панелі
+    if (m_profilePanel->maximumWidth() == targetWidth) {
+        // Якщо панель вже відкрита, нічого не робимо (або можна оновити дані)
+        qInfo() << "Profile panel already visible.";
+        return;
+    }
+
+    qInfo() << "Showing profile panel...";
+    m_profileAnimation->stop(); // Зупиняємо поточну анімацію, якщо є
+    m_profileAnimation->setStartValue(m_profilePanel->maximumWidth()); // Починаємо з поточної ширини
+    m_profileAnimation->setEndValue(targetWidth); // Кінцева ширина
+    m_profileAnimation->start();
+}
+
+// Приховування панелі профілю з анімацією
+void MainWindow::hideProfilePanel()
+{
+    if (!m_profilePanel || !m_profileAnimation) return;
+
+    if (m_profilePanel->maximumWidth() == 0) {
+        // Якщо панель вже прихована
+        return;
+    }
+
+    qInfo() << "Hiding profile panel...";
+    m_profileAnimation->stop();
+    m_profileAnimation->setStartValue(m_profilePanel->maximumWidth());
+    m_profileAnimation->setEndValue(0); // Кінцева ширина 0
+    m_profileAnimation->start();
+}
+
+// Заповнення полів панелі профілю даними
+void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
+{
+     // Перевіряємо, чи дані взагалі були знайдені
+    if (!profileInfo.found) {
+        // Можна показати повідомлення про помилку або заповнити поля відповідним текстом
+        ui->profileFirstNameLabel->setText(tr("(Помилка завантаження)"));
+        ui->profileLastNameLabel->setText(tr("(Помилка завантаження)"));
+        ui->profileEmailLabel->setText(tr("(Помилка завантаження)"));
+        ui->profilePhoneLabel->setText(tr("(Помилка завантаження)"));
+        ui->profileAddressLabel->setText(tr("(Помилка завантаження)"));
+        ui->profileJoinDateLabel->setText(tr("(Помилка завантаження)"));
+        ui->profileLoyaltyLabel->setText(tr("(Помилка завантаження)"));
+        ui->profilePointsLabel->setText(tr("(Помилка завантаження)"));
+        return;
+    }
+
+    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині profilePanel)
+    ui->profileFirstNameLabel->setText(profileInfo.firstName.isEmpty() ? tr("(не вказано)") : profileInfo.firstName);
+    ui->profileLastNameLabel->setText(profileInfo.lastName.isEmpty() ? tr("(не вказано)") : profileInfo.lastName);
+    ui->profileEmailLabel->setText(profileInfo.email); // Email має бути завжди
+    ui->profilePhoneLabel->setText(profileInfo.phone.isEmpty() ? tr("(не вказано)") : profileInfo.phone);
+    ui->profileAddressLabel->setText(profileInfo.address.isEmpty() ? tr("(не вказано)") : profileInfo.address);
+    ui->profileJoinDateLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
+    ui->profileLoyaltyLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
+    ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
+}
+
+
 // Слот для обробки натискання кнопки профілю
 void MainWindow::on_profileButton_clicked()
 {
@@ -445,10 +535,9 @@ void MainWindow::on_profileButton_clicked()
         return;
     }
 
-    // 3. Створюємо та показуємо діалог профілю, передаючи дані
-    ProfileDialog profileDialog(profile, this); // 'this' робить MainWindow батьком діалогу
-    profileDialog.exec(); // Показуємо діалог модально (блокує MainWindow)
-    // Якщо потрібно немодально: profileDialog.show(); але тоді треба керувати пам'яттю інакше
+    // 3. Заповнюємо панель профілю даними
+    populateProfilePanel(profile);
 
-    qInfo() << "Profile dialog shown and closed.";
+    // 4. Показуємо панель профілю (з анімацією)
+    showProfilePanel();
 }

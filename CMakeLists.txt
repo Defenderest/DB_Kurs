@@ -30,8 +30,7 @@ set(PROJECT_SOURCES
     database.h
     logindialog.cpp
     logindialog.h
-    profiledialog.cpp # Додано новий файл діалогу профілю
-    profiledialog.h
+    # profiledialog файли більше не потрібні
 )
 
 # --- Создание исполняемого файла ---
@@ -44,7 +43,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         mainwindow.ui
         logindialog.ui # Додано UI файл діалогу входу
-        profiledialog.ui # Додано UI файл діалогу профілю
+        # profiledialog.ui більше не потрібен
         resourses.qrc # Убедитесь, что имя файла правильное (resources?)
     )
 else()
