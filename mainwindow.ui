@@ -1487,17 +1487,8 @@ border-bottom: 1px solid #eeeeee;</string>
             <property name="bottomMargin">
              <number>10</number>
             </property>
-            <item>
-             <spacer name="ordersBottomSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Policy::Expanding</enum>
-              </property>
-              <!-- sizeHint часто є зайвим, коли sizeType встановлено в Expanding -->
-             </spacer>
-            </item>
+            <!-- Елементи замовлень будуть додані сюди динамічно -->
+            <!-- Розширювач знизу видалено, QVBoxLayout повинен впоратися -->
            </layout>
           </widget>
          </widget>
