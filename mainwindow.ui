@@ -78,7 +78,7 @@ QLineEdit, QComboBox, QDateEdit {
 
 QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
     border-color: #7bbfff; /* Lighter blue focus border */
-    /* box-shadow: 0 0 0 1px #cce5ff; /* Optional: subtle glow */
+    /* box-shadow: 0 0 0 1px #cce5ff; Optional: subtle glow */
 }
 
 QLineEdit::placeholder {
