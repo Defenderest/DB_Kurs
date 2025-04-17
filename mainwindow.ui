@@ -358,7 +358,7 @@ QLineEdit#globalSearchLineEdit {
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>60</height>
+           <height>56</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -430,7 +430,7 @@ QLineEdit#globalSearchLineEdit {
     <item>
      <widget class="QTabWidget" name="mainTabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -469,7 +469,7 @@ QLineEdit#globalSearchLineEdit {
              <x>0</x>
              <y>0</y>
              <width>1110</width>
-             <height>1300</height>
+             <height>1795</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="discoverContentLayout">
@@ -549,7 +549,7 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>132</height>
+                   <height>142</height>
                   </size>
                  </property>
                  <property name="styleSheet">
@@ -572,7 +572,7 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>132</height>
+                   <height>142</height>
                   </size>
                  </property>
                  <property name="styleSheet">
@@ -595,7 +595,7 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>132</height>
+                   <height>142</height>
                   </size>
                  </property>
                  <property name="styleSheet">
@@ -618,7 +618,7 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>132</height>
+                   <height>142</height>
                   </size>
                  </property>
                  <property name="styleSheet">
@@ -919,7 +919,7 @@ border-bottom: 1px solid #eeeeee;</string>
              <property name="minimumSize">
               <size>
                <width>300</width>
-               <height>60</height>
+               <height>54</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -938,7 +938,7 @@ border-bottom: 1px solid #eeeeee;</string>
              <property name="minimumSize">
               <size>
                <width>200</width>
-               <height>60</height>
+               <height>54</height>
               </size>
              </property>
              <item>
@@ -952,14 +952,14 @@ border-bottom: 1px solid #eeeeee;</string>
             <widget class="QPushButton" name="filterButton">
              <property name="minimumSize">
               <size>
-               <width>58</width>
-               <height>56</height>
+               <width>52</width>
+               <height>50</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>58</width>
-               <height>40</height>
+               <width>52</width>
+               <height>50</height>
               </size>
              </property>
              <property name="toolTip">
@@ -974,14 +974,14 @@ border-bottom: 1px solid #eeeeee;</string>
             <widget class="QPushButton" name="sortButton">
              <property name="minimumSize">
               <size>
-               <width>58</width>
-               <height>56</height>
+               <width>52</width>
+               <height>50</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>58</width>
-               <height>40</height>
+               <width>52</width>
+               <height>50</height>
               </size>
              </property>
              <property name="toolTip">
@@ -1009,14 +1009,14 @@ border-bottom: 1px solid #eeeeee;</string>
             <widget class="QPushButton" name="viewModeButton">
              <property name="minimumSize">
               <size>
-               <width>58</width>
-               <height>56</height>
+               <width>52</width>
+               <height>50</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>58</width>
-               <height>40</height>
+               <width>52</width>
+               <height>50</height>
               </size>
              </property>
              <property name="toolTip">
@@ -1043,8 +1043,8 @@ border-bottom: 1px solid #eeeeee;</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1120</width>
-             <height>496</height>
+             <width>1118</width>
+             <height>509</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="booksContainerLayout">
@@ -1118,7 +1118,7 @@ border-bottom: 1px solid #eeeeee;</string>
              <property name="minimumSize">
               <size>
                <width>300</width>
-               <height>60</height>
+               <height>54</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -1158,8 +1158,8 @@ border-bottom: 1px solid #eeeeee;</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1120</width>
-             <height>496</height>
+             <width>1118</width>
+             <height>509</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="authorsContainerLayout">
@@ -1233,7 +1233,7 @@ border-bottom: 1px solid #eeeeee;</string>
              <property name="minimumSize">
               <size>
                <width>200</width>
-               <height>60</height>
+               <height>54</height>
               </size>
              </property>
              <item>
@@ -1289,7 +1289,7 @@ border-bottom: 1px solid #eeeeee;</string>
              <property name="minimumSize">
               <size>
                <width>150</width>
-               <height>60</height>
+               <height>54</height>
               </size>
              </property>
              <property name="toolTip">
@@ -1329,8 +1329,8 @@ border-bottom: 1px solid #eeeeee;</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1120</width>
-             <height>496</height>
+             <width>1118</width>
+             <height>509</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="ordersListLayout">
