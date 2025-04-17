@@ -21,7 +21,7 @@
     }
 
     QWidget {
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
       font-size: 10pt;
     }
 
@@ -289,15 +289,17 @@
      <number>15</number>
     </property>
     <item>
-     <!-- Header Section -->
      <widget class="QWidget" name="headerWidget" native="true">
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>50</height> <!-- Fixed header height -->
+        <height>50</height>
        </size>
       </property>
       <layout class="QHBoxLayout" name="headerLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -310,11 +312,7 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <property name="spacing">
-        <number>12</number> <!-- Spacing between header elements -->
-       </property>
        <item>
-        <!-- Logo Placeholder -->
         <widget class="QLabel" name="logoLabel">
          <property name="minimumSize">
           <size>
@@ -329,41 +327,39 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string/> <!-- Use ID selector from main QSS -->
+          <string/>
          </property>
          <property name="text">
-          <string>Книгарня</string> <!-- Bookstore Name -->
+          <string>Книгарня</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
        <item>
-        <!-- Global Search Bar -->
         <widget class="QLineEdit" name="globalSearchLineEdit">
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>40</height>
+           <height>60</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>500</width> <!-- Max width for search -->
+           <width>500</width>
            <height>40</height>
           </size>
          </property>
          <property name="placeholderText">
-          <string>Пошук книг, авторів, видавництв...</string> <!-- Placeholder -->
+          <string>Пошук книг, авторів, видавництв...</string>
          </property>
         </widget>
        </item>
        <item>
-        <!-- Spacer to push icons to the right -->
         <spacer name="horizontalSpacer">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -374,47 +370,41 @@
         </spacer>
        </item>
        <item>
-        <!-- Wishlist Button -->
         <widget class="QPushButton" name="wishlistButton">
          <property name="toolTip">
-          <string>Обране</string> <!-- Tooltip -->
+          <string>Обране</string>
          </property>
          <property name="text">
-          <string>❤️</string> <!-- Replaced icon with emoji -->
+          <string>❤️</string>
          </property>
-         <!-- Icon properties removed -->
          <property name="flat">
-          <bool>false</bool> <!-- Make it look like a normal button -->
+          <bool>false</bool>
          </property>
         </widget>
        </item>
        <item>
-        <!-- Cart Button -->
         <widget class="QPushButton" name="cartButton">
          <property name="toolTip">
-          <string>Кошик</string> <!-- Tooltip -->
+          <string>Кошик</string>
          </property>
          <property name="text">
-          <string>🛒</string> <!-- Replaced icon with emoji -->
+          <string>🛒</string>
          </property>
-         <!-- Icon properties removed -->
          <property name="flat">
-          <bool>false</bool> <!-- Make it look like a normal button -->
+          <bool>false</bool>
          </property>
         </widget>
        </item>
        <item>
-        <!-- Profile Button -->
         <widget class="QPushButton" name="profileButton">
          <property name="toolTip">
-          <string>Мій профіль</string> <!-- Tooltip -->
+          <string>Мій профіль</string>
          </property>
          <property name="text">
-          <string>👤</string> <!-- Replaced icon with emoji -->
+          <string>👤</string>
          </property>
-         <!-- Icon properties removed -->
          <property name="flat">
-          <bool>false</bool> <!-- Make it look like a normal button -->
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -422,27 +412,23 @@
      </widget>
     </item>
     <item>
-     <!-- Main Tabbed Interface -->
      <widget class="QTabWidget" name="mainTabWidget">
       <property name="currentIndex">
-       <number>0</number> <!-- Start on the first tab -->
+       <number>1</number>
       </property>
       <property name="documentMode">
-       <bool>true</bool> <!-- Removes extra frame for a cleaner look -->
+       <bool>true</bool>
       </property>
       <property name="tabsClosable">
-       <bool>false</bool> <!-- Tabs cannot be closed -->
+       <bool>false</bool>
       </property>
-
-      <!-- Discover Tab (Homepage) -->
       <widget class="QWidget" name="discoverTab">
-       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>🏠 Головна</string> <!-- Added emoji to title -->
+        <string>🏠 Головна</string>
        </attribute>
        <layout class="QVBoxLayout" name="discoverTabLayout">
         <property name="spacing">
-         <number>0</number> <!-- No spacing handled by margins/padding in QSS -->
+         <number>0</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
@@ -457,24 +443,22 @@
          <number>0</number>
         </property>
         <item>
-         <!-- Scroll Area for Discover content -->
          <widget class="QScrollArea" name="discoverScrollArea">
           <property name="widgetResizable">
-           <bool>true</bool> <!-- Allows content widget to resize -->
+           <bool>true</bool>
           </property>
           <widget class="QWidget" name="discoverScrollContents">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <!-- Initial size, will be adjusted -->
-             <width>1118</width>
-             <height>640</height>
+             <width>1110</width>
+             <height>1300</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="discoverContentLayout">
             <property name="spacing">
-             <number>20</number> <!-- Spacing between sections -->
+             <number>20</number>
             </property>
             <property name="leftMargin">
              <number>10</number>
@@ -486,37 +470,34 @@
              <number>10</number>
             </property>
             <property name="bottomMargin">
-             <number>20</number> <!-- Extra space at the bottom -->
+             <number>20</number>
             </property>
             <item>
-             <!-- Promotional Banner -->
              <widget class="QLabel" name="bannerLabel">
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>250</height> <!-- Fixed banner height -->
+                <height>250</height>
                </size>
               </property>
               <property name="styleSheet">
-               <string/> <!-- Use ID selector from main QSS -->
+               <string/>
               </property>
               <property name="text">
-               <!-- Placeholder text -->
                <string>📚 Новинки та Популярні Книги 📚</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignCenter</set> <!-- Center align text -->
+               <set>Qt::AlignmentFlag::AlignCenter</set>
               </property>
               <property name="wordWrap">
-               <bool>true</bool> <!-- Allow text wrapping -->
+               <bool>true</bool>
               </property>
              </widget>
             </item>
             <item>
-             <!-- Popular Categories Header -->
              <widget class="QLabel" name="categoryHeaderLabel">
               <property name="styleSheet">
-               <string/> <!-- Use ID selector from main QSS -->
+               <string/>
               </property>
               <property name="text">
                <string>Популярні категорії</string>
@@ -524,12 +505,8 @@
              </widget>
             </item>
             <item>
-             <!-- Categories Grid -->
              <widget class="QWidget" name="categoriesWidget" native="true">
               <layout class="QGridLayout" name="categoriesLayout">
-               <property name="spacing">
-                <number>20</number> <!-- Spacing between category buttons -->
-               </property>
                <property name="leftMargin">
                 <number>0</number>
                </property>
@@ -542,7 +519,9 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <!-- Example Category Buttons (Add more as needed) -->
+               <property name="spacing">
+                <number>20</number>
+               </property>
                <item row="0" column="0">
                 <widget class="QPushButton" name="fictionCategoryButton">
                  <property name="sizePolicy">
@@ -554,15 +533,15 @@
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>100</height>
+                   <height>132</height>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string/> <!-- Use parent widget selector -->
+                  <string/>
                  </property>
                  <property name="text">
                   <string>Художня
- література</string> <!-- Multi-line text -->
+ література</string>
                  </property>
                 </widget>
                </item>
@@ -577,12 +556,12 @@
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>100</height>
+                   <height>132</height>
                   </size>
                  </property>
-                  <property name="styleSheet">
-                   <string/>
-                  </property>
+                 <property name="styleSheet">
+                  <string/>
+                 </property>
                  <property name="text">
                   <string>Бізнес
  та наука</string>
@@ -600,7 +579,7 @@
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>100</height>
+                   <height>132</height>
                   </size>
                  </property>
                  <property name="styleSheet">
@@ -623,7 +602,7 @@
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>100</height>
+                   <height>132</height>
                   </size>
                  </property>
                  <property name="styleSheet">
@@ -634,179 +613,156 @@
                  </property>
                 </widget>
                </item>
-               <!-- Add more rows/columns as needed -->
               </layout>
              </widget>
             </item>
             <item>
-             <!-- Bestsellers Header -->
              <widget class="QLabel" name="bestsellerHeaderLabel">
               <property name="styleSheet">
-               <string/> <!-- Use ID selector from main QSS -->
+               <string/>
               </property>
               <property name="text">
-               <string>🔥 Бестселери</string> <!-- Emoji included -->
+               <string>🔥 Бестселери</string>
               </property>
              </widget>
             </item>
             <item>
-             <!-- Bestsellers Scroll Area (Horizontal Carousel Placeholder) -->
              <widget class="QScrollArea" name="bestsellerScrollArea">
-                 <property name="minimumHeight">
-                     <number>280</number> <!-- Min height for book cards -->
-                 </property>
-                 <property name="maximumHeight">
-                     <number>320</number> <!-- Max height -->
-                 </property>
-                 <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum> <!-- No frame around scroll area -->
-                 </property>
-                 <property name="widgetResizable">
-                     <bool>true</bool>
-                 </property>
-                 <!-- Hide scrollbars initially, manage programmatically or via content size -->
-                 <property name="horizontalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAsNeeded</enum>
-                 </property>
-                 <property name="verticalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAlwaysOff</enum>
-                 </property>
-                 <widget class="QWidget" name="bestsellerRowWidget">
-                     <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>1098</width> <!-- Initial width -->
-                            <height>300</height> <!-- Initial height -->
-                        </rect>
-                     </property>
-                     <!-- Horizontal layout for book cards -->
-                     <layout class="QHBoxLayout" name="bestsellerRowLayout">
-                         <property name="spacing">
-                             <number>20</number> <!-- Spacing between book cards -->
-                         </property>
-                         <property name="leftMargin">
-                             <number>0</number>
-                         </property>
-                         <property name="topMargin">
-                             <number>5</number>
-                         </property>
-                         <property name="rightMargin">
-                             <number>0</number>
-                         </property>
-                         <property name="bottomMargin">
-                             <number>5</number>
-                         </property>
-                         <!-- Book card widgets will be added here programmatically -->
-                         <item>
-                            <spacer name="bestsellerSpacer">
-                               <property name="orientation">
-                                <enum>Qt::Horizontal</enum>
-                               </property>
-                               <property name="sizeHint" stdset="0">
-                                <size>
-                                 <!-- Spacer ensures content pushes left if not full -->
-                                 <width>0</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                              </spacer>
-                         </item>
-                     </layout>
-                 </widget>
+              <property name="frameShape">
+               <enum>QFrame::Shape::NoFrame</enum>
+              </property>
+              <property name="verticalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="bestsellerRowWidget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>1090</width>
+                 <height>280</height>
+                </rect>
+               </property>
+               <layout class="QHBoxLayout" name="bestsellerRowLayout">
+                <property name="spacing">
+                 <number>20</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>5</number>
+                </property>
+                <item>
+                 <spacer name="bestsellerSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </item>
             <item>
-             <!-- New Releases Header -->
              <widget class="QLabel" name="newReleaseHeaderLabel">
               <property name="styleSheet">
-               <string/> <!-- Use ID selector from main QSS -->
+               <string/>
               </property>
               <property name="text">
-               <string>✨ Новинки</string> <!-- Emoji included -->
+               <string>✨ Новинки</string>
               </property>
              </widget>
             </item>
             <item>
-             <!-- New Releases Scroll Area (Horizontal Carousel Placeholder) -->
              <widget class="QScrollArea" name="newReleaseScrollArea">
-                 <property name="minimumHeight">
-                     <number>280</number>
-                 </property>
-                  <property name="maximumHeight">
-                     <number>320</number>
-                 </property>
-                 <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                 </property>
-                 <property name="widgetResizable">
-                     <bool>true</bool>
-                 </property>
-                  <property name="horizontalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAsNeeded</enum>
-                 </property>
-                 <property name="verticalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAlwaysOff</enum>
-                 </property>
-                 <widget class="QWidget" name="newReleaseRowWidget">
-                     <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>1098</width>
-                            <height>300</height>
-                        </rect>
-                     </property>
-                     <layout class="QHBoxLayout" name="newReleaseRowLayout">
-                          <property name="spacing">
-                             <number>20</number>
-                         </property>
-                         <property name="leftMargin">
-                             <number>0</number>
-                         </property>
-                         <property name="topMargin">
-                             <number>5</number>
-                         </property>
-                         <property name="rightMargin">
-                             <number>0</number>
-                         </property>
-                         <property name="bottomMargin">
-                             <number>5</number>
-                         </property>
-                          <!-- Book card widgets will be added here programmatically -->
-                          <item>
-                            <spacer name="newReleaseSpacer">
-                               <property name="orientation">
-                                <enum>Qt::Horizontal</enum>
-                               </property>
-                               <property name="sizeHint" stdset="0">
-                                <size>
-                                 <width>0</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                              </spacer>
-                         </item>
-                     </layout>
-                 </widget>
+              <property name="frameShape">
+               <enum>QFrame::Shape::NoFrame</enum>
+              </property>
+              <property name="verticalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="newReleaseRowWidget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>1090</width>
+                 <height>280</height>
+                </rect>
+               </property>
+               <layout class="QHBoxLayout" name="newReleaseRowLayout">
+                <property name="spacing">
+                 <number>20</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>5</number>
+                </property>
+                <item>
+                 <spacer name="newReleaseSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </item>
             <item>
-                <!-- Vertical spacer at the end of the scrollable content -->
-                <spacer name="discoverBottomSpacer">
-                   <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>0</height> <!-- Takes up remaining space -->
-                      </size>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Expanding</enum>
-                   </property>
-                  </spacer>
+             <spacer name="discoverBottomSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Policy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>0</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -814,22 +770,19 @@
         </item>
        </layout>
       </widget>
-
-      <!-- Books Tab -->
       <widget class="QWidget" name="booksTab">
-       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>📚 Книги</string> <!-- Added emoji to title -->
+        <string>📚 Книги</string>
        </attribute>
        <layout class="QVBoxLayout" name="booksTabLayout">
         <property name="spacing">
-         <number>16</number> <!-- Spacing between filter bar and results -->
+         <number>16</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
         </property>
         <property name="topMargin">
-         <number>10</number> <!-- Top margin for content -->
+         <number>10</number>
         </property>
         <property name="rightMargin">
          <number>0</number>
@@ -838,17 +791,16 @@
          <number>0</number>
         </property>
         <item>
-         <!-- Filter/Search Bar for Books -->
          <widget class="QWidget" name="booksFilterWidget" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height> <!-- Min height for the filter bar -->
-            </size>
-           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>45</height>
+           </size>
+          </property>
           <layout class="QHBoxLayout" name="booksFilterLayout">
            <property name="spacing">
-            <number>16</number> <!-- Spacing between filter controls -->
+            <number>16</number>
            </property>
            <property name="leftMargin">
             <number>0</number>
@@ -860,15 +812,14 @@
             <number>0</number>
            </property>
            <property name="bottomMargin">
-            <number>5</number> <!-- Small bottom margin -->
+            <number>5</number>
            </property>
            <item>
-            <!-- Book Search Input -->
             <widget class="QLineEdit" name="bookSearchLineEdit">
              <property name="minimumSize">
               <size>
                <width>300</width>
-               <height>40</height>
+               <height>60</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -883,35 +834,31 @@
             </widget>
            </item>
            <item>
-            <!-- Category Filter Dropdown -->
             <widget class="QComboBox" name="categoryFilterComboBox">
              <property name="minimumSize">
               <size>
                <width>200</width>
-               <height>40</height>
+               <height>60</height>
               </size>
              </property>
-             <!-- Populate items programmatically -->
              <item>
               <property name="text">
                <string>Всі категорії</string>
               </property>
              </item>
-             <!-- Add other categories here or in code -->
             </widget>
            </item>
            <item>
-            <!-- Filter Button -->
             <widget class="QPushButton" name="filterButton">
              <property name="minimumSize">
               <size>
-               <width>40</width>
-               <height>40</height>
+               <width>58</width>
+               <height>56</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>40</width>
+               <width>58</width>
                <height>40</height>
               </size>
              </property>
@@ -919,23 +866,21 @@
               <string>Фільтри</string>
              </property>
              <property name="text">
-              <string>Ф</string> <!-- Replaced icon with letter -->
+              <string>Ф</string>
              </property>
-             <!-- Icon properties removed -->
             </widget>
            </item>
            <item>
-            <!-- Sort Button -->
             <widget class="QPushButton" name="sortButton">
              <property name="minimumSize">
               <size>
-               <width>40</width>
-               <height>40</height>
+               <width>58</width>
+               <height>56</height>
               </size>
              </property>
-              <property name="maximumSize">
+             <property name="maximumSize">
               <size>
-               <width>40</width>
+               <width>58</width>
                <height>40</height>
               </size>
              </property>
@@ -943,16 +888,14 @@
               <string>Сортування</string>
              </property>
              <property name="text">
-              <string>↓</string> <!-- Replaced icon with symbol -->
+              <string>↓</string>
              </property>
-             <!-- Icon properties removed -->
             </widget>
            </item>
            <item>
-            <!-- Spacer pushes view mode button to the right -->
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -963,17 +906,16 @@
             </spacer>
            </item>
            <item>
-            <!-- View Mode Toggle Button (Grid/List) -->
             <widget class="QPushButton" name="viewModeButton">
              <property name="minimumSize">
               <size>
-               <width>40</width>
-               <height>40</height>
+               <width>58</width>
+               <height>56</height>
               </size>
              </property>
-              <property name="maximumSize">
+             <property name="maximumSize">
               <size>
-               <width>40</width>
+               <width>58</width>
                <height>40</height>
               </size>
              </property>
@@ -981,21 +923,17 @@
               <string>Вигляд: Сітка/Список</string>
              </property>
              <property name="text">
-              <string>▦</string> <!-- Replaced icon with symbol -->
+              <string>▦</string>
              </property>
-             <!-- Icon properties removed -->
              <property name="checkable">
-              <bool>true</bool> <!-- Make it a toggle button -->
+              <bool>true</bool>
              </property>
-             <!-- Set checked state for default view if needed -->
-             <!-- <property name="checked"><bool>true</bool></property> -->
             </widget>
            </item>
           </layout>
          </widget>
         </item>
         <item>
-         <!-- Scroll Area for Book Results -->
          <widget class="QScrollArea" name="booksScrollArea">
           <property name="widgetResizable">
            <bool>true</bool>
@@ -1005,15 +943,11 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1118</width>
-             <height>569</height> <!-- Adjust height as needed -->
+             <width>1120</width>
+             <height>496</height>
             </rect>
            </property>
-           <!-- Grid layout for book cards -->
            <layout class="QGridLayout" name="booksContainerLayout">
-            <property name="spacing">
-             <number>24</number> <!-- Spacing between book items -->
-            </property>
             <property name="leftMargin">
              <number>5</number>
             </property>
@@ -1026,25 +960,24 @@
             <property name="bottomMargin">
              <number>10</number>
             </property>
-            <!-- Book widgets (cards/list items) will be added here programmatically -->
+            <property name="spacing">
+             <number>24</number>
+            </property>
            </layout>
           </widget>
          </widget>
         </item>
        </layout>
       </widget>
-
-      <!-- Authors Tab -->
       <widget class="QWidget" name="authorsTab">
-       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>👥 Автори</string> <!-- Added emoji to title -->
+        <string>👥 Автори</string>
        </attribute>
        <layout class="QVBoxLayout" name="authorsTabLayout">
         <property name="spacing">
          <number>16</number>
         </property>
-         <property name="leftMargin">
+        <property name="leftMargin">
          <number>0</number>
         </property>
         <property name="topMargin">
@@ -1057,14 +990,13 @@
          <number>0</number>
         </property>
         <item>
-         <!-- Filter/Search Bar for Authors -->
          <widget class="QWidget" name="authorsFilterWidget" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height>
-            </size>
-           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>45</height>
+           </size>
+          </property>
           <layout class="QHBoxLayout" name="authorsFilterLayout">
            <property name="spacing">
             <number>12</number>
@@ -1082,15 +1014,14 @@
             <number>5</number>
            </property>
            <item>
-            <!-- Author Search Input -->
             <widget class="QLineEdit" name="authorSearchLineEdit">
              <property name="minimumSize">
               <size>
                <width>300</width>
-               <height>40</height>
+               <height>60</height>
               </size>
              </property>
-              <property name="maximumSize">
+             <property name="maximumSize">
               <size>
                <width>400</width>
                <height>40</height>
@@ -1102,24 +1033,22 @@
             </widget>
            </item>
            <item>
-             <!-- Spacer to push search to the left -->
-             <spacer name="authorSearchSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
+            <spacer name="authorSearchSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
         </item>
         <item>
-         <!-- Scroll Area for Author Results -->
          <widget class="QScrollArea" name="authorsScrollArea">
           <property name="widgetResizable">
            <bool>true</bool>
@@ -1129,16 +1058,12 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1118</width>
-             <height>569</height> <!-- Adjust height -->
+             <width>1120</width>
+             <height>496</height>
             </rect>
            </property>
-           <!-- Grid layout for author cards/items -->
            <layout class="QGridLayout" name="authorsContainerLayout">
-            <property name="spacing">
-             <number>24</number>
-            </property>
-             <property name="leftMargin">
+            <property name="leftMargin">
              <number>5</number>
             </property>
             <property name="topMargin">
@@ -1150,25 +1075,24 @@
             <property name="bottomMargin">
              <number>10</number>
             </property>
-            <!-- Author widgets will be added here programmatically -->
+            <property name="spacing">
+             <number>24</number>
+            </property>
            </layout>
           </widget>
          </widget>
         </item>
        </layout>
       </widget>
-
-      <!-- My Orders Tab -->
       <widget class="QWidget" name="ordersTab">
-       <!-- Icon attribute removed -->
        <attribute name="title">
-        <string>🛍️ Мої замовлення</string> <!-- Added emoji to title -->
+        <string>🛍️ Мої замовлення</string>
        </attribute>
        <layout class="QVBoxLayout" name="ordersTabLayout">
         <property name="spacing">
          <number>16</number>
         </property>
-         <property name="leftMargin">
+        <property name="leftMargin">
          <number>0</number>
         </property>
         <property name="topMargin">
@@ -1181,19 +1105,18 @@
          <number>0</number>
         </property>
         <item>
-         <!-- Filter Bar for Orders -->
          <widget class="QWidget" name="ordersFilterWidget" native="true">
           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>45</height>
-            </size>
-           </property>
+           <size>
+            <width>0</width>
+            <height>45</height>
+           </size>
+          </property>
           <layout class="QHBoxLayout" name="ordersFilterLayout">
            <property name="spacing">
             <number>16</number>
            </property>
-            <property name="leftMargin">
+           <property name="leftMargin">
             <number>0</number>
            </property>
            <property name="topMargin">
@@ -1206,15 +1129,13 @@
             <number>5</number>
            </property>
            <item>
-            <!-- Order Status Filter Dropdown -->
             <widget class="QComboBox" name="orderStatusComboBox">
              <property name="minimumSize">
               <size>
                <width>200</width>
-               <height>40</height>
+               <height>60</height>
               </size>
              </property>
-             <!-- Populate items programmatically or here -->
              <item>
               <property name="text">
                <string>Всі статуси</string>
@@ -1240,56 +1161,52 @@
                <string>Доставлено</string>
               </property>
              </item>
-              <item>
+             <item>
               <property name="text">
                <string>Скасовано</string>
               </property>
              </item>
             </widget>
            </item>
-            <item>
-             <!-- Label for Date Filter -->
-             <widget class="QLabel" name="dateFilterLabel">
-                 <property name="text">
-                     <string>Дата від:</string> <!-- Label for date edit -->
-                 </property>
-                  <property name="minimumSize">
-                     <size>
-                      <width>60</width> <!-- Ensure space for label -->
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignVCenter</set> <!-- Align right -->
-                    </property>
-             </widget>
-            </item>
            <item>
-            <!-- Order Date Filter Input -->
+            <widget class="QLabel" name="dateFilterLabel">
+             <property name="minimumSize">
+              <size>
+               <width>60</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Дата від:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QDateEdit" name="orderDateEdit">
              <property name="minimumSize">
               <size>
                <width>150</width>
-               <height>40</height>
+               <height>60</height>
               </size>
              </property>
+             <property name="toolTip">
+              <string>Фільтрувати замовлення від вказаної дати</string>
+             </property>
              <property name="displayFormat">
-                <string>dd.MM.yyyy</string> <!-- Date format -->
+              <string>dd.MM.yyyy</string>
              </property>
              <property name="calendarPopup">
-              <bool>true</bool> <!-- Show calendar on click -->
+              <bool>true</bool>
              </property>
-             <property name="toolTip">
-                 <string>Фільтрувати замовлення від вказаної дати</string>
-             </property>
-             <!-- Set initial date programmatically if needed -->
             </widget>
            </item>
            <item>
-            <!-- Spacer pushes filters to the left -->
             <spacer name="horizontalSpacer_3">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -1303,7 +1220,6 @@
          </widget>
         </item>
         <item>
-         <!-- Scroll Area for Order List -->
          <widget class="QScrollArea" name="ordersScrollArea">
           <property name="widgetResizable">
            <bool>true</bool>
@@ -1313,16 +1229,15 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1118</width>
-             <height>569</height> <!-- Adjust height -->
+             <width>1120</width>
+             <height>496</height>
             </rect>
            </property>
-           <!-- Vertical layout for order items -->
            <layout class="QVBoxLayout" name="ordersListLayout">
             <property name="spacing">
-             <number>16</number> <!-- Spacing between order items -->
+             <number>16</number>
             </property>
-             <property name="leftMargin">
+            <property name="leftMargin">
              <number>5</number>
             </property>
             <property name="topMargin">
@@ -1334,39 +1249,34 @@
             <property name="bottomMargin">
              <number>10</number>
             </property>
-             <!-- Order widgets will be added here programmatically -->
-             <item>
-                <!-- Spacer pushes content up -->
-                <spacer name="ordersBottomSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height> <!-- Adjust height -->
-                  </size>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Expanding</enum> <!-- Takes up remaining space -->
-                 </property>
-                </spacer>
-             </item>
+            <item>
+             <spacer name="ordersBottomSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Policy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </widget>
         </item>
        </layout>
       </widget>
-
-      <!-- Add more tabs here if needed -->
-
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/> <!-- Status bar at the bottom -->
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
- <resources/> <!-- Define resources (like icons) here in a .qrc file for real apps -->
- <connections/> <!-- Connect signals/slots here or in code -->
+ <resources/>
+ <connections/>
 </ui>
