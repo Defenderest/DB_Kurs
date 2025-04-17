@@ -6,6 +6,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QString>
+#include <QDate>    // Додано для QDate
 #include <QVariant> // Нужно для lastInsertId() или query.value()
 #include <QVector>  // Для хранения сгенерированных ID
 #include <QDebug>
