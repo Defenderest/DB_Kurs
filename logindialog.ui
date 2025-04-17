@@ -74,7 +74,8 @@
    <item>
     <widget class="QLabel" name="errorLabel">
      <property name="styleSheet">
-      <string notr="true">color: red;</string>
+      <string notr="true">color: #dc3545; /* Червоний для помилок */
+font-size: 9pt;</string>
      </property>
      <property name="text">
       <string/>

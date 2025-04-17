@@ -14,41 +14,62 @@
    <string>Профіль користувача</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/* Стилі можна скопіювати з mainwindow.ui або задати свої */
+   <string notr="true">/* --- Загальні стилі діалогу --- */
+QDialog {
+    background-color: #f8f9fa; /* Світло-сірий фон */
+}
+
 QWidget {
     font-family: &quot;Segoe UI&quot;, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 10pt;
+    color: #212529; /* Основний темний текст */
 }
+
+/* --- Заголовок профілю --- */
 QLabel#profileHeaderLabel {
-   font-size: 16pt;
+   font-size: 15pt; /* Трохи менший */
    font-weight: 600;
-   color: #333;
+   color: #343a40; /* Темно-сірий */
    margin-bottom: 15px;
+   padding-bottom: 5px;
+   border-bottom: 1px solid #dee2e6; /* Лінія під заголовком */
 }
-QLabel {
- color: #333;
+
+/* --- Мітки полів (Ім'я:, Прізвище:, ...) --- */
+QLabel[objectName^=&quot;label_&quot;] {
+  font-weight: 600; /* Жирніший шрифт для міток */
+  color: #495057; /* Сірий колір */
+  padding-top: 3px; /* Невеликий відступ зверху для вирівнювання */
 }
-QLabel[objectName^=&quot;label_&quot;] { /* Стиль для міток полів */
-  font-weight: 500;
-  color: #555;
+
+/* --- Значення полів (самі дані) --- */
+QLabel#firstNameLabel, QLabel#lastNameLabel, QLabel#emailLabel,
+QLabel#phoneLabel, QLabel#addressLabel, QLabel#joinDateLabel,
+QLabel#loyaltyLabel, QLabel#pointsLabel {
+    font-weight: 400; /* Звичайний шрифт для значень */
+    color: #212529;
+    padding-top: 3px;
 }
-QPushButton {
-    padding: 8px 16px;
-    background-color: #0078d4;
+
+/* --- Кнопки внизу діалогу --- */
+QDialogButtonBox QPushButton {
+    padding: 7px 15px; /* Трохи менші падінги */
+    background-color: #6c757d; /* Сіра кнопка "Закрити" */
     color: white;
-    border: 1px solid #0078d4;
-    border-radius: 5px;
+    border: 1px solid #6c757d;
+    border-radius: 4px;
     font-weight: 500;
-    min-height: 30px; /* Трохи менша висота для кнопок діалогу */
+    min-height: 32px;
     font-size: 10pt;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
-QPushButton:hover {
-    background-color: #106ebe;
-    border-color: #106ebe;
+QDialogButtonBox QPushButton:hover {
+    background-color: #5c636a; /* Темніший сірий при наведенні */
+    border-color: #565e64;
 }
-QPushButton:pressed {
-    background-color: #005a9e;
-    border-color: #005a9e;
+QDialogButtonBox QPushButton:pressed {
+    background-color: #565e64; /* Ще темніший при натисканні */
+    border-color: #51585e;
 }
 </string>
   </property>
