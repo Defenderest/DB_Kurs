@@ -14,304 +14,291 @@
    <string>Книгарня</string>
   </property>
   <property name="styleSheet">
-   <string>/* === Base Styles === */
-QMainWindow {
-    background-color: #f0f2f5; /* Slightly cooler light gray */
-    color: #1c1e21; /* Dark text */
-}
+   <string>
+    QMainWindow {
+      background-color: #f8f9fa; /* Light gray background */
+      color: #212529; /* Dark text */
+    }
 
-QWidget {
-    font-family: &quot;Segoe UI&quot;, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 10pt;
-}
+    QWidget {
+      font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+      font-size: 10pt;
+    }
 
-/* === Tab Widget === */
-QTabWidget::pane {
-    border: none;
-    background-color: #ffffff; /* White content background */
-    border-radius: 0 0 6px 6px; /* Slightly smaller radius */
-    padding: 20px;
-}
+    /* Styling for the main content area of the tabs */
+    QTabWidget::pane {
+      border: none; /* Remove border around the content */
+      background-color: #ffffff; /* White background for tab content */
+      border-radius: 0 0 8px 8px; /* Round bottom corners */
+      padding: 20px; /* Padding inside the tab content */
+    }
+    /* Styling for individual tabs */
+    QTabBar::tab {
+      padding: 14px 24px; /* Generous padding */
+      margin-right: 2px; /* Small space between tabs */
+      background-color: #e9ecef; /* Light gray inactive tab */
+      border: 1px solid #dee2e6; /* Subtle border */
+      border-bottom: none; /* Remove bottom border for inactive */
+      border-top-left-radius: 8px; /* Round top-left corner */
+      border-top-right-radius: 8px; /* Round top-right corner */
+      color: #495057; /* Medium gray text for inactive */
+      font-weight: 500; /* Medium font weight */
+    }
+    /* Styling for the selected tab */
+    QTabBar::tab:selected {
+      background-color: #ffffff; /* White background for active tab */
+      color: #000000; /* Black text for active tab */
+      font-weight: 600; /* Bolder font weight */
+      border-color: #dee2e6; /* Match pane border */
+    }
+    /* Styling for hovered tabs (not selected) */
+    QTabBar::tab:hover:!selected {
+        background-color: #f1f3f5; /* Slightly lighter gray on hover */
+        color: #343a40; /* Darker text on hover */
+    }
+    /* Align tabs to the left */
+    QTabWidget::tab-bar {
+        alignment: left;
+        left: 10px; /* Indent the tab bar slightly */
+    }
 
-QTabBar::tab {
-    padding: 12px 20px; /* Adjusted padding */
-    margin-right: 1px;
-    background-color: transparent; /* Make inactive tabs transparent */
-    border: none; /* Remove borders */
-    border-bottom: 3px solid transparent; /* Bottom border for selection indicator */
-    color: #606770; /* Medium gray text */
-    font-weight: 500;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-}
+    /* Styling for input fields */
+    QLineEdit, QComboBox, QDateEdit {
+      padding: 10px 12px;
+      border: 1px solid #ced4da; /* Standard border */
+      border-radius: 6px; /* Slightly rounded corners */
+      background-color: #ffffff; /* White background */
+      color: #212529; /* Dark text */
+      min-height: 38px; /* Consistent height */
+    }
+    QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
+      border-color: #80bdff; /* Blue border on focus (Bootstrap-like) */
+    }
+    QLineEdit::placeholder {
+      color: #6c757d; /* Gray placeholder text */
+    }
+    /* Styling for ComboBox dropdown arrow area */
+    QComboBox::drop-down {
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+        width: 20px;
+        border-left-width: 1px;
+        border-left-color: #ced4da;
+        border-left-style: solid;
+        border-top-right-radius: 6px; /* Match parent radius */
+        border-bottom-right-radius: 6px; /* Match parent radius */
+    }
+    /* Arrow icon for ComboBox */
+    QComboBox::down-arrow {
+        /* Assuming you have an icon file icons/chevron-down.svg */
+        image: url(icons/chevron-down.svg);
+        width: 12px;
+        height: 12px;
+    }
 
-QTabBar::tab:selected {
-    background-color: #ffffff; /* White background for selected tab */
-    color: #0062cc; /* Primary blue for selected text */
-    font-weight: 600;
-    border-bottom: 3px solid #0062cc; /* Blue indicator */
-}
+    /* General Button Styling */
+    QPushButton {
+      padding: 10px 18px;
+      background-color: #007bff; /* Primary blue */
+      color: white;
+      border: none;
+      border-radius: 6px; /* Rounded corners */
+      font-weight: 500; /* Medium weight */
+      min-height: 38px; /* Match input field height */
+    }
+    QPushButton:hover {
+      background-color: #0056b3; /* Darker blue on hover */
+    }
+    QPushButton:pressed {
+      background-color: #004085; /* Even darker blue when pressed */
+    }
 
-QTabBar::tab:hover:!selected {
-    background-color: #e4e6eb; /* Light gray hover */
-    color: #1c1e21; /* Darker text on hover */
-    border-bottom: 3px solid #ced0d4; /* Gray indicator on hover */
-}
+    /* Specific styling for header icon buttons */
+    QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
+      background-color: transparent; /* No background */
+      border: none;
+      padding: 8px;
+      border-radius: 18px; /* Circular hover effect */
+      min-height: 36px; min-width: 36px; /* Fixed size */
+      max-width: 36px; max-height: 36px;
+    }
+    QPushButton#cartButton:hover, QPushButton#wishlistButton:hover, QPushButton#profileButton:hover {
+      background-color: #e9ecef; /* Light gray background on hover */
+    }
+    QPushButton#cartButton:pressed, QPushButton#wishlistButton:pressed, QPushButton#profileButton:pressed {
+      background-color: #dee2e6; /* Darker gray when pressed */
+    }
 
-QTabWidget::tab-bar {
-    alignment: left;
-    left: 5px; /* Slight indent */
-}
+    /* Specific styling for filter/sort icon buttons */
+    QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
+        background-color: #f8f9fa; /* Match main background */
+        border: 1px solid #ced4da; /* Standard border */
+        color: #495057; /* Medium gray icon color (if needed) */
+        min-width: 40px; max-width: 40px; /* Fixed size */
+        padding: 8px; /* Padding around icon */
+        border-radius: 6px; /* Match input fields */
+    }
+     QPushButton#filterButton:hover, QPushButton#sortButton:hover, QPushButton#viewModeButton:hover {
+        background-color: #e9ecef; /* Light gray on hover */
+        border-color: #adb5bd; /* Darker border on hover */
+     }
+    QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#viewModeButton:pressed {
+        background-color: #dee2e6; /* Darker gray when pressed */
+     }
 
-/* === Input Fields === */
-QLineEdit, QComboBox, QDateEdit {
-    padding: 8px 12px;
-    border: 1px solid #ccd0d5; /* Slightly softer border */
-    border-radius: 5px;
-    background-color: #ffffff;
-    color: #1c1e21;
-    min-height: 36px; /* Consistent height */
-    font-size: 10pt;
-}
-
-QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
-    border-color: #0062cc; /* Blue border on focus */
-    /* box-shadow: 0 0 0 1px #0062cc; /* Optional: add a subtle glow */
-}
-
-QLineEdit::placeholder {
-    color: #8a8d91; /* Softer placeholder text */
-}
-
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 25px; /* Slightly wider */
-    border-left: 1px solid #ccd0d5;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-QComboBox::down-arrow {
-    /* Use a standard character or an SVG icon */
-    /* image: url(:/icons/chevron-down.svg); */
-    /* For simplicity, using a character here if no icon is set up */
-     width: 10px;
-     height: 10px;
-}
-QComboBox QAbstractItemView { /* Style dropdown list */
-    border: 1px solid #ccd0d5;
-    background-color: #ffffff;
-    selection-background-color: #e7f3ff; /* Light blue selection */
-    selection-color: #0062cc;
-    padding: 4px;
-}
-
-/* === Buttons === */
-/* General Button */
-QPushButton {
-    padding: 8px 16px;
-    background-color: #0062cc; /* Primary blue */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-weight: 500;
-    min-height: 36px; /* Match input fields */
-    font-size: 10pt;
-}
-QPushButton:hover {
-    background-color: #005cbf; /* Darker blue */
-}
-QPushButton:pressed {
-    background-color: #0052a8; /* Even darker */
-}
-QPushButton:disabled {
-    background-color: #e4e6eb;
-    color: #bcc0c4;
-}
-
-/* Header Icon Buttons */
-QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
-    background-color: transparent;
-    border: none;
-    padding: 6px; /* Adjust padding */
-    border-radius: 50%; /* Make circular */
-    min-height: 38px; min-width: 38px; /* Fixed size */
-    max-width: 38px; max-height: 38px;
-    color: #606770; /* Icon color */
-    font-size: 14pt; /* Adjust icon size if using text */
-}
-QPushButton#cartButton:hover, QPushButton#wishlistButton:hover, QPushButton#profileButton:hover {
-    background-color: #e4e6eb; /* Light gray background on hover */
-    color: #1c1e21;
-}
-QPushButton#cartButton:pressed, QPushButton#wishlistButton:pressed, QPushButton#profileButton:pressed {
-    background-color: #d8dadf; /* Darker gray when pressed */
-}
-
-/* Filter/Sort/View Icon Buttons */
-QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
-    background-color: #ffffff; /* White background */
-    border: 1px solid #ccd0d5; /* Standard border */
-    color: #606770; /* Icon color */
-    min-width: 38px; max-width: 38px; /* Fixed size */
-    min-height: 36px; max-height: 36px; /* Match input height */
-    padding: 6px; /* Padding around icon */
-    border-radius: 5px; /* Match input fields */
-    font-size: 12pt; /* Adjust icon size */
-}
-QPushButton#filterButton:hover, QPushButton#sortButton:hover, QPushButton#viewModeButton:hover {
-    background-color: #f0f2f5; /* Light gray on hover */
-    border-color: #adb5bd;
-    color: #1c1e21;
-}
-QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#viewModeButton:pressed {
-    background-color: #e4e6eb; /* Darker gray when pressed */
-}
-QPushButton#viewModeButton:checked {
-    background-color: #e7f3ff; /* Light blue when checked */
-    border-color: #0062cc;
-    color: #0062cc;
-}
+    /* Scroll Area Styling */
+    QScrollArea {
+      border: none; /* No border around scroll areas */
+      background-color: transparent; /* Inherit background */
+    }
+    /* Vertical Scroll Bar Track */
+    QScrollBar:vertical {
+        border: none;
+        background: #f1f3f5; /* Light gray track */
+        width: 10px; /* Width of the scrollbar */
+        margin: 0px 0px 0px 0px;
+        border-radius: 5px; /* Rounded track */
+    }
+    /* Vertical Scroll Bar Handle */
+    QScrollBar::handle:vertical {
+        background: #ced4da; /* Medium gray handle */
+        min-height: 20px; /* Minimum handle size */
+        border-radius: 5px; /* Rounded handle */
+    }
+    QScrollBar::handle:vertical:hover {
+        background: #adb5bd; /* Darker handle on hover */
+    }
+    /* Hide scroll bar arrows */
+    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+        border: none;
+        background: none;
+        height: 0px;
+    }
+     /* Hide space below/above handle */
+     QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+         background: none;
+     }
+     /* Horizontal Scroll Bar (similar styling, adapt if needed) */
+     QScrollBar:horizontal {
+        border: none;
+        background: #f1f3f5;
+        height: 10px;
+        margin: 0px 0px 0px 0px;
+        border-radius: 5px;
+     }
+     QScrollBar::handle:horizontal {
+        background: #ced4da;
+        min-width: 20px;
+        border-radius: 5px;
+     }
+     QScrollBar::handle:horizontal:hover {
+        background: #adb5bd;
+     }
+     QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+        border: none;
+        background: none;
+        width: 0px;
+     }
+     QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+         background: none;
+     }
 
 
-/* === Scroll Area & Scroll Bars === */
-QScrollArea {
-    border: none;
-    background-color: transparent;
-}
-QScrollBar:vertical {
-    border: none;
-    background: #e4e6eb; /* Track color */
-    width: 8px; /* Thinner scrollbar */
-    margin: 0px 0px 0px 0px;
-    border-radius: 4px;
-}
-QScrollBar::handle:vertical {
-    background: #bcc0c4; /* Handle color */
-    min-height: 25px;
-    border-radius: 4px;
-}
-QScrollBar::handle:vertical:hover {
-    background: #a4a8ad; /* Darker handle on hover */
-}
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-    border: none; background: none; height: 0px;
-}
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-    background: none;
-}
-/* Horizontal Scroll Bar (similar styling) */
-QScrollBar:horizontal {
-    border: none; background: #e4e6eb; height: 8px; margin: 0px 0px 0px 0px; border-radius: 4px;
-}
-QScrollBar::handle:horizontal {
-    background: #bcc0c4; min-width: 25px; border-radius: 4px;
-}
-QScrollBar::handle:horizontal:hover {
-    background: #a4a8ad;
-}
-QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
-    border: none; background: none; width: 0px;
-}
-QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
-    background: none;
-}
+    /* Status Bar Styling */
+    QStatusBar {
+      background-color: #f8f9fa; /* Match main background */
+      color: #6c757d; /* Medium gray text */
+      font-size: 9pt; /* Slightly smaller font */
+      border-top: 1px solid #dee2e6; /* Separator line */
+    }
 
-/* === Status Bar === */
-QStatusBar {
-    background-color: #f0f2f5; /* Match main background */
-    color: #606770; /* Medium gray text */
-    font-size: 9pt;
-    border-top: 1px solid #d8dadf; /* Separator line */
-}
+    /* General Label Styling */
+    QLabel {
+       color: #212529; /* Dark text */
+       background-color: transparent; /* No background unless specified */
+    }
 
-/* === Labels === */
-QLabel {
-   color: #1c1e21; /* Default dark text */
-   background-color: transparent;
-}
-QLabel#logoLabel {
-   font-size: 18px; /* Slightly smaller logo */
-   font-weight: 600; /* Semi-bold */
-   color: #000000;
-   padding-left: 0px; /* No extra padding */
-}
-QLabel#bannerLabel {
-   background-color: qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 #0062cc, stop:1 #004c9e); /* Simpler blue gradient */
-   border-radius: 8px; /* Consistent radius */
-   color: #ffffff;
-   font-size: 24px; /* Slightly smaller */
-   font-weight: 600;
-   padding: 30px; /* Adjusted padding */
-}
-QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel {
-   font-size: 16px; /* Header font size */
-   font-weight: 600;
-   color: #1c1e21; /* Dark text */
-   margin-top: 20px;
-   margin-bottom: 10px;
-   padding-bottom: 5px;
-   border-bottom: 1px solid #e4e6eb; /* Lighter border */
-}
-QLabel#dateFilterLabel {
-    color: #606770; /* Match placeholder text color */
-}
+    /* Specific Label Styling */
+    QLabel#logoLabel {
+       font-size: 20px; /* Larger font for logo */
+       font-weight: bold; /* Bold */
+       color: #000000; /* Black */
+       padding-left: 5px; /* Small padding */
+    }
 
-/* === Category Buttons (Discover Tab) === */
-QWidget#categoriesWidget QPushButton {
-    background-color: #ffffff;
-    color: #0062cc; /* Blue text */
-    border: 1px solid #ccd0d5; /* Softer border */
-    font-weight: 500; /* Normal weight */
-    text-align: center;
-    padding: 15px;
-    min-height: 110px; /* Adjusted height */
-    border-radius: 6px;
-}
-QWidget#categoriesWidget QPushButton:hover {
-    background-color: #f0f2f5; /* Light gray hover */
-    color: #005cbf;
-    border-color: #adb5bd;
-}
-QWidget#categoriesWidget QPushButton:pressed {
-    background-color: #e4e6eb; /* Darker gray press */
-}
+    /* Styling for the main banner on Discover tab */
+    QLabel#bannerLabel {
+      /* Example gradient background */
+      background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 123, 255, 0.8), stop:1 rgba(0, 86, 179, 0.9));
+      border-radius: 12px; /* Rounded corners */
+      color: #ffffff; /* White text */
+      font-size: 28px; /* Large font */
+      font-weight: bold; /* Bold */
+      padding: 40px; /* Large padding */
+      /* text-align: center; Property not available directly, use Alignment property */
+    }
 
-/* === Specific Widget Adjustments === */
-QLineEdit#globalSearchLineEdit {
-    min-height: 38px; /* Slightly taller search */
-}
-</string>
+    /* Styling for section headers */
+    QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel {
+       font-size: 18px; /* Larger font for headers */
+       font-weight: 600; /* Semi-bold */
+       color: #343a40; /* Dark gray text */
+       margin-top: 24px; /* Space above header */
+       margin-bottom: 8px; /* Space below header */
+       padding-bottom: 4px; /* Space before border */
+       border-bottom: 1px solid #e9ecef; /* Subtle bottom border */
+    }
+
+    /* Styling for category buttons on Discover tab */
+    QWidget#categoriesWidget QPushButton {
+        background-color: #ffffff; /* White background */
+        color: #007bff; /* Blue text */
+        border: 1px solid #007bff; /* Blue border */
+        font-weight: 600; /* Semi-bold */
+        text-align: center; /* Center text */
+        padding: 15px; /* Generous padding */
+        min-height: 100px; /* Fixed height */
+        border-radius: 8px; /* Rounded corners */
+    }
+    QWidget#categoriesWidget QPushButton:hover {
+        background-color: #e7f3ff; /* Light blue background on hover */
+        color: #0056b3; /* Darker blue text */
+        border-color: #0056b3; /* Darker blue border */
+    }
+     QWidget#categoriesWidget QPushButton:pressed {
+        background-color: #cce5ff; /* Even lighter blue when pressed */
+     }
+
+   </string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
-     <number>12</number> <!-- Reduced spacing -->
+     <number>15</number>
     </property>
     <property name="leftMargin">
-     <number>15</number> <!-- Reduced margin -->
+     <number>20</number>
     </property>
     <property name="topMargin">
-     <number>10</number> <!-- Reduced margin -->
+     <number>15</number>
     </property>
     <property name="rightMargin">
-     <number>15</number> <!-- Reduced margin -->
+     <number>20</number>
     </property>
     <property name="bottomMargin">
-     <number>10</number> <!-- Reduced margin -->
+     <number>15</number>
     </property>
     <item>
      <widget class="QWidget" name="headerWidget" native="true">
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>45</height> <!-- Reduced header height -->
+        <height>50</height>
        </size>
       </property>
       <layout class="QHBoxLayout" name="headerLayout">
        <property name="spacing">
-        <number>10</number> <!-- Reduced spacing -->
+        <number>12</number>
        </property>
        <property name="leftMargin">
         <number>0</number>
@@ -329,14 +316,14 @@ QLineEdit#globalSearchLineEdit {
         <widget class="QLabel" name="logoLabel">
          <property name="minimumSize">
           <size>
-           <width>120</width> <!-- Adjusted logo width -->
-           <height>35</height>
+           <width>140</width>
+           <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>35</height>
+           <height>40</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -354,14 +341,14 @@ QLineEdit#globalSearchLineEdit {
         <widget class="QLineEdit" name="globalSearchLineEdit">
          <property name="minimumSize">
           <size>
-           <width>300</width> <!-- Adjusted search width -->
-           <height>38</height> <!-- Adjusted search height to match style -->
+           <width>350</width>
+           <height>60</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>450</width> <!-- Adjusted search max width -->
-           <height>38</height> <!-- Adjusted search height to match style -->
+           <width>500</width>
+           <height>40</height>
           </size>
          </property>
          <property name="placeholderText">
@@ -427,7 +414,7 @@ QLineEdit#globalSearchLineEdit {
     <item>
      <widget class="QTabWidget" name="mainTabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -454,7 +441,6 @@ QLineEdit#globalSearchLineEdit {
         </property>
         <property name="bottomMargin">
          <number>0</number>
-        <!-- Note: Padding is now controlled by QTabWidget::pane in stylesheet -->
         </property>
         <item>
          <widget class="QScrollArea" name="discoverScrollArea">
@@ -466,37 +452,36 @@ QLineEdit#globalSearchLineEdit {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1120</width> <!-- Adjusted width based on parent -->
-             <height>1300</height> <!-- Height might need adjustment based on content -->
+             <width>1110</width>
+             <height>1300</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="discoverContentLayout">
             <property name="spacing">
-             <number>25</number> <!-- Increased spacing slightly -->
+             <number>20</number>
             </property>
             <property name="leftMargin">
-             <number>5</number> <!-- Reduced margin -->
+             <number>10</number>
             </property>
             <property name="topMargin">
-             <number>5</number> <!-- Reduced margin -->
+             <number>10</number>
             </property>
             <property name="rightMargin">
-             <number>5</number> <!-- Reduced margin -->
+             <number>10</number>
             </property>
             <property name="bottomMargin">
-             <number>25</number> <!-- Increased bottom margin -->
+             <number>20</number>
             </property>
             <item>
              <widget class="QLabel" name="bannerLabel">
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>200</height> <!-- Reduced banner height -->
+                <height>250</height>
                </size>
               </property>
               <property name="styleSheet">
                <string/>
-              <!-- Styling moved to main stylesheet under QLabel#bannerLabel -->
               </property>
               <property name="text">
                <string>📚 Новинки та Популярні Книги 📚</string>
@@ -535,7 +520,7 @@ QLineEdit#globalSearchLineEdit {
                 <number>0</number>
                </property>
                <property name="spacing">
-                <number>15</number> <!-- Reduced spacing -->
+                <number>20</number>
                </property>
                <item row="0" column="0">
                 <widget class="QPushButton" name="fictionCategoryButton">
@@ -548,12 +533,11 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>110</height> <!-- Adjusted height to match style -->
+                   <height>132</height>
                   </size>
                  </property>
                  <property name="styleSheet">
                   <string/>
-                  <!-- Styling moved to main stylesheet under QWidget#categoriesWidget QPushButton -->
                  </property>
                  <property name="text">
                   <string>Художня
@@ -572,12 +556,11 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>110</height> <!-- Adjusted height -->
+                   <height>132</height>
                   </size>
                  </property>
                  <property name="styleSheet">
                   <string/>
-                  <!-- Styling moved to main stylesheet -->
                  </property>
                  <property name="text">
                   <string>Бізнес
@@ -596,12 +579,11 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>110</height> <!-- Adjusted height -->
+                   <height>132</height>
                   </size>
                  </property>
                  <property name="styleSheet">
                   <string/>
-                  <!-- Styling moved to main stylesheet -->
                  </property>
                  <property name="text">
                   <string>Дитячі
@@ -620,12 +602,11 @@ QLineEdit#globalSearchLineEdit {
                  <property name="minimumSize">
                   <size>
                    <width>150</width>
-                   <height>110</height> <!-- Adjusted height -->
+                   <height>132</height>
                   </size>
                  </property>
                  <property name="styleSheet">
                   <string/>
-                  <!-- Styling moved to main stylesheet -->
                  </property>
                  <property name="text">
                   <string>Освіта</string>
@@ -664,13 +645,13 @@ QLineEdit#globalSearchLineEdit {
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1090</width> <!-- Width might need adjustment -->
-                 <height>300</height> <!-- Adjusted height, depends on card size -->
+                 <width>1090</width>
+                 <height>280</height>
                 </rect>
                </property>
                <layout class="QHBoxLayout" name="bestsellerRowLayout">
                 <property name="spacing">
-                 <number>15</number> <!-- Reduced spacing -->
+                 <number>20</number>
                 </property>
                 <property name="leftMargin">
                  <number>0</number>
@@ -730,13 +711,13 @@ QLineEdit#globalSearchLineEdit {
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1090</width> <!-- Width might need adjustment -->
-                 <height>300</height> <!-- Adjusted height, depends on card size -->
+                 <width>1090</width>
+                 <height>280</height>
                 </rect>
                </property>
                <layout class="QHBoxLayout" name="newReleaseRowLayout">
                 <property name="spacing">
-                 <number>15</number> <!-- Reduced spacing -->
+                 <number>20</number>
                 </property>
                 <property name="leftMargin">
                  <number>0</number>
@@ -795,32 +776,31 @@ QLineEdit#globalSearchLineEdit {
        </attribute>
        <layout class="QVBoxLayout" name="booksTabLayout">
         <property name="spacing">
-         <number>12</number> <!-- Reduced spacing -->
+         <number>16</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
         </property>
         <property name="topMargin">
-         <number>5</number> <!-- Reduced top margin -->
+         <number>10</number>
         </property>
         <property name="rightMargin">
          <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
-        <!-- Note: Padding is now controlled by QTabWidget::pane in stylesheet -->
         </property>
         <item>
          <widget class="QWidget" name="booksFilterWidget" native="true">
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>40</height> <!-- Reduced filter bar height -->
+            <height>45</height>
            </size>
           </property>
           <layout class="QHBoxLayout" name="booksFilterLayout">
            <property name="spacing">
-            <number>10</number> <!-- Reduced spacing -->
+            <number>16</number>
            </property>
            <property name="leftMargin">
             <number>0</number>
@@ -838,14 +818,14 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QLineEdit" name="bookSearchLineEdit">
              <property name="minimumSize">
               <size>
-               <width>250</width> <!-- Adjusted width -->
-               <height>36</height> <!-- Adjusted height to match style -->
+               <width>300</width>
+               <height>60</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>350</width> <!-- Adjusted max width -->
-               <height>36</height> <!-- Adjusted height to match style -->
+               <width>400</width>
+               <height>40</height>
               </size>
              </property>
              <property name="placeholderText">
@@ -857,8 +837,8 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QComboBox" name="categoryFilterComboBox">
              <property name="minimumSize">
               <size>
-               <width>180</width> <!-- Adjusted width -->
-               <height>36</height> <!-- Adjusted height to match style -->
+               <width>200</width>
+               <height>60</height>
               </size>
              </property>
              <item>
@@ -872,14 +852,14 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QPushButton" name="filterButton">
              <property name="minimumSize">
               <size>
-               <width>38</width> <!-- Adjusted size to match style -->
-               <height>36</height> <!-- Adjusted size to match style -->
+               <width>58</width>
+               <height>56</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>38</width> <!-- Adjusted size to match style -->
-               <height>36</height> <!-- Adjusted size to match style -->
+               <width>58</width>
+               <height>40</height>
               </size>
              </property>
              <property name="toolTip">
@@ -894,14 +874,14 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QPushButton" name="sortButton">
              <property name="minimumSize">
               <size>
-               <width>38</width> <!-- Adjusted size to match style -->
-               <height>36</height> <!-- Adjusted size to match style -->
+               <width>58</width>
+               <height>56</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>38</width> <!-- Adjusted size to match style -->
-               <height>36</height> <!-- Adjusted size to match style -->
+               <width>58</width>
+               <height>40</height>
               </size>
              </property>
              <property name="toolTip">
@@ -929,14 +909,14 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QPushButton" name="viewModeButton">
              <property name="minimumSize">
               <size>
-               <width>38</width> <!-- Adjusted size to match style -->
-               <height>36</height> <!-- Adjusted size to match style -->
+               <width>58</width>
+               <height>56</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>38</width> <!-- Adjusted size to match style -->
-               <height>36</height> <!-- Adjusted size to match style -->
+               <width>58</width>
+               <height>40</height>
               </size>
              </property>
              <property name="toolTip">
@@ -963,25 +943,25 @@ QLineEdit#globalSearchLineEdit {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1130</width> <!-- Adjusted width -->
-             <height>531</height> <!-- Adjusted height -->
+             <width>1120</width>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="booksContainerLayout">
             <property name="leftMargin">
-             <number>10</number> <!-- Increased margin -->
+             <number>5</number>
             </property>
             <property name="topMargin">
              <number>10</number>
             </property>
             <property name="rightMargin">
-             <number>10</number> <!-- Increased margin -->
+             <number>5</number>
             </property>
             <property name="bottomMargin">
              <number>10</number>
             </property>
             <property name="spacing">
-             <number>20</number> <!-- Reduced spacing -->
+             <number>24</number>
             </property>
            </layout>
           </widget>
@@ -995,32 +975,31 @@ QLineEdit#globalSearchLineEdit {
        </attribute>
        <layout class="QVBoxLayout" name="authorsTabLayout">
         <property name="spacing">
-         <number>12</number> <!-- Reduced spacing -->
+         <number>16</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
         </property>
         <property name="topMargin">
-         <number>5</number> <!-- Reduced top margin -->
+         <number>10</number>
         </property>
         <property name="rightMargin">
          <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
-        <!-- Note: Padding is now controlled by QTabWidget::pane in stylesheet -->
         </property>
         <item>
          <widget class="QWidget" name="authorsFilterWidget" native="true">
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>40</height> <!-- Reduced filter bar height -->
+            <height>45</height>
            </size>
           </property>
           <layout class="QHBoxLayout" name="authorsFilterLayout">
            <property name="spacing">
-            <number>10</number> <!-- Reduced spacing -->
+            <number>12</number>
            </property>
            <property name="leftMargin">
             <number>0</number>
@@ -1038,14 +1017,14 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QLineEdit" name="authorSearchLineEdit">
              <property name="minimumSize">
               <size>
-               <width>250</width> <!-- Adjusted width -->
-               <height>36</height> <!-- Adjusted height to match style -->
+               <width>300</width>
+               <height>60</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>350</width> <!-- Adjusted max width -->
-               <height>36</height> <!-- Adjusted height to match style -->
+               <width>400</width>
+               <height>40</height>
               </size>
              </property>
              <property name="placeholderText">
@@ -1079,25 +1058,25 @@ QLineEdit#globalSearchLineEdit {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1130</width> <!-- Adjusted width -->
-             <height>531</height> <!-- Adjusted height -->
+             <width>1120</width>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="authorsContainerLayout">
             <property name="leftMargin">
-             <number>10</number> <!-- Increased margin -->
+             <number>5</number>
             </property>
             <property name="topMargin">
              <number>10</number>
             </property>
             <property name="rightMargin">
-             <number>10</number> <!-- Increased margin -->
+             <number>5</number>
             </property>
             <property name="bottomMargin">
              <number>10</number>
             </property>
             <property name="spacing">
-             <number>20</number> <!-- Reduced spacing -->
+             <number>24</number>
             </property>
            </layout>
           </widget>
@@ -1111,32 +1090,31 @@ QLineEdit#globalSearchLineEdit {
        </attribute>
        <layout class="QVBoxLayout" name="ordersTabLayout">
         <property name="spacing">
-         <number>12</number> <!-- Reduced spacing -->
+         <number>16</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
         </property>
         <property name="topMargin">
-         <number>5</number> <!-- Reduced top margin -->
+         <number>10</number>
         </property>
         <property name="rightMargin">
          <number>0</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
-        <!-- Note: Padding is now controlled by QTabWidget::pane in stylesheet -->
         </property>
         <item>
          <widget class="QWidget" name="ordersFilterWidget" native="true">
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>40</height> <!-- Reduced filter bar height -->
+            <height>45</height>
            </size>
           </property>
           <layout class="QHBoxLayout" name="ordersFilterLayout">
            <property name="spacing">
-            <number>10</number> <!-- Reduced spacing -->
+            <number>16</number>
            </property>
            <property name="leftMargin">
             <number>0</number>
@@ -1154,8 +1132,8 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QComboBox" name="orderStatusComboBox">
              <property name="minimumSize">
               <size>
-               <width>180</width> <!-- Adjusted width -->
-               <height>36</height> <!-- Adjusted height to match style -->
+               <width>200</width>
+               <height>60</height>
               </size>
              </property>
              <item>
@@ -1210,8 +1188,8 @@ QLineEdit#globalSearchLineEdit {
             <widget class="QDateEdit" name="orderDateEdit">
              <property name="minimumSize">
               <size>
-               <width>130</width> <!-- Adjusted width -->
-               <height>36</height> <!-- Adjusted height to match style -->
+               <width>150</width>
+               <height>60</height>
               </size>
              </property>
              <property name="toolTip">
@@ -1251,22 +1229,22 @@ QLineEdit#globalSearchLineEdit {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1130</width> <!-- Adjusted width -->
-             <height>531</height> <!-- Adjusted height -->
+             <width>1120</width>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="ordersListLayout">
             <property name="spacing">
-             <number>12</number> <!-- Reduced spacing -->
+             <number>16</number>
             </property>
             <property name="leftMargin">
-             <number>10</number> <!-- Increased margin -->
+             <number>5</number>
             </property>
             <property name="topMargin">
              <number>10</number>
             </property>
             <property name="rightMargin">
-             <number>10</number> <!-- Increased margin -->
+             <number>5</number>
             </property>
             <property name="bottomMargin">
              <number>10</number>
