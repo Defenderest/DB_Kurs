@@ -92,6 +92,26 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         }
         // --- Кінець завантаження авторів ---
 
+    // --- Підключення сигналів навігаційних кнопок до QStackedWidget ---
+    connect(ui->navHomeButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->discoverPage); // Перемикаємо на сторінку "Головна"
+    });
+    connect(ui->navBooksButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->booksPage); // Перемикаємо на сторінку "Книги"
+    });
+    connect(ui->navAuthorsButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->authorsPage); // Перемикаємо на сторінку "Автори"
+    });
+    connect(ui->navOrdersButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->ordersPage); // Перемикаємо на сторінку "Замовлення"
+    });
+
+    // Встановлюємо початкову сторінку (Головна)
+    ui->contentStackedWidget->setCurrentWidget(ui->discoverPage);
+    ui->navHomeButton->setChecked(true); // Позначаємо відповідну кнопку як активну
+    // --- Кінець підключення сигналів навігації ---
+
+
     // Блок else для помилки підключення більше не потрібен тут,
     // оскільки dbManager передається і перевіряється на початку конструктора.
 }
