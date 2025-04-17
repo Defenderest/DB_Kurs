@@ -150,6 +150,7 @@ bool DatabaseManager::createSchemaTables()
         CREATE TABLE customer (
             customer_id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL,
             email VARCHAR(255) UNIQUE NOT NULL, phone VARCHAR(30), address TEXT,
+            password_hash VARCHAR(64) NOT NULL, -- Додано поле для хешу пароля (SHA-256 = 64 hex chars)
             loyalty_program BOOLEAN DEFAULT FALSE, join_date DATE NOT NULL DEFAULT CURRENT_DATE,
             loyalty_points INTEGER DEFAULT 0 CHECK (loyalty_points >= 0) ); )";
     if(success) success &= executeQuery(query, createCustomerSQL, "Создание customer");
@@ -537,14 +538,14 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
     }
 
 
-    // 4. Customer (Генерація тестових клієнтів, як раніше)
+    // 4. Customer (Генерація тестових клієнтів з паролями)
     if (success) {
-        qInfo() << "Populating table customer (generating test data)...";
+        qInfo() << "Populating table customer (generating test data with passwords)...";
         QString insertCustomerSQL = R"(
-        INSERT INTO customer (first_name, last_name, email, phone, address, loyalty_program, join_date, loyalty_points)
-        VALUES (:first_name, :last_name, :email, :phone, :address, :loyalty_program, :join_date, :loyalty_points)
+        INSERT INTO customer (first_name, last_name, email, phone, address, password_hash, loyalty_program, join_date, loyalty_points)
+        VALUES (:first_name, :last_name, :email, :phone, :address, :password_hash, :loyalty_program, :join_date, :loyalty_points)
         RETURNING customer_id;
-    )"; // Added RETURNING
+    )"; // Додано password_hash
     if (!query.prepare(insertCustomerSQL)) {
         qCritical() << "Error preparing query for customer:" << query.lastError().text(); // Changed log to English
         success = false;
@@ -567,8 +568,14 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
             query.bindValue(":join_date", randomDate(QDate::currentDate().addYears(-5), QDate::currentDate()));
             query.bindValue(":loyalty_points", QRandomGenerator::global()->bounded(0, 501));
 
+            // Генерація та хешування пароля (приклад: "password" + email)
+            QString plainPassword = "password" + query.boundValue(":email").toString();
+            QByteArray passwordHash = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
+            query.bindValue(":password_hash", passwordHash.toHex()); // Зберігаємо хеш у hex форматі
+
             if (executeInsertQuery(query, QString("Customer %1").arg(i+1), lastId)) {
                 customerIds.append(lastId.toInt());
+                qDebug() << "Generated customer" << query.boundValue(":email").toString() << "with password:" << plainPassword; // Тільки для тестування!
             } else {
                 success = false;
             }
@@ -932,6 +939,47 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
     qInfo() << "Processed" << count << "books for display.";
 
     return books;
+}
+
+
+// Реалізація методу для отримання даних для входу
+CustomerLoginInfo DatabaseManager::getCustomerLoginInfo(const QString &email) const
+{
+    CustomerLoginInfo loginInfo;
+    if (!m_isConnected || !m_db.isOpen() || email.isEmpty()) {
+        qWarning() << "Неможливо отримати дані для входу: немає з'єднання або email порожній.";
+        return loginInfo; // Повертаємо порожню структуру
+    }
+
+    const QString sql = R"(
+        SELECT customer_id, password_hash
+        FROM customer
+        WHERE email = :email;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":email", email);
+
+    qInfo() << "Executing SQL to get login info for email:" << email;
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні даних для входу для email '" << email << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return loginInfo;
+    }
+
+    if (query.next()) {
+        loginInfo.customerId = query.value("customer_id").toInt();
+        loginInfo.passwordHash = query.value("password_hash").toString();
+        loginInfo.found = true;
+        qInfo() << "Login info found for email:" << email << "Customer ID:" << loginInfo.customerId;
+    } else {
+        qInfo() << "Login info not found for email:" << email;
+        // loginInfo.found залишається false
+    }
+
+    return loginInfo;
 }
 
 

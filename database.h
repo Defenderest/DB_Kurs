@@ -10,6 +10,7 @@
 #include <QVector>  // Для хранения сгенерированных ID
 #include <QDebug>
 #include <QList>    // Потрібно для QList<BookDisplayInfo>
+#include <QCryptographicHash> // Додано для хешування паролів
 
 // Структура для передачі даних книги в UI (перенесено з .cpp)
 struct BookDisplayInfo {
@@ -29,6 +30,13 @@ struct AuthorDisplayInfo {
     QString lastName;
     QString nationality;
     QString imagePath; // Шлях до зображення автора
+};
+
+// Структура для передачі даних для входу
+struct CustomerLoginInfo {
+    int customerId = -1;
+    QString passwordHash;
+    bool found = false; // Прапорець, чи знайдено користувача
 };
 
 
@@ -64,6 +72,9 @@ public:
 
     // Новий метод для отримання авторів для відображення
     QList<AuthorDisplayInfo> getAllAuthorsForDisplay() const;
+
+    // Новий метод для отримання даних для входу за email
+    CustomerLoginInfo getCustomerLoginInfo(const QString &email) const;
 
 
 private:
