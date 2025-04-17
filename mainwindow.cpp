@@ -15,6 +15,7 @@
 #include <QPainter>        // Додано для малювання круглої маски
 #include <QBitmap>         // Додано для QBitmap (використовується з QPainter)
 #include <QDate>           // Додано для форматування дати
+#include "profiledialog.h" // Додано для нового діалогу профілю
 
 // Змінено конструктор: приймає DatabaseManager та ID користувача
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
@@ -452,17 +453,10 @@ void MainWindow::on_profileButton_clicked()
         return;
     }
 
-    // 3. Заповнюємо поля на вкладці "Профіль"
-    ui->profileFirstNameLabel->setText(profile.firstName.isEmpty() ? tr("(не вказано)") : profile.firstName);
-    ui->profileLastNameLabel->setText(profile.lastName.isEmpty() ? tr("(не вказано)") : profile.lastName);
-    ui->profileEmailLabel->setText(profile.email); // Email має бути завжди
-    ui->profilePhoneLabel->setText(profile.phone.isEmpty() ? tr("(не вказано)") : profile.phone);
-    ui->profileAddressLabel->setText(profile.address.isEmpty() ? tr("(не вказано)") : profile.address);
-    ui->profileJoinDateLabel->setText(profile.joinDate.isValid() ? profile.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
-    ui->profileLoyaltyLabel->setText(profile.loyaltyProgram ? tr("Так") : tr("Ні"));
-    ui->profilePointsLabel->setText(QString::number(profile.loyaltyPoints));
+    // 3. Створюємо та показуємо діалог профілю, передаючи дані
+    ProfileDialog profileDialog(profile, this); // 'this' робить MainWindow батьком діалогу
+    profileDialog.exec(); // Показуємо діалог модально (блокує MainWindow)
+    // Якщо потрібно немодально: profileDialog.show(); але тоді треба керувати пам'яттю інакше
 
-    // 4. Переключаємося на вкладку "Профіль"
-    ui->mainTabWidget->setCurrentWidget(ui->profileTab);
-    qInfo() << "Switched to profile tab.";
+    qInfo() << "Profile dialog shown and closed.";
 }
