@@ -1032,6 +1032,57 @@ QList<AuthorDisplayInfo> DatabaseManager::getAllAuthorsForDisplay() const
 }
 
 
+// Реалізація нового методу для отримання повної інформації профілю користувача
+CustomerProfileInfo DatabaseManager::getCustomerProfileInfo(int customerId) const
+{
+    CustomerProfileInfo profileInfo;
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0) {
+        qWarning() << "Неможливо отримати профіль: немає з'єднання або невірний customerId.";
+        return profileInfo; // Повертаємо порожню структуру
+    }
+
+    const QString sql = R"(
+        SELECT
+            customer_id, first_name, last_name, email, phone, address,
+            join_date, loyalty_program, loyalty_points
+        FROM customer
+        WHERE customer_id = :customerId;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to get profile info for customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні профілю для customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return profileInfo;
+    }
+
+    if (query.next()) {
+        profileInfo.customerId = query.value("customer_id").toInt();
+        profileInfo.firstName = query.value("first_name").toString();
+        profileInfo.lastName = query.value("last_name").toString();
+        profileInfo.email = query.value("email").toString();
+        profileInfo.phone = query.value("phone").toString();
+        profileInfo.address = query.value("address").toString();
+        profileInfo.joinDate = query.value("join_date").toDate();
+        profileInfo.loyaltyProgram = query.value("loyalty_program").toBool();
+        profileInfo.loyaltyPoints = query.value("loyalty_points").toInt();
+        profileInfo.found = true;
+        qInfo() << "Profile info found for customer ID:" << customerId;
+    } else {
+        qInfo() << "Profile info not found for customer ID:" << customerId;
+        // profileInfo.found залишається false
+    }
+
+    return profileInfo;
+}
+
+
+
 // Реалізація нового методу для отримання книг за жанром
 QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, int limit) const
 {

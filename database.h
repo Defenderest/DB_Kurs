@@ -39,6 +39,20 @@ struct CustomerLoginInfo {
     bool found = false; // Прапорець, чи знайдено користувача
 };
 
+// Структура для передачі повної інформації профілю користувача в UI
+struct CustomerProfileInfo {
+    int customerId = -1;
+    QString firstName;
+    QString lastName;
+    QString email;
+    QString phone;
+    QString address;
+    QDate joinDate;
+    bool loyaltyProgram = false;
+    int loyaltyPoints = 0;
+    bool found = false; // Прапорець, чи знайдено користувача
+};
+
 
 class DatabaseManager : public QObject
 {
@@ -75,6 +89,9 @@ public:
 
     // Новий метод для отримання даних для входу за email
     CustomerLoginInfo getCustomerLoginInfo(const QString &email) const;
+
+    // Новий метод для отримання повної інформації профілю користувача за ID
+    CustomerProfileInfo getCustomerProfileInfo(int customerId) const;
 
 
 private:

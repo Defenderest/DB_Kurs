@@ -7,9 +7,11 @@
 #include "database.h"
 #include <QWidget> // Додано для QWidget* у конструкторі та типів повернення
 #include <QLayout> // Додано для QLayout* у clearLayout
+#include <QDate>   // Додано для QDate у CustomerProfileInfo
 
 // Forward declarations
 class DatabaseManager;
+struct CustomerProfileInfo; // Додано forward declaration
 class QLabel;
 class QVBoxLayout;
 class QGridLayout;
@@ -28,15 +30,18 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    // Змінено конструктор: приймає DatabaseManager та ID користувача
+    explicit MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
     void displayBooks(const QList<BookDisplayInfo> &books); // Слот для відображення книг
+    void on_profileButton_clicked(); // Слот для кнопки профілю
 
 private:
     Ui::MainWindow *ui;
-    DatabaseManager *m_dbManager; // Указатель на менеджер БД
+    DatabaseManager *m_dbManager; // Вказівник на менеджер БД (передається ззовні)
+    int m_currentCustomerId;      // ID поточного користувача
 
     // Допоміжна функція для очищення layout
     void clearLayout(QLayout* layout);

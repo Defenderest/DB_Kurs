@@ -14,54 +14,42 @@
 #include <QScrollArea>     // Щоб переконатися, що вміст прокручується
 #include <QPainter>        // Додано для малювання круглої маски
 #include <QBitmap>         // Додано для QBitmap (використовується з QPainter)
+#include <QDate>           // Додано для форматування дати
 
-MainWindow::MainWindow(QWidget *parent)
+// Змінено конструктор: приймає DatabaseManager та ID користувача
+MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , m_dbManager(dbManager) // Ініціалізуємо вказівник переданим значенням
+    , m_currentCustomerId(customerId) // Зберігаємо ID користувача
 {
     ui->setupUi(this);
 
-    // 1. Создаем экземпляр DatabaseManager
-    m_dbManager = new DatabaseManager(this); // 'this' устанавливает родителя для управления памятью
+    // Перевіряємо, чи передано менеджер БД
+    if (!m_dbManager) {
+        qCritical() << "MainWindow: DatabaseManager is null! Cannot function properly.";
+        QMessageBox::critical(this, tr("Критична помилка"), tr("Менеджер бази даних не ініціалізовано."));
+        // Можливо, закрити вікно або заблокувати функціонал
+        return;
+    }
 
-    // 2. Подключаемся к базе данных (замените на ваши реальные данные)
-    bool connected = m_dbManager->connectToDatabase(
-        "127.127.126.49",      // Хост
-        5432,             // Порт
-        "postgres",   // Имя базы данных
-        "postgres",       // Имя пользователя
-        "1234"            // Пароль (ВНИМАНИЕ: Не храните пароли в коде в реальных приложениях!)
-    );
+    // Перевіряємо ID користувача
+    if (m_currentCustomerId <= 0) {
+         qWarning() << "MainWindow: Invalid customer ID received:" << m_currentCustomerId;
+         // Можна показати повідомлення або обмежити функціонал
+         ui->statusBar->showMessage(tr("Помилка: Не вдалося визначити користувача."), 0);
+    } else {
+         ui->statusBar->showMessage(tr("Вітаємо!"), 5000);
+         qInfo() << "MainWindow initialized for customer ID:" << m_currentCustomerId;
+    }
 
-    // 3. Отображаем статус подключения в строке состояния
-    if (connected) {
-        ui->statusBar->showMessage(tr("Успішно підключено до бази даних."), 5000); // Сообщение на 5 секунд
-        qInfo() << "Database connection successful.";
+    // Підключаємо сигнал кнопки профілю до слота
+    connect(ui->profileButton, &QPushButton::clicked, this, &MainWindow::on_profileButton_clicked);
 
-        // --- ВРЕМЕННО: Создаем схему и заполняем данными при запуске ---
-        // В реальном приложении это должно быть по кнопке или при первом запуске
-        if (!m_dbManager->createSchemaTables()) {
-             QMessageBox::critical(this, tr("Помилка створення схеми"),
-                                  tr("Не вдалося створити таблиці бази даних.\nДивіться логи для деталей."));
-             ui->statusBar->showMessage(tr("Помилка створення схеми БД!"), 0); // Постоянное сообщение
-        } else {
-             ui->statusBar->showMessage(tr("Схема БД успішно створена/оновлена."), 5000);
-             // Заполняем тестовыми данными (например, 30 записей)
-             if (!m_dbManager->populateTestData(30)) {
-                 QMessageBox::warning(this, tr("Помилка заповнення даних"),
-                                      tr("Не вдалося заповнити таблиці тестовими даними.\nДивіться логи для деталей."));
-                 ui->statusBar->showMessage(tr("Помилка заповнення БД тестовими даними!"), 0);
-             } else {
-                 ui->statusBar->showMessage(tr("Тестові дані успішно додані."), 5000);
-                 // Опционально: вывести все данные в консоль для проверки
-                 // m_dbManager->printAllData();
-             }
-        }
-        // --- КОНЕЦ ВРЕМЕННОГО БЛОКА ---
 
-        // --- Завантаження та відображення книг ---
-        QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
-        if (!books.isEmpty()) {
+    // --- Завантаження та відображення книг (логіка залишається, але без створення/підключення БД) ---
+    QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
+    if (!books.isEmpty()) {
             displayBooks(books); // Заповнюємо основну вкладку "Книги"
             ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
         } else {
@@ -100,14 +88,8 @@ MainWindow::MainWindow(QWidget *parent)
         }
         // --- Кінець завантаження авторів ---
 
-
-    } else {
-        ui->statusBar->showMessage(tr("Помилка підключення до бази даних!"), 0); // Постоянное сообщение об ошибке
-        QMessageBox::critical(this, tr("Помилка підключення"),
-                              tr("Не вдалося підключитися до бази даних.\nПеревірте налаштування та логи.\nДодаток може працювати некоректно."));
-        qCritical() << "Database connection failed:" << m_dbManager->lastError().text();
-    }
-
+    // Блок else для помилки підключення більше не потрібен тут,
+    // оскільки dbManager передається і перевіряється на початку конструктора.
 }
 
 MainWindow::~MainWindow()
@@ -434,4 +416,53 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
     // Оновлюємо геометрію
     ui->authorsContainerWidget->updateGeometry();
     ui->authorsScrollArea->updateGeometry();
+}
+
+
+// Слот для обробки натискання кнопки профілю
+void MainWindow::on_profileButton_clicked()
+{
+    qInfo() << "Profile button clicked. Loading profile for customer ID:" << m_currentCustomerId;
+
+    if (m_currentCustomerId <= 0) {
+        QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо завантажити профіль, оскільки користувач не визначений."));
+        return;
+    }
+
+    if (!m_dbManager) {
+         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+         return;
+    }
+
+    // 1. Отримуємо дані профілю з бази даних
+    CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
+
+    // 2. Перевіряємо, чи знайдені дані
+    if (!profile.found) {
+        QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
+        // Очищаємо поля на вкладці профілю (про всяк випадок)
+        ui->profileFirstNameLabel->setText(tr("(помилка завантаження)"));
+        ui->profileLastNameLabel->setText(tr("(помилка завантаження)"));
+        ui->profileEmailLabel->setText(tr("(помилка завантаження)"));
+        ui->profilePhoneLabel->setText(tr("(помилка завантаження)"));
+        ui->profileAddressLabel->setText(tr("(помилка завантаження)"));
+        ui->profileJoinDateLabel->setText(tr("(помилка завантаження)"));
+        ui->profileLoyaltyLabel->setText(tr("(помилка завантаження)"));
+        ui->profilePointsLabel->setText(tr("(помилка завантаження)"));
+        return;
+    }
+
+    // 3. Заповнюємо поля на вкладці "Профіль"
+    ui->profileFirstNameLabel->setText(profile.firstName.isEmpty() ? tr("(не вказано)") : profile.firstName);
+    ui->profileLastNameLabel->setText(profile.lastName.isEmpty() ? tr("(не вказано)") : profile.lastName);
+    ui->profileEmailLabel->setText(profile.email); // Email має бути завжди
+    ui->profilePhoneLabel->setText(profile.phone.isEmpty() ? tr("(не вказано)") : profile.phone);
+    ui->profileAddressLabel->setText(profile.address.isEmpty() ? tr("(не вказано)") : profile.address);
+    ui->profileJoinDateLabel->setText(profile.joinDate.isValid() ? profile.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
+    ui->profileLoyaltyLabel->setText(profile.loyaltyProgram ? tr("Так") : tr("Ні"));
+    ui->profilePointsLabel->setText(QString::number(profile.loyaltyPoints));
+
+    // 4. Переключаємося на вкладку "Профіль"
+    ui->mainTabWidget->setCurrentWidget(ui->profileTab);
+    qInfo() << "Switched to profile tab.";
 }
