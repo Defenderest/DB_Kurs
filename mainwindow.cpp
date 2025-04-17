@@ -204,7 +204,7 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 
     int row = 0;
     int col = 0;
-    const int maxColumns = 4; // Кількість колонок у сітці
+    const int maxColumns = 5; // Змінено кількість колонок у сітці на 5
 
     for (const BookDisplayInfo &bookInfo : books) {
         QWidget *bookCard = createBookCardWidget(bookInfo);
