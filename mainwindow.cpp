@@ -174,7 +174,7 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     cardLayout->addWidget(titleLabel);
 
     // 3. Автор(и) (QLabel)
-    QLabel *authorLabel = new QLabel(bookInfo.authors);
+    QLabel *authorLabel = new QLabel(bookInfo.authors.isEmpty() ? tr("Невідомий автор") : bookInfo.authors);
     authorLabel->setWordWrap(true);
     authorLabel->setAlignment(Qt::AlignCenter);
     authorLabel->setStyleSheet("QLabel { color: #555; font-size: 9pt; }");

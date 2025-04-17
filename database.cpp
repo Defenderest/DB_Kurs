@@ -920,12 +920,9 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
         bookInfo.authors = query.value("authors").toString();
         bookInfo.genre = query.value("genre").toString(); // Отримуємо жанр
 
-        // Якщо автори відсутні (був LEFT JOIN), встановлюємо рядок за замовчуванням
-        if (bookInfo.authors.isEmpty() && !query.value("authors").isNull()) {
-             // Це може статися, якщо STRING_AGG повернув NULL (хоча зазвичай повертає порожній рядок)
-             bookInfo.authors = tr("Невідомий автор");
-        } else if (query.value("authors").isNull()) {
-             bookInfo.authors = tr("Невідомий автор");
+        // Якщо автори відсутні (був LEFT JOIN), перевіряємо на NULL
+        if (query.value("authors").isNull()) {
+             bookInfo.authors = ""; // Повертаємо порожній рядок, UI вирішить, що показати
         }
 
 
@@ -1046,10 +1043,9 @@ QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, in
         bookInfo.authors = query.value("authors").toString();
         bookInfo.genre = query.value("genre").toString();
 
-        if (bookInfo.authors.isEmpty() && !query.value("authors").isNull()) {
-             bookInfo.authors = tr("Невідомий автор");
-        } else if (query.value("authors").isNull()) {
-             bookInfo.authors = tr("Невідомий автор");
+        // Якщо автори відсутні (був LEFT JOIN), перевіряємо на NULL
+        if (query.value("authors").isNull()) {
+             bookInfo.authors = ""; // Повертаємо порожній рядок
         }
 
         books.append(bookInfo);

@@ -3,13 +3,13 @@
 
 #include <QMainWindow>
 #include <QList> // Для списку книг
-#include <QHBoxLayout> // Додано для QHBoxLayout
-#include "database.h" // Додано для повних визначень BookDisplayInfo та AuthorDisplayInfo
+#include <QHBoxLayout>
+#include "database.h"
+#include <QWidget> // Додано для QWidget* у конструкторі та типів повернення
+#include <QLayout> // Додано для QLayout* у clearLayout
 
 // Forward declarations
 class DatabaseManager;
-// struct BookDisplayInfo; // Більше не потрібне попереднє оголошення
-// struct AuthorDisplayInfo; // Попереднє оголошення не потрібне
 class QLabel;
 class QVBoxLayout;
 class QGridLayout;
