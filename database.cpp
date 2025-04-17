@@ -331,25 +331,25 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
     QList<BookData> books = {
         // Українські класики (6 книг)
-        {"Кобзар", "978-966-7047-36-8", QDate(1840, 1, 1), "А-ба-ба-га-ла-ма-га", 300.00, 150, "Збірка поетичних творів", "українська", 704, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Шевченко"}},
-        {"Гайдамаки", "978-966-03-4689-0", QDate(1841, 1, 1), "Видавництво Старого Лева", 180.00, 80, "Історико-героїчна поема", "українська", 160, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Шевченко"}},
-        {"Лісова пісня", "978-617-679-191-9", QDate(1911, 1, 1), "Видавництво Старого Лева", 220.00, 100, "Драма-феєрія", "українська", 256, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Українка"}},
-        {"Камінний господар", "978-966-10-5500-7", QDate(1912, 1, 1), "А-ба-ба-га-ла-ма-га", 190.00, 70, "Драматична поема", "українська", 128, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Українка"}},
-        {"Захар Беркут", "978-966-03-5112-2", QDate(1883, 1, 1), "А-ба-ба-га-ла-ма-га", 250.00, 120, "Історична повість", "українська", 320, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Франко"}},
-        {"Украдене щастя", "978-617-569-098-1", QDate(1893, 1, 1), "Видавництво Старого Лева", 170.00, 90, "Соціально-психологічна драма", "українська", 192, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Франко"}},
-        // Зарубіжні автори (12 книг - залишаються без змін)
-        {"1984", "978-0-452-28423-4", QDate(1949, 6, 8), "Penguin Books", 150.00, 100, "Dystopian classic", "англійська", 328, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Orwell"}},
-        {"Animal Farm", "978-0-451-52634-2", QDate(1945, 8, 17), "Penguin Books", 120.00, 120, "Political allegory", "англійська", 144, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Orwell"}},
-        {"Harry Potter and the Philosopher's Stone", "978-0-7475-3269-9", QDate(1997, 6, 26), "Bloomsbury", 350.00, 80, "Fantasy novel", "англійська", 223, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Rowling"}}, // Note: Publisher not in list
-        {"The Shining", "978-0-385-12167-5", QDate(1977, 1, 28), "Doubleday", 280.00, 65, "Horror novel", "англійська", 447, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"King"}}, // Note: Publisher not in list
-        {"It", "978-0-670-81302-5", QDate(1986, 9, 15), "Viking", 450.00, 45, "Horror novel", "англійська", 1138, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"King"}}, // Note: Publisher not in list
-        {"Norwegian Wood", "978-0-375-70402-4", QDate(1987, 1, 1), "Vintage International", 240.00, 70, "Coming-of-age novel", "англійська", 296, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Murakami"}}, // Note: Publisher not in list
-        {"American Gods", "978-0-380-97365-1", QDate(2001, 6, 19), "HarperCollins", 320.00, 50, "Fantasy novel", "англійська", 465, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Gaiman"}},
-        {"The Handmaid's Tale", "978-0-385-49081-8", QDate(1985, 1, 1), "McClelland and Stewart", 270.00, 75, "Dystopian novel", "англійська", 311, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Atwood"}}, // Note: Publisher not in list
-        {"Sapiens: A Brief History of Humankind", "978-0-06-231609-7", QDate(2011, 1, 1), "HarperCollins", 400.00, 90, "Non-fiction", "англійська", 464, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Harari"}},
-        {"The Last Wish (The Witcher)", "978-0-316-43896-9", QDate(1993, 1, 1), "Orbit", 290.00, 60, "Fantasy short stories", "англійська", 400, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Sapkowski"}}, // Note: Publisher not in list
-        {"The Hobbit", "978-0-547-92822-7", QDate(1937, 9, 21), "Houghton Mifflin Harcourt", 220.00, 110, "Fantasy novel", "англійська", 310, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Tolkien"}}, // Note: Publisher not in list
-        {"The Lord of the Rings", "978-0-618-26027-9", QDate(1954, 7, 29), "Allen & Unwin", 600.00, 40, "High-fantasy novel", "англійська", 1178, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Tolkien"}} // Note: Publisher not in list
+        {"Кобзар", "978-966-7047-36-8", QDate(1840, 1, 1), "А-ба-ба-га-ла-ма-га", 300.00, 150, "Збірка поетичних творів", "українська", 704, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Шевченко"}, "Класика"},
+        {"Гайдамаки", "978-966-03-4689-0", QDate(1841, 1, 1), "Видавництво Старого Лева", 180.00, 80, "Історико-героїчна поема", "українська", 160, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Шевченко"}, "Класика"},
+        {"Лісова пісня", "978-617-679-191-9", QDate(1911, 1, 1), "Видавництво Старого Лева", 220.00, 100, "Драма-феєрія", "українська", 256, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Українка"}, "Класика"},
+        {"Камінний господар", "978-966-10-5500-7", QDate(1912, 1, 1), "А-ба-ба-га-ла-ма-га", 190.00, 70, "Драматична поема", "українська", 128, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Українка"}, "Класика"},
+        {"Захар Беркут", "978-966-03-5112-2", QDate(1883, 1, 1), "А-ба-ба-га-ла-ма-га", 250.00, 120, "Історична повість", "українська", 320, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Франко"}, "Класика"},
+        {"Украдене щастя", "978-617-569-098-1", QDate(1893, 1, 1), "Видавництво Старого Лева", 170.00, 90, "Соціально-психологічна драма", "українська", 192, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Франко"}, "Класика"},
+        // Зарубіжні автори (12 книг)
+        {"1984", "978-0-452-28423-4", QDate(1949, 6, 8), "Penguin Books", 150.00, 100, "Dystopian classic", "англійська", 328, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Orwell"}, "Наукова фантастика"},
+        {"Animal Farm", "978-0-451-52634-2", QDate(1945, 8, 17), "Penguin Books", 120.00, 120, "Political allegory", "англійська", 144, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Orwell"}, "Сучасна проза"},
+        {"Harry Potter and the Philosopher's Stone", "978-0-7475-3269-9", QDate(1997, 6, 26), "Bloomsbury", 350.00, 80, "Fantasy novel", "англійська", 223, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Rowling"}, "Фентезі"}, // Note: Publisher not in list
+        {"The Shining", "978-0-385-12167-5", QDate(1977, 1, 28), "Doubleday", 280.00, 65, "Horror novel", "англійська", 447, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"King"}, "Жахи"}, // Note: Publisher not in list
+        {"It", "978-0-670-81302-5", QDate(1986, 9, 15), "Viking", 450.00, 45, "Horror novel", "англійська", 1138, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"King"}, "Жахи"}, // Note: Publisher not in list
+        {"Norwegian Wood", "978-0-375-70402-4", QDate(1987, 1, 1), "Vintage International", 240.00, 70, "Coming-of-age novel", "англійська", 296, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Murakami"}, "Сучасна проза"}, // Note: Publisher not in list
+        {"American Gods", "978-0-380-97365-1", QDate(2001, 6, 19), "HarperCollins", 320.00, 50, "Fantasy novel", "англійська", 465, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Gaiman"}, "Фентезі"},
+        {"The Handmaid's Tale", "978-0-385-49081-8", QDate(1985, 1, 1), "McClelland and Stewart", 270.00, 75, "Dystopian novel", "англійська", 311, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Atwood"}, "Наукова фантастика"}, // Note: Publisher not in list
+        {"Sapiens: A Brief History of Humankind", "978-0-06-231609-7", QDate(2011, 1, 1), "HarperCollins", 400.00, 90, "Non-fiction", "англійська", 464, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Harari"}, "Науково-популярне"},
+        {"The Last Wish (The Witcher)", "978-0-316-43896-9", QDate(1993, 1, 1), "Orbit", 290.00, 60, "Fantasy short stories", "англійська", 400, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Sapkowski"}, "Фентезі"}, // Note: Publisher not in list
+        {"The Hobbit", "978-0-547-92822-7", QDate(1937, 9, 21), "Houghton Mifflin Harcourt", 220.00, 110, "Fantasy novel", "англійська", 310, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Tolkien"}, "Фентезі"}, // Note: Publisher not in list
+        {"The Lord of the Rings", "978-0-618-26027-9", QDate(1954, 7, 29), "Allen & Unwin", 600.00, 40, "High-fantasy novel", "англійська", 1178, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\test_img.jpg", {"Tolkien"}, "Фентезі"} // Note: Publisher not in list
     };
 
 
@@ -439,8 +439,8 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
     if (success) {
         qInfo() << "Populating table book and book_author with real data...";
         QString insertBookSQL = R"(
-             INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count, cover_image_path)
-             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count, :cover_image_path)
+             INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count, cover_image_path, genre)
+             VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count, :cover_image_path, :genre)
              RETURNING book_id;
          )";
          QString insertBookAuthorSQL = R"(
