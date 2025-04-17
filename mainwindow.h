@@ -38,6 +38,8 @@ private:
     void clearLayout(QLayout* layout);
     // Допоміжна функція для створення картки книги
     QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
+    // Допоміжна функція для відображення книг у горизонтальному layout
+    void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
 
 };
 #endif // MAINWINDOW_H

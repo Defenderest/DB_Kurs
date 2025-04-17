@@ -60,18 +60,32 @@ MainWindow::MainWindow(QWidget *parent)
         // --- Завантаження та відображення книг ---
         QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
         if (!books.isEmpty()) {
-            displayBooks(books);
+            displayBooks(books); // Заповнюємо основну вкладку "Книги"
             ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
         } else {
-            qWarning() << "Не вдалося завантажити книги для відображення.";
-            // Показати повідомлення користувачу в booksContainerWidget
+            qWarning() << "Не вдалося завантажити книги для відображення на вкладці 'Книги'.";
+            // Показати повідомлення користувачу в booksContainerWidget (на вкладці "Книги")
             clearLayout(ui->booksContainerLayout); // Очистити перед додаванням повідомлення
             QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних. Спробуйте пізніше."), ui->booksContainerWidget);
             noBooksLabel->setAlignment(Qt::AlignCenter);
             noBooksLabel->setWordWrap(true);
-            ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки
+            ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки (на вкладці "Книги")
         }
-        // --- Кінець завантаження книг ---
+        // --- Кінець завантаження книг для вкладки "Книги" ---
+
+        // --- Завантаження книг за жанрами для вкладки "Головна" ---
+        qInfo() << "Завантаження книг за жанрами для головної сторінки...";
+        QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8); // Обмежимо кількість для горизонтального ряду
+        displayBooksInHorizontalLayout(classicsBooks, ui->classicsRowLayout);
+
+        QList<BookDisplayInfo> fantasyBooks = m_dbManager->getBooksByGenre("Фентезі", 8);
+        displayBooksInHorizontalLayout(fantasyBooks, ui->fantasyRowLayout);
+
+        QList<BookDisplayInfo> nonFictionBooks = m_dbManager->getBooksByGenre("Науково-популярне", 8);
+        displayBooksInHorizontalLayout(nonFictionBooks, ui->nonFictionRowLayout);
+        qInfo() << "Завершено завантаження книг за жанрами.";
+        // --- Кінець завантаження книг за жанрами ---
+
 
     } else {
         ui->statusBar->showMessage(tr("Помилка підключення до бази даних!"), 0); // Постоянное сообщение об ошибке
@@ -237,5 +251,43 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 
     // Переконуємося, що контейнер оновився
     ui->booksContainerWidget->updateGeometry();
+    ui->booksContainerWidget->updateGeometry();
     ui->booksScrollArea->updateGeometry();
+}
+
+
+// Допоміжна функція для відображення книг у горизонтальному layout
+void MainWindow::displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout)
+{
+    if (!layout) {
+        qWarning() << "Target layout for horizontal display is null!";
+        return;
+    }
+    // Очищаємо попередні віджети та розширювачі
+    clearLayout(layout);
+
+    if (books.isEmpty()) {
+        // Якщо книг немає, показуємо повідомлення
+        QLabel *noBooksLabel = new QLabel(tr("Для цього розділу книг не знайдено."));
+        noBooksLabel->setAlignment(Qt::AlignCenter);
+        noBooksLabel->setStyleSheet("QLabel { color: #777; font-style: italic; }");
+        layout->addWidget(noBooksLabel, 1); // Додаємо з розтягуванням
+    } else {
+        for (const BookDisplayInfo &bookInfo : books) {
+            QWidget *bookCard = createBookCardWidget(bookInfo);
+            if (bookCard) {
+                // Встановлюємо фіксовану або максимальну ширину для карток у горизонтальному ряду
+                bookCard->setMinimumWidth(180);
+                bookCard->setMaximumWidth(220);
+                layout->addWidget(bookCard);
+            }
+        }
+        // Додаємо розширювач в кінці, щоб притиснути картки вліво
+        layout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    }
+
+    // Оновлюємо геометрію батьківського віджета (QWidget всередині QScrollArea)
+    if (layout->parentWidget()) {
+        layout->parentWidget()->updateGeometry();
+    }
 }

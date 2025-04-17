@@ -633,17 +633,36 @@ QLineEdit#globalSearchLineEdit {
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="bestsellerHeaderLabel">
+             <widget class="QLabel" name="classicsHeaderLabel">
               <property name="styleSheet">
-               <string/>
+               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
+font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
               </property>
               <property name="text">
-               <string>🔥 Бестселери</string>
+               <string>📖 Класика</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QScrollArea" name="bestsellerScrollArea">
+             <widget class="QScrollArea" name="classicsScrollArea">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>320</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>350</height>
+               </size>
+              </property>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
@@ -656,18 +675,18 @@ QLineEdit#globalSearchLineEdit {
               <property name="widgetResizable">
                <bool>true</bool>
               </property>
-              <widget class="QWidget" name="bestsellerRowWidget">
+              <widget class="QWidget" name="classicsRowWidget">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
                  <width>1090</width>
-                 <height>280</height>
+                 <height>320</height>
                 </rect>
                </property>
-               <layout class="QHBoxLayout" name="bestsellerRowLayout">
+               <layout class="QHBoxLayout" name="classicsRowLayout">
                 <property name="spacing">
-                 <number>20</number>
+                 <number>15</number>
                 </property>
                 <property name="leftMargin">
                  <number>0</number>
@@ -681,35 +700,41 @@ QLineEdit#globalSearchLineEdit {
                 <property name="bottomMargin">
                  <number>5</number>
                 </property>
-                <item>
-                 <spacer name="bestsellerSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
                </layout>
               </widget>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="newReleaseHeaderLabel">
+             <widget class="QLabel" name="fantasyHeaderLabel">
               <property name="styleSheet">
-               <string/>
+               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
+font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
               </property>
               <property name="text">
-               <string>✨ Новинки</string>
+               <string>✨ Фентезі</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QScrollArea" name="newReleaseScrollArea">
+             <widget class="QScrollArea" name="fantasyScrollArea">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>320</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>350</height>
+               </size>
+              </property>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
@@ -722,18 +747,18 @@ QLineEdit#globalSearchLineEdit {
               <property name="widgetResizable">
                <bool>true</bool>
               </property>
-              <widget class="QWidget" name="newReleaseRowWidget">
+              <widget class="QWidget" name="fantasyRowWidget">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
                  <width>1090</width>
-                 <height>280</height>
+                 <height>320</height>
                 </rect>
                </property>
-               <layout class="QHBoxLayout" name="newReleaseRowLayout">
+               <layout class="QHBoxLayout" name="fantasyRowLayout">
                 <property name="spacing">
-                 <number>20</number>
+                 <number>15</number>
                 </property>
                 <property name="leftMargin">
                  <number>0</number>
@@ -747,19 +772,78 @@ QLineEdit#globalSearchLineEdit {
                 <property name="bottomMargin">
                  <number>5</number>
                 </property>
-                <item>
-                 <spacer name="newReleaseSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="nonFictionHeaderLabel">
+              <property name="styleSheet">
+               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
+font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
+              </property>
+              <property name="text">
+               <string>🔬 Науково-популярне</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QScrollArea" name="nonFictionScrollArea">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>320</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>350</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::Shape::NoFrame</enum>
+              </property>
+              <property name="verticalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="nonFictionRowWidget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>1090</width>
+                 <height>320</height>
+                </rect>
+               </property>
+               <layout class="QHBoxLayout" name="nonFictionRowLayout">
+                <property name="spacing">
+                 <number>15</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>5</number>
+                </property>
                </layout>
               </widget>
              </widget>

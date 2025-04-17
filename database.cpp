@@ -55,6 +55,7 @@ struct BookData {
     int pageCount;
     QString coverImagePath;
     QStringList authorLastNames; // Посилання на авторів за прізвищем (спрощено)
+    QString genre; // Додано поле жанру
     int dbId = -1; // Для збереження ID книги
     int publisherDbId = -1; // ID видавця з БД
     QList<int> authorDbIds; // ID авторів з БД
@@ -166,7 +167,8 @@ bool DatabaseManager::createSchemaTables()
             publication_date DATE, publisher_id INTEGER, price NUMERIC(10, 2) CHECK (price >= 0),
             stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0), description TEXT, language VARCHAR(50),
             page_count INTEGER CHECK (page_count > 0),
-            cover_image_path VARCHAR(512), -- Добавлено поле для пути к обложке
+            cover_image_path VARCHAR(512),
+            genre VARCHAR(100), -- Додано поле для жанру
             CONSTRAINT fk_publisher FOREIGN KEY (publisher_id) REFERENCES publisher(publisher_id) ON DELETE SET NULL ); )";
     if(success) success &= executeQuery(query, createBookSQL, "Создание book");
 
@@ -493,6 +495,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 bookQuery.bindValue(":language", book.language);
                 bookQuery.bindValue(":page_count", book.pageCount);
                 bookQuery.bindValue(":cover_image_path", book.coverImagePath.isEmpty() ? QVariant(QVariant::String) : book.coverImagePath);
+                bookQuery.bindValue(":genre", book.genre.isEmpty() ? QVariant(QVariant::String) : book.genre); // Додано прив'язку жанру
 
                 if (executeInsertQuery(bookQuery, QString("Book %1").arg(book.title), lastId)) {
                     book.dbId = lastId.toInt();
@@ -883,13 +886,14 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
             b.price,
             b.cover_image_path,
             b.stock_quantity,
-            COALESCE(p.name, 'Невідомий видавець') AS publisher_name, -- Додано ім'я видавця
+            b.genre, -- Додано отримання жанру
+            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
             STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
         FROM book b
-        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id -- Додано JOIN для видавця
+        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
         LEFT JOIN book_author ba ON b.book_id = ba.book_id
         LEFT JOIN author a ON ba.author_id = a.author_id
-        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, p.name -- Додано p.name в GROUP BY
+        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre, p.name -- Додано b.genre в GROUP BY
         ORDER BY b.title;
     )";
 
@@ -911,7 +915,8 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
         bookInfo.price = query.value("price").toDouble();
         bookInfo.coverImagePath = query.value("cover_image_path").toString();
         bookInfo.stockQuantity = query.value("stock_quantity").toInt();
-        bookInfo.authors = query.value("authors").toString(); // Отримуємо об'єднаних авторів
+        bookInfo.authors = query.value("authors").toString();
+        bookInfo.genre = query.value("genre").toString(); // Отримуємо жанр
 
         // Якщо автори відсутні (був LEFT JOIN), встановлюємо рядок за замовчуванням
         if (bookInfo.authors.isEmpty() && !query.value("authors").isNull()) {
@@ -926,6 +931,81 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
         count++;
     }
     qInfo() << "Processed" << count << "books for display.";
+
+    return books;
+}
+
+
+// Реалізація нового методу для отримання книг за жанром
+QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, int limit) const
+{
+    QList<BookDisplayInfo> books;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо отримати книги за жанром: немає активного з'єднання з БД.";
+        return books;
+    }
+    if (genre.isEmpty()) {
+        qWarning() << "Неможливо отримати книги: не вказано жанр.";
+        return books;
+    }
+
+    // Запит схожий на getAllBooksForDisplay, але з WHERE та LIMIT
+    const QString sql = R"(
+        SELECT
+            b.book_id,
+            b.title,
+            b.price,
+            b.cover_image_path,
+            b.stock_quantity,
+            b.genre,
+            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
+            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
+        FROM book b
+        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
+        LEFT JOIN book_author ba ON b.book_id = ba.book_id
+        LEFT JOIN author a ON ba.author_id = a.author_id
+        WHERE b.genre = :genre -- Фільтрація за жанром
+        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre, p.name
+        ORDER BY b.publication_date DESC, b.title -- Сортування (наприклад, новіші спочатку)
+        LIMIT :limit; -- Обмеження кількості
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":genre", genre);
+    query.bindValue(":limit", limit > 0 ? limit : 10); // За замовчуванням 10, якщо ліміт недійсний
+
+    qInfo() << "Executing SQL to get books for genre:" << genre << "with limit:" << query.boundValue(":limit").toInt();
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні списку книг для жанру '" << genre << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery(); // Показуємо запит з підставленими значеннями
+        qCritical() << "Bound values:" << query.boundValues();
+        return books;
+    }
+
+    qInfo() << "Successfully fetched books for genre" << genre << ". Processing results...";
+    int count = 0;
+    while (query.next()) {
+        BookDisplayInfo bookInfo;
+        bookInfo.bookId = query.value("book_id").toInt();
+        bookInfo.title = query.value("title").toString();
+        bookInfo.price = query.value("price").toDouble();
+        bookInfo.coverImagePath = query.value("cover_image_path").toString();
+        bookInfo.stockQuantity = query.value("stock_quantity").toInt();
+        bookInfo.authors = query.value("authors").toString();
+        bookInfo.genre = query.value("genre").toString();
+
+        if (bookInfo.authors.isEmpty() && !query.value("authors").isNull()) {
+             bookInfo.authors = tr("Невідомий автор");
+        } else if (query.value("authors").isNull()) {
+             bookInfo.authors = tr("Невідомий автор");
+        }
+
+        books.append(bookInfo);
+        count++;
+    }
+    qInfo() << "Processed" << count << "books for genre" << genre;
 
     return books;
 }

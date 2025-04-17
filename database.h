@@ -19,6 +19,7 @@ struct BookDisplayInfo {
     double price;
     QString coverImagePath;
     int stockQuantity;
+    QString genre; // Додано поле жанру
 };
 
 class DatabaseManager : public QObject
@@ -47,6 +48,10 @@ public:
 
     // Новий метод для отримання книг для відображення
     QList<BookDisplayInfo> getAllBooksForDisplay() const;
+
+    // Новий метод для отримання книг за жанром
+    QList<BookDisplayInfo> getBooksByGenre(const QString &genre, int limit = 10) const;
+
 
 private:
     QSqlDatabase m_db;
