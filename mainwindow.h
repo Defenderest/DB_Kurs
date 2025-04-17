@@ -43,5 +43,9 @@ private:
     // Допоміжна функція для відображення книг у горизонтальному layout
     void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
 
+    // Допоміжні функції для вкладки "Автори"
+    QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
+    void displayAuthors(const QList<AuthorDisplayInfo> &authors);
+
 };
 #endif // MAINWINDOW_H
