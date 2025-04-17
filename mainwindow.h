@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QList> // Для списку книг
+#include <QHBoxLayout> // Додано для QHBoxLayout
 
 // Forward declarations
 class DatabaseManager;
@@ -12,6 +13,7 @@ class QVBoxLayout;
 class QGridLayout;
 class QPushButton;
 class QFrame; // Для створення "картки"
+// class QHBoxLayout; // Можна використовувати forward declaration, якщо include в .cpp
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
