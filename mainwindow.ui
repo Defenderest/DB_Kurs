@@ -438,23 +438,160 @@ QLineEdit#globalSearchLineEdit {
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="mainTabWidget">
-      <property name="currentIndex">
-       <number>4</number>
+     <layout class="QHBoxLayout" name="mainContentLayout">
+      <property name="spacing">
+       <number>0</number>
       </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
-      <property name="tabsClosable">
-       <bool>false</bool>
-      </property>
-      <widget class="QWidget" name="discoverTab">
-       <attribute name="title">
-        <string>🏠 Головна</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="discoverTabLayout">
-        <property name="spacing">
+      <item>
+       <widget class="QWidget" name="navigationPanel" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget#navigationPanel {
+    background-color: #e9ecef; /* Світло-сірий фон панелі */
+    border-right: 1px solid #dee2e6; /* Лінія розділення */
+}
+
+QPushButton#navHomeButton,
+QPushButton#navBooksButton,
+QPushButton#navAuthorsButton,
+QPushButton#navOrdersButton {
+    padding: 12px 15px;
+    border: none; /* Без рамки */
+    border-radius: 4px; /* Невелике заокруглення */
+    text-align: left;
+    font-size: 11pt;
+    font-weight: 500;
+    color: #343a40; /* Темно-сірий текст */
+    background-color: transparent; /* Прозорий фон */
+    margin: 4px 8px; /* Відступи */
+    min-height: 38px;
+}
+
+QPushButton#navHomeButton:hover,
+QPushButton#navBooksButton:hover,
+QPushButton#navAuthorsButton:hover,
+QPushButton#navOrdersButton:hover {
+    background-color: #dee2e6; /* Світліший фон при наведенні */
+    color: #000;
+}
+
+QPushButton#navHomeButton:checked,
+QPushButton#navBooksButton:checked,
+QPushButton#navAuthorsButton:checked,
+QPushButton#navOrdersButton:checked {
+    background-color: #0d6efd; /* Синій фон для активної кнопки */
+    color: white; /* Білий текст */
+    font-weight: 600;
+}
+</string>
+        </property>
+        <layout class="QVBoxLayout" name="navigationLayout">
+         <property name="spacing">
+          <number>8</number>
+         </property>
+         <property name="leftMargin">
+          <number>10</number>
+         </property>
+         <property name="topMargin">
+          <number>20</number>
+         </property>
+         <property name="rightMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="navHomeButton">
+           <property name="text">
+            <string>🏠 Головна</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="navBooksButton">
+           <property name="text">
+            <string>📚 Книги</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="navAuthorsButton">
+           <property name="text">
+            <string>👥 Автори</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="navOrdersButton">
+           <property name="text">
+            <string>🛍️ Мої замовлення</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="navigationSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="contentStackedWidget">
+        <property name="currentIndex">
          <number>0</number>
+        </property>
+        <widget class="QWidget" name="discoverPage">
+         <layout class="QVBoxLayout" name="discoverPageLayout">
+          <property name="spacing">
+           <number>0</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
@@ -880,11 +1017,8 @@ border-bottom: 1px solid #eeeeee;</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="booksTab">
-       <attribute name="title">
-        <string>📚 Книги</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="booksTabLayout">
+      <widget class="QWidget" name="booksPage">
+       <layout class="QVBoxLayout" name="booksPageLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1079,11 +1213,8 @@ border-bottom: 1px solid #eeeeee;</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="authorsTab">
-       <attribute name="title">
-        <string>👥 Автори</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="authorsTabLayout">
+      <widget class="QWidget" name="authorsPage">
+       <layout class="QVBoxLayout" name="authorsPageLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1194,11 +1325,8 @@ border-bottom: 1px solid #eeeeee;</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="ordersTab">
-       <attribute name="title">
-        <string>🛍️ Мої замовлення</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="ordersTabLayout">
+      <widget class="QWidget" name="ordersPage">
+       <layout class="QVBoxLayout" name="ordersPageLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1381,13 +1509,15 @@ border-bottom: 1px solid #eeeeee;</string>
         </item>
        </layout>
       </widget>
-      <!-- Вкладка Профіль видалена -->
      </widget>
     </item>
-    <!-- Панель профілю видалена -->
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="styleSheet">
+    <string notr="true">/* Стиль для статус бару вже визначено в глобальних стилях */</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

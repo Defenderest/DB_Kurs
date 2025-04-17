@@ -57,15 +57,15 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
             displayBooks(books); // Заповнюємо основну вкладку "Книги"
             ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
         } else {
-            qWarning() << "Не вдалося завантажити книги для відображення на вкладці 'Книги'.";
-            // Показати повідомлення користувачу в booksContainerWidget (на вкладці "Книги")
+            qWarning() << "Не вдалося завантажити книги для відображення на сторінці 'Книги'.";
+            // Показати повідомлення користувачу в booksContainerWidget (на сторінці "Книги")
             clearLayout(ui->booksContainerLayout); // Очистити перед додаванням повідомлення
-            QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних. Спробуйте пізніше."), ui->booksContainerWidget);
+            QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних. Спробуйте пізніше."), ui->booksContainerWidget); // booksContainerWidget тепер всередині booksPage
             noBooksLabel->setAlignment(Qt::AlignCenter);
             noBooksLabel->setWordWrap(true);
-            ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки (на вкладці "Книги")
+            ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки (на сторінці "Книги")
         }
-        // --- Кінець завантаження книг для вкладки "Книги" ---
+        // --- Кінець завантаження книг для сторінки "Книги" ---
 
         // --- Завантаження книг за жанрами для вкладки "Головна" ---
         qInfo() << "Завантаження книг за жанрами для головної сторінки...";
@@ -81,7 +81,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         // --- Кінець завантаження книг за жанрами ---
 
         // --- Завантаження та відображення авторів ---
-        qInfo() << "Завантаження авторів для вкладки 'Автори'...";
+        qInfo() << "Завантаження авторів для сторінки 'Автори'...";
         QList<AuthorDisplayInfo> authors = m_dbManager->getAllAuthorsForDisplay();
         displayAuthors(authors);
         if(authors.isEmpty()){
@@ -92,10 +92,24 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         }
         // --- Кінець завантаження авторів ---
 
-    // --- Навігація здійснюється через QTabWidget (mainTabWidget) ---
-    // Встановлюємо початкову вкладку (Головна)
-    ui->mainTabWidget->setCurrentWidget(ui->discoverTab);
-    // --- Кінець налаштування початкової вкладки ---
+    // --- Підключення сигналів навігаційних кнопок до QStackedWidget ---
+    connect(ui->navHomeButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->discoverPage);
+    });
+    connect(ui->navBooksButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->booksPage);
+    });
+    connect(ui->navAuthorsButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->authorsPage);
+    });
+    connect(ui->navOrdersButton, &QPushButton::clicked, this, [this]() {
+        ui->contentStackedWidget->setCurrentWidget(ui->ordersPage);
+    });
+
+    // Встановлюємо початкову сторінку (Головна)
+    ui->contentStackedWidget->setCurrentWidget(ui->discoverPage);
+    // Кнопка navHomeButton вже позначена як активна в .ui файлі (checked=true)
+    // --- Кінець підключення сигналів навігації ---
 
 
     // Блок else для помилки підключення більше не потрібен тут,
