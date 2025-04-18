@@ -54,5 +54,8 @@ private:
     QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
     void displayAuthors(const QList<AuthorDisplayInfo> &authors);
 
+    // Допоміжна функція для заповнення даних у вкладці профілю
+    void populateProfilePanel(const CustomerProfileInfo &profileInfo);
+
 };
 #endif // MAINWINDOW_H
