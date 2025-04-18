@@ -469,21 +469,209 @@ QLabel#profileLoyaltyLabel, QLabel#profilePointsLabel {
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="mainTabWidget">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
-      <property name="tabsClosable">
-       <bool>false</bool>
-      </property>
-      <widget class="QWidget" name="discoverTab">
-       <attribute name="title">
-        <string>🏠 Головна</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="discoverTabLayout">
+     <widget class="QWidget" name="contentAreaWidget" native="true">
+      <layout class="QHBoxLayout" name="contentHorizontalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QFrame" name="sidebarFrame">
+         <property name="minimumSize">
+          <size>
+           <width>50</width> <!-- Start narrow -->
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width> <!-- Start narrow -->
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string>QFrame#sidebarFrame {
+    background-color: #e9ecef; /* Sidebar background */
+    border-right: 1px solid #dee2e6;
+}
+
+QPushButton#navButtonHome,
+QPushButton#navButtonBooks,
+QPushButton#navButtonAuthors,
+QPushButton#navButtonOrders,
+QPushButton#navButtonProfile {
+    background-color: transparent;
+    border: none;
+    color: #495057;
+    padding: 10px 5px; /* Adjust padding */
+    text-align: left; /* Align text left */
+    min-height: 36px;
+    border-radius: 4px;
+    font-size: 11pt; /* Adjust font size */
+    font-weight: 500;
+    /* Hide text initially */
+    /* We'll manage text visibility/icon display in C++ */
+}
+
+QPushButton#navButtonHome:hover,
+QPushButton#navButtonBooks:hover,
+QPushButton#navButtonAuthors:hover,
+QPushButton#navButtonOrders:hover,
+QPushButton#navButtonProfile:hover {
+    background-color: #cfe2ff;
+    color: #0d6efd;
+}
+
+QPushButton#navButtonHome:checked,
+QPushButton#navButtonBooks:checked,
+QPushButton#navButtonAuthors:checked,
+QPushButton#navButtonOrders:checked,
+QPushButton#navButtonProfile:checked {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: 600;
+}
+</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="sidebarLayout">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <property name="bottomMargin">
+           <number>10</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="navButtonHome">
+            <property name="toolTip">
+             <string>Головна</string>
+            </property>
+            <property name="text">
+             <string>🏠</string> <!-- Icon only initially -->
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool> <!-- Start selected -->
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="navButtonBooks">
+            <property name="toolTip">
+             <string>Книги</string>
+            </property>
+            <property name="text">
+             <string>📚</string> <!-- Icon only initially -->
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="navButtonAuthors">
+            <property name="toolTip">
+             <string>Автори</string>
+            </property>
+            <property name="text">
+             <string>👥</string> <!-- Icon only initially -->
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="navButtonOrders">
+            <property name="toolTip">
+             <string>Мої замовлення</string>
+            </property>
+            <property name="text">
+             <string>🛍️</string> <!-- Icon only initially -->
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="navButtonProfile">
+            <property name="toolTip">
+             <string>Профіль</string>
+            </property>
+            <property name="text">
+             <string>👤</string> <!-- Icon only initially -->
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="sidebarSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QStackedWidget" name="contentStackedWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="pageDiscover">
+          <layout class="QVBoxLayout" name="discoverPageLayout">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -909,13 +1097,11 @@ border-bottom: 1px solid #eeeeee;</string>
           </widget>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="booksTab">
-       <attribute name="title">
-        <string>📚 Книги</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="booksTabLayout">
+           </layout>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="pageBooks">
+          <layout class="QVBoxLayout" name="booksPageLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1108,13 +1294,11 @@ border-bottom: 1px solid #eeeeee;</string>
           </widget>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="authorsTab">
-       <attribute name="title">
-        <string>👥 Автори</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="authorsTabLayout">
+           </layout>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="pageAuthors">
+          <layout class="QVBoxLayout" name="authorsPageLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1223,13 +1407,11 @@ border-bottom: 1px solid #eeeeee;</string>
           </widget>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="ordersTab">
-       <attribute name="title">
-        <string>🛍️ Мої замовлення</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="ordersTabLayout">
+           </layout>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="pageOrders">
+          <layout class="QVBoxLayout" name="ordersPageLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1410,13 +1592,11 @@ border-bottom: 1px solid #eeeeee;</string>
           </widget>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="profileTab">
-       <attribute name="title">
-        <string>👤 Профіль</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="profileTabLayout">
+           </layout>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="pageProfile">
+          <layout class="QVBoxLayout" name="profilePageLayout">
         <property name="spacing">
          <number>15</number>
         </property>
@@ -1606,9 +1786,12 @@ border-bottom: 1px solid #eeeeee;</string>
            </size>
           </property>
          </spacer>
-        </item>
-       </layout>
-      </widget>
+           </layout>
+          </widget>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
