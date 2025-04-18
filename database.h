@@ -40,6 +40,32 @@ struct CustomerLoginInfo {
     bool found = false; // Прапорець, чи знайдено користувача
 };
 
+// Структура для позиції замовлення в UI
+struct OrderItemDisplayInfo {
+    QString bookTitle;
+    int quantity;
+    double pricePerUnit;
+};
+
+// Структура для статусу замовлення в UI
+struct OrderStatusDisplayInfo {
+    QString status;
+    QDateTime statusDate;
+    QString trackingNumber;
+};
+
+// Структура для повного замовлення в UI
+struct OrderDisplayInfo {
+    int orderId;
+    QDateTime orderDate;
+    double totalAmount;
+    QString shippingAddress;
+    QString paymentMethod;
+    QList<OrderItemDisplayInfo> items;
+    QList<OrderStatusDisplayInfo> statuses;
+};
+
+
 // Структура для передачі повної інформації профілю користувача в UI
 struct CustomerProfileInfo {
     int customerId = -1;
@@ -93,6 +119,9 @@ public:
 
     // Новий метод для отримання повної інформації профілю користувача за ID
     CustomerProfileInfo getCustomerProfileInfo(int customerId) const;
+
+    // Новий метод для отримання замовлень користувача для відображення
+    QList<OrderDisplayInfo> getCustomerOrdersForDisplay(int customerId) const;
 
 
 private:

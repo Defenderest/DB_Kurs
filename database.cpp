@@ -944,6 +944,113 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для отримання замовлень користувача
+QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int customerId) const
+{
+    QList<OrderDisplayInfo> orders;
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0) {
+        qWarning() << "Неможливо отримати замовлення: немає з'єднання або невірний customerId.";
+        return orders;
+    }
+
+    // 1. Отримуємо основну інформацію про замовлення користувача
+    const QString ordersSql = R"(
+        SELECT order_id, order_date, total_amount, shipping_address, payment_method
+        FROM "order"
+        WHERE customer_id = :customerId
+        ORDER BY order_date DESC; -- Показуємо новіші замовлення першими
+    )";
+
+    QSqlQuery orderQuery(m_db);
+    orderQuery.prepare(ordersSql);
+    orderQuery.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to get orders for customer ID:" << customerId;
+    if (!orderQuery.exec()) {
+        qCritical() << "Помилка при отриманні замовлень для customer ID '" << customerId << "':";
+        qCritical() << orderQuery.lastError().text();
+        qCritical() << "SQL запит:" << orderQuery.lastQuery();
+        return orders;
+    }
+
+    // Підготовлені запити для отримання позицій та статусів (для ефективності)
+    QSqlQuery itemQuery(m_db);
+    const QString itemsSql = R"(
+        SELECT oi.quantity, oi.price_per_unit, b.title
+        FROM order_item oi
+        JOIN book b ON oi.book_id = b.book_id
+        WHERE oi.order_id = :orderId;
+    )";
+    if (!itemQuery.prepare(itemsSql)) {
+         qCritical() << "Помилка підготовки запиту для order_item:" << itemQuery.lastError().text();
+         return orders; // Повертаємо те, що встигли зібрати, або порожній список
+    }
+
+    QSqlQuery statusQuery(m_db);
+    const QString statusesSql = R"(
+        SELECT status, status_date, tracking_number
+        FROM order_status
+        WHERE order_id = :orderId
+        ORDER BY status_date ASC; -- Показуємо статуси в хронологічному порядку
+    )";
+     if (!statusQuery.prepare(statusesSql)) {
+         qCritical() << "Помилка підготовки запиту для order_status:" << statusQuery.lastError().text();
+         return orders;
+     }
+
+
+    // 2. Обробляємо кожне замовлення
+    qInfo() << "Processing orders for customer ID:" << customerId;
+    int orderCount = 0;
+    while (orderQuery.next()) {
+        OrderDisplayInfo orderInfo;
+        orderInfo.orderId = orderQuery.value("order_id").toInt();
+        orderInfo.orderDate = orderQuery.value("order_date").toDateTime();
+        orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
+        orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
+        orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
+
+        // 3. Отримуємо позиції для поточного замовлення
+        itemQuery.bindValue(":orderId", orderInfo.orderId);
+        if (!itemQuery.exec()) {
+            qCritical() << "Помилка при отриманні позицій для order ID '" << orderInfo.orderId << "':";
+            qCritical() << itemQuery.lastError().text();
+            // Продовжуємо до наступного замовлення або повертаємо помилку
+            continue;
+        }
+        while (itemQuery.next()) {
+            OrderItemDisplayInfo itemInfo;
+            itemInfo.quantity = itemQuery.value("quantity").toInt();
+            itemInfo.pricePerUnit = itemQuery.value("price_per_unit").toDouble();
+            itemInfo.bookTitle = itemQuery.value("title").toString();
+            orderInfo.items.append(itemInfo);
+        }
+
+        // 4. Отримуємо статуси для поточного замовлення
+        statusQuery.bindValue(":orderId", orderInfo.orderId);
+         if (!statusQuery.exec()) {
+            qCritical() << "Помилка при отриманні статусів для order ID '" << orderInfo.orderId << "':";
+            qCritical() << statusQuery.lastError().text();
+            // Продовжуємо
+            continue;
+        }
+        while (statusQuery.next()) {
+            OrderStatusDisplayInfo statusInfo;
+            statusInfo.status = statusQuery.value("status").toString();
+            statusInfo.statusDate = statusQuery.value("status_date").toDateTime();
+            statusInfo.trackingNumber = statusQuery.value("tracking_number").toString();
+            orderInfo.statuses.append(statusInfo);
+        }
+
+        orders.append(orderInfo);
+        orderCount++;
+    }
+
+    qInfo() << "Processed" << orderCount << "orders for customer ID:" << customerId;
+    return orders;
+}
+
+
 // Реалізація методу для отримання даних для входу
 CustomerLoginInfo DatabaseManager::getCustomerLoginInfo(const QString &email) const
 {
