@@ -348,7 +348,7 @@ QWidget#ordersContainerWidget {
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>55</height> <!-- Збільшено висоту хедера для уникнення перекриття -->
+        <height>60</height> <!-- Ще збільшено висоту хедера -->
        </size>
       </property>
       <layout class="QHBoxLayout" name="headerLayout">
