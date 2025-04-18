@@ -59,6 +59,9 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     connect(ui->navOrdersButton, &QPushButton::clicked, this, &MainWindow::on_navOrdersButton_clicked);
     connect(ui->navProfileButton, &QPushButton::clicked, this, &MainWindow::on_navProfileButton_clicked); // Додано з'єднання для кнопки профілю
 
+    // Підключаємо зміну комбо-боксу статусу замовлень до перезавантаження списку
+    connect(ui->orderStatusComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::loadAndDisplayOrders);
+
     // Видалено з'єднання для кнопки профілю з хедера
 
     // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
@@ -807,9 +810,33 @@ void MainWindow::loadAndDisplayOrders()
         return;
     }
 
-    QList<OrderDisplayInfo> orders = m_dbManager->getCustomerOrdersForDisplay(m_currentCustomerId);
-    qInfo() << "Завантажено" << orders.size() << "замовлень.";
-    displayOrders(orders); // Відображаємо отримані замовлення
+    // Отримуємо всі замовлення
+    QList<OrderDisplayInfo> allOrders = m_dbManager->getCustomerOrdersForDisplay(m_currentCustomerId);
+    qInfo() << "Завантажено" << allOrders.size() << "замовлень.";
+
+    // Отримуємо вибраний статус для фільтрації
+    QString statusFilter = ui->orderStatusComboBox->currentText();
+    QList<OrderDisplayInfo> filteredOrders;
+
+    if (statusFilter == tr("Всі статуси")) {
+        filteredOrders = allOrders; // Показуємо всі, якщо вибрано "Всі статуси"
+    } else {
+        // Фільтруємо замовлення за останнім статусом
+        for (const OrderDisplayInfo &order : allOrders) {
+            if (!order.statuses.isEmpty()) {
+                // Останній статус - це останній елемент у списку, оскільки вони відсортовані за датою в БД
+                const OrderStatusDisplayInfo &lastStatus = order.statuses.last();
+                if (lastStatus.status == statusFilter) {
+                    filteredOrders.append(order);
+                }
+            }
+            // Якщо у замовлення немає статусів, воно не потрапить у фільтрований список (крім "Всі статуси")
+        }
+        qInfo() << "Відфільтровано" << filteredOrders.size() << "замовлень за статусом:" << statusFilter;
+    }
+
+
+    displayOrders(filteredOrders); // Відображаємо відфільтровані замовлення
 
     if (m_dbManager->lastError().isValid()) {
          ui->statusBar->showMessage(tr("Помилка при завантаженні замовлень: %1").arg(m_dbManager->lastError().text()), 5000);
