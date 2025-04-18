@@ -359,7 +359,7 @@ QWidget#ordersContainerWidget {
         <number>0</number>
        </property>
        <property name="topMargin">
-        <number>5</number> <!-- Додано верхній відступ -->
+        <number>0</number> <!-- Зменшено верхній відступ, щоб підняти вміст -->
        </property>
        <property name="rightMargin">
         <number>0</number>
