@@ -79,7 +79,7 @@ QLineEdit, QComboBox, QDateEdit {
 
 QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
     border-color: #86b7fe; /* Світло-синя рамка при фокусі */
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* Тінь як у Bootstrap */
+    /* box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); */ /* Тінь як у Bootstrap - Removed due to potential uic error */
 }
 
 QLineEdit::placeholder {
@@ -119,7 +119,7 @@ QPushButton {
     font-weight: 500;
     min-height: 34px;
     font-size: 10pt;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; /* Плавний перехід */
+    /* transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; */ /* Плавний перехід - Removed due to potential uic error */
 }
 QPushButton:hover {
     background-color: #0b5ed7; /* Темніший синій при наведенні */
