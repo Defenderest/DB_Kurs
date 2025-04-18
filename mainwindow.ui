@@ -359,13 +359,13 @@ QWidget#ordersContainerWidget {
         <number>0</number>
        </property>
        <property name="topMargin">
-        <number>0</number>
+        <number>5</number> <!-- Додано верхній відступ -->
        </property>
        <property name="rightMargin">
         <number>0</number>
        </property>
        <property name="bottomMargin">
-        <number>0</number>
+        <number>5</number> <!-- Додано нижній відступ -->
        </property>
        <item>
         <widget class="QLabel" name="logoLabel">
