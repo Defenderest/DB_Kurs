@@ -216,6 +216,8 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
 // Слот для відображення книг у сітці
 void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 {
+    const int maxColumns = 5; // Змінено кількість колонок у сітці на 5
+
     // Очищаємо попередні віджети з booksContainerLayout (всередині pageBooks)
     if (!ui->booksContainerLayout) {
         qWarning() << "displayBooks: booksContainerLayout is null!";
@@ -240,7 +242,7 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 
     int row = 0;
     int col = 0;
-    const int maxColumns = 5; // Змінено кількість колонок у сітці на 5
+    // const int maxColumns = 5; // Перенесено на початок функції
 
     for (const BookDisplayInfo &bookInfo : books) {
         QWidget *bookCard = createBookCardWidget(bookInfo);
@@ -405,6 +407,8 @@ QWidget* MainWindow::createAuthorCardWidget(const AuthorDisplayInfo &authorInfo)
 // Метод для відображення авторів у сітці
 void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 {
+    const int maxColumns = 5; // Кількість колонок (можна змінити)
+
     // Очищаємо попередні віджети з authorsContainerLayout (всередині pageAuthors)
      if (!ui->authorsContainerLayout) {
         qWarning() << "displayAuthors: authorsContainerLayout is null!";
@@ -426,7 +430,7 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 
     int row = 0;
     int col = 0;
-    const int maxColumns = 5; // Кількість колонок (можна змінити)
+    // const int maxColumns = 5; // Перенесено на початок функції
 
     for (const AuthorDisplayInfo &authorInfo : authors) {
         QWidget *authorCard = createAuthorCardWidget(authorInfo);
