@@ -280,8 +280,32 @@ QWidget#categoriesWidget QPushButton:pressed {
 }
 
 QLineEdit#globalSearchLineEdit {
-    min-height: 36px;
+    min-height: 34px; /* Зменшено висоту */
+    background-color: #f1f3f5; /* Світліший фон */
+    border: 1px solid #e9ecef; /* Дуже світла рамка */
+    border-radius: 17px; /* Більш округлі краї */
+    padding-left: 15px; /* Відступ для тексту (і можливої іконки) */
+    padding-right: 15px;
 }
+QLineEdit#globalSearchLineEdit:focus {
+    border-color: #ced4da; /* Трохи темніша рамка при фокусі */
+    background-color: #ffffff; /* Білий фон при фокусі */
+}
+
+/* Стиль для пошуку на сторінці книг */
+QLineEdit#bookSearchLineEdit {
+    min-height: 34px; /* Зменшено висоту */
+    background-color: #f8f9fa; /* Світлий фон */
+    border: 1px solid #dee2e6; /* Світла рамка */
+    border-radius: 4px; /* Стандартне заокруглення */
+    padding-left: 10px;
+    padding-right: 10px;
+}
+QLineEdit#bookSearchLineEdit:focus {
+    border-color: #86b7fe; /* Синя рамка при фокусі (як у інших полів) */
+    background-color: #ffffff;
+}
+
 
 /* === Стилі для сторінок контенту === */
 QWidget#discoverPage,
@@ -373,17 +397,17 @@ QWidget#ordersContainerWidget {
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>56</height>
+           <height>34</height> <!-- Змінено висоту -->
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>500</width>
-           <height>40</height>
+           <height>34</height> <!-- Змінено висоту -->
           </size>
          </property>
          <property name="placeholderText">
-          <string>Пошук книг, авторів, видавництв...</string>
+          <string>Пошук книг, авторів...</string> <!-- Трохи скорочено -->
          </property>
         </widget>
        </item>
@@ -1078,13 +1102,13 @@ border-bottom: 1px solid #eeeeee;</string>
                <property name="minimumSize">
                 <size>
                  <width>300</width>
-                 <height>54</height>
+                 <height>34</height> <!-- Змінено висоту -->
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
                  <width>400</width>
-                 <height>40</height>
+                 <height>34</height> <!-- Змінено висоту -->
                 </size>
                </property>
                <property name="placeholderText">
