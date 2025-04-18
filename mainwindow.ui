@@ -348,7 +348,7 @@ QWidget#ordersContainerWidget {
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>45</height> <!-- Повертаємо початкову висоту -->
+        <height>35</height> <!-- Зменшено мінімальну висоту для підняття вмісту -->
        </size>
       </property>
       <layout class="QHBoxLayout" name="headerLayout">
@@ -365,7 +365,7 @@ QWidget#ordersContainerWidget {
         <number>0</number>
        </property>
        <property name="bottomMargin">
-        <number>5</number> <!-- Додано нижній відступ -->
+        <number>0</number> <!-- Зменшено нижній відступ -->
        </property>
        <item>
         <widget class="QLabel" name="logoLabel">
