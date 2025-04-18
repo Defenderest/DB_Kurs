@@ -463,56 +463,15 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 // void MainWindow::loadAndDisplayOrders() { ... }
 
 
-// --- Методи для панелі профілю ---
+// --- Видалено методи для анімованої панелі профілю ---
+// Функції setupProfilePanelAnimation, showProfilePanel, hideProfilePanel
+// були видалені, оскільки відповідна панель та її анімація більше не використовуються.
 
-// Налаштування анімації для панелі профілю
-void MainWindow::setupProfilePanelAnimation()
-{
-    if (!m_profilePanel) return;
 
-    m_profileAnimation = new QPropertyAnimation(m_profilePanel, "maximumWidth", this);
-    m_profileAnimation->setDuration(300); // Тривалість анімації в мс
-    m_profileAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Тип анімації
-}
-
-// Показ панелі профілю з анімацією
-void MainWindow::showProfilePanel()
-{
-    if (!m_profilePanel || !m_profileAnimation) return;
-
-    const int targetWidth = 350; // Бажана ширина панелі
-    if (m_profilePanel->maximumWidth() == targetWidth) {
-        // Якщо панель вже відкрита, нічого не робимо (або можна оновити дані)
-        qInfo() << "Profile panel already visible.";
-        return;
-    }
-
-    qInfo() << "Showing profile panel...";
-    m_profileAnimation->stop(); // Зупиняємо поточну анімацію, якщо є
-    m_profileAnimation->setStartValue(m_profilePanel->maximumWidth()); // Починаємо з поточної ширини
-    m_profileAnimation->setEndValue(targetWidth); // Кінцева ширина
-    m_profileAnimation->start();
-}
-
-// Приховування панелі профілю з анімацією
-void MainWindow::hideProfilePanel()
-{
-    if (!m_profilePanel || !m_profileAnimation) return;
-
-    if (m_profilePanel->maximumWidth() == 0) {
-        // Якщо панель вже прихована
-        return;
-    }
-
-    qInfo() << "Hiding profile panel...";
-    m_profileAnimation->stop();
-    m_profileAnimation->setStartValue(m_profilePanel->maximumWidth());
-    m_profileAnimation->setEndValue(0); // Кінцева ширина 0
-    m_profileAnimation->start();
-}
-
-// Заповнення полів панелі профілю даними
-void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
+// Заповнення полів вкладки профілю даними
+// (Перейменовано populateProfilePanel -> populateProfileTab для ясності,
+// але можна залишити і стару назву, якщо вона використовується в інших місцях)
+void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo) // Або populateProfileTab
 {
      // Перевіряємо, чи дані взагалі були знайдені
     if (!profileInfo.found) {
