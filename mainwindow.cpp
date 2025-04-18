@@ -71,10 +71,10 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // --- Завантаження та відображення даних для початкової сторінки (Головна) ---
     // Переконуємося, що відповідні layout'и існують перед заповненням
-    // (Тепер вони всередині ui->pageDiscover)
+    // (Тепер вони всередині ui->discoverPage)
     qInfo() << "Завантаження даних для головної сторінки...";
     if (ui->classicsRowLayout) {
-        QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8);
+        QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8); // Використовуємо getBooksByGenre
         displayBooksInHorizontalLayout(classicsBooks, ui->classicsRowLayout);
     } else {
         qWarning() << "classicsRowLayout is null!";
@@ -94,7 +94,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     qInfo() << "Завершено завантаження даних для головної сторінки.";
 
     // --- Завантаження даних для інших сторінок (можна зробити ледачим завантаженням при першому відкритті) ---
-    // Завантаження книг для сторінки "Книги" (ui->pageBooks)
+    // Завантаження книг для сторінки "Книги" (ui->booksPage)
     if (!ui->booksContainerLayout) {
          qCritical() << "booksContainerLayout is null!";
     } else {
@@ -108,7 +108,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         }
     }
 
-    // Завантаження авторів для сторінки "Автори" (ui->pageAuthors)
+    // Завантаження авторів для сторінки "Автори" (ui->authorsPage)
     if (!ui->authorsContainerLayout) {
         qCritical() << "authorsContainerLayout is null!";
     } else {
@@ -482,168 +482,73 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 // void MainWindow::loadAndDisplayOrders() { ... }
 
 
-// --- Реалізація нових слотів та функцій ---
+// --- Реалізація слотів та функцій ---
 
-// Слоти для кнопок навігації
-void MainWindow::on_navButtonHome_clicked()
+// Слоти для кнопок навігації (перейменовані)
+void MainWindow::on_navHomeButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->pageDiscover);
+    ui->contentStackedWidget->setCurrentWidget(ui->discoverPage); // Використовуємо ім'я сторінки з UI
 }
 
-void MainWindow::on_navButtonBooks_clicked()
+void MainWindow::on_navBooksButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->pageBooks);
+    ui->contentStackedWidget->setCurrentWidget(ui->booksPage); // Використовуємо ім'я сторінки з UI
     // Можна додати ледаче завантаження тут, якщо не зроблено в конструкторі
 }
 
-void MainWindow::on_navButtonAuthors_clicked()
+void MainWindow::on_navAuthorsButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->pageAuthors);
+    ui->contentStackedWidget->setCurrentWidget(ui->authorsPage); // Використовуємо ім'я сторінки з UI
     // Можна додати ледаче завантаження тут
 }
 
-void MainWindow::on_navButtonOrders_clicked()
+void MainWindow::on_navOrdersButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->pageOrders);
+    ui->contentStackedWidget->setCurrentWidget(ui->ordersPage); // Використовуємо ім'я сторінки з UI
     // Потрібно завантажити дані замовлень
     // loadAndDisplayOrders();
     qWarning() << "Сторінка замовлень ще не реалізована повністю.";
     // Тимчасово: очистити layout або показати повідомлення
-    if(ui->ordersPageLayout) {
+    if(ui->ordersPageLayout) { // Перевіряємо layout сторінки замовлень
         clearLayout(ui->ordersPageLayout);
-        QLabel *todoLabel = new QLabel(tr("Сторінка 'Мої замовлення' в розробці."), ui->pageOrders);
+        QLabel *todoLabel = new QLabel(tr("Сторінка 'Мої замовлення' в розробці."), ui->ordersPage);
         todoLabel->setAlignment(Qt::AlignCenter);
         ui->ordersPageLayout->addWidget(todoLabel);
     }
 }
 
-void MainWindow::on_navButtonProfile_clicked()
+// Слот для кнопки профілю в хедері
+void MainWindow::on_profileButton_clicked()
 {
-    qInfo() << "Navigating to profile page for customer ID:" << m_currentCustomerId;
-    ui->contentStackedWidget->setCurrentWidget(ui->pageProfile);
+    qInfo() << "Profile button clicked. Loading profile for customer ID:" << m_currentCustomerId;
 
-    // Завантажуємо дані профілю при переході на вкладку
     if (m_currentCustomerId <= 0) {
         QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо завантажити профіль, оскільки користувач не визначений."));
-        // Очистити поля або показати помилку в полях
-        populateProfilePanel(CustomerProfileInfo()); // Передати порожню структуру
         return;
     }
+
     if (!m_dbManager) {
          QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
-         populateProfilePanel(CustomerProfileInfo());
          return;
     }
 
+    // 1. Отримуємо дані профілю з бази даних
     CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
+
+    // 2. Перевіряємо, чи знайдені дані
     if (!profile.found) {
         QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
-    }
-    populateProfilePanel(profile); // Заповнюємо або показуємо помилку всередині
-}
-
-
-// Налаштування анімації бокової панелі
-void MainWindow::setupSidebarAnimation()
-{
-    m_sidebarAnimation = new QPropertyAnimation(ui->sidebarFrame, "maximumWidth", this);
-    m_sidebarAnimation->setDuration(250); // Тривалість анімації в мс
-    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Плавність анімації
-
-    // Опціонально: підключити сигнал завершення анімації
-    // connect(m_sidebarAnimation, &QPropertyAnimation::finished, this, &MainWindow::onSidebarAnimationFinished);
-}
-
-// Функція для розгортання/згортання панелі
-void MainWindow::toggleSidebar(bool expand)
-{
-    if (m_isSidebarExpanded == expand && m_sidebarAnimation->state() == QAbstractAnimation::Stopped) {
-        return; // Вже в потрібному стані і анімація не йде
-    }
-     // Якщо анімація ще триває, зупиняємо її перед запуском нової
-    if (m_sidebarAnimation->state() == QAbstractAnimation::Running) {
-        m_sidebarAnimation->stop();
-    }
-
-    m_isSidebarExpanded = expand;
-
-    // Оновлюємо текст кнопок
-    for (auto it = m_buttonOriginalText.begin(); it != m_buttonOriginalText.end(); ++it) {
-        QPushButton *button = it.key();
-        const QString &originalText = it.value();
-        if (expand) {
-            button->setText(originalText);
-            button->setToolTip(""); // Очистити підказку, коли текст видно
-        } else {
-            // Залишаємо тільки перший символ (іконку)
-            button->setText(originalText.left(originalText.indexOf(' ') > 0 ? originalText.indexOf(' ') : 1));
-             button->setToolTip(originalText.mid(originalText.indexOf(' ') + 1)); // Показати текст як підказку
-        }
-    }
-
-
-    m_sidebarAnimation->setStartValue(ui->sidebarFrame->width());
-    m_sidebarAnimation->setEndValue(expand ? m_expandedWidth : m_collapsedWidth);
-    m_sidebarAnimation->start();
-}
-
-
-// Перехоплення подій для sidebarFrame
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
-{
-    if (watched == ui->sidebarFrame) {
-        if (event->type() == QEvent::Enter) {
-            // Миша увійшла в область sidebarFrame
-            toggleSidebar(true); // Розгорнути
-            return true; // Подія оброблена
-        } else if (event->type() == QEvent::Leave) {
-            // Миша покинула область sidebarFrame
-            toggleSidebar(false); // Згорнути
-            return true; // Подія оброблена
-        }
-    }
-    // Передаємо подію батьківському класу для стандартної обробки
-    return QMainWindow::eventFilter(watched, event);
-}
-
-
-// Заповнення полів сторінки профілю даними
-void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
-{
-    // Перевіряємо, чи вказівники на QLabel існують (важливо після змін в UI)
-    if (!ui->profileFirstNameLabel || !ui->profileLastNameLabel || !ui->profileEmailLabel ||
-        !ui->profilePhoneLabel || !ui->profileAddressLabel || !ui->profileJoinDateLabel ||
-        !ui->profileLoyaltyLabel || !ui->profilePointsLabel)
-    {
-        qWarning() << "populateProfilePanel: One or more profile labels are null!";
-        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти поля для відображення профілю."));
         return;
     }
 
-     // Перевіряємо, чи дані взагалі були знайдені
-    if (!profileInfo.found || profileInfo.customerId <= 0) {
-        // Заповнюємо поля текстом про помилку або відсутність даних
-        const QString errorText = tr("(Помилка завантаження або дані відсутні)");
-        ui->profileFirstNameLabel->setText(errorText);
-        ui->profileLastNameLabel->setText(errorText);
-        ui->profileEmailLabel->setText(errorText);
-        ui->profilePhoneLabel->setText(errorText);
-        ui->profileAddressLabel->setText(errorText);
-        ui->profileJoinDateLabel->setText(errorText);
-        ui->profileLoyaltyLabel->setText(errorText);
-        ui->profilePointsLabel->setText("-");
-        return;
-    }
-
-    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині pageProfile)
-    ui->profileFirstNameLabel->setText(profileInfo.firstName.isEmpty() ? tr("(не вказано)") : profileInfo.firstName);
-    ui->profileLastNameLabel->setText(profileInfo.lastName.isEmpty() ? tr("(не вказано)") : profileInfo.lastName);
-    ui->profileEmailLabel->setText(profileInfo.email); // Email має бути завжди
-    ui->profilePhoneLabel->setText(profileInfo.phone.isEmpty() ? tr("(не вказано)") : profileInfo.phone);
-    ui->profileAddressLabel->setText(profileInfo.address.isEmpty() ? tr("(не вказано)") : profileInfo.address);
-    ui->profileJoinDateLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
-    ui->profileLoyaltyLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
-    ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
+    // 3. Створюємо та показуємо діалог профілю
+    ProfileDialog profileDialog(profile, this); // Передаємо дані та батьківський віджет
+    profileDialog.exec(); // Показуємо діалог модально
 }
 
-// --- Кінець реалізації нових слотів та функцій ---
+
+// Функції для анімації (setupSidebarAnimation, toggleSidebar, eventFilter) видалені.
+
+// Функція populateProfilePanel видалена, оскільки діалог сам обробляє дані.
+
+// --- Кінець реалізації слотів та функцій ---

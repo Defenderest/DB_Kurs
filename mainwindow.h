@@ -8,10 +8,7 @@
 #include <QWidget> // Додано для QWidget* у конструкторі та типів повернення
 #include <QLayout>      // Додано для QLayout* у clearLayout
 #include <QDate>        // Додано для QDate у CustomerProfileInfo
-#include <QPropertyAnimation> // Для анімації бокової панелі
-#include <QEvent>       // Для eventFilter
-#include <QEnterEvent>  // Для подій наведення миші
-#include <QMap>         // Для збереження тексту кнопок
+#include "profiledialog.h" // Додано для діалогу профілю
 
 // Forward declarations
 class DatabaseManager;
@@ -22,7 +19,6 @@ class QGridLayout;
 class QPushButton;
 class QFrame;
 class QStackedWidget; // Додано
-class QPropertyAnimation; // Додано
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,14 +37,11 @@ public:
 
 private slots:
     // Слоти для кнопок навігації
-    void on_navButtonHome_clicked();
-    void on_navButtonBooks_clicked();
-    void on_navButtonAuthors_clicked();
-    void on_navButtonOrders_clicked();
-    void on_navButtonProfile_clicked();
-
-    // Слот для завершення анімації (опціонально, якщо потрібні дії після)
-    // void onSidebarAnimationFinished();
+    void on_navHomeButton_clicked();   // Перейменовано
+    void on_navBooksButton_clicked();  // Перейменовано
+    void on_navAuthorsButton_clicked();// Перейменовано
+    void on_navOrdersButton_clicked(); // Перейменовано
+    void on_profileButton_clicked();   // Слот для кнопки профілю в хедері
 
 private:
     // Допоміжні функції для відображення даних
@@ -57,29 +50,17 @@ private:
     void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
     QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
     QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
-    void populateProfilePanel(const CustomerProfileInfo &profileInfo); // Залишаємо, але буде використовуватись у pageProfile
+    // void populateProfilePanel(const CustomerProfileInfo &profileInfo); // Видалено, діалог сам заповнюється
 
     // Допоміжна функція для очищення layout
     void clearLayout(QLayout* layout);
-
-    // Налаштування анімації та стану бічної панелі
-    void setupSidebarAnimation();
-    void toggleSidebar(bool expand);
 
     // Члени класу
     Ui::MainWindow *ui;
     DatabaseManager *m_dbManager; // Вказівник на менеджер БД
     int m_currentCustomerId;      // ID поточного користувача
 
-    QPropertyAnimation *m_sidebarAnimation = nullptr; // Анімація для бокової панелі
-    bool m_isSidebarExpanded = false;                 // Поточний стан панелі
-    int m_collapsedWidth = 50;                        // Ширина згорнутої панелі
-    int m_expandedWidth = 200;                       // Ширина розгорнутої панелі
-    QMap<QPushButton*, QString> m_buttonOriginalText; // Зберігання оригінального тексту кнопок
-
-protected:
-    // Перехоплення подій для sidebarFrame
-    bool eventFilter(QObject *watched, QEvent *event) override;
+    // Члени для анімації видалені
 
 };
 #endif // MAINWINDOW_H
