@@ -527,6 +527,12 @@ void MainWindow::on_profileButton_clicked()
     // 3. Заповнюємо панель профілю даними
     populateProfilePanel(profile);
 
-    // 4. Показуємо панель профілю (з анімацією)
-    showProfilePanel();
+    // 4. Переключаємо головний TabWidget на вкладку профілю
+    if (ui->mainTabWidget && ui->profileTab) {
+        ui->mainTabWidget->setCurrentWidget(ui->profileTab);
+        qInfo() << "Switched to profile tab.";
+    } else {
+        qWarning() << "Could not switch to profile tab: mainTabWidget or profileTab is null.";
+        QMessageBox::warning(this, tr("Помилка інтерфейсу"), tr("Не вдалося відкрити вкладку профілю."));
+    }
 }
