@@ -853,14 +853,6 @@ border-bottom: 1px solid #eeeeee;</string>
                  <bool>true</bool>
                 </property>
                 <widget class="QWidget" name="classicsRowWidget">
-                 <property name="geometry">
-                  <rect>
-                   <x>0</x>
-                   <y>0</y>
-                   <width>958</width>
-                   <height>320</height>
-                  </rect>
-                 </property>
                  <layout class="QHBoxLayout" name="classicsRowLayout">
                   <property name="spacing">
                    <number>15</number>
@@ -924,14 +916,6 @@ border-bottom: 1px solid #eeeeee;</string>
                  <bool>true</bool>
                 </property>
                 <widget class="QWidget" name="fantasyRowWidget">
-                 <property name="geometry">
-                  <rect>
-                   <x>0</x>
-                   <y>0</y>
-                   <width>958</width>
-                   <height>320</height>
-                  </rect>
-                 </property>
                  <layout class="QHBoxLayout" name="fantasyRowLayout">
                   <property name="spacing">
                    <number>15</number>
@@ -995,14 +979,6 @@ border-bottom: 1px solid #eeeeee;</string>
                  <bool>true</bool>
                 </property>
                 <widget class="QWidget" name="nonFictionRowWidget">
-                 <property name="geometry">
-                  <rect>
-                   <x>0</x>
-                   <y>0</y>
-                   <width>958</width>
-                   <height>320</height>
-                  </rect>
-                 </property>
                  <layout class="QHBoxLayout" name="nonFictionRowLayout">
                   <property name="spacing">
                    <number>15</number>
@@ -1211,14 +1187,6 @@ border-bottom: 1px solid #eeeeee;</string>
              <bool>true</bool>
             </property>
             <widget class="QWidget" name="booksContainerWidget">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>978</width>
-               <height>509</height>
-              </rect>
-             </property>
              <layout class="QGridLayout" name="booksContainerLayout">
               <property name="leftMargin">
                <number>5</number>
@@ -1323,14 +1291,6 @@ border-bottom: 1px solid #eeeeee;</string>
              <bool>true</bool>
             </property>
             <widget class="QWidget" name="authorsContainerWidget">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>978</width>
-               <height>509</height>
-              </rect>
-             </property>
              <layout class="QGridLayout" name="authorsContainerLayout">
               <property name="leftMargin">
                <number>5</number>
@@ -1491,14 +1451,6 @@ border-bottom: 1px solid #eeeeee;</string>
              <bool>true</bool>
             </property>
             <widget class="QWidget" name="ordersContainerWidget">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>978</width>
-               <height>509</height>
-              </rect>
-             </property>
             </widget>
            </widget>
           </item>
