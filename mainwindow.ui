@@ -28,64 +28,64 @@ QWidget {
 
 /* === Віджети вкладок === */
 QTabWidget::pane {
-    border: 1px solid #dee2e6; /* Трохи темніша межа */
+    border: 1px solid #dee2e6;
     border-top: none;
-    background-color: #ffffff; /* Білий фон вмісту вкладки */
-    border-radius: 0 0 4px 4px; /* Менший радіус */
-    padding: 15px; /* Трохи менший падінг */
+    background-color: #ffffff;
+    border-radius: 0 0 4px 4px;
+    padding: 15px;
 }
 
 QTabBar::tab {
-    padding: 10px 18px; /* Змінений падінг */
-    margin-right: 0px; /* Без відступу між вкладками */
-    background-color: transparent; /* Прозорий фон неактивної вкладки */
-    border: none; /* Без рамки */
-    border-bottom: 2px solid transparent; /* Лінія знизу для активної вкладки */
-    color: #495057; /* Сірий текст */
+    padding: 10px 18px;
+    margin-right: 0px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #495057;
     font-weight: 500;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
 
 QTabBar::tab:selected {
-    background-color: #ffffff; /* Білий фон активної вкладки */
-    color: #0d6efd; /* Новий синій акцент */
+    background-color: #ffffff;
+    color: #0d6efd;
     font-weight: 600;
-    border: 1px solid #dee2e6; /* Межа навколо активної */
-    border-top-width: 2px; /* Товстіша верхня межа */
-    border-top-color: #0d6efd; /* Синя верхня межа */
-    border-bottom: none; /* Без нижньої межі (бо вона на pane) */
+    border: 1px solid #dee2e6;
+    border-top-width: 2px;
+    border-top-color: #0d6efd;
+    border-bottom: none;
 }
 
 QTabBar::tab:hover:!selected {
-    background-color: #e9ecef; /* Світло-сірий при наведенні */
+    background-color: #e9ecef;
     color: #0d6efd;
-    border-bottom: 2px solid #ced4da; /* Сіра лінія знизу при наведенні */
+    border-bottom: 2px solid #ced4da;
 }
 
 QTabWidget::tab-bar {
     alignment: left;
-    left: 10px; /* Трохи більший відступ зліва */
+    left: 10px;
 }
 
 /* === Поля вводу, Комбобокси, Дата === */
 QLineEdit, QComboBox, QDateEdit {
     padding: 8px 10px;
-    border: 1px solid #ced4da; /* Сіра межа */
-    border-radius: 4px; /* Менший радіус */
+    border: 1px solid #ced4da;
+    border-radius: 4px;
     background-color: #ffffff;
     color: #212529;
-    min-height: 34px; /* Трохи менша висота */
+    min-height: 34px;
     font-size: 10pt;
 }
 
 QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
-    border-color: #86b7fe; /* Світло-синя межа при фокусі */
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* Тінь як у Bootstrap */
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
 QLineEdit::placeholder {
-    color: #6c757d; /* Темніший плейсхолдер */
+    color: #6c757d;
 }
 
 QComboBox::drop-down {
@@ -98,14 +98,14 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-     image: url(:/icons/down-arrow.svg); /* Потрібно додати іконку */
+     image: url(:/icons/down-arrow.svg);
      width: 10px;
      height: 10px;
 }
 QComboBox QAbstractItemView {
     border: 1px solid #ced4da;
     background-color: #ffffff;
-    selection-background-color: #cfe2ff; /* Світліший синій для виділення */
+    selection-background-color: #cfe2ff;
     selection-color: #0d6efd;
     padding: 4px;
 }
@@ -113,17 +113,17 @@ QComboBox QAbstractItemView {
 /* === Кнопки === */
 QPushButton {
     padding: 8px 15px;
-    background-color: #0d6efd; /* Новий синій */
+    background-color: #0d6efd;
     color: white;
     border: 1px solid #0d6efd;
     border-radius: 4px;
     font-weight: 500;
     min-height: 34px;
     font-size: 10pt;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; /* Плавний перехід */
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 QPushButton:hover {
-    background-color: #0b5ed7; /* Темніший синій при наведенні */
+    background-color: #0b5ed7;
     border-color: #0a58ca;
 }
 QPushButton:pressed {
@@ -131,7 +131,7 @@ QPushButton:pressed {
     border-color: #0a53be;
 }
 QPushButton:disabled {
-    background-color: #6c757d; /* Сірий для неактивної */
+    background-color: #6c757d;
     color: #ffffff;
     border-color: #6c757d;
 }
@@ -139,30 +139,30 @@ QPushButton:disabled {
 /* === Кнопки іконки (Кошик, Обране, Профіль) === */
 QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
     background-color: transparent;
-    border: 1px solid transparent; /* Прозора рамка для збереження розміру */
+    border: 1px solid transparent;
     padding: 5px;
-    border-radius: 4px; /* Квадратні */
+    border-radius: 4px;
     min-height: 36px; min-width: 36px;
     max-width: 36px; max-height: 36px;
-    color: #495057; /* Сірий колір іконки */
-    font-size: 16pt; /* Трохи більший розмір */
+    color: #495057;
+    font-size: 16pt;
 }
 QPushButton#cartButton:hover, QPushButton#wishlistButton:hover, QPushButton#profileButton:hover {
-    background-color: #e9ecef; /* Світло-сірий фон при наведенні */
-    color: #0d6efd; /* Синій колір іконки при наведенні */
-    border-color: #ced4da; /* Сіра рамка при наведенні */
+    background-color: #e9ecef;
+    color: #0d6efd;
+    border-color: #ced4da;
 }
 QPushButton#cartButton:pressed, QPushButton#wishlistButton:pressed, QPushButton#profileButton:pressed {
-    background-color: #ced4da; /* Темніший сірий при натисканні */
+    background-color: #ced4da;
     border-color: #adb5bd;
 }
 
 /* === Кнопки Фільтр, Сортування, Вигляд === */
 QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
     background-color: #ffffff;
-    border: 1px solid #ced4da; /* Сіра межа */
-    color: #495057; /* Сірий текст/іконка */
-    min-width: 36px; max-width: 36px; /* Зробимо квадратними */
+    border: 1px solid #ced4da;
+    color: #495057;
+    min-width: 36px; max-width: 36px;
     min-height: 34px; max-height: 34px;
     padding: 6px;
     border-radius: 4px;
@@ -177,7 +177,7 @@ QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#vi
     background-color: #e9ecef;
 }
 QPushButton#viewModeButton:checked {
-    background-color: #cfe2ff; /* Світло-синій фон для вибраного */
+    background-color: #cfe2ff;
     border-color: #86b7fe;
     color: #0d6efd;
 }
@@ -189,18 +189,18 @@ QScrollArea {
 }
 QScrollBar:vertical {
     border: none;
-    background: #f1f3f5; /* Ще світліший фон */
-    width: 6px; /* Тонший скролбар */
+    background: #f1f3f5;
+    width: 6px;
     margin: 0px 0px 0px 0px;
     border-radius: 3px;
 }
 QScrollBar::handle:vertical {
-    background: #adb5bd; /* Сірий повзунок */
+    background: #adb5bd;
     min-height: 20px;
     border-radius: 3px;
 }
 QScrollBar::handle:vertical:hover {
-    background: #6c757d; /* Темніший сірий при наведенні */
+    background: #6c757d;
 }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     border: none; background: none; height: 0px;
@@ -227,79 +227,79 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 
 /* === Рядок стану === */
 QStatusBar {
-    background-color: #e9ecef; /* Світло-сірий фон */
-    color: #495057; /* Сірий текст */
+    background-color: #e9ecef;
+    color: #495057;
     font-size: 9pt;
-    border-top: 1px solid #dee2e6; /* Тонка верхня межа */
+    border-top: 1px solid #dee2e6;
 }
 
 /* === Мітки (Labels) === */
 QLabel {
-   color: #212529; /* Основний темний колір тексту */
+   color: #212529;
    background-color: transparent;
 }
 QLabel#logoLabel {
    font-size: 18px;
-   font-weight: 700; /* Жирніший */
-   color: #0d6efd; /* Синій колір логотипу */
+   font-weight: 700;
+   color: #0d6efd;
    padding-left: 0px;
 }
 QLabel#bannerLabel {
-   background-color: #cfe2ff; /* Світло-синій фон банера */
-   border-radius: 6px; /* Менший радіус */
-   color: #0a58ca; /* Темніший синій текст */
-   font-size: 22px; /* Трохи менший шрифт */
+   background-color: #cfe2ff;
+   border-radius: 6px;
+   color: #0a58ca;
+   font-size: 22px;
    font-weight: 600;
-   padding: 25px; /* Менший падінг */
-   text-align: center; /* Вирівнювання по центру */
+   padding: 25px;
+   text-align: center;
 }
 /* Заголовки секцій */
 QLabel#categoryHeaderLabel, QLabel#classicsHeaderLabel, QLabel#fantasyHeaderLabel, QLabel#nonFictionHeaderLabel {
-   font-size: 14pt; /* Більший шрифт */
+   font-size: 14pt;
    font-weight: 600;
-   color: #343a40; /* Темно-сірий */
-   margin-top: 25px; /* Більший відступ зверху */
-   margin-bottom: 15px; /* Більший відступ знизу */
+   color: #343a40;
+   margin-top: 25px;
+   margin-bottom: 15px;
    padding-bottom: 8px;
-   border-bottom: 1px solid #dee2e6; /* Сіра лінія знизу */
+   border-bottom: 1px solid #dee2e6;
 }
 QLabel#dateFilterLabel {
-    color: #495057; /* Сірий текст */
+    color: #495057;
     font-weight: 500;
 }
 
 /* === Кнопки категорій === */
 QWidget#categoriesWidget QPushButton {
     background-color: #ffffff;
-    color: #0d6efd; /* Синій текст */
-    border: 1px solid #dee2e6; /* Світло-сіра межа */
+    color: #0d6efd;
+    border: 1px solid #dee2e6;
     font-weight: 500;
     text-align: center;
     padding: 15px;
-    min-height: 100px; /* Трохи менша висота */
+    min-height: 100px;
     border-radius: 4px;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 QWidget#categoriesWidget QPushButton:hover {
     background-color: #f8f9fa;
-    color: #0b5ed7; /* Темніший синій при наведенні */
-    border-color: #adb5bd; /* Темніша сіра межа */
+    color: #0b5ed7;
+    border-color: #adb5bd;
 }
 QWidget#categoriesWidget QPushButton:pressed {
-    background-color: #e9ecef; /* Ще світліший сірий при натисканні */
+    background-color: #e9ecef;
 }
 
 /* === Поле глобального пошуку === */
 QLineEdit#globalSearchLineEdit {
-    min-height: 36px; /* Вища */
-    border-radius: 18px; /* Округлені краї */
+    min-height: 36px;
+    border-radius: 18px;
     padding-left: 15px;
     padding-right: 15px;
 }
 
 /* === Стилі для вкладки Профіль === */
 QWidget#profileTab {
-    background-color: #ffffff; /* Білий фон для області профілю */
+    background-color: #ffffff;
     padding: 30px;
 }
 QLabel#profileHeaderLabel {
@@ -307,23 +307,23 @@ QLabel#profileHeaderLabel {
    font-weight: 600;
    color: #212529;
    margin-bottom: 20px;
-   border-bottom: none; /* Забираємо лінію, якщо вона була успадкована */
+   border-bottom: none;
 }
-QFormLayout#profileFormLayout QLabel { /* Стилі для міток у формі */
+QFormLayout#profileFormLayout QLabel {
     font-weight: 600;
-    color: #495057; /* Сірий колір для назв полів */
-    margin-top: 5px; /* Невеликий відступ зверху для кращого вирівнювання */
+    color: #495057;
+    margin-top: 5px;
 }
-QFormLayout#profileFormLayout QLabel[text="(не завантажено)"] { /* Стиль для значень */
-    color: #6c757d; /* Світліший сірий для даних */
+QFormLayout#profileFormLayout QLabel[text="(не завантажено)"] {
+    color: #6c757d;
     font-style: italic;
 }
 QLabel#profileFirstNameLabel, QLabel#profileLastNameLabel, QLabel#profileEmailLabel,
 QLabel#profilePhoneLabel, QLabel#profileAddressLabel, QLabel#profileJoinDateLabel,
 QLabel#profileLoyaltyLabel, QLabel#profilePointsLabel {
-     color: #212529; /* Темний колір для завантажених даних */
+     color: #212529;
      font-style: normal;
-     padding-top: 5px; /* Вирівнювання з міткою */
+     padding-top: 5px;
 }
 
 </string>
@@ -490,19 +490,19 @@ QLabel#profileLoyaltyLabel, QLabel#profilePointsLabel {
         <widget class="QFrame" name="sidebarFrame">
          <property name="minimumSize">
           <size>
-           <width>50</width> <!-- Start narrow -->
+           <width>50</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>50</width> <!-- Start narrow -->
+           <width>50</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="styleSheet">
           <string>QFrame#sidebarFrame {
-    background-color: #e9ecef; /* Sidebar background */
+    background-color: #e9ecef;
     border-right: 1px solid #dee2e6;
 }
 
@@ -514,14 +514,14 @@ QPushButton#navButtonProfile {
     background-color: transparent;
     border: none;
     color: #495057;
-    padding: 10px 5px; /* Adjust padding */
-    text-align: left; /* Align text left */
+    padding: 10px 5px;
+    text-align: left;
     min-height: 36px;
     border-radius: 4px;
-    font-size: 11pt; /* Adjust font size */
+    font-size: 11pt;
     font-weight: 500;
-    /* Hide text initially */
-    /* We'll manage text visibility/icon display in C++ */
+
+
 }
 
 QPushButton#navButtonHome:hover,
@@ -572,13 +572,13 @@ QPushButton#navButtonProfile:checked {
              <string>Головна</string>
             </property>
             <property name="text">
-             <string>🏠</string> <!-- Icon only initially -->
+             <string>🏠</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool> <!-- Start selected -->
+             <bool>true</bool>
             </property>
             <property name="autoExclusive">
              <bool>true</bool>
@@ -591,7 +591,7 @@ QPushButton#navButtonProfile:checked {
              <string>Книги</string>
             </property>
             <property name="text">
-             <string>📚</string> <!-- Icon only initially -->
+             <string>📚</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -607,7 +607,7 @@ QPushButton#navButtonProfile:checked {
              <string>Автори</string>
             </property>
             <property name="text">
-             <string>👥</string> <!-- Icon only initially -->
+             <string>👥</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -623,7 +623,7 @@ QPushButton#navButtonProfile:checked {
              <string>Мої замовлення</string>
             </property>
             <property name="text">
-             <string>🛍️</string> <!-- Icon only initially -->
+             <string>🛍️</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -639,7 +639,7 @@ QPushButton#navButtonProfile:checked {
              <string>Профіль</string>
             </property>
             <property name="text">
-             <string>👤</string> <!-- Icon only initially -->
+             <string>👤</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
