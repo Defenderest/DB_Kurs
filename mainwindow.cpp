@@ -646,13 +646,18 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
     // --- Деталі: Адреса, Оплата ---
     QFormLayout *detailsLayout = new QFormLayout();
     detailsLayout->setSpacing(8);
-    detailsLayout->addRow(tr("Адреса доставки:"), new QLabel(orderInfo.shippingAddress));
-    detailsLayout->addRow(tr("Спосіб оплати:"), new QLabel(orderInfo.paymentMethod));
+    QLabel *addressValueLabel = new QLabel(orderInfo.shippingAddress);
+    addressValueLabel->setStyleSheet("color: black;"); // Встановлюємо чорний колір
+    detailsLayout->addRow(tr("Адреса доставки:"), addressValueLabel);
+    QLabel *paymentValueLabel = new QLabel(orderInfo.paymentMethod);
+    paymentValueLabel->setStyleSheet("color: black;"); // Встановлюємо чорний колір
+    detailsLayout->addRow(tr("Спосіб оплати:"), paymentValueLabel);
     mainLayout->addLayout(detailsLayout);
 
     // --- Позиції замовлення (Таблиця) ---
     if (!orderInfo.items.isEmpty()) {
         QGroupBox *itemsGroup = new QGroupBox(tr("Товари в замовленні"));
+        itemsGroup->setStyleSheet("QGroupBox { color: black; font-weight: bold; }"); // Додано стиль для групи
         QVBoxLayout *itemsLayout = new QVBoxLayout(itemsGroup);
 
         QTableWidget *itemsTable = new QTableWidget(orderInfo.items.size(), 3);
@@ -665,7 +670,7 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
         itemsTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch); // Розтягнути назву
         itemsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents); // Кількість по вмісту
         itemsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents); // Ціна по вмісту
-        itemsTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; } ");
+        itemsTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; color: black; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; color: black; } "); // Додано color: black
 
         for (int i = 0; i < orderInfo.items.size(); ++i) {
             const auto &item = orderInfo.items.at(i);
@@ -693,6 +698,7 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
     // --- Статуси замовлення (Таблиця) ---
     if (!orderInfo.statuses.isEmpty()) {
         QGroupBox *statusGroup = new QGroupBox(tr("Історія статусів"));
+        statusGroup->setStyleSheet("QGroupBox { color: black; font-weight: bold; }"); // Додано стиль для групи
         QVBoxLayout *statusLayout = new QVBoxLayout(statusGroup);
 
         QTableWidget *statusTable = new QTableWidget(orderInfo.statuses.size(), 3);
@@ -705,7 +711,7 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
         statusTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
         statusTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
         statusTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-        statusTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; } ");
+        statusTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; color: black; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; color: black; } "); // Додано color: black
 
 
         for (int i = 0; i < orderInfo.statuses.size(); ++i) {
