@@ -12,13 +12,14 @@
 #include <QFrame>          // Для рамки картки
 #include <QSizePolicy>     // Для налаштування розмірів
 #include <QScrollArea>     // Щоб переконатися, що вміст прокручується
-#include <QPainter>        // Додано для малювання круглої маски
-#include <QBitmap>         // Додано для QBitmap (використовується з QPainter)
-#include <QDate>           // Додано для форматування дати
-#include <QPropertyAnimation> // Додано для анімації
-#include <QStackedWidget>   // Додано для QStackedWidget
+#include <QPainter>         // Додано для малювання круглої маски
+#include <QBitmap>          // Додано для QBitmap (використовується з QPainter)
+#include <QDate>            // Додано для форматування дати
+// QPropertyAnimation вже включено через mainwindow.h
+// QStackedWidget вже включено через mainwindow.h
+#include <QEnterEvent>      // Для eventFilter
+#include <QMap>             // Для QMap
 
-// Змінено конструктор: приймає DatabaseManager та ID користувача
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -46,84 +47,86 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     }
 
     // --- Видалено налаштування навігації через бічну панель ---
-    // У файлі mainwindow.ui використовується QTabWidget (mainTabWidget),
-    // а не QStackedWidget (contentStackedWidget) та кнопки nav...Button.
-    // Відповідний код налаштування видалено.
+    // Підключаємо сигнали кнопок навігації до слотів
+    connect(ui->navButtonHome, &QPushButton::clicked, this, &MainWindow::on_navButtonHome_clicked);
+    connect(ui->navButtonBooks, &QPushButton::clicked, this, &MainWindow::on_navButtonBooks_clicked);
+    connect(ui->navButtonAuthors, &QPushButton::clicked, this, &MainWindow::on_navButtonAuthors_clicked);
+    connect(ui->navButtonOrders, &QPushButton::clicked, this, &MainWindow::on_navButtonOrders_clicked);
+    connect(ui->navButtonProfile, &QPushButton::clicked, this, &MainWindow::on_navButtonProfile_clicked);
 
-    // Підключаємо сигнал кнопки профілю до слота
-    connect(ui->profileButton, &QPushButton::clicked, this, &MainWindow::on_profileButton_clicked);
+    // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
+    m_buttonOriginalText[ui->navButtonHome] = tr("🏠 Головна");
+    m_buttonOriginalText[ui->navButtonBooks] = tr("📚 Книги");
+    m_buttonOriginalText[ui->navButtonAuthors] = tr("👥 Автори");
+    m_buttonOriginalText[ui->navButtonOrders] = tr("🛍️ Мої замовлення");
+    m_buttonOriginalText[ui->navButtonProfile] = tr("👤 Профіль");
 
-    // --- Видалено налаштування анімованої панелі профілю ---
-    // У файлі mainwindow.ui немає окремої панелі profilePanel та кнопки closeProfileButton.
-    // Інформація профілю знаходиться у вкладці profileTab.
-    // Відповідний код пошуку панелі, налаштування анімації та підключення кнопки закриття видалено.
+    // Налаштовуємо анімацію бокової панелі
+    setupSidebarAnimation();
 
+    // Встановлюємо фільтр подій на sidebarFrame для відстеження наведення миші
+    ui->sidebarFrame->installEventFilter(this);
+    // Переконуємось, що панель спочатку згорнута
+    toggleSidebar(false); // Згорнути без анімації при старті
 
-    // --- Завантаження та відображення книг для вкладки "Книги" ---
-    // Переконуємося, що відповідний layout існує перед заповненням
-    if (!ui->booksContainerLayout) {
-         qCritical() << "booksContainerLayout is null! Cannot display books.";
-         QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти область для відображення книг."));
-         // Можливо, варто повернутися або заблокувати вкладку
-    } else {
-        QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
-        if (!books.isEmpty()) {
-                displayBooks(books); // Заповнюємо вкладку "Книги"
-                ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
-            } else {
-                qWarning() << "Не вдалося завантажити книги для відображення на вкладці 'Книги'.";
-                // Показати повідомлення користувачу в booksContainerWidget (на вкладці "Книги")
-                clearLayout(ui->booksContainerLayout); // Очистити перед додаванням повідомлення
-                QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних. Спробуйте пізніше."), ui->booksContainerWidget);
-                noBooksLabel->setAlignment(Qt::AlignCenter);
-                noBooksLabel->setWordWrap(true);
-                ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки (на вкладці "Книги")
-            }
-    }
-    // --- Кінець завантаження книг для вкладки "Книги" ---
-
-    // --- Завантаження книг за жанрами для вкладки "Головна" ---
-    qInfo() << "Завантаження книг за жанрами для головної вкладки...";
-    // Перевіряємо наявність відповідних layout'ів перед заповненням
+    // --- Завантаження та відображення даних для початкової сторінки (Головна) ---
+    // Переконуємося, що відповідні layout'и існують перед заповненням
+    // (Тепер вони всередині ui->pageDiscover)
+    qInfo() << "Завантаження даних для головної сторінки...";
     if (ui->classicsRowLayout) {
-        QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8); // Обмежимо кількість для горизонтального ряду
+        QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8);
         displayBooksInHorizontalLayout(classicsBooks, ui->classicsRowLayout);
     } else {
-        qWarning() << "classicsRowLayout is null! Cannot display classics books.";
+        qWarning() << "classicsRowLayout is null!";
     }
-
     if (ui->fantasyRowLayout) {
         QList<BookDisplayInfo> fantasyBooks = m_dbManager->getBooksByGenre("Фентезі", 8);
         displayBooksInHorizontalLayout(fantasyBooks, ui->fantasyRowLayout);
     } else {
-        qWarning() << "fantasyRowLayout is null! Cannot display fantasy books.";
+        qWarning() << "fantasyRowLayout is null!";
     }
-
     if (ui->nonFictionRowLayout) {
         QList<BookDisplayInfo> nonFictionBooks = m_dbManager->getBooksByGenre("Науково-популярне", 8);
         displayBooksInHorizontalLayout(nonFictionBooks, ui->nonFictionRowLayout);
     } else {
-        qWarning() << "nonFictionRowLayout is null! Cannot display non-fiction books.";
+        qWarning() << "nonFictionRowLayout is null!";
     }
-    qInfo() << "Завершено завантаження книг за жанрами.";
-    // --- Кінець завантаження книг за жанрами ---
+    qInfo() << "Завершено завантаження даних для головної сторінки.";
 
-    // --- Завантаження та відображення авторів для вкладки "Автори" ---
-    qInfo() << "Завантаження авторів для вкладки 'Автори'...";
+    // --- Завантаження даних для інших сторінок (можна зробити ледачим завантаженням при першому відкритті) ---
+    // Завантаження книг для сторінки "Книги" (ui->pageBooks)
+    if (!ui->booksContainerLayout) {
+         qCritical() << "booksContainerLayout is null!";
+    } else {
+        QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
+        displayBooks(books); // Заповнюємо сторінку "Книги"
+        if (!books.isEmpty()) {
+             ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
+        } else {
+             qWarning() << "Не вдалося завантажити книги для сторінки 'Книги'.";
+             // Повідомлення вже обробляється в displayBooks
+        }
+    }
+
+    // Завантаження авторів для сторінки "Автори" (ui->pageAuthors)
     if (!ui->authorsContainerLayout) {
-        qCritical() << "authorsContainerLayout is null! Cannot display authors.";
-        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти область для відображення авторів."));
+        qCritical() << "authorsContainerLayout is null!";
     } else {
         QList<AuthorDisplayInfo> authors = m_dbManager->getAllAuthorsForDisplay();
         displayAuthors(authors);
-        if(authors.isEmpty()){
-             qWarning() << "Не вдалося завантажити авторів або їх немає в базі даних.";
-             // Повідомлення вже відображається в displayAuthors
+        if (!authors.isEmpty()) {
+             qInfo() << "Автори успішно завантажені.";
         } else {
-             qInfo() << "Автори успішно завантажені та відображені.";
+             qWarning() << "Не вдалося завантажити авторів.";
+             // Повідомлення вже обробляється в displayAuthors
         }
     }
-    // --- Кінець завантаження авторів ---
+
+    // Завантаження профілю для сторінки "Профіль" (ui->pageProfile)
+    // (Завантаження відбувається при кліку на кнопку профілю)
+
+    // Завантаження замовлень (якщо потрібно при старті)
+    // loadAndDisplayOrders(); // Потрібно реалізувати цю функцію та відповідну сторінку ui->pageOrders
 
     // Завантаження замовлень (якщо потрібно при старті)
     // loadAndDisplayOrders(); // Можна додати функцію для завантаження замовлень
@@ -230,13 +233,27 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
 // Слот для відображення книг у сітці
 void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 {
-    // Очищаємо попередні віджети з booksContainerLayout
-    clearLayout(ui->booksContainerLayout);
-
+    // Очищаємо попередні віджети з booksContainerLayout (всередині pageBooks)
     if (!ui->booksContainerLayout) {
-        qWarning() << "booksContainerLayout is null!";
+        qWarning() << "displayBooks: booksContainerLayout is null!";
+        // Можливо, показати повідомлення в statusBar або в самій області
+        QLabel *errorLabel = new QLabel(tr("Помилка: Не вдалося знайти область для відображення книг."), ui->booksContainerWidget);
+        errorLabel->setAlignment(Qt::AlignCenter);
+        ui->booksContainerWidget->setLayout(new QVBoxLayout()); // Потрібен layout для додавання мітки
+        ui->booksContainerWidget->layout()->addWidget(errorLabel);
         return;
     }
+    clearLayout(ui->booksContainerLayout);
+
+    if (books.isEmpty()) {
+        QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних."), ui->booksContainerWidget);
+        noBooksLabel->setAlignment(Qt::AlignCenter);
+        noBooksLabel->setWordWrap(true);
+        // Додаємо мітку безпосередньо в layout, якщо він існує
+        ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, maxColumns); // Розтягнути на кілька колонок
+        return; // Виходимо, якщо книг немає
+    }
+
 
     int row = 0;
     int col = 0;
@@ -286,9 +303,8 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 
 
     // Переконуємося, що контейнер оновився
-    // Переконуємося, що контейнер оновився
     ui->booksContainerWidget->updateGeometry();
-    ui->booksScrollArea->updateGeometry();
+    // ui->booksScrollArea->updateGeometry(); // Зазвичай не потрібно викликати для ScrollArea
 }
 
 
@@ -406,18 +422,22 @@ QWidget* MainWindow::createAuthorCardWidget(const AuthorDisplayInfo &authorInfo)
 // Метод для відображення авторів у сітці
 void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 {
-    clearLayout(ui->authorsContainerLayout);
-
-    if (!ui->authorsContainerLayout) {
-        qWarning() << "authorsContainerLayout is null!";
+    // Очищаємо попередні віджети з authorsContainerLayout (всередині pageAuthors)
+     if (!ui->authorsContainerLayout) {
+        qWarning() << "displayAuthors: authorsContainerLayout is null!";
+        QLabel *errorLabel = new QLabel(tr("Помилка: Не вдалося знайти область для відображення авторів."), ui->authorsContainerWidget);
+        errorLabel->setAlignment(Qt::AlignCenter);
+        ui->authorsContainerWidget->setLayout(new QVBoxLayout());
+        ui->authorsContainerWidget->layout()->addWidget(errorLabel);
         return;
     }
+    clearLayout(ui->authorsContainerLayout);
 
     if (authors.isEmpty()) {
         QLabel *noAuthorsLabel = new QLabel(tr("Не вдалося завантажити авторів або їх немає в базі даних."), ui->authorsContainerWidget);
         noAuthorsLabel->setAlignment(Qt::AlignCenter);
         noAuthorsLabel->setWordWrap(true);
-        ui->authorsContainerLayout->addWidget(noAuthorsLabel, 0, 0, 1, 4); // Розтягнути на кілька колонок
+        ui->authorsContainerLayout->addWidget(noAuthorsLabel, 0, 0, 1, maxColumns); // Розтягнути на кілька колонок
         return;
     }
 
@@ -454,40 +474,168 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
     ui->authorsContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
 
     // Оновлюємо геометрію
-    // Оновлюємо геометрію
     ui->authorsContainerWidget->updateGeometry();
-    ui->authorsScrollArea->updateGeometry();
+    // ui->authorsScrollArea->updateGeometry(); // Зазвичай не потрібно
 }
 
 // TODO: Додати метод для завантаження та відображення замовлень
 // void MainWindow::loadAndDisplayOrders() { ... }
 
 
-// --- Видалено методи для анімованої панелі профілю ---
-// Функції setupProfilePanelAnimation, showProfilePanel, hideProfilePanel
-// були видалені, оскільки відповідна панель та її анімація більше не використовуються.
+// --- Реалізація нових слотів та функцій ---
 
-
-// Заповнення полів вкладки профілю даними
-// (Перейменовано populateProfilePanel -> populateProfileTab для ясності,
-// але можна залишити і стару назву, якщо вона використовується в інших місцях)
-void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo) // Або populateProfileTab
+// Слоти для кнопок навігації
+void MainWindow::on_navButtonHome_clicked()
 {
-     // Перевіряємо, чи дані взагалі були знайдені
-    if (!profileInfo.found) {
-        // Можна показати повідомлення про помилку або заповнити поля відповідним текстом
-        ui->profileFirstNameLabel->setText(tr("(Помилка завантаження)"));
-        ui->profileLastNameLabel->setText(tr("(Помилка завантаження)"));
-        ui->profileEmailLabel->setText(tr("(Помилка завантаження)"));
-        ui->profilePhoneLabel->setText(tr("(Помилка завантаження)"));
-        ui->profileAddressLabel->setText(tr("(Помилка завантаження)"));
-        ui->profileJoinDateLabel->setText(tr("(Помилка завантаження)"));
-        ui->profileLoyaltyLabel->setText(tr("(Помилка завантаження)"));
-        ui->profilePointsLabel->setText(tr("(Помилка завантаження)"));
+    ui->contentStackedWidget->setCurrentWidget(ui->pageDiscover);
+}
+
+void MainWindow::on_navButtonBooks_clicked()
+{
+    ui->contentStackedWidget->setCurrentWidget(ui->pageBooks);
+    // Можна додати ледаче завантаження тут, якщо не зроблено в конструкторі
+}
+
+void MainWindow::on_navButtonAuthors_clicked()
+{
+    ui->contentStackedWidget->setCurrentWidget(ui->pageAuthors);
+    // Можна додати ледаче завантаження тут
+}
+
+void MainWindow::on_navButtonOrders_clicked()
+{
+    ui->contentStackedWidget->setCurrentWidget(ui->pageOrders);
+    // Потрібно завантажити дані замовлень
+    // loadAndDisplayOrders();
+    qWarning() << "Сторінка замовлень ще не реалізована повністю.";
+    // Тимчасово: очистити layout або показати повідомлення
+    if(ui->ordersPageLayout) {
+        clearLayout(ui->ordersPageLayout);
+        QLabel *todoLabel = new QLabel(tr("Сторінка 'Мої замовлення' в розробці."), ui->pageOrders);
+        todoLabel->setAlignment(Qt::AlignCenter);
+        ui->ordersPageLayout->addWidget(todoLabel);
+    }
+}
+
+void MainWindow::on_navButtonProfile_clicked()
+{
+    qInfo() << "Navigating to profile page for customer ID:" << m_currentCustomerId;
+    ui->contentStackedWidget->setCurrentWidget(ui->pageProfile);
+
+    // Завантажуємо дані профілю при переході на вкладку
+    if (m_currentCustomerId <= 0) {
+        QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо завантажити профіль, оскільки користувач не визначений."));
+        // Очистити поля або показати помилку в полях
+        populateProfilePanel(CustomerProfileInfo()); // Передати порожню структуру
+        return;
+    }
+    if (!m_dbManager) {
+         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+         populateProfilePanel(CustomerProfileInfo());
+         return;
+    }
+
+    CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
+    if (!profile.found) {
+        QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
+    }
+    populateProfilePanel(profile); // Заповнюємо або показуємо помилку всередині
+}
+
+
+// Налаштування анімації бокової панелі
+void MainWindow::setupSidebarAnimation()
+{
+    m_sidebarAnimation = new QPropertyAnimation(ui->sidebarFrame, "maximumWidth", this);
+    m_sidebarAnimation->setDuration(250); // Тривалість анімації в мс
+    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Плавність анімації
+
+    // Опціонально: підключити сигнал завершення анімації
+    // connect(m_sidebarAnimation, &QPropertyAnimation::finished, this, &MainWindow::onSidebarAnimationFinished);
+}
+
+// Функція для розгортання/згортання панелі
+void MainWindow::toggleSidebar(bool expand)
+{
+    if (m_isSidebarExpanded == expand && m_sidebarAnimation->state() == QAbstractAnimation::Stopped) {
+        return; // Вже в потрібному стані і анімація не йде
+    }
+     // Якщо анімація ще триває, зупиняємо її перед запуском нової
+    if (m_sidebarAnimation->state() == QAbstractAnimation::Running) {
+        m_sidebarAnimation->stop();
+    }
+
+    m_isSidebarExpanded = expand;
+
+    // Оновлюємо текст кнопок
+    for (auto it = m_buttonOriginalText.begin(); it != m_buttonOriginalText.end(); ++it) {
+        QPushButton *button = it.key();
+        const QString &originalText = it.value();
+        if (expand) {
+            button->setText(originalText);
+            button->setToolTip(""); // Очистити підказку, коли текст видно
+        } else {
+            // Залишаємо тільки перший символ (іконку)
+            button->setText(originalText.left(originalText.indexOf(' ') > 0 ? originalText.indexOf(' ') : 1));
+             button->setToolTip(originalText.mid(originalText.indexOf(' ') + 1)); // Показати текст як підказку
+        }
+    }
+
+
+    m_sidebarAnimation->setStartValue(ui->sidebarFrame->width());
+    m_sidebarAnimation->setEndValue(expand ? m_expandedWidth : m_collapsedWidth);
+    m_sidebarAnimation->start();
+}
+
+
+// Перехоплення подій для sidebarFrame
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->sidebarFrame) {
+        if (event->type() == QEvent::Enter) {
+            // Миша увійшла в область sidebarFrame
+            toggleSidebar(true); // Розгорнути
+            return true; // Подія оброблена
+        } else if (event->type() == QEvent::Leave) {
+            // Миша покинула область sidebarFrame
+            toggleSidebar(false); // Згорнути
+            return true; // Подія оброблена
+        }
+    }
+    // Передаємо подію батьківському класу для стандартної обробки
+    return QMainWindow::eventFilter(watched, event);
+}
+
+
+// Заповнення полів сторінки профілю даними
+void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
+{
+    // Перевіряємо, чи вказівники на QLabel існують (важливо після змін в UI)
+    if (!ui->profileFirstNameLabel || !ui->profileLastNameLabel || !ui->profileEmailLabel ||
+        !ui->profilePhoneLabel || !ui->profileAddressLabel || !ui->profileJoinDateLabel ||
+        !ui->profileLoyaltyLabel || !ui->profilePointsLabel)
+    {
+        qWarning() << "populateProfilePanel: One or more profile labels are null!";
+        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти поля для відображення профілю."));
         return;
     }
 
-    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині profilePanel)
+     // Перевіряємо, чи дані взагалі були знайдені
+    if (!profileInfo.found || profileInfo.customerId <= 0) {
+        // Заповнюємо поля текстом про помилку або відсутність даних
+        const QString errorText = tr("(Помилка завантаження або дані відсутні)");
+        ui->profileFirstNameLabel->setText(errorText);
+        ui->profileLastNameLabel->setText(errorText);
+        ui->profileEmailLabel->setText(errorText);
+        ui->profilePhoneLabel->setText(errorText);
+        ui->profileAddressLabel->setText(errorText);
+        ui->profileJoinDateLabel->setText(errorText);
+        ui->profileLoyaltyLabel->setText(errorText);
+        ui->profilePointsLabel->setText("-");
+        return;
+    }
+
+    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині pageProfile)
     ui->profileFirstNameLabel->setText(profileInfo.firstName.isEmpty() ? tr("(не вказано)") : profileInfo.firstName);
     ui->profileLastNameLabel->setText(profileInfo.lastName.isEmpty() ? tr("(не вказано)") : profileInfo.lastName);
     ui->profileEmailLabel->setText(profileInfo.email); // Email має бути завжди
@@ -498,41 +646,4 @@ void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo) //
     ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
 }
 
-
-// Слот для обробки натискання кнопки профілю
-void MainWindow::on_profileButton_clicked()
-{
-    qInfo() << "Profile button clicked. Loading profile for customer ID:" << m_currentCustomerId;
-
-    if (m_currentCustomerId <= 0) {
-        QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо завантажити профіль, оскільки користувач не визначений."));
-        return;
-    }
-
-    if (!m_dbManager) {
-         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
-         return;
-    }
-
-    // 1. Отримуємо дані профілю з бази даних
-    CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
-
-    // 2. Перевіряємо, чи знайдені дані
-    if (!profile.found) {
-        QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
-        // Більше не потрібно очищати поля, оскільки вони в окремому діалозі
-        return;
-    }
-
-    // 3. Заповнюємо панель профілю даними
-    populateProfilePanel(profile);
-
-    // 4. Переключаємо головний TabWidget на вкладку профілю
-    if (ui->mainTabWidget && ui->profileTab) {
-        ui->mainTabWidget->setCurrentWidget(ui->profileTab);
-        qInfo() << "Switched to profile tab.";
-    } else {
-        qWarning() << "Could not switch to profile tab: mainTabWidget or profileTab is null.";
-        QMessageBox::warning(this, tr("Помилка інтерфейсу"), tr("Не вдалося відкрити вкладку профілю."));
-    }
-}
+// --- Кінець реалізації нових слотів та функцій ---
