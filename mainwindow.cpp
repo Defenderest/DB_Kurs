@@ -15,10 +15,8 @@
 #include <QPainter>         // Додано для малювання круглої маски
 #include <QBitmap>          // Додано для QBitmap (використовується з QPainter)
 #include <QDate>            // Додано для форматування дати
-// QPropertyAnimation вже включено через mainwindow.h
-// QStackedWidget вже включено через mainwindow.h
-#include <QEnterEvent>      // Для eventFilter
-#include <QMap>             // Для QMap
+#include "profiledialog.h" // Додано для діалогу профілю
+// Залежності для анімації видалені
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -46,28 +44,17 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
          qInfo() << "MainWindow initialized for customer ID:" << m_currentCustomerId;
     }
 
-    // --- Видалено налаштування навігації через бічну панель ---
-    // Підключаємо сигнали кнопок навігації до слотів
-    connect(ui->navButtonHome, &QPushButton::clicked, this, &MainWindow::on_navButtonHome_clicked);
-    connect(ui->navButtonBooks, &QPushButton::clicked, this, &MainWindow::on_navButtonBooks_clicked);
-    connect(ui->navButtonAuthors, &QPushButton::clicked, this, &MainWindow::on_navButtonAuthors_clicked);
-    connect(ui->navButtonOrders, &QPushButton::clicked, this, &MainWindow::on_navButtonOrders_clicked);
-    connect(ui->navButtonProfile, &QPushButton::clicked, this, &MainWindow::on_navButtonProfile_clicked);
+    // Підключаємо сигнали кнопок навігації до слотів (використовуємо імена з UI)
+    connect(ui->navHomeButton, &QPushButton::clicked, this, &MainWindow::on_navHomeButton_clicked);
+    connect(ui->navBooksButton, &QPushButton::clicked, this, &MainWindow::on_navBooksButton_clicked);
+    connect(ui->navAuthorsButton, &QPushButton::clicked, this, &MainWindow::on_navAuthorsButton_clicked);
+    connect(ui->navOrdersButton, &QPushButton::clicked, this, &MainWindow::on_navOrdersButton_clicked);
+    // connect(ui->navButtonProfile, ...); // Видалено, немає такої кнопки в панелі
 
-    // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
-    m_buttonOriginalText[ui->navButtonHome] = tr("🏠 Головна");
-    m_buttonOriginalText[ui->navButtonBooks] = tr("📚 Книги");
-    m_buttonOriginalText[ui->navButtonAuthors] = tr("👥 Автори");
-    m_buttonOriginalText[ui->navButtonOrders] = tr("🛍️ Мої замовлення");
-    m_buttonOriginalText[ui->navButtonProfile] = tr("👤 Профіль");
+    // Підключаємо кнопку профілю з хедера
+    connect(ui->profileButton, &QPushButton::clicked, this, &MainWindow::on_profileButton_clicked);
 
-    // Налаштовуємо анімацію бокової панелі
-    setupSidebarAnimation();
-
-    // Встановлюємо фільтр подій на sidebarFrame для відстеження наведення миші
-    ui->sidebarFrame->installEventFilter(this);
-    // Переконуємось, що панель спочатку згорнута
-    toggleSidebar(false); // Згорнути без анімації при старті
+    // Код для анімації та збереження тексту кнопок видалено
 
     // --- Завантаження та відображення даних для початкової сторінки (Головна) ---
     // Переконуємося, що відповідні layout'и існують перед заповненням
@@ -122,14 +109,10 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         }
     }
 
-    // Завантаження профілю для сторінки "Профіль" (ui->pageProfile)
-    // (Завантаження відбувається при кліку на кнопку профілю)
+    // Завантаження профілю більше не потрібне тут, воно відбувається при кліку на profileButton
 
     // Завантаження замовлень (якщо потрібно при старті)
-    // loadAndDisplayOrders(); // Потрібно реалізувати цю функцію та відповідну сторінку ui->pageOrders
-
-    // Завантаження замовлень (якщо потрібно при старті)
-    // loadAndDisplayOrders(); // Можна додати функцію для завантаження замовлень
+    // loadAndDisplayOrders(); // Потрібно реалізувати цю функцію та відповідну сторінку ui->ordersPage
 
     // Блок else для помилки підключення більше не потрібен тут,
     // оскільки dbManager передається і перевіряється на початку конструктора.
