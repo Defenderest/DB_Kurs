@@ -40,9 +40,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void displayBooks(const QList<BookDisplayInfo> &books); // Метод для відображення книг
-
-private slots:
     // Слоти для кнопок навігації
     void on_navButtonHome_clicked();
     void on_navButtonBooks_clicked();
@@ -54,6 +51,22 @@ private slots:
     // void onSidebarAnimationFinished();
 
 private:
+    // Допоміжні функції для відображення даних
+    void displayBooks(const QList<BookDisplayInfo> &books); // Метод для відображення книг
+    void displayAuthors(const QList<AuthorDisplayInfo> &authors);
+    void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
+    QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
+    QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
+    void populateProfilePanel(const CustomerProfileInfo &profileInfo); // Залишаємо, але буде використовуватись у pageProfile
+
+    // Допоміжна функція для очищення layout
+    void clearLayout(QLayout* layout);
+
+    // Налаштування анімації та стану бічної панелі
+    void setupSidebarAnimation();
+    void toggleSidebar(bool expand);
+
+    // Члени класу
     Ui::MainWindow *ui;
     DatabaseManager *m_dbManager; // Вказівник на менеджер БД
     int m_currentCustomerId;      // ID поточного користувача
@@ -63,25 +76,6 @@ private:
     int m_collapsedWidth = 50;                        // Ширина згорнутої панелі
     int m_expandedWidth = 200;                       // Ширина розгорнутої панелі
     QMap<QPushButton*, QString> m_buttonOriginalText; // Зберігання оригінального тексту кнопок
-
-    // Допоміжна функція для очищення layout
-    void clearLayout(QLayout* layout);
-    // Допоміжна функція для створення картки книги
-    QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
-    // Допоміжна функція для відображення книг у горизонтальному layout
-    void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
-
-    // Допоміжні функції для вкладки "Автори"
-    QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
-    void displayAuthors(const QList<AuthorDisplayInfo> &authors);
-
-    // Допоміжна функція для заповнення даних у вкладці профілю
-    void populateProfilePanel(const CustomerProfileInfo &profileInfo); // Залишаємо, але буде використовуватись у pageProfile
-
-    // Налаштування анімації
-    void setupSidebarAnimation();
-    // Функція для розгортання/згортання панелі
-    void toggleSidebar(bool expand);
 
 protected:
     // Перехоплення подій для sidebarFrame
