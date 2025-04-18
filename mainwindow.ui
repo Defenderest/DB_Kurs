@@ -280,7 +280,7 @@ QWidget#categoriesWidget QPushButton {
     padding: 12px;
     min-height: 100px; /* Трохи менша висота */
     border-radius: 4px;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+    /* transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out; */ /* Removed due to potential uic error */
 }
 QWidget#categoriesWidget QPushButton:hover {
     background-color: #f8f9fa;
@@ -781,18 +781,11 @@ QPushButton#navOrdersButton:checked {
             </item>
             <item>
              <widget class="QLabel" name="classicsHeaderLabel">
-              <property name="styleSheet">
-               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
-font-size: 16px;
-font-weight: 600;
-color: #444444;
-margin-top: 20px;
-margin-bottom: 10px;
-padding-bottom: 5px;
-border-bottom: 1px solid #eeeeee;</string>
-              </property>
               <property name="text">
                <string>📖 Класика</string>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
               </property>
              </widget>
             </item>
@@ -853,18 +846,11 @@ border-bottom: 1px solid #eeeeee;</string>
             </item>
             <item>
              <widget class="QLabel" name="fantasyHeaderLabel">
-              <property name="styleSheet">
-               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
-font-size: 16px;
-font-weight: 600;
-color: #444444;
-margin-top: 20px;
-margin-bottom: 10px;
-padding-bottom: 5px;
-border-bottom: 1px solid #eeeeee;</string>
-              </property>
               <property name="text">
                <string>✨ Фентезі</string>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
               </property>
              </widget>
             </item>
@@ -925,18 +911,11 @@ border-bottom: 1px solid #eeeeee;</string>
             </item>
             <item>
              <widget class="QLabel" name="nonFictionHeaderLabel">
-              <property name="styleSheet">
-               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
-font-size: 16px;
-font-weight: 600;
-color: #444444;
-margin-top: 20px;
-margin-bottom: 10px;
-padding-bottom: 5px;
-border-bottom: 1px solid #eeeeee;</string>
-              </property>
               <property name="text">
                <string>🔬 Науково-популярне</string>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
               </property>
              </widget>
             </item>
