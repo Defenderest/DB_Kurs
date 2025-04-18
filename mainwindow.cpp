@@ -19,6 +19,11 @@
 #include <QEvent>           // Для eventFilter
 #include <QEnterEvent>      // Для подій наведення миші
 #include <QMap>             // Для QMap
+#include <QDateTime>        // Для форматування дати/часу замовлення
+#include <QLocale>          // Для форматування чисел та дат
+#include <QGroupBox>        // Для групування елементів замовлення
+#include <QTableWidget>     // Для відображення позицій та статусів
+#include <QHeaderView>      // Для налаштування заголовків таблиці
 // #include "profiledialog.h" // Видалено
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
@@ -507,17 +512,8 @@ void MainWindow::on_navAuthorsButton_clicked()
 
 void MainWindow::on_navOrdersButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->ordersPage); // Використовуємо ім'я сторінки з UI
-    // Потрібно завантажити дані замовлень
-    // loadAndDisplayOrders();
-    qWarning() << "Сторінка замовлень ще не реалізована повністю.";
-    // Тимчасово: очистити layout або показати повідомлення
-    if(ui->ordersPageLayout) { // Перевіряємо layout сторінки замовлень
-        clearLayout(ui->ordersPageLayout);
-        QLabel *todoLabel = new QLabel(tr("Сторінка 'Мої замовлення' в розробці."), ui->ordersPage);
-        todoLabel->setAlignment(Qt::AlignCenter);
-        ui->ordersPageLayout->addWidget(todoLabel);
-    }
+    ui->contentStackedWidget->setCurrentWidget(ui->ordersPage); // Переключаємо на сторінку замовлень
+    loadAndDisplayOrders(); // Завантажуємо та відображаємо замовлення
 }
 
 // Слот для кнопки профілю в бічній панелі
@@ -603,6 +599,205 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     }
     // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
+}
+
+// Метод для створення віджету картки замовлення
+QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
+{
+    // Основний віджет-контейнер для замовлення (використовуємо QFrame)
+    QFrame *orderFrame = new QFrame();
+    orderFrame->setFrameShape(QFrame::StyledPanel);
+    orderFrame->setFrameShadow(QFrame::Sunken); // Трохи інший стиль для відокремлення
+    orderFrame->setLineWidth(1);
+    orderFrame->setStyleSheet("QFrame { background-color: #f8f9fa; border-radius: 6px; border: 1px solid #dee2e6; }");
+    orderFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); // Розширюється по ширині
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(orderFrame);
+    mainLayout->setSpacing(12);
+    mainLayout->setContentsMargins(15, 15, 15, 15);
+
+    // --- Верхня частина: ID, Дата, Сума ---
+    QHBoxLayout *headerLayout = new QHBoxLayout();
+    headerLayout->setSpacing(20);
+
+    QLabel *orderIdLabel = new QLabel(tr("Замовлення №%1").arg(orderInfo.orderId));
+    orderIdLabel->setStyleSheet("font-weight: bold; font-size: 12pt; color: #343a40;");
+
+    QLabel *orderDateLabel = new QLabel(tr("Дата: %1").arg(QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat)));
+    orderDateLabel->setStyleSheet("color: #6c757d;");
+
+    QLabel *totalAmountLabel = new QLabel(tr("Сума: %1 грн").arg(QLocale::system().toString(orderInfo.totalAmount, 'f', 2)));
+    totalAmountLabel->setStyleSheet("font-weight: bold; color: #198754; font-size: 11pt;");
+
+    headerLayout->addWidget(orderIdLabel);
+    headerLayout->addWidget(orderDateLabel);
+    headerLayout->addStretch(1); // Розтягувач, щоб притиснути суму вправо
+    headerLayout->addWidget(totalAmountLabel);
+
+    mainLayout->addLayout(headerLayout);
+
+    // --- Роздільник ---
+    QFrame *separator = new QFrame();
+    separator->setFrameShape(QFrame::HLine);
+    separator->setFrameShadow(QFrame::Sunken);
+    separator->setStyleSheet("border-color: #e0e0e0;");
+    mainLayout->addWidget(separator);
+
+    // --- Деталі: Адреса, Оплата ---
+    QFormLayout *detailsLayout = new QFormLayout();
+    detailsLayout->setSpacing(8);
+    detailsLayout->addRow(tr("Адреса доставки:"), new QLabel(orderInfo.shippingAddress));
+    detailsLayout->addRow(tr("Спосіб оплати:"), new QLabel(orderInfo.paymentMethod));
+    mainLayout->addLayout(detailsLayout);
+
+    // --- Позиції замовлення (Таблиця) ---
+    if (!orderInfo.items.isEmpty()) {
+        QGroupBox *itemsGroup = new QGroupBox(tr("Товари в замовленні"));
+        QVBoxLayout *itemsLayout = new QVBoxLayout(itemsGroup);
+
+        QTableWidget *itemsTable = new QTableWidget(orderInfo.items.size(), 3);
+        itemsTable->setHorizontalHeaderLabels({tr("Назва книги"), tr("Кількість"), tr("Ціна за од.")});
+        itemsTable->verticalHeader()->setVisible(false); // Сховати вертикальні заголовки
+        itemsTable->setEditTriggers(QAbstractItemView::NoEditTriggers); // Заборонити редагування
+        itemsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+        itemsTable->setAlternatingRowColors(true);
+        itemsTable->horizontalHeader()->setStretchLastSection(false); // Не розтягувати останню колонку
+        itemsTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch); // Розтягнути назву
+        itemsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents); // Кількість по вмісту
+        itemsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents); // Ціна по вмісту
+        itemsTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; } ");
+
+        for (int i = 0; i < orderInfo.items.size(); ++i) {
+            const auto &item = orderInfo.items.at(i);
+            itemsTable->setItem(i, 0, new QTableWidgetItem(item.bookTitle));
+            QTableWidgetItem *quantityItem = new QTableWidgetItem(QString::number(item.quantity));
+            quantityItem->setTextAlignment(Qt::AlignCenter);
+            itemsTable->setItem(i, 1, quantityItem);
+            QTableWidgetItem *priceItem = new QTableWidgetItem(QLocale::system().toString(item.pricePerUnit, 'f', 2) + tr(" грн"));
+            priceItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            itemsTable->setItem(i, 2, priceItem);
+        }
+        itemsTable->resizeRowsToContents();
+        // Встановлюємо висоту таблиці на основі вмісту + заголовок
+        int tableHeight = itemsTable->horizontalHeader()->height();
+        for(int i=0; i<itemsTable->rowCount(); ++i) {
+            tableHeight += itemsTable->rowHeight(i);
+        }
+        // Обмежуємо максимальну висоту таблиці товарів, щоб уникнути надмірного розтягування картки
+        itemsTable->setMaximumHeight(tableHeight + 5 < 200 ? tableHeight + 5 : 200); // Наприклад, макс. 200px
+
+        itemsLayout->addWidget(itemsTable);
+        mainLayout->addWidget(itemsGroup);
+    }
+
+    // --- Статуси замовлення (Таблиця) ---
+    if (!orderInfo.statuses.isEmpty()) {
+        QGroupBox *statusGroup = new QGroupBox(tr("Історія статусів"));
+        QVBoxLayout *statusLayout = new QVBoxLayout(statusGroup);
+
+        QTableWidget *statusTable = new QTableWidget(orderInfo.statuses.size(), 3);
+        statusTable->setHorizontalHeaderLabels({tr("Статус"), tr("Дата"), tr("Номер ТТН")});
+        statusTable->verticalHeader()->setVisible(false);
+        statusTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        statusTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+        statusTable->setAlternatingRowColors(true);
+        statusTable->horizontalHeader()->setStretchLastSection(false);
+        statusTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+        statusTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+        statusTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+        statusTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; } ");
+
+
+        for (int i = 0; i < orderInfo.statuses.size(); ++i) {
+            const auto &status = orderInfo.statuses.at(i);
+            statusTable->setItem(i, 0, new QTableWidgetItem(status.status));
+            statusTable->setItem(i, 1, new QTableWidgetItem(QLocale::system().toString(status.statusDate, QLocale::ShortFormat)));
+            statusTable->setItem(i, 2, new QTableWidgetItem(status.trackingNumber.isEmpty() ? "-" : status.trackingNumber));
+        }
+        statusTable->resizeRowsToContents();
+        // Встановлюємо висоту таблиці статусів
+        int tableHeight = statusTable->horizontalHeader()->height();
+        for(int i=0; i<statusTable->rowCount(); ++i) {
+            tableHeight += statusTable->rowHeight(i);
+        }
+        // Обмежуємо максимальну висоту таблиці статусів
+        statusTable->setMaximumHeight(tableHeight + 5 < 150 ? tableHeight + 5 : 150); // Наприклад, макс. 150px
+
+        statusLayout->addWidget(statusTable);
+        mainLayout->addWidget(statusGroup);
+    }
+
+    orderFrame->setLayout(mainLayout);
+    return orderFrame;
+}
+
+// Метод для відображення списку замовлень
+void MainWindow::displayOrders(const QList<OrderDisplayInfo> &orders)
+{
+    if (!ui->ordersContentLayout) {
+        qWarning() << "displayOrders: ordersContentLayout is null!";
+        // Можна показати помилку в statusBar
+        ui->statusBar->showMessage(tr("Помилка інтерфейсу: Не вдалося відобразити замовлення."), 5000);
+        return;
+    }
+
+    // Очищаємо layout від попередніх замовлень та спейсера
+    clearLayout(ui->ordersContentLayout);
+
+    if (orders.isEmpty()) {
+        QLabel *noOrdersLabel = new QLabel(tr("У вас ще немає замовлень."), ui->ordersContainerWidget);
+        noOrdersLabel->setAlignment(Qt::AlignCenter);
+        noOrdersLabel->setStyleSheet("font-style: italic; color: #6c757d; padding: 20px;"); // Додано padding
+        ui->ordersContentLayout->addWidget(noOrdersLabel);
+        // Додаємо спейсер знизу, щоб мітка була по центру вертикально
+        ui->ordersContentLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    } else {
+        for (const OrderDisplayInfo &orderInfo : orders) {
+            QWidget *orderCard = createOrderWidget(orderInfo);
+            if (orderCard) {
+                ui->ordersContentLayout->addWidget(orderCard);
+            }
+        }
+        // Додаємо спейсер в кінці, щоб притиснути картки вгору
+        ui->ordersContentLayout->addSpacerItem(new QSpacerItem(20, 1, QSizePolicy::Minimum, QSizePolicy::Expanding)); // Зменшено висоту спейсера
+    }
+
+    // Оновлюємо геометрію контейнера
+    ui->ordersContainerWidget->updateGeometry();
+    // Переконуємось, що ScrollArea оновилась, якщо вміст змінився
+    QCoreApplication::processEvents(); // Даємо можливість обробити події перед прокруткою
+    ui->ordersScrollArea->ensureVisible(0,0); // Прокручуємо до верху
+}
+
+// Метод для завантаження та відображення замовлень
+void MainWindow::loadAndDisplayOrders()
+{
+    qInfo() << "Завантаження замовлень для customer ID:" << m_currentCustomerId;
+    if (!m_dbManager) {
+        qCritical() << "loadAndDisplayOrders: DatabaseManager is null!";
+        QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+        displayOrders({}); // Показати порожній список з помилкою
+        return;
+    }
+    if (m_currentCustomerId <= 0) {
+        qWarning() << "loadAndDisplayOrders: Invalid customer ID:" << m_currentCustomerId;
+        QMessageBox::warning(this, tr("Помилка"), tr("Неможливо завантажити замовлення, користувач не визначений."));
+        displayOrders({}); // Показати порожній список з помилкою
+        return;
+    }
+
+    QList<OrderDisplayInfo> orders = m_dbManager->getCustomerOrdersForDisplay(m_currentCustomerId);
+    qInfo() << "Завантажено" << orders.size() << "замовлень.";
+    displayOrders(orders); // Відображаємо отримані замовлення
+
+    if (m_dbManager->lastError().isValid()) {
+         ui->statusBar->showMessage(tr("Помилка при завантаженні замовлень: %1").arg(m_dbManager->lastError().text()), 5000);
+    } else if (!orders.isEmpty()) {
+         ui->statusBar->showMessage(tr("Замовлення успішно завантажено."), 3000);
+    } else {
+         // Якщо помилки не було, але замовлень 0, показуємо відповідне повідомлення
+         ui->statusBar->showMessage(tr("У вас ще немає замовлень."), 3000);
+    }
 }
 
 
