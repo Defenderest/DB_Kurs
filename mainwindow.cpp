@@ -646,12 +646,23 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
     // --- Деталі: Адреса, Оплата ---
     QFormLayout *detailsLayout = new QFormLayout();
     detailsLayout->setSpacing(8);
-    QLabel *addressValueLabel = new QLabel(orderInfo.shippingAddress);
-    addressValueLabel->setStyleSheet("color: black;"); // Встановлюємо чорний колір
-    detailsLayout->addRow(tr("Адреса доставки:"), addressValueLabel);
-    QLabel *paymentValueLabel = new QLabel(orderInfo.paymentMethod);
-    paymentValueLabel->setStyleSheet("color: black;"); // Встановлюємо чорний колір
-    detailsLayout->addRow(tr("Спосіб оплати:"), paymentValueLabel);
+    detailsLayout->setLabelAlignment(Qt::AlignLeft); // Вирівнювання назв полів по лівому краю
+
+    // Адреса доставки
+    QLabel *addressLabel = new QLabel(tr("Адреса доставки:"));
+    addressLabel->setStyleSheet("color: black; font-weight: bold;"); // Чорний жирний шрифт для назви поля
+    QLabel *addressValueLabel = new QLabel(orderInfo.shippingAddress.isEmpty() ? tr("(не вказано)") : orderInfo.shippingAddress);
+    addressValueLabel->setStyleSheet("color: black;"); // Чорний колір для значення
+    addressValueLabel->setWordWrap(true); // Дозволяємо перенос тексту адреси
+    detailsLayout->addRow(addressLabel, addressValueLabel);
+
+    // Спосіб оплати
+    QLabel *paymentLabel = new QLabel(tr("Спосіб оплати:"));
+    paymentLabel->setStyleSheet("color: black; font-weight: bold;"); // Чорний жирний шрифт для назви поля
+    QLabel *paymentValueLabel = new QLabel(orderInfo.paymentMethod.isEmpty() ? tr("(не вказано)") : orderInfo.paymentMethod);
+    paymentValueLabel->setStyleSheet("color: black;"); // Чорний колір для значення
+    detailsLayout->addRow(paymentLabel, paymentValueLabel);
+
     mainLayout->addLayout(detailsLayout);
 
     // --- Позиції замовлення (Таблиця) ---
@@ -689,7 +700,7 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
             tableHeight += itemsTable->rowHeight(i);
         }
         // Обмежуємо максимальну висоту таблиці товарів, щоб уникнути надмірного розтягування картки
-        itemsTable->setMaximumHeight(tableHeight + 5 < 200 ? tableHeight + 5 : 200); // Наприклад, макс. 200px
+        itemsTable->setMaximumHeight(tableHeight + 5 < 300 ? tableHeight + 5 : 300); // Збільшено макс. висоту до 300px
 
         itemsLayout->addWidget(itemsTable);
         mainLayout->addWidget(itemsGroup);
@@ -727,7 +738,7 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
             tableHeight += statusTable->rowHeight(i);
         }
         // Обмежуємо максимальну висоту таблиці статусів
-        statusTable->setMaximumHeight(tableHeight + 5 < 150 ? tableHeight + 5 : 150); // Наприклад, макс. 150px
+        statusTable->setMaximumHeight(tableHeight + 5 < 250 ? tableHeight + 5 : 250); // Збільшено макс. висоту до 250px
 
         statusLayout->addWidget(statusTable);
         mainLayout->addWidget(statusGroup);
