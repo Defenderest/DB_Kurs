@@ -57,10 +57,34 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     ui->navHomeButton->setChecked(true); // Позначаємо кнопку Головна як активну
 
     // Підключаємо кнопки навігації до слотів для перемикання сторінок
-    connect(ui->navHomeButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->discoverPage); });
-    connect(ui->navBooksButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->booksPage); });
-    connect(ui->navAuthorsButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->authorsPage); });
-    connect(ui->navOrdersButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->ordersPage); });
+    connect(ui->navHomeButton, &QPushButton::clicked, this, [this](){
+        if (this->ui && this->ui->contentStackedWidget && this->ui->discoverPage) {
+            this->ui->contentStackedWidget->setCurrentWidget(this->ui->discoverPage);
+        } else {
+            qWarning() << "UI elements missing for navHomeButton connection!";
+        }
+    });
+    connect(ui->navBooksButton, &QPushButton::clicked, this, [this](){
+        if (this->ui && this->ui->contentStackedWidget && this->ui->booksPage) {
+            this->ui->contentStackedWidget->setCurrentWidget(this->ui->booksPage);
+        } else {
+            qWarning() << "UI elements missing for navBooksButton connection!";
+        }
+    });
+    connect(ui->navAuthorsButton, &QPushButton::clicked, this, [this](){
+        if (this->ui && this->ui->contentStackedWidget && this->ui->authorsPage) {
+            this->ui->contentStackedWidget->setCurrentWidget(this->ui->authorsPage);
+        } else {
+            qWarning() << "UI elements missing for navAuthorsButton connection!";
+        }
+    });
+    connect(ui->navOrdersButton, &QPushButton::clicked, this, [this](){
+        if (this->ui && this->ui->contentStackedWidget && this->ui->ordersPage) {
+            this->ui->contentStackedWidget->setCurrentWidget(this->ui->ordersPage);
+        } else {
+            qWarning() << "UI elements missing for navOrdersButton connection!";
+        }
+    });
     // --- Кінець налаштування навігації ---
 
 
