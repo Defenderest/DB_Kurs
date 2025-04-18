@@ -348,7 +348,7 @@ QWidget#ordersContainerWidget {
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>35</height> <!-- Зменшено мінімальну висоту для підняття вмісту -->
+        <height>45</height> <!-- Повертаємо висоту 45 -->
        </size>
       </property>
       <layout class="QHBoxLayout" name="headerLayout">
@@ -359,13 +359,13 @@ QWidget#ordersContainerWidget {
         <number>0</number>
        </property>
        <property name="topMargin">
-        <number>0</number> <!-- Зменшено верхній відступ, щоб підняти вміст -->
+        <number>5</number> <!-- Повертаємо верхній відступ 5 -->
        </property>
        <property name="rightMargin">
         <number>0</number>
        </property>
        <property name="bottomMargin">
-        <number>0</number> <!-- Зменшено нижній відступ -->
+        <number>5</number> <!-- Повертаємо нижній відступ 5 -->
        </property>
        <item>
         <widget class="QLabel" name="logoLabel">
@@ -380,6 +380,12 @@ QWidget#ordersContainerWidget {
            <width>16777215</width>
            <height>40</height>
           </size>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed"> <!-- Встановлюємо фіксовану вертикальну політику -->
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
          <property name="styleSheet">
           <string/>
@@ -399,6 +405,12 @@ QWidget#ordersContainerWidget {
            <width>350</width>
            <height>30</height> <!-- Змінено висоту -->
           </size>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <!-- Встановлюємо фіксовану вертикальну політику -->
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
          <property name="maximumSize">
           <size>
