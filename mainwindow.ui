@@ -656,14 +656,6 @@ QPushButton#navProfileButton:checked {
              <bool>true</bool>
             </property>
             <widget class="QWidget" name="discoverScrollContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>978</width>
-               <height>1795</height>
-              </rect>
-             </property>
              <layout class="QVBoxLayout" name="discoverContentLayout">
               <property name="spacing">
                <number>20</number>
