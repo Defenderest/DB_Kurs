@@ -621,13 +621,13 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
     headerLayout->setSpacing(20);
 
     QLabel *orderIdLabel = new QLabel(tr("Замовлення №%1").arg(orderInfo.orderId));
-    orderIdLabel->setStyleSheet("font-weight: bold; font-size: 12pt; color: #343a40;");
+    orderIdLabel->setStyleSheet("font-weight: bold; font-size: 12pt; color: black;"); // Змінено колір на чорний
 
     QLabel *orderDateLabel = new QLabel(tr("Дата: %1").arg(QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat)));
-    orderDateLabel->setStyleSheet("color: #6c757d;");
+    orderDateLabel->setStyleSheet("color: black;"); // Змінено колір на чорний
 
     QLabel *totalAmountLabel = new QLabel(tr("Сума: %1 грн").arg(QLocale::system().toString(orderInfo.totalAmount, 'f', 2)));
-    totalAmountLabel->setStyleSheet("font-weight: bold; color: #198754; font-size: 11pt;");
+    totalAmountLabel->setStyleSheet("font-weight: bold; color: black; font-size: 11pt;"); // Змінено колір на чорний
 
     headerLayout->addWidget(orderIdLabel);
     headerLayout->addWidget(orderDateLabel);
@@ -747,7 +747,7 @@ void MainWindow::displayOrders(const QList<OrderDisplayInfo> &orders)
     if (orders.isEmpty()) {
         QLabel *noOrdersLabel = new QLabel(tr("У вас ще немає замовлень."), ui->ordersContainerWidget);
         noOrdersLabel->setAlignment(Qt::AlignCenter);
-        noOrdersLabel->setStyleSheet("font-style: italic; color: #6c757d; padding: 20px;"); // Додано padding
+        noOrdersLabel->setStyleSheet("font-style: italic; color: black; padding: 20px;"); // Змінено колір на чорний
         ui->ordersContentLayout->addWidget(noOrdersLabel);
         // Додаємо спейсер знизу, щоб мітка була по центру вертикально
         ui->ordersContentLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
