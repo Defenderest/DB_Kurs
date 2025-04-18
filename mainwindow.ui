@@ -16,8 +16,8 @@
   <property name="styleSheet">
    <string>/* === Глобальні стилі === */
 QMainWindow {
-    background-color: #f8f9fa; /* Світло-сірий фон */
-    color: #212529; /* Темний текст */
+    background-color: #f8f9fa;
+    color: #212529;
 }
 
 QWidget {
