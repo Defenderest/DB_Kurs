@@ -16,7 +16,7 @@
 #include <QBitmap>         // Додано для QBitmap (використовується з QPainter)
 #include <QDate>           // Додано для форматування дати
 #include <QPropertyAnimation> // Додано для анімації
-// #include "profiledialog.h" // Більше не потрібен
+#include <QStackedWidget>   // Додано для QStackedWidget
 
 // Змінено конструктор: приймає DatabaseManager та ID користувача
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
@@ -45,6 +45,25 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
          qInfo() << "MainWindow initialized for customer ID:" << m_currentCustomerId;
     }
 
+    // --- Налаштування навігації через бічну панель ---
+    // Переконуємося, що contentStackedWidget існує
+    if (!ui->contentStackedWidget) {
+        qCritical() << "contentStackedWidget is null! UI setup failed.";
+        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося ініціалізувати область контенту."));
+        return; // Або інша обробка помилки
+    }
+    // Встановлюємо початкову сторінку (Головна)
+    ui->contentStackedWidget->setCurrentWidget(ui->discoverPage);
+    ui->navHomeButton->setChecked(true); // Позначаємо кнопку Головна як активну
+
+    // Підключаємо кнопки навігації до слотів для перемикання сторінок
+    connect(ui->navHomeButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->discoverPage); });
+    connect(ui->navBooksButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->booksPage); });
+    connect(ui->navAuthorsButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->authorsPage); });
+    connect(ui->navOrdersButton, &QPushButton::clicked, this, [this](){ ui->contentStackedWidget->setCurrentWidget(ui->ordersPage); });
+    // --- Кінець налаштування навігації ---
+
+
     // Підключаємо сигнал кнопки профілю до слота
     connect(ui->profileButton, &QPushButton::clicked, this, &MainWindow::on_profileButton_clicked);
 
@@ -61,23 +80,23 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     }
 
 
-    // --- Завантаження та відображення книг (логіка залишається, але без створення/підключення БД) ---
+    // --- Завантаження та відображення книг для сторінки "Книги" ---
     QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
     if (!books.isEmpty()) {
-            displayBooks(books); // Заповнюємо основну вкладку "Книги"
+            displayBooks(books); // Заповнюємо сторінку "Книги"
             ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
         } else {
-            qWarning() << "Не вдалося завантажити книги для відображення на вкладці 'Книги'.";
-            // Показати повідомлення користувачу в booksContainerWidget (на вкладці "Книги")
+            qWarning() << "Не вдалося завантажити книги для відображення на сторінці 'Книги'.";
+            // Показати повідомлення користувачу в booksContainerWidget (на сторінці "Книги")
             clearLayout(ui->booksContainerLayout); // Очистити перед додаванням повідомлення
             QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних. Спробуйте пізніше."), ui->booksContainerWidget);
             noBooksLabel->setAlignment(Qt::AlignCenter);
             noBooksLabel->setWordWrap(true);
-            ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки (на вкладці "Книги")
+            ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, 4); // Розтягнути на 4 колонки (на сторінці "Книги")
         }
-        // --- Кінець завантаження книг для вкладки "Книги" ---
+        // --- Кінець завантаження книг для сторінки "Книги" ---
 
-        // --- Завантаження книг за жанрами для вкладки "Головна" ---
+        // --- Завантаження книг за жанрами для сторінки "Головна" ---
         qInfo() << "Завантаження книг за жанрами для головної сторінки...";
         QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8); // Обмежимо кількість для горизонтального ряду
         displayBooksInHorizontalLayout(classicsBooks, ui->classicsRowLayout);
@@ -90,8 +109,8 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         qInfo() << "Завершено завантаження книг за жанрами.";
         // --- Кінець завантаження книг за жанрами ---
 
-        // --- Завантаження та відображення авторів ---
-        qInfo() << "Завантаження авторів для вкладки 'Автори'...";
+        // --- Завантаження та відображення авторів для сторінки "Автори" ---
+        qInfo() << "Завантаження авторів для сторінки 'Автори'...";
         QList<AuthorDisplayInfo> authors = m_dbManager->getAllAuthorsForDisplay();
         displayAuthors(authors);
         if(authors.isEmpty()){
@@ -260,7 +279,7 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 
 
     // Переконуємося, що контейнер оновився
-    ui->booksContainerWidget->updateGeometry();
+    // Переконуємося, що контейнер оновився
     ui->booksContainerWidget->updateGeometry();
     ui->booksScrollArea->updateGeometry();
 }
@@ -428,9 +447,13 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
     ui->authorsContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
 
     // Оновлюємо геометрію
+    // Оновлюємо геометрію
     ui->authorsContainerWidget->updateGeometry();
     ui->authorsScrollArea->updateGeometry();
 }
+
+// TODO: Додати метод для завантаження та відображення замовлень
+// void MainWindow::loadAndDisplayOrders() { ... }
 
 
 // --- Методи для панелі профілю ---
