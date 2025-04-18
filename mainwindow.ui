@@ -14,10 +14,10 @@
    <string>Книгарня</string>
   </property>
   <property name="styleSheet">
-   <string>/* --- Загальні стилі --- */
+   <string>
 QMainWindow {
-    background-color: #f8f9fa; /* Світло-сірий фон */
-    color: #212529; /* Темний текст */
+    background-color: #ffffff;
+    color: #333333;
 }
 
 QWidget {
@@ -25,182 +25,177 @@ QWidget {
     font-size: 10pt;
 }
 
-/* --- Вкладки --- */
+
 QTabWidget::pane {
-    border: 1px solid #dee2e6; /* Світліша рамка */
+    border: 1px solid #e0e0e0;
     border-top: none;
-    background-color: #ffffff; /* Білий фон вмісту вкладки */
-    border-radius: 0 0 4px 4px;
-    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 0 0 6px 6px;
+    padding: 20px;
 }
 
 QTabBar::tab {
-    padding: 10px 18px;
-    margin-right: 2px;
-    background-color: #e9ecef; /* Трохи темніший сірий для неактивних */
-    border: 1px solid #dee2e6;
+    padding: 12px 20px;
+    margin-right: 1px;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
     border-bottom: none;
-    color: #495057; /* Сірий текст */
+    color: #555555;
     font-weight: 500;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
 }
 
 QTabBar::tab:selected {
-    background-color: #ffffff; /* Білий фон для активної */
-    color: #0d6efd; /* Синій акцент */
+    background-color: #ffffff;
+    color: #0078d4;
     font-weight: 600;
-    border-color: #dee2e6;
-    border-bottom: 1px solid #ffffff; /* Приховуємо нижню межу */
-    margin-bottom: -1px; /* Щоб перекрити межу панелі */
+    border-color: #e0e0e0;
+
 }
 
 QTabBar::tab:hover:!selected {
-    background-color: #dee2e6; /* Світліший сірий при наведенні */
-    color: #212529;
-    border-color: #ced4da;
+    background-color: #eeeeee;
+    color: #333333;
+    border-color: #dcdcdc;
 }
 
 QTabWidget::tab-bar {
     alignment: left;
-    left: 5px; /* Невеликий відступ */
+    left: 5px;
 }
 
-/* --- Поля вводу, Комбобокси, Дата --- */
+
 QLineEdit, QComboBox, QDateEdit {
-    padding: 8px 10px;
-    border: 1px solid #ced4da; /* Стандартна сіра рамка */
-    border-radius: 4px; /* Менш заокруглені кути */
+    padding: 8px 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 5px;
     background-color: #ffffff;
-    color: #212529;
-    min-height: 34px; /* Трохи менша висота */
+    color: #333333;
+    min-height: 36px;
     font-size: 10pt;
 }
 
 QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
-    border-color: #86b7fe; /* Світло-синя рамка при фокусі */
-    /* box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); */ /* Тінь як у Bootstrap - Removed due to potential uic error */
+    border-color: #7bbfff;
+
 }
 
 QLineEdit::placeholder {
-    color: #6c757d; /* Сірий плейсхолдер */
+    color: #aaaaaa;
 }
 
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
-    width: 20px;
-    border-left: 1px solid #ced4da;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    width: 25px;
+    border-left: 1px solid #dcdcdc;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 QComboBox::down-arrow {
-    /* Можна використати іконку або залишити стандартну */
-     image: url(:/icons/down-arrow.svg); /* Приклад шляху до іконки */
+
      width: 10px;
      height: 10px;
 }
 QComboBox QAbstractItemView {
-    border: 1px solid #ced4da;
+    border: 1px solid #dcdcdc;
     background-color: #ffffff;
-    selection-background-color: #cfe2ff; /* Світло-синій фон виділення */
-    selection-color: #000; /* Чорний текст виділення */
+    selection-background-color: #e6f2ff;
+    selection-color: #0078d4;
     padding: 4px;
 }
 
-/* --- Кнопки --- */
+
 QPushButton {
-    padding: 8px 14px;
-    background-color: #0d6efd; /* Основний синій */
+    padding: 8px 16px;
+    background-color: #0078d4;
     color: white;
-    border: 1px solid #0d6efd;
-    border-radius: 4px;
+    border: 1px solid #0078d4;
+    border-radius: 5px;
     font-weight: 500;
-    min-height: 34px;
+    min-height: 36px;
     font-size: 10pt;
-    /* transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; */ /* Плавний перехід - Removed due to potential uic error */
 }
 QPushButton:hover {
-    background-color: #0b5ed7; /* Темніший синій при наведенні */
-    border-color: #0a58ca;
+    background-color: #106ebe;
+    border-color: #106ebe;
 }
 QPushButton:pressed {
-    background-color: #0a58ca; /* Ще темніший при натисканні */
-    border-color: #0a53be;
+    background-color: #005a9e;
+    border-color: #005a9e;
 }
 QPushButton:disabled {
-    background-color: #6c757d; /* Сірий для неактивних */
-    color: #ffffff;
-    border-color: #6c757d;
-    opacity: 0.65;
+    background-color: #f0f0f0;
+    color: #aaaaaa;
+    border-color: #e0e0e0;
 }
 
-/* --- Кнопки-іконки в хедері --- */
+
 QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
     background-color: transparent;
-    border: 1px solid transparent; /* Прозора рамка для збереження розміру */
+    border: none;
     padding: 6px;
-    border-radius: 4px; /* Звичайний радіус */
-    min-height: 36px; min-width: 36px;
-    max-width: 36px; max-height: 36px;
-    color: #495057; /* Сірий колір іконки */
-    font-size: 14pt; /* Розмір можна налаштувати */
+    border-radius: 50%;
+    min-height: 38px; min-width: 38px;
+    max-width: 38px; max-height: 38px;
+    color: #555555;
+    font-size: 14pt;
 }
 QPushButton#cartButton:hover, QPushButton#wishlistButton:hover, QPushButton#profileButton:hover {
-    background-color: #e9ecef; /* Світло-сірий фон при наведенні */
-    color: #212529;
-    border-color: #dee2e6;
+    background-color: #f0f0f0;
+    color: #333333;
 }
 QPushButton#cartButton:pressed, QPushButton#wishlistButton:pressed, QPushButton#profileButton:pressed {
-    background-color: #dee2e6; /* Темніший сірий при натисканні */
-    border-color: #ced4da;
+    background-color: #e0e0e0;
 }
 
-/* --- Кнопки фільтрів/сортування/вигляду --- */
+
 QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
     background-color: #ffffff;
-    border: 1px solid #ced4da; /* Стандартна сіра рамка */
-    color: #495057; /* Сірий колір іконки/тексту */
-    min-width: 36px; max-width: 36px; /* Зробимо квадратними */
-    min-height: 34px; max-height: 34px;
+    border: 1px solid #dcdcdc;
+    color: #555555;
+    min-width: 38px; max-width: 38px;
+    min-height: 36px; max-height: 36px;
     padding: 6px;
-    border-radius: 4px;
+    border-radius: 5px;
     font-size: 12pt;
 }
 QPushButton#filterButton:hover, QPushButton#sortButton:hover, QPushButton#viewModeButton:hover {
-    background-color: #f8f9fa; /* Дуже світлий сірий фон */
-    border-color: #adb5bd;
-    color: #212529;
+    background-color: #f5f5f5;
+    border-color: #c8c8c8;
+    color: #333333;
 }
 QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#viewModeButton:pressed {
-    background-color: #e9ecef; /* Трохи темніший сірий */
+    background-color: #e8e8e8;
 }
 QPushButton#viewModeButton:checked {
-    background-color: #cfe2ff; /* Світло-синій фон для вибраного */
-    border-color: #86b7fe;
-    color: #0d6efd;
+    background-color: #e6f2ff;
+    border-color: #7bbfff;
+    color: #0078d4;
 }
 
-/* --- Скролбари --- */
+
+
 QScrollArea {
     border: none;
     background-color: transparent;
 }
 QScrollBar:vertical {
     border: none;
-    background: #f1f3f5; /* Дуже світлий фон */
-    width: 6px; /* Тонший скролбар */
+    background: #f5f5f5;
+    width: 8px;
     margin: 0px 0px 0px 0px;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 QScrollBar::handle:vertical {
-    background: #adb5bd; /* Сірий повзунок */
-    min-height: 20px;
-    border-radius: 3px;
+    background: #dcdcdc;
+    min-height: 25px;
+    border-radius: 4px;
 }
 QScrollBar::handle:vertical:hover {
-    background: #6c757d; /* Темніший при наведенні */
+    background: #c8c8c8;
 }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     border: none; background: none; height: 0px;
@@ -210,13 +205,13 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }
 
 QScrollBar:horizontal {
-    border: none; background: #f1f3f5; height: 6px; margin: 0px 0px 0px 0px; border-radius: 3px;
+    border: none; background: #f5f5f5; height: 8px; margin: 0px 0px 0px 0px; border-radius: 4px;
 }
 QScrollBar::handle:horizontal {
-    background: #adb5bd; min-width: 20px; border-radius: 3px;
+    background: #dcdcdc; min-width: 25px; border-radius: 4px;
 }
 QScrollBar::handle:horizontal:hover {
-    background: #6c757d;
+    background: #c8c8c8;
 }
 QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
     border: none; background: none; width: 0px;
@@ -225,75 +220,70 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
     background: none;
 }
 
-/* --- Статус бар --- */
+
 QStatusBar {
-    background-color: #e9ecef; /* Світло-сірий фон */
-    color: #495057; /* Сірий текст */
+    background-color: #f5f5f5;
+    color: #555555;
     font-size: 9pt;
-    border-top: 1px solid #dee2e6; /* Тонка верхня межа */
+    border-top: 1px solid #e0e0e0;
 }
 
-/* --- Мітки (Labels) --- */
+
 QLabel {
-   color: #212529; /* Основний темний текст */
+   color: #333333;
    background-color: transparent;
 }
 QLabel#logoLabel {
-   font-size: 16pt; /* Трохи менший логотип */
+   font-size: 18px;
    font-weight: 600;
-   color: #000000; /* Чорний */
+   color: #000000;
    padding-left: 0px;
 }
 QLabel#bannerLabel {
-   /* background-color: qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 #e6f2ff, stop:1 #d0e7ff); */
-   background-color: #cfe2ff; /* Простий світло-синій фон */
-   border-radius: 6px; /* Менше заокруглення */
-   color: #0a58ca; /* Темніший синій текст */
-   font-size: 20pt; /* Менший розмір шрифту */
-   font-weight: 500; /* Звичайний шрифт */
-   padding: 25px;
-   text-align: center; /* Вирівнювання по центру */
-}
-/* Заголовки секцій */
-QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel,
-QLabel#classicsHeaderLabel, QLabel#fantasyHeaderLabel, QLabel#nonFictionHeaderLabel {
-   font-size: 14pt; /* Менший розмір */
+
+   background-color: qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 #e6f2ff, stop:1 #d0e7ff);
+   border-radius: 8px;
+   color: #005a9e;
+   font-size: 24px;
    font-weight: 600;
-   color: #343a40; /* Темно-сірий */
-   margin-top: 15px;
-   margin-bottom: 8px;
-   padding-bottom: 4px;
-   border-bottom: 1px solid #dee2e6; /* Світліша лінія */
+   padding: 30px;
+}
+QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel {
+   font-size: 16px;
+   font-weight: 600;
+   color: #444444;
+   margin-top: 20px;
+   margin-bottom: 10px;
+   padding-bottom: 5px;
+   border-bottom: 1px solid #eeeeee;
 }
 QLabel#dateFilterLabel {
-    color: #495057; /* Сірий текст */
-    font-size: 9pt; /* Менший шрифт */
+    color: #777777;
 }
 
-/* --- Кнопки категорій --- */
+
 QWidget#categoriesWidget QPushButton {
     background-color: #ffffff;
-    color: #0d6efd; /* Синій текст */
-    border: 1px solid #ced4da; /* Сіра рамка */
+    color: #0078d4;
+    border: 1px solid #dcdcdc;
     font-weight: 500;
     text-align: center;
-    padding: 12px;
-    min-height: 100px; /* Трохи менша висота */
-    border-radius: 4px;
-    /* transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out; */ /* Removed due to potential uic error */
+    padding: 15px;
+    min-height: 110px;
+    border-radius: 6px;
 }
 QWidget#categoriesWidget QPushButton:hover {
-    background-color: #f8f9fa;
-    color: #0b5ed7;
-    border-color: #adb5bd;
+    background-color: #f5f5f5;
+    color: #106ebe;
+    border-color: #c8c8c8;
 }
 QWidget#categoriesWidget QPushButton:pressed {
-    background-color: #e9ecef;
+    background-color: #e8e8e8;
 }
 
-/* --- Глобальний пошук --- */
+
 QLineEdit#globalSearchLineEdit {
-    min-height: 36px; /* Стандартна висота */
+    min-height: 38px;
 }
 </string>
   </property>
@@ -438,160 +428,23 @@ QLineEdit#globalSearchLineEdit {
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="mainContentLayout">
-      <property name="spacing">
-       <number>0</number>
+     <widget class="QTabWidget" name="mainTabWidget">
+      <property name="currentIndex">
+       <number>4</number>
       </property>
-      <item>
-       <widget class="QWidget" name="navigationPanel" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QWidget#navigationPanel {
-    background-color: #e9ecef; /* Світло-сірий фон панелі */
-    border-right: 1px solid #dee2e6; /* Лінія розділення */
-}
-
-QPushButton#navHomeButton,
-QPushButton#navBooksButton,
-QPushButton#navAuthorsButton,
-QPushButton#navOrdersButton {
-    padding: 12px 15px;
-    border: none; /* Без рамки */
-    border-radius: 4px; /* Невелике заокруглення */
-    text-align: left;
-    font-size: 11pt;
-    font-weight: 500;
-    color: #343a40; /* Темно-сірий текст */
-    background-color: transparent; /* Прозорий фон */
-    margin: 4px 8px; /* Відступи */
-    min-height: 38px;
-}
-
-QPushButton#navHomeButton:hover,
-QPushButton#navBooksButton:hover,
-QPushButton#navAuthorsButton:hover,
-QPushButton#navOrdersButton:hover {
-    background-color: #dee2e6; /* Світліший фон при наведенні */
-    color: #000;
-}
-
-QPushButton#navHomeButton:checked,
-QPushButton#navBooksButton:checked,
-QPushButton#navAuthorsButton:checked,
-QPushButton#navOrdersButton:checked {
-    background-color: #0d6efd; /* Синій фон для активної кнопки */
-    color: white; /* Білий текст */
-    font-weight: 600;
-}
-</string>
-        </property>
-        <layout class="QVBoxLayout" name="navigationLayout">
-         <property name="spacing">
-          <number>8</number>
-         </property>
-         <property name="leftMargin">
-          <number>10</number>
-         </property>
-         <property name="topMargin">
-          <number>20</number>
-         </property>
-         <property name="rightMargin">
-          <number>10</number>
-         </property>
-         <property name="bottomMargin">
-          <number>10</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="navHomeButton">
-           <property name="text">
-            <string>🏠 Головна</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="navBooksButton">
-           <property name="text">
-            <string>📚 Книги</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="navAuthorsButton">
-           <property name="text">
-            <string>👥 Автори</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="navOrdersButton">
-           <property name="text">
-            <string>🛍️ Мої замовлення</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="navigationSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QStackedWidget" name="contentStackedWidget">
-        <property name="currentIndex">
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <widget class="QWidget" name="discoverTab">
+       <attribute name="title">
+        <string>🏠 Головна</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="discoverTabLayout">
+        <property name="spacing">
          <number>0</number>
-        </property>
-        <widget class="QWidget" name="discoverPage">
-         <layout class="QVBoxLayout" name="discoverPageLayout">
-          <property name="spacing">
-           <number>0</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
@@ -781,11 +634,18 @@ QPushButton#navOrdersButton:checked {
             </item>
             <item>
              <widget class="QLabel" name="classicsHeaderLabel">
+              <property name="styleSheet">
+               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
+font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
+              </property>
               <property name="text">
                <string>📖 Класика</string>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
               </property>
              </widget>
             </item>
@@ -846,11 +706,18 @@ QPushButton#navOrdersButton:checked {
             </item>
             <item>
              <widget class="QLabel" name="fantasyHeaderLabel">
+              <property name="styleSheet">
+               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
+font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
+              </property>
               <property name="text">
                <string>✨ Фентезі</string>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
               </property>
              </widget>
             </item>
@@ -911,11 +778,18 @@ QPushButton#navOrdersButton:checked {
             </item>
             <item>
              <widget class="QLabel" name="nonFictionHeaderLabel">
+              <property name="styleSheet">
+               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
+font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
+              </property>
               <property name="text">
                <string>🔬 Науково-популярне</string>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
               </property>
              </widget>
             </item>
@@ -996,8 +870,11 @@ QPushButton#navOrdersButton:checked {
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="booksPage">
-       <layout class="QVBoxLayout" name="booksPageLayout">
+      <widget class="QWidget" name="booksTab">
+       <attribute name="title">
+        <string>📚 Книги</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="booksTabLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1192,8 +1069,11 @@ QPushButton#navOrdersButton:checked {
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="authorsPage">
-       <layout class="QVBoxLayout" name="authorsPageLayout">
+      <widget class="QWidget" name="authorsTab">
+       <attribute name="title">
+        <string>👥 Автори</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="authorsTabLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1304,8 +1184,11 @@ QPushButton#navOrdersButton:checked {
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="ordersPage">
-       <layout class="QVBoxLayout" name="ordersPageLayout">
+      <widget class="QWidget" name="ordersTab">
+       <attribute name="title">
+        <string>🛍️ Мої замовлення</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="ordersTabLayout">
         <property name="spacing">
          <number>16</number>
         </property>
@@ -1442,22 +1325,315 @@ QPushButton#navOrdersButton:checked {
            <bool>true</bool>
           </property>
           <widget class="QWidget" name="ordersContainerWidget">
-           <!-- Геометрія буде керуватися QScrollArea та layout'ом -->
-           <!-- Layout буде встановлено програмно в mainwindow.cpp -->
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1118</width>
+             <height>509</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="ordersListLayout">
+            <property name="spacing">
+             <number>16</number>
+            </property>
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>10</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
+             <number>10</number>
+            </property>
+            <item>
+             <spacer name="ordersBottomSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Policy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
        </layout>
       </widget>
+      <!-- Вкладка Профіль видалена -->
+     </widget>
+    </item>
+    <item>
+     <!-- Панель профілю, що висувається -->
+     <widget class="QFrame" name="profilePanel">
+      <property name="minimumSize">
+       <size>
+        <width>0</width> <!-- Початкова ширина 0 -->
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>0</width> <!-- Початкова ширина 0 -->
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QFrame#profilePanel {
+    background-color: #f8f8f8;
+    border-left: 1px solid #d0d0d0;
+}
+QLabel#profilePanelHeaderLabel {
+   font-size: 14pt; /* Трохи менший заголовок */
+   font-weight: 600;
+   color: #333;
+   margin-bottom: 10px;
+   padding-bottom: 8px;
+   border-bottom: 1px solid #e0e0e0;
+}
+QLabel[objectName^=&quot;label_&quot;] { /* Стиль для міток полів */
+  font-weight: 500;
+  color: #555;
+  padding-top: 3px; /* Невеликий відступ зверху */
+}
+QLabel[objectName$=Label] { /* Стиль для значень полів */
+  color: #111;
+  font-size: 10pt;
+}
+QPushButton#closeProfileButton {
+    background-color: transparent;
+    border: none;
+    color: #777;
+    font-size: 16pt;
+    font-weight: bold;
+    padding: 0px;
+    min-width: 24px; max-width: 24px;
+    min-height: 24px; max-height: 24px;
+}
+QPushButton#closeProfileButton:hover {
+    color: #333;
+}
+QPushButton#closeProfileButton:pressed {
+    color: #000;
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <layout class="QVBoxLayout" name="profilePanelLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="leftMargin">
+        <number>15</number>
+       </property>
+       <property name="topMargin">
+        <number>15</number>
+       </property>
+       <property name="rightMargin">
+        <number>15</number>
+       </property>
+       <property name="bottomMargin">
+        <number>15</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="profilePanelHeaderLayout">
+         <property name="spacing">
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="profilePanelHeaderLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Ваш профіль</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="closeProfileButton">
+           <property name="toolTip">
+            <string>Закрити панель профілю</string>
+           </property>
+           <property name="text">
+            <string>×</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="profilePanelFormLayout">
+         <property name="horizontalSpacing">
+          <number>12</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>8</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_FirstName">
+           <property name="text">
+            <string>Ім'я:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="profileFirstNameLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_LastName">
+           <property name="text">
+            <string>Прізвище:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="profileLastNameLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_Email">
+           <property name="text">
+            <string>Email:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="profileEmailLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_Phone">
+           <property name="text">
+            <string>Телефон:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="profilePhoneLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_Address">
+           <property name="text">
+            <string>Адреса:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="profileAddressLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_JoinDate">
+           <property name="text">
+            <string>Дата реєстрації:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="profileJoinDateLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_Loyalty">
+           <property name="text">
+            <string>Програма лояльності:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLabel" name="profileLoyaltyLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_Points">
+           <property name="text">
+            <string>Бонусні бали:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLabel" name="profilePointsLabel">
+           <property name="text">
+            <string>(не завантажено)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="profilePanelSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="styleSheet">
-    <string notr="true">/* Стиль для статус бару вже визначено в глобальних стилях */</string>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <resources/>
  <connections/>
