@@ -280,10 +280,10 @@ QWidget#categoriesWidget QPushButton:pressed {
 }
 
 QLineEdit#globalSearchLineEdit {
-    min-height: 34px; /* Зменшено висоту */
+    min-height: 30px; /* Ще зменшено висоту */
     background-color: #f1f3f5; /* Світліший фон */
     border: 1px solid #e9ecef; /* Дуже світла рамка */
-    border-radius: 17px; /* Більш округлі краї */
+    border-radius: 15px; /* Округлі краї (половина висоти) */
     padding-left: 15px; /* Відступ для тексту (і можливої іконки) */
     padding-right: 15px;
 }
@@ -348,7 +348,7 @@ QWidget#ordersContainerWidget {
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>50</height>
+        <height>45</height> <!-- Зменшено висоту хедера -->
        </size>
       </property>
       <layout class="QHBoxLayout" name="headerLayout">
@@ -397,13 +397,13 @@ QWidget#ordersContainerWidget {
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>34</height> <!-- Змінено висоту -->
+           <height>30</height> <!-- Змінено висоту -->
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>500</width>
-           <height>34</height> <!-- Змінено висоту -->
+           <height>30</height> <!-- Змінено висоту -->
           </size>
          </property>
          <property name="placeholderText">
