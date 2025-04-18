@@ -14,19 +14,16 @@
    <string>Книгарня</string>
   </property>
   <property name="styleSheet">
-   <string>/* === Глобальні стилі === */
-QMainWindow {
+   <string>QMainWindow {
     background-color: #f8f9fa;
     color: #212529;
 }
 
 QWidget {
-    font-family: &quot;Segoe UI&quot;, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 10pt;
-    color: #212529;
 }
 
-/* === Віджети вкладок === */
 QTabWidget::pane {
     border: 1px solid #dee2e6;
     border-top: none;
@@ -37,10 +34,10 @@ QTabWidget::pane {
 
 QTabBar::tab {
     padding: 10px 18px;
-    margin-right: 0px;
-    background-color: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
+    margin-right: 2px;
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
     color: #495057;
     font-weight: 500;
     border-top-left-radius: 4px;
@@ -51,24 +48,22 @@ QTabBar::tab:selected {
     background-color: #ffffff;
     color: #0d6efd;
     font-weight: 600;
-    border: 1px solid #dee2e6;
-    border-top-width: 2px;
-    border-top-color: #0d6efd;
-    border-bottom: none;
+    border-color: #dee2e6;
+    border-bottom: 1px solid #ffffff;
+    margin-bottom: -1px;
 }
 
 QTabBar::tab:hover:!selected {
-    background-color: #e9ecef;
-    color: #0d6efd;
-    border-bottom: 2px solid #ced4da;
+    background-color: #dee2e6;
+    color: #212529;
+    border-color: #ced4da;
 }
 
 QTabWidget::tab-bar {
     alignment: left;
-    left: 10px;
+    left: 5px;
 }
 
-/* === Поля вводу, Комбобокси, Дата === */
 QLineEdit, QComboBox, QDateEdit {
     padding: 8px 10px;
     border: 1px solid #ced4da;
@@ -106,13 +101,12 @@ QComboBox QAbstractItemView {
     border: 1px solid #ced4da;
     background-color: #ffffff;
     selection-background-color: #cfe2ff;
-    selection-color: #0d6efd;
+    selection-color: #000;
     padding: 4px;
 }
 
-/* === Кнопки === */
 QPushButton {
-    padding: 8px 15px;
+    padding: 8px 14px;
     background-color: #0d6efd;
     color: white;
     border: 1px solid #0d6efd;
@@ -134,30 +128,29 @@ QPushButton:disabled {
     background-color: #6c757d;
     color: #ffffff;
     border-color: #6c757d;
+    opacity: 0.65;
 }
 
-/* === Кнопки іконки (Кошик, Обране, Профіль) === */
 QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
     background-color: transparent;
     border: 1px solid transparent;
-    padding: 5px;
+    padding: 6px;
     border-radius: 4px;
     min-height: 36px; min-width: 36px;
     max-width: 36px; max-height: 36px;
     color: #495057;
-    font-size: 16pt;
+    font-size: 14pt;
 }
 QPushButton#cartButton:hover, QPushButton#wishlistButton:hover, QPushButton#profileButton:hover {
     background-color: #e9ecef;
-    color: #0d6efd;
-    border-color: #ced4da;
+    color: #212529;
+    border-color: #dee2e6;
 }
 QPushButton#cartButton:pressed, QPushButton#wishlistButton:pressed, QPushButton#profileButton:pressed {
-    background-color: #ced4da;
-    border-color: #adb5bd;
+    background-color: #dee2e6;
+    border-color: #ced4da;
 }
 
-/* === Кнопки Фільтр, Сортування, Вигляд === */
 QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
     background-color: #ffffff;
     border: 1px solid #ced4da;
@@ -171,7 +164,7 @@ QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
 QPushButton#filterButton:hover, QPushButton#sortButton:hover, QPushButton#viewModeButton:hover {
     background-color: #f8f9fa;
     border-color: #adb5bd;
-    color: #0d6efd;
+    color: #212529;
 }
 QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#viewModeButton:pressed {
     background-color: #e9ecef;
@@ -182,7 +175,6 @@ QPushButton#viewModeButton:checked {
     color: #0d6efd;
 }
 
-/* === Області прокрутки === */
 QScrollArea {
     border: none;
     background-color: transparent;
@@ -225,7 +217,6 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
     background: none;
 }
 
-/* === Рядок стану === */
 QStatusBar {
     background-color: #e9ecef;
     color: #495057;
@@ -233,49 +224,48 @@ QStatusBar {
     border-top: 1px solid #dee2e6;
 }
 
-/* === Мітки (Labels) === */
 QLabel {
    color: #212529;
    background-color: transparent;
 }
 QLabel#logoLabel {
-   font-size: 18px;
-   font-weight: 700;
-   color: #0d6efd;
+   font-size: 16pt;
+   font-weight: 600;
+   color: #000000;
    padding-left: 0px;
 }
 QLabel#bannerLabel {
    background-color: #cfe2ff;
    border-radius: 6px;
    color: #0a58ca;
-   font-size: 22px;
-   font-weight: 600;
+   font-size: 20pt;
+   font-weight: 500;
    padding: 25px;
    text-align: center;
 }
-/* Заголовки секцій */
-QLabel#categoryHeaderLabel, QLabel#classicsHeaderLabel, QLabel#fantasyHeaderLabel, QLabel#nonFictionHeaderLabel {
+
+QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel,
+QLabel#classicsHeaderLabel, QLabel#fantasyHeaderLabel, QLabel#nonFictionHeaderLabel {
    font-size: 14pt;
    font-weight: 600;
    color: #343a40;
-   margin-top: 25px;
-   margin-bottom: 15px;
-   padding-bottom: 8px;
+   margin-top: 15px;
+   margin-bottom: 8px;
+   padding-bottom: 4px;
    border-bottom: 1px solid #dee2e6;
 }
 QLabel#dateFilterLabel {
     color: #495057;
-    font-weight: 500;
+    font-size: 9pt;
 }
 
-/* === Кнопки категорій === */
 QWidget#categoriesWidget QPushButton {
     background-color: #ffffff;
     color: #0d6efd;
-    border: 1px solid #dee2e6;
+    border: 1px solid #ced4da;
     font-weight: 500;
     text-align: center;
-    padding: 15px;
+    padding: 12px;
     min-height: 100px;
     border-radius: 4px;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
@@ -289,43 +279,9 @@ QWidget#categoriesWidget QPushButton:pressed {
     background-color: #e9ecef;
 }
 
-/* === Поле глобального пошуку === */
 QLineEdit#globalSearchLineEdit {
     min-height: 36px;
-    border-radius: 18px;
-    padding-left: 15px;
-    padding-right: 15px;
 }
-
-/* === Стилі для вкладки Профіль === */
-QWidget#profileTab {
-    background-color: #ffffff;
-    padding: 30px;
-}
-QLabel#profileHeaderLabel {
-   font-size: 18pt;
-   font-weight: 600;
-   color: #212529;
-   margin-bottom: 20px;
-   border-bottom: none;
-}
-QFormLayout#profileFormLayout QLabel {
-    font-weight: 600;
-    color: #495057;
-    margin-top: 5px;
-}
-QFormLayout#profileFormLayout QLabel[text="(не завантажено)"] {
-    color: #6c757d;
-    font-style: italic;
-}
-QLabel#profileFirstNameLabel, QLabel#profileLastNameLabel, QLabel#profileEmailLabel,
-QLabel#profilePhoneLabel, QLabel#profileAddressLabel, QLabel#profileJoinDateLabel,
-QLabel#profileLoyaltyLabel, QLabel#profilePointsLabel {
-     color: #212529;
-     font-style: normal;
-     padding-top: 5px;
-}
-
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -399,7 +355,7 @@ QLabel#profileLoyaltyLabel, QLabel#profilePointsLabel {
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>60</height>
+           <height>56</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -469,1334 +425,1052 @@ QLabel#profileLoyaltyLabel, QLabel#profilePointsLabel {
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="contentAreaWidget" native="true">
-      <layout class="QHBoxLayout" name="contentHorizontalLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QFrame" name="sidebarFrame">
-         <property name="minimumSize">
-          <size>
-           <width>50</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string>QFrame#sidebarFrame {
+     <layout class="QHBoxLayout" name="mainContentLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="navigationPanel" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget#navigationPanel {
     background-color: #e9ecef;
     border-right: 1px solid #dee2e6;
 }
 
-QPushButton#navButtonHome,
-QPushButton#navButtonBooks,
-QPushButton#navButtonAuthors,
-QPushButton#navButtonOrders,
-QPushButton#navButtonProfile {
-    background-color: transparent;
+QPushButton#navHomeButton,
+QPushButton#navBooksButton,
+QPushButton#navAuthorsButton,
+QPushButton#navOrdersButton {
+    padding: 12px 15px;
     border: none;
-    color: #495057;
-    padding: 10px 5px;
-    text-align: left;
-    min-height: 36px;
     border-radius: 4px;
+    text-align: left;
     font-size: 11pt;
     font-weight: 500;
-
-
+    color: #343a40;
+    background-color: transparent;
+    margin: 4px 8px;
+    min-height: 38px;
 }
 
-QPushButton#navButtonHome:hover,
-QPushButton#navButtonBooks:hover,
-QPushButton#navButtonAuthors:hover,
-QPushButton#navButtonOrders:hover,
-QPushButton#navButtonProfile:hover {
-    background-color: #cfe2ff;
-    color: #0d6efd;
+QPushButton#navHomeButton:hover,
+QPushButton#navBooksButton:hover,
+QPushButton#navAuthorsButton:hover,
+QPushButton#navOrdersButton:hover {
+    background-color: #dee2e6;
+    color: #000;
 }
 
-QPushButton#navButtonHome:checked,
-QPushButton#navButtonBooks:checked,
-QPushButton#navButtonAuthors:checked,
-QPushButton#navButtonOrders:checked,
-QPushButton#navButtonProfile:checked {
+QPushButton#navHomeButton:checked,
+QPushButton#navBooksButton:checked,
+QPushButton#navAuthorsButton:checked,
+QPushButton#navOrdersButton:checked {
     background-color: #0d6efd;
     color: white;
     font-weight: 600;
 }
 </string>
+        </property>
+        <layout class="QVBoxLayout" name="navigationLayout">
+         <property name="spacing">
+          <number>8</number>
          </property>
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+         <property name="leftMargin">
+          <number>10</number>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="topMargin">
+          <number>20</number>
          </property>
-         <layout class="QVBoxLayout" name="sidebarLayout">
+         <property name="rightMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="navHomeButton">
+           <property name="text">
+            <string>🏠 Головна</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="navBooksButton">
+           <property name="text">
+            <string>📚 Книги</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="navAuthorsButton">
+           <property name="text">
+            <string>👥 Автори</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="navOrdersButton">
+           <property name="text">
+            <string>🛍️ Мої замовлення</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="navigationSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="contentStackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="discoverPage">
+         <layout class="QVBoxLayout" name="discoverPageLayout">
           <property name="spacing">
-           <number>8</number>
+           <number>0</number>
           </property>
           <property name="leftMargin">
-           <number>5</number>
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QScrollArea" name="discoverScrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="discoverScrollContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>978</width>
+               <height>1795</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="discoverContentLayout">
+              <property name="spacing">
+               <number>20</number>
+              </property>
+              <property name="leftMargin">
+               <number>10</number>
+              </property>
+              <property name="topMargin">
+               <number>10</number>
+              </property>
+              <property name="rightMargin">
+               <number>10</number>
+              </property>
+              <property name="bottomMargin">
+               <number>20</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="bannerLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>250</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>📚 Новинки та Популярні Книги 📚</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="categoryHeaderLabel">
+                <property name="styleSheet">
+                 <string/>
+                </property>
+                <property name="text">
+                 <string>Популярні категорії</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="categoriesWidget" native="true">
+                <layout class="QGridLayout" name="categoriesLayout">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="spacing">
+                  <number>20</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="fictionCategoryButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>142</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string/>
+                   </property>
+                   <property name="text">
+                    <string>Художня
+ література</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="nonFictionCategoryButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>142</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string/>
+                   </property>
+                   <property name="text">
+                    <string>Бізнес
+ та наука</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="childrenCategoryButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>142</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string/>
+                   </property>
+                   <property name="text">
+                    <string>Дитячі
+ книги</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QPushButton" name="educationCategoryButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>142</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string/>
+                   </property>
+                   <property name="text">
+                    <string>Освіта</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="classicsHeaderLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
+                </property>
+                <property name="text">
+                 <string>📖 Класика</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QScrollArea" name="classicsScrollArea">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>320</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>350</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Shape::NoFrame</enum>
+                </property>
+                <property name="verticalScrollBarPolicy">
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                </property>
+                <property name="horizontalScrollBarPolicy">
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                </property>
+                <property name="widgetResizable">
+                 <bool>true</bool>
+                </property>
+                <widget class="QWidget" name="classicsRowWidget">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>958</width>
+                   <height>320</height>
+                  </rect>
+                 </property>
+                 <layout class="QHBoxLayout" name="classicsRowLayout">
+                  <property name="spacing">
+                   <number>15</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>5</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>5</number>
+                  </property>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="fantasyHeaderLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
+                </property>
+                <property name="text">
+                 <string>✨ Фентезі</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QScrollArea" name="fantasyScrollArea">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>320</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>350</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Shape::NoFrame</enum>
+                </property>
+                <property name="verticalScrollBarPolicy">
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                </property>
+                <property name="horizontalScrollBarPolicy">
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                </property>
+                <property name="widgetResizable">
+                 <bool>true</bool>
+                </property>
+                <widget class="QWidget" name="fantasyRowWidget">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>958</width>
+                   <height>320</height>
+                  </rect>
+                 </property>
+                 <layout class="QHBoxLayout" name="fantasyRowLayout">
+                  <property name="spacing">
+                   <number>15</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>5</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>5</number>
+                  </property>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="nonFictionHeaderLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 16px;
+font-weight: 600;
+color: #444444;
+margin-top: 20px;
+margin-bottom: 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid #eeeeee;</string>
+                </property>
+                <property name="text">
+                 <string>🔬 Науково-популярне</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QScrollArea" name="nonFictionScrollArea">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>320</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>350</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Shape::NoFrame</enum>
+                </property>
+                <property name="verticalScrollBarPolicy">
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                </property>
+                <property name="horizontalScrollBarPolicy">
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                </property>
+                <property name="widgetResizable">
+                 <bool>true</bool>
+                </property>
+                <widget class="QWidget" name="nonFictionRowWidget">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>958</width>
+                   <height>320</height>
+                  </rect>
+                 </property>
+                 <layout class="QHBoxLayout" name="nonFictionRowLayout">
+                  <property name="spacing">
+                   <number>15</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>5</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>5</number>
+                  </property>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <spacer name="discoverBottomSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Policy::Expanding</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="booksPage">
+         <layout class="QVBoxLayout" name="booksPageLayout">
+          <property name="spacing">
+           <number>16</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
           </property>
           <property name="topMargin">
            <number>10</number>
           </property>
           <property name="rightMargin">
-           <number>5</number>
+           <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>10</number>
+           <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="navButtonHome">
-            <property name="toolTip">
-             <string>Головна</string>
-            </property>
-            <property name="text">
-             <string>🏠</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="navButtonBooks">
-            <property name="toolTip">
-             <string>Книги</string>
-            </property>
-            <property name="text">
-             <string>📚</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="navButtonAuthors">
-            <property name="toolTip">
-             <string>Автори</string>
-            </property>
-            <property name="text">
-             <string>👥</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="navButtonOrders">
-            <property name="toolTip">
-             <string>Мої замовлення</string>
-            </property>
-            <property name="text">
-             <string>🛍️</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="navButtonProfile">
-            <property name="toolTip">
-             <string>Профіль</string>
-            </property>
-            <property name="text">
-             <string>👤</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="sidebarSpacer">
-            <property name="orientation">
-             <enum>Qt::Orientation::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+           <widget class="QWidget" name="booksFilterWidget" native="true">
+            <property name="minimumSize">
              <size>
-              <width>20</width>
-              <height>40</height>
+              <width>0</width>
+              <height>45</height>
              </size>
             </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QStackedWidget" name="contentStackedWidget">
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="pageDiscover">
-          <layout class="QVBoxLayout" name="discoverPageLayout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QScrollArea" name="discoverScrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="discoverScrollContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1110</width>
-             <height>1300</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="discoverContentLayout">
-            <property name="spacing">
-             <number>20</number>
-            </property>
-            <property name="leftMargin">
-             <number>10</number>
-            </property>
-            <property name="topMargin">
-             <number>10</number>
-            </property>
-            <property name="rightMargin">
-             <number>10</number>
-            </property>
-            <property name="bottomMargin">
-             <number>20</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="bannerLabel">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>250</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string/>
-              </property>
-              <property name="text">
-               <string>📚 Новинки та Популярні Книги 📚</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignCenter</set>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="categoryHeaderLabel">
-              <property name="styleSheet">
-               <string/>
-              </property>
-              <property name="text">
-               <string>Популярні категорії</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QWidget" name="categoriesWidget" native="true">
-              <layout class="QGridLayout" name="categoriesLayout">
-               <property name="leftMargin">
-                <number>0</number>
+            <layout class="QHBoxLayout" name="booksFilterLayout">
+             <property name="spacing">
+              <number>16</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="bookSearchLineEdit">
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>54</height>
+                </size>
                </property>
-               <property name="topMargin">
-                <number>5</number>
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>40</height>
+                </size>
                </property>
-               <property name="rightMargin">
-                <number>0</number>
+               <property name="placeholderText">
+                <string>Пошук за назвою або автором...</string>
                </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <property name="spacing">
-                <number>20</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QPushButton" name="fictionCategoryButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>150</width>
-                   <height>132</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string/>
-                 </property>
-                 <property name="text">
-                  <string>Художня
- література</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QPushButton" name="nonFictionCategoryButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>150</width>
-                   <height>132</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string/>
-                 </property>
-                 <property name="text">
-                  <string>Бізнес
- та наука</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QPushButton" name="childrenCategoryButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>150</width>
-                   <height>132</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string/>
-                 </property>
-                 <property name="text">
-                  <string>Дитячі
- книги</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <widget class="QPushButton" name="educationCategoryButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>150</width>
-                   <height>132</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string/>
-                 </property>
-                 <property name="text">
-                  <string>Освіта</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="classicsHeaderLabel">
-              <property name="styleSheet">
-               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
-font-size: 16px;
-font-weight: 600;
-color: #444444;
-margin-top: 20px;
-margin-bottom: 10px;
-padding-bottom: 5px;
-border-bottom: 1px solid #eeeeee;</string>
-              </property>
-              <property name="text">
-               <string>📖 Класика</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QScrollArea" name="classicsScrollArea">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>320</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>350</height>
-               </size>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Shape::NoFrame</enum>
-              </property>
-              <property name="verticalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="horizontalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
-              </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <widget class="QWidget" name="classicsRowWidget">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>1090</width>
-                 <height>320</height>
-                </rect>
-               </property>
-               <layout class="QHBoxLayout" name="classicsRowLayout">
-                <property name="spacing">
-                 <number>15</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>5</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>5</number>
-                </property>
-               </layout>
               </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="fantasyHeaderLabel">
-              <property name="styleSheet">
-               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
-font-size: 16px;
-font-weight: 600;
-color: #444444;
-margin-top: 20px;
-margin-bottom: 10px;
-padding-bottom: 5px;
-border-bottom: 1px solid #eeeeee;</string>
-              </property>
-              <property name="text">
-               <string>✨ Фентезі</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QScrollArea" name="fantasyScrollArea">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>320</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>350</height>
-               </size>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Shape::NoFrame</enum>
-              </property>
-              <property name="verticalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="horizontalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
-              </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <widget class="QWidget" name="fantasyRowWidget">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>1090</width>
-                 <height>320</height>
-                </rect>
+             </item>
+             <item>
+              <widget class="QComboBox" name="categoryFilterComboBox">
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>54</height>
+                </size>
                </property>
-               <layout class="QHBoxLayout" name="fantasyRowLayout">
-                <property name="spacing">
-                 <number>15</number>
+               <item>
+                <property name="text">
+                 <string>Всі категорії</string>
                 </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>5</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>5</number>
-                </property>
-               </layout>
+               </item>
               </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="nonFictionHeaderLabel">
-              <property name="styleSheet">
-               <string notr="true">/* Копіюємо стиль з categoryHeaderLabel */
-font-size: 16px;
-font-weight: 600;
-color: #444444;
-margin-top: 20px;
-margin-bottom: 10px;
-padding-bottom: 5px;
-border-bottom: 1px solid #eeeeee;</string>
-              </property>
-              <property name="text">
-               <string>🔬 Науково-популярне</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QScrollArea" name="nonFictionScrollArea">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>320</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>350</height>
-               </size>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Shape::NoFrame</enum>
-              </property>
-              <property name="verticalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-              </property>
-              <property name="horizontalScrollBarPolicy">
-               <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
-              </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <widget class="QWidget" name="nonFictionRowWidget">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>1090</width>
-                 <height>320</height>
-                </rect>
+             </item>
+             <item>
+              <widget class="QPushButton" name="filterButton">
+               <property name="minimumSize">
+                <size>
+                 <width>52</width>
+                 <height>50</height>
+                </size>
                </property>
-               <layout class="QHBoxLayout" name="nonFictionRowLayout">
-                <property name="spacing">
-                 <number>15</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>5</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>5</number>
-                </property>
-               </layout>
+               <property name="maximumSize">
+                <size>
+                 <width>52</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Фільтри</string>
+               </property>
+               <property name="text">
+                <string>Ф</string>
+               </property>
               </widget>
-             </widget>
-            </item>
-            <item>
-             <spacer name="discoverBottomSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Policy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-           </layout>
-          </widget>
-         </widget>
-         <widget class="QWidget" name="pageBooks">
-          <layout class="QVBoxLayout" name="booksPageLayout">
-        <property name="spacing">
-         <number>16</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>10</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QWidget" name="booksFilterWidget" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>45</height>
-           </size>
-          </property>
-          <layout class="QHBoxLayout" name="booksFilterLayout">
-           <property name="spacing">
-            <number>16</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>5</number>
-           </property>
-           <item>
-            <widget class="QLineEdit" name="bookSearchLineEdit">
-             <property name="minimumSize">
-              <size>
-               <width>300</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>400</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="placeholderText">
-              <string>Пошук за назвою або автором...</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="categoryFilterComboBox">
-             <property name="minimumSize">
-              <size>
-               <width>200</width>
-               <height>60</height>
-              </size>
-             </property>
-             <item>
-              <property name="text">
-               <string>Всі категорії</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="filterButton">
-             <property name="minimumSize">
-              <size>
-               <width>58</width>
-               <height>56</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>58</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Фільтри</string>
-             </property>
-             <property name="text">
-              <string>Ф</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="sortButton">
-             <property name="minimumSize">
-              <size>
-               <width>58</width>
-               <height>56</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>58</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Сортування</string>
-             </property>
-             <property name="text">
-              <string>↓</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QPushButton" name="viewModeButton">
-             <property name="minimumSize">
-              <size>
-               <width>58</width>
-               <height>56</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>58</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Вигляд: Сітка/Список</string>
-             </property>
-             <property name="text">
-              <string>▦</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QScrollArea" name="booksScrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="booksContainerWidget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1120</width>
-             <height>496</height>
-            </rect>
-           </property>
-           <layout class="QGridLayout" name="booksContainerLayout">
-            <property name="leftMargin">
-             <number>5</number>
-            </property>
-            <property name="topMargin">
-             <number>10</number>
-            </property>
-            <property name="rightMargin">
-             <number>5</number>
-            </property>
-            <property name="bottomMargin">
-             <number>10</number>
-            </property>
-            <property name="spacing">
-             <number>24</number>
-            </property>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-           </layout>
-          </widget>
-         </widget>
-         <widget class="QWidget" name="pageAuthors">
-          <layout class="QVBoxLayout" name="authorsPageLayout">
-        <property name="spacing">
-         <number>16</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>10</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QWidget" name="authorsFilterWidget" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>45</height>
-           </size>
-          </property>
-          <layout class="QHBoxLayout" name="authorsFilterLayout">
-           <property name="spacing">
-            <number>12</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>5</number>
-           </property>
-           <item>
-            <widget class="QLineEdit" name="authorSearchLineEdit">
-             <property name="minimumSize">
-              <size>
-               <width>300</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>400</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="placeholderText">
-              <string>Пошук за ім'ям автора...</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="authorSearchSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QScrollArea" name="authorsScrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="authorsContainerWidget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1120</width>
-             <height>496</height>
-            </rect>
-           </property>
-           <layout class="QGridLayout" name="authorsContainerLayout">
-            <property name="leftMargin">
-             <number>5</number>
-            </property>
-            <property name="topMargin">
-             <number>10</number>
-            </property>
-            <property name="rightMargin">
-             <number>5</number>
-            </property>
-            <property name="bottomMargin">
-             <number>10</number>
-            </property>
-            <property name="spacing">
-             <number>24</number>
-            </property>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-           </layout>
-          </widget>
-         </widget>
-         <widget class="QWidget" name="pageOrders">
-          <layout class="QVBoxLayout" name="ordersPageLayout">
-        <property name="spacing">
-         <number>16</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>10</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QWidget" name="ordersFilterWidget" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>45</height>
-           </size>
-          </property>
-          <layout class="QHBoxLayout" name="ordersFilterLayout">
-           <property name="spacing">
-            <number>16</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>5</number>
-           </property>
-           <item>
-            <widget class="QComboBox" name="orderStatusComboBox">
-             <property name="minimumSize">
-              <size>
-               <width>200</width>
-               <height>60</height>
-              </size>
-             </property>
-             <item>
-              <property name="text">
-               <string>Всі статуси</string>
-              </property>
              </item>
              <item>
-              <property name="text">
-               <string>Нове</string>
-              </property>
+              <widget class="QPushButton" name="sortButton">
+               <property name="minimumSize">
+                <size>
+                 <width>52</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>52</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Сортування</string>
+               </property>
+               <property name="text">
+                <string>↓</string>
+               </property>
+              </widget>
              </item>
              <item>
-              <property name="text">
-               <string>В обробці</string>
-              </property>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
-              <property name="text">
-               <string>Відправлено</string>
-              </property>
+              <widget class="QPushButton" name="viewModeButton">
+               <property name="minimumSize">
+                <size>
+                 <width>52</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>52</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Вигляд: Сітка/Список</string>
+               </property>
+               <property name="text">
+                <string>▦</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
-             <item>
-              <property name="text">
-               <string>Доставлено</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Скасовано</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="dateFilterLabel">
-             <property name="minimumSize">
-              <size>
-               <width>60</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Дата від:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDateEdit" name="orderDateEdit">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Фільтрувати замовлення від вказаної дати</string>
-             </property>
-             <property name="displayFormat">
-              <string>dd.MM.yyyy</string>
-             </property>
-             <property name="calendarPopup">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QScrollArea" name="ordersScrollArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="ordersContainerWidget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1120</width>
-             <height>496</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="ordersListLayout">
-            <property name="spacing">
-             <number>16</number>
-            </property>
-            <property name="leftMargin">
-             <number>5</number>
-            </property>
-            <property name="topMargin">
-             <number>10</number>
-            </property>
-            <property name="rightMargin">
-             <number>5</number>
-            </property>
-            <property name="bottomMargin">
-             <number>10</number>
-            </property>
-            <item>
-             <spacer name="ordersBottomSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Policy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-           </layout>
-          </widget>
-         </widget>
-         <widget class="QWidget" name="pageProfile">
-          <layout class="QVBoxLayout" name="profilePageLayout">
-        <property name="spacing">
-         <number>15</number>
-        </property>
-        <property name="leftMargin">
-         <number>25</number>
-        </property>
-        <property name="topMargin">
-         <number>25</number>
-        </property>
-        <property name="rightMargin">
-         <number>25</number>
-        </property>
-        <property name="bottomMargin">
-         <number>25</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="profileHeaderLabel">
-          <property name="styleSheet">
-           <string notr="true">font-size: 18pt; font-weight: 600; color: #333; margin-bottom: 15px;</string>
-          </property>
-          <property name="text">
-           <string>Ваш профіль</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QFormLayout" name="profileFormLayout">
-          <property name="horizontalSpacing">
-           <number>20</number>
-          </property>
-          <property name="verticalSpacing">
-           <number>12</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_FirstName">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Ім'я:</string>
-            </property>
+            </layout>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="profileFirstNameLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_LastName">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Прізвище:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="profileLastNameLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_Email">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Email:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="profileEmailLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_Phone">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Телефон:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLabel" name="profilePhoneLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_Address">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Адреса:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QLabel" name="profileAddressLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
-            <property name="wordWrap">
+          <item>
+           <widget class="QScrollArea" name="booksScrollArea">
+            <property name="widgetResizable">
              <bool>true</bool>
             </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_JoinDate">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Дата реєстрації:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QLabel" name="profileJoinDateLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_Loyalty">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Програма лояльності:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QLabel" name="profileLoyaltyLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="label_Points">
-            <property name="styleSheet">
-             <string notr="true">font-weight: 500; color: #555;</string>
-            </property>
-            <property name="text">
-             <string>Бонусні бали:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QLabel" name="profilePointsLabel">
-            <property name="text">
-             <string>(не завантажено)</string>
-            </property>
+            <widget class="QWidget" name="booksContainerWidget">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>978</width>
+               <height>509</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="booksContainerLayout">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>10</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
+               <number>10</number>
+              </property>
+              <property name="spacing">
+               <number>24</number>
+              </property>
+             </layout>
+            </widget>
            </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <spacer name="profileVerticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-           </layout>
-          </widget>
-         </widget>
         </widget>
-       </item>
-      </layout>
-     </widget>
+        <widget class="QWidget" name="authorsPage">
+         <layout class="QVBoxLayout" name="authorsPageLayout">
+          <property name="spacing">
+           <number>16</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QWidget" name="authorsFilterWidget" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>45</height>
+             </size>
+            </property>
+            <layout class="QHBoxLayout" name="authorsFilterLayout">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="authorSearchLineEdit">
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>54</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="placeholderText">
+                <string>Пошук за ім'ям автора...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="authorSearchSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QScrollArea" name="authorsScrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="authorsContainerWidget">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>978</width>
+               <height>509</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="authorsContainerLayout">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>10</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
+               <number>10</number>
+              </property>
+              <property name="spacing">
+               <number>24</number>
+              </property>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="ordersPage">
+         <layout class="QVBoxLayout" name="ordersPageLayout">
+          <property name="spacing">
+           <number>16</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QWidget" name="ordersFilterWidget" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>45</height>
+             </size>
+            </property>
+            <layout class="QHBoxLayout" name="ordersFilterLayout">
+             <property name="spacing">
+              <number>16</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QComboBox" name="orderStatusComboBox">
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>54</height>
+                </size>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Всі статуси</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Нове</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>В обробці</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Відправлено</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Доставлено</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Скасовано</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="dateFilterLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>60</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Дата від:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDateEdit" name="orderDateEdit">
+               <property name="minimumSize">
+                <size>
+                 <width>150</width>
+                 <height>54</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Фільтрувати замовлення від вказаної дати</string>
+               </property>
+               <property name="displayFormat">
+                <string>dd.MM.yyyy</string>
+               </property>
+               <property name="calendarPopup">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QScrollArea" name="ordersScrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="ordersContainerWidget">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>978</width>
+               <height>509</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
