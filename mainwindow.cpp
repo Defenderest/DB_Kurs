@@ -623,7 +623,11 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
     QLabel *orderIdLabel = new QLabel(tr("Замовлення №%1").arg(orderInfo.orderId));
     orderIdLabel->setStyleSheet("font-weight: bold; font-size: 12pt; color: black;"); // Змінено колір на чорний
 
-    QLabel *orderDateLabel = new QLabel(tr("Дата: %1").arg(QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat)));
+    // Форматуємо дату більш явно і перевіряємо валідність
+    QString dateString = orderInfo.orderDate.isValid()
+                         ? QLocale::system().toString(orderInfo.orderDate, "dd.MM.yyyy hh:mm")
+                         : tr("(невідома дата)");
+    QLabel *orderDateLabel = new QLabel(tr("Дата: %1").arg(dateString));
     orderDateLabel->setStyleSheet("color: black;"); // Змінено колір на чорний
 
     QLabel *totalAmountLabel = new QLabel(tr("Сума: %1 грн").arg(QLocale::system().toString(orderInfo.totalAmount, 'f', 2)));
