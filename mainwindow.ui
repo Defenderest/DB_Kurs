@@ -393,6 +393,9 @@ QWidget#ordersContainerWidget {
         </widget>
        </item>
        <item>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignTop</set> <!-- Вирівнювання по верхньому краю -->
+        </property>
         <widget class="QLineEdit" name="globalSearchLineEdit">
          <property name="minimumSize">
           <size>
