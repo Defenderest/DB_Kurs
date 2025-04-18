@@ -15,8 +15,11 @@
 #include <QPainter>         // Додано для малювання круглої маски
 #include <QBitmap>          // Додано для QBitmap (використовується з QPainter)
 #include <QDate>            // Додано для форматування дати
-#include "profiledialog.h" // Додано для діалогу профілю
-// Залежності для анімації видалені
+#include <QPropertyAnimation> // Додано для анімації
+#include <QEvent>           // Для eventFilter
+#include <QEnterEvent>      // Для подій наведення миші
+#include <QMap>             // Для QMap
+// #include "profiledialog.h" // Видалено
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -49,12 +52,24 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     connect(ui->navBooksButton, &QPushButton::clicked, this, &MainWindow::on_navBooksButton_clicked);
     connect(ui->navAuthorsButton, &QPushButton::clicked, this, &MainWindow::on_navAuthorsButton_clicked);
     connect(ui->navOrdersButton, &QPushButton::clicked, this, &MainWindow::on_navOrdersButton_clicked);
-    // connect(ui->navButtonProfile, ...); // Видалено, немає такої кнопки в панелі
+    connect(ui->navProfileButton, &QPushButton::clicked, this, &MainWindow::on_navProfileButton_clicked); // Додано з'єднання для кнопки профілю
 
-    // Підключаємо кнопку профілю з хедера
-    connect(ui->profileButton, &QPushButton::clicked, this, &MainWindow::on_profileButton_clicked);
+    // Видалено з'єднання для кнопки профілю з хедера
 
-    // Код для анімації та збереження тексту кнопок видалено
+    // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
+    m_buttonOriginalText[ui->navHomeButton] = tr("🏠 Головна");
+    m_buttonOriginalText[ui->navBooksButton] = tr("📚 Книги");
+    m_buttonOriginalText[ui->navAuthorsButton] = tr("👥 Автори");
+    m_buttonOriginalText[ui->navOrdersButton] = tr("🛍️ Мої замовлення");
+    m_buttonOriginalText[ui->navProfileButton] = tr("👤 Профіль"); // Додано текст для кнопки профілю
+
+    // Налаштовуємо анімацію бокової панелі
+    setupSidebarAnimation();
+
+    // Встановлюємо фільтр подій на sidebarFrame для відстеження наведення миші
+    ui->sidebarFrame->installEventFilter(this);
+    // Переконуємось, що панель спочатку згорнута
+    toggleSidebar(false); // Згорнути без анімації при старті
 
     // --- Завантаження та відображення даних для початкової сторінки (Головна) ---
     // Переконуємося, що відповідні layout'и існують перед заповненням
@@ -109,7 +124,8 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         }
     }
 
-    // Завантаження профілю більше не потрібне тут, воно відбувається при кліку на profileButton
+    // Завантаження профілю для сторінки "Профіль" (ui->pageProfile)
+    // (Завантаження відбувається при кліку на кнопку профілю в бічній панелі)
 
     // Завантаження замовлень (якщо потрібно при старті)
     // loadAndDisplayOrders(); // Потрібно реалізувати цю функцію та відповідну сторінку ui->ordersPage
@@ -471,7 +487,7 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 
 // --- Реалізація слотів та функцій ---
 
-// Слоти для кнопок навігації (перейменовані)
+// Слоти для кнопок навігації
 void MainWindow::on_navHomeButton_clicked()
 {
     ui->contentStackedWidget->setCurrentWidget(ui->discoverPage); // Використовуємо ім'я сторінки з UI
@@ -504,38 +520,137 @@ void MainWindow::on_navOrdersButton_clicked()
     }
 }
 
-// Слот для кнопки профілю в хедері
-void MainWindow::on_profileButton_clicked()
+// Слот для кнопки профілю в бічній панелі
+void MainWindow::on_navProfileButton_clicked()
 {
-    qInfo() << "Profile button clicked. Loading profile for customer ID:" << m_currentCustomerId;
+    qInfo() << "Navigating to profile page for customer ID:" << m_currentCustomerId;
+    ui->contentStackedWidget->setCurrentWidget(ui->pageProfile);
 
+    // Завантажуємо дані профілю при переході на сторінку
     if (m_currentCustomerId <= 0) {
         QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо завантажити профіль, оскільки користувач не визначений."));
+        populateProfilePanel(CustomerProfileInfo()); // Показати помилку в полях
         return;
     }
-
     if (!m_dbManager) {
          QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+         populateProfilePanel(CustomerProfileInfo()); // Показати помилку в полях
          return;
     }
 
-    // 1. Отримуємо дані профілю з бази даних
     CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
-
-    // 2. Перевіряємо, чи знайдені дані
     if (!profile.found) {
         QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
-        return;
     }
-
-    // 3. Створюємо та показуємо діалог профілю
-    ProfileDialog profileDialog(profile, this); // Передаємо дані та батьківський віджет
-    profileDialog.exec(); // Показуємо діалог модально
+    populateProfilePanel(profile); // Заповнюємо сторінку профілю
 }
 
 
-// Функції для анімації (setupSidebarAnimation, toggleSidebar, eventFilter) видалені.
+// Налаштування анімації бокової панелі
+void MainWindow::setupSidebarAnimation()
+{
+    m_sidebarAnimation = new QPropertyAnimation(ui->sidebarFrame, "maximumWidth", this);
+    m_sidebarAnimation->setDuration(250); // Тривалість анімації в мс
+    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Плавність анімації
+}
 
-// Функція populateProfilePanel видалена, оскільки діалог сам обробляє дані.
+// Функція для розгортання/згортання панелі
+void MainWindow::toggleSidebar(bool expand)
+{
+    if (m_isSidebarExpanded == expand && m_sidebarAnimation->state() == QAbstractAnimation::Stopped) {
+        return; // Вже в потрібному стані і анімація не йде
+    }
+     // Якщо анімація ще триває, зупиняємо її перед запуском нової
+    if (m_sidebarAnimation->state() == QAbstractAnimation::Running) {
+        m_sidebarAnimation->stop();
+    }
+
+    m_isSidebarExpanded = expand;
+
+    // Оновлюємо текст кнопок
+    for (auto it = m_buttonOriginalText.begin(); it != m_buttonOriginalText.end(); ++it) {
+        QPushButton *button = it.key();
+        const QString &originalText = it.value();
+        if (expand) {
+            button->setText(originalText);
+            button->setToolTip(""); // Очистити підказку, коли текст видно
+        } else {
+            // Залишаємо тільки перший символ (іконку)
+            button->setText(originalText.left(originalText.indexOf(' ') > 0 ? originalText.indexOf(' ') : 1));
+             button->setToolTip(originalText.mid(originalText.indexOf(' ') + 1)); // Показати текст як підказку
+        }
+    }
+
+    m_sidebarAnimation->setStartValue(ui->sidebarFrame->width());
+    m_sidebarAnimation->setEndValue(expand ? m_expandedWidth : m_collapsedWidth);
+    m_sidebarAnimation->start();
+}
+
+
+// Перехоплення подій для sidebarFrame
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->sidebarFrame) {
+        if (event->type() == QEvent::Enter) {
+            // Миша увійшла в область sidebarFrame
+            toggleSidebar(true); // Розгорнути
+            return true; // Подія оброблена
+        } else if (event->type() == QEvent::Leave) {
+            // Миша покинула область sidebarFrame
+            toggleSidebar(false); // Згорнути
+            return true; // Подія оброблена
+        }
+    }
+    // Передаємо подію батьківському класу для стандартної обробки
+    return QMainWindow::eventFilter(watched, event);
+}
+
+
+// Заповнення полів сторінки профілю даними
+void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
+{
+    // Перевіряємо, чи вказівники на QLabel існують (важливо після змін в UI)
+    if (!ui->profileFirstNameLabel || !ui->profileLastNameLabel || !ui->profileEmailLabel ||
+        !ui->profilePhoneLabel || !ui->profileAddressLabel || !ui->profileJoinDateLabel ||
+        !ui->profileLoyaltyLabel || !ui->profilePointsLabel)
+    {
+        qWarning() << "populateProfilePanel: One or more profile labels are null!";
+        // Не показуємо QMessageBox тут, щоб не заважати користувачу
+        // Просто виходимо або встановлюємо текст помилки
+        if(ui->pageProfile) { // Спробуємо показати помилку на самій сторінці
+             clearLayout(ui->profilePageLayout); // Очистимо, щоб не було старих даних
+             QLabel *errorLabel = new QLabel(tr("Помилка інтерфейсу: Не вдалося знайти поля для відображення профілю."), ui->pageProfile);
+             errorLabel->setAlignment(Qt::AlignCenter);
+             errorLabel->setWordWrap(true);
+             ui->profilePageLayout->addWidget(errorLabel);
+        }
+        return;
+    }
+
+     // Перевіряємо, чи дані взагалі були знайдені
+    if (!profileInfo.found || profileInfo.customerId <= 0) {
+        // Заповнюємо поля текстом про помилку або відсутність даних
+        const QString errorText = tr("(Помилка завантаження або дані відсутні)");
+        ui->profileFirstNameLabel->setText(errorText);
+        ui->profileLastNameLabel->setText(errorText);
+        ui->profileEmailLabel->setText(errorText);
+        ui->profilePhoneLabel->setText(errorText);
+        ui->profileAddressLabel->setText(errorText);
+        ui->profileJoinDateLabel->setText(errorText);
+        ui->profileLoyaltyLabel->setText(errorText);
+        ui->profilePointsLabel->setText("-");
+        return;
+    }
+
+    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині pageProfile)
+    ui->profileFirstNameLabel->setText(profileInfo.firstName.isEmpty() ? tr("(не вказано)") : profileInfo.firstName);
+    ui->profileLastNameLabel->setText(profileInfo.lastName.isEmpty() ? tr("(не вказано)") : profileInfo.lastName);
+    ui->profileEmailLabel->setText(profileInfo.email); // Email має бути завжди
+    ui->profilePhoneLabel->setText(profileInfo.phone.isEmpty() ? tr("(не вказано)") : profileInfo.phone);
+    ui->profileAddressLabel->setText(profileInfo.address.isEmpty() ? tr("(не вказано)") : profileInfo.address);
+    ui->profileJoinDateLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
+    ui->profileLoyaltyLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
+    ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
+}
 
 // --- Кінець реалізації слотів та функцій ---

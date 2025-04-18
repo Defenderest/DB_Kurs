@@ -408,19 +408,6 @@ QLineEdit#globalSearchLineEdit {
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QPushButton" name="profileButton">
-         <property name="toolTip">
-          <string>Мій профіль</string>
-         </property>
-         <property name="text">
-          <string>👤</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
@@ -430,21 +417,21 @@ QLineEdit#globalSearchLineEdit {
        <number>0</number>
       </property>
       <item>
-       <widget class="QWidget" name="navigationPanel" native="true">
+       <widget class="QFrame" name="sidebarFrame">
         <property name="minimumSize">
          <size>
-          <width>200</width>
+          <width>50</width>
           <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>200</width>
+          <width>50</width>
           <height>16777215</height>
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QWidget#navigationPanel {
+         <string notr="true">QFrame#sidebarFrame {
     background-color: #e9ecef;
     border-right: 1px solid #dee2e6;
 }
@@ -452,8 +439,9 @@ QLineEdit#globalSearchLineEdit {
 QPushButton#navHomeButton,
 QPushButton#navBooksButton,
 QPushButton#navAuthorsButton,
-QPushButton#navOrdersButton {
-    padding: 12px 15px;
+QPushButton#navOrdersButton,
+QPushButton#navProfileButton {
+    padding: 10px 5px;
     border: none;
     border-radius: 4px;
     text-align: left;
@@ -463,27 +451,36 @@ QPushButton#navOrdersButton {
     background-color: transparent;
     margin: 4px 8px;
     min-height: 38px;
+    /* Text visibility managed in C++ */
 }
 
 QPushButton#navHomeButton:hover,
 QPushButton#navBooksButton:hover,
 QPushButton#navAuthorsButton:hover,
-QPushButton#navOrdersButton:hover {
-    background-color: #dee2e6;
-    color: #000;
+QPushButton#navOrdersButton:hover,
+QPushButton#navProfileButton:hover {
+    background-color: #cfe2ff;
+    color: #0d6efd;
 }
 
 QPushButton#navHomeButton:checked,
 QPushButton#navBooksButton:checked,
 QPushButton#navAuthorsButton:checked,
-QPushButton#navOrdersButton:checked {
+QPushButton#navOrdersButton:checked,
+QPushButton#navProfileButton:checked {
     background-color: #0d6efd;
     color: white;
     font-weight: 600;
 }
 </string>
         </property>
-        <layout class="QVBoxLayout" name="navigationLayout">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="sidebarLayout">
          <property name="spacing">
           <number>8</number>
          </property>
@@ -555,7 +552,23 @@ QPushButton#navOrdersButton:checked {
           </widget>
          </item>
          <item>
-          <spacer name="navigationSpacer">
+          <widget class="QPushButton" name="navProfileButton">
+           <property name="toolTip">
+            <string>Профіль</string>
+           </property>
+           <property name="text">
+            <string>👤</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="sidebarSpacer">
            <property name="orientation">
             <enum>Qt::Orientation::Vertical</enum>
            </property>
@@ -1457,6 +1470,197 @@ border-bottom: 1px solid #eeeeee;</string>
              </property>
             </widget>
            </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="pageProfile">
+         <layout class="QVBoxLayout" name="profilePageLayout">
+          <property name="spacing">
+           <number>15</number>
+          </property>
+          <property name="leftMargin">
+           <number>20</number>
+          </property>
+          <property name="topMargin">
+           <number>20</number>
+          </property>
+          <property name="rightMargin">
+           <number>20</number>
+          </property>
+          <property name="bottomMargin">
+           <number>20</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="profileHeaderLabel">
+            <property name="styleSheet">
+             <string notr="true">font-size: 18pt; font-weight: 600; color: #212529; margin-bottom: 15px;</string>
+            </property>
+            <property name="text">
+             <string>Мій профіль</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="profileFormLayout">
+            <property name="horizontalSpacing">
+             <number>20</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>12</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_FirstName">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Ім'я:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="profileFirstNameLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_LastName">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Прізвище:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="profileLastNameLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_Email">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Email:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="profileEmailLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_Phone">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Телефон:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLabel" name="profilePhoneLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_Address">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Адреса:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLabel" name="profileAddressLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_JoinDate">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Дата реєстрації:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLabel" name="profileJoinDateLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_Loyalty">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Програма лояльності:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QLabel" name="profileLoyaltyLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_Points">
+              <property name="styleSheet">
+               <string notr="true">font-weight: 600; color: #495057;</string>
+              </property>
+              <property name="text">
+               <string>Бали лояльності:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QLabel" name="profilePointsLabel">
+              <property name="text">
+               <string>(завантаження...)</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="profileVerticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
