@@ -840,10 +840,10 @@ void MainWindow::loadAndDisplayOrders()
 
     if (m_dbManager->lastError().isValid()) {
          ui->statusBar->showMessage(tr("Помилка при завантаженні замовлень: %1").arg(m_dbManager->lastError().text()), 5000);
-    } else if (!orders.isEmpty()) {
+    } else if (!filteredOrders.isEmpty()) { // Використовуємо відфільтрований список
          ui->statusBar->showMessage(tr("Замовлення успішно завантажено."), 3000);
     } else {
-         // Якщо помилки не було, але замовлень 0, показуємо відповідне повідомлення
+         // Якщо помилки не було, але замовлень 0 (після фільтрації), показуємо відповідне повідомлення
          ui->statusBar->showMessage(tr("У вас ще немає замовлень."), 3000);
     }
 }
