@@ -403,12 +403,6 @@ QWidget#ordersContainerWidget {
            <height>30</height> <!-- Змінено висоту -->
           </size>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>500</width>
-           <height>30</height> <!-- Змінено висоту -->
-          </size>
-         </property>
          <property name="placeholderText">
           <string>Пошук книг, авторів...</string> <!-- Трохи скорочено -->
          </property>
