@@ -282,6 +282,24 @@ QWidget#categoriesWidget QPushButton:pressed {
 QLineEdit#globalSearchLineEdit {
     min-height: 36px;
 }
+
+/* === Стилі для сторінок контенту === */
+QWidget#discoverPage,
+QWidget#booksPage,
+QWidget#authorsPage,
+QWidget#ordersPage,
+QWidget#pageProfile {
+    background-color: #ffffff; /* Білий фон для сторінок */
+}
+
+/* Стилі для вмісту сторінок (наприклад, ScrollArea) */
+QWidget#discoverScrollContents,
+QWidget#booksContainerWidget,
+QWidget#authorsContainerWidget,
+QWidget#ordersContainerWidget {
+     background-color: transparent; /* Робимо фон контейнерів прозорим */
+}
+
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
