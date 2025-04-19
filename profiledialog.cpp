@@ -3,6 +3,7 @@
 #include "database.h" // Включаємо для доступу до DatabaseManager та структур
 #include <QDate> // Для форматування дати
 #include <QDialogButtonBox> // Потрібно для доступу до buttonBox
+#include <QPushButton>      // Додано для QPushButton
 #include <QLineEdit>        // Потрібно для доступу до profilePhoneLineEdit
 #include <QMessageBox>      // Для показу повідомлень
 #include <QDebug>           // Для логування
