@@ -57,7 +57,7 @@ struct BookData {
     QString coverImagePath;
     QStringList authorLastNames; // Посилання на авторів за прізвищем (спрощено)
     QString genre; // Додано поле жанру
-    QString description; // Додано поле опису
+    // QString description; // Видалено дублююче поле опису, воно вже є вище
     int dbId = -1; // Для збереження ID книги
     int publisherDbId = -1; // ID видавця з БД
     QList<int> authorDbIds; // ID авторів з БД
