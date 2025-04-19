@@ -1547,9 +1547,9 @@ border-bottom: 1px solid #eeeeee;</string>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="profileFirstNameLabel">
-              <property name="text">
-               <string>(завантаження...)</string>
+             <widget class="QLineEdit" name="profileFirstNameLineEdit">
+              <property name="placeholderText">
+               <string>Введіть ім'я</string>
               </property>
              </widget>
             </item>
@@ -1564,9 +1564,9 @@ border-bottom: 1px solid #eeeeee;</string>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLabel" name="profileLastNameLabel">
-              <property name="text">
-               <string>(завантаження...)</string>
+             <widget class="QLineEdit" name="profileLastNameLineEdit">
+              <property name="placeholderText">
+               <string>Введіть прізвище</string>
               </property>
              </widget>
             </item>
@@ -1615,12 +1615,9 @@ border-bottom: 1px solid #eeeeee;</string>
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="QLabel" name="profileAddressLabel">
-              <property name="text">
-               <string>(завантаження...)</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
+             <widget class="QLineEdit" name="profileAddressLineEdit">
+              <property name="placeholderText">
+               <string>Введіть адресу</string>
               </property>
              </widget>
             </item>

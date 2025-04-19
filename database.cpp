@@ -946,6 +946,89 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для оновлення імені та прізвища користувача
+bool DatabaseManager::updateCustomerName(int customerId, const QString &firstName, const QString &lastName)
+{
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0) {
+        qWarning() << "Неможливо оновити ім'я/прізвище: немає з'єднання або невірний customerId.";
+        return false;
+    }
+    if (firstName.isEmpty() || lastName.isEmpty()) {
+        qWarning() << "Неможливо оновити ім'я/прізвище: ім'я або прізвище порожні.";
+        return false; // Ім'я та прізвище не можуть бути порожніми
+    }
+
+    const QString sql = R"(
+        UPDATE customer
+        SET first_name = :firstName, last_name = :lastName
+        WHERE customer_id = :customerId;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":firstName", firstName);
+    query.bindValue(":lastName", lastName);
+    query.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to update name for customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при оновленні імені/прізвища для customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return false;
+    }
+
+    if (query.numRowsAffected() > 0) {
+        qInfo() << "Name updated successfully for customer ID:" << customerId;
+        return true;
+    } else {
+        qWarning() << "Name update query executed, but no rows were affected for customer ID:" << customerId << "(Customer might not exist)";
+        return false;
+    }
+}
+
+// Реалізація нового методу для оновлення адреси користувача
+bool DatabaseManager::updateCustomerAddress(int customerId, const QString &newAddress)
+{
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0) {
+        qWarning() << "Неможливо оновити адресу: немає з'єднання або невірний customerId.";
+        return false;
+    }
+
+    const QString sql = R"(
+        UPDATE customer
+        SET address = :address
+        WHERE customer_id = :customerId;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    // Дозволяємо встановлювати NULL, якщо рядок порожній
+    query.bindValue(":address", newAddress.isEmpty() ? QVariant(QVariant::String) : newAddress);
+    query.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to update address for customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при оновленні адреси для customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return false;
+    }
+
+    if (query.numRowsAffected() > 0) {
+        qInfo() << "Address updated successfully for customer ID:" << customerId;
+        return true;
+    } else {
+        // Якщо адреса не змінилася, numRowsAffected може бути 0, але це не помилка
+        qWarning() << "Address update query executed, but no rows were affected for customer ID:" << customerId << "(Customer might not exist or address unchanged)";
+        // Повертаємо true, якщо запит виконався без помилок SQL
+        return true;
+    }
+}
+
+
 // Реалізація нового методу для оновлення телефону користувача
 bool DatabaseManager::updateCustomerPhone(int customerId, const QString &newPhone)
 {

@@ -137,6 +137,12 @@ public:
     // Новий метод для оновлення телефону користувача
     bool updateCustomerPhone(int customerId, const QString &newPhone);
 
+    // Новий метод для оновлення імені та прізвища користувача
+    bool updateCustomerName(int customerId, const QString &firstName, const QString &lastName);
+
+    // Новий метод для оновлення адреси користувача
+    bool updateCustomerAddress(int customerId, const QString &newAddress);
+
 
 private:
     QSqlDatabase m_db;

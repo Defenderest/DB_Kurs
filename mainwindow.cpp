@@ -856,12 +856,12 @@ void MainWindow::loadAndDisplayOrders()
 // Заповнення полів сторінки профілю даними
 void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
 {
-    // Перевіряємо, чи вказівники на віджети існують (важливо після змін в UI)
-    if (!ui->profileFirstNameLabel || !ui->profileLastNameLabel || !ui->profileEmailLabel ||
-        !ui->profilePhoneLineEdit || !ui->profileAddressLabel || !ui->profileJoinDateLabel || // Змінено profilePhoneLabel на profilePhoneLineEdit
+    // Перевіряємо, чи вказівники на віджети існують (використовуємо нові LineEdit)
+    if (!ui->profileFirstNameLineEdit || !ui->profileLastNameLineEdit || !ui->profileEmailLabel ||
+        !ui->profilePhoneLineEdit || !ui->profileAddressLineEdit || !ui->profileJoinDateLabel ||
         !ui->profileLoyaltyLabel || !ui->profilePointsLabel)
     {
-        qWarning() << "populateProfilePanel: One or more profile labels are null!";
+        qWarning() << "populateProfilePanel: One or more profile widgets are null!";
         // Не показуємо QMessageBox тут, щоб не заважати користувачу
         // Просто виходимо або встановлюємо текст помилки
         if(ui->pageProfile) { // Спробуємо показати помилку на самій сторінці
@@ -876,30 +876,54 @@ void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
 
      // Перевіряємо, чи дані взагалі були знайдені
     if (!profileInfo.found || profileInfo.customerId <= 0) {
-        // Заповнюємо поля текстом про помилку або відсутність даних
+        // Заповнюємо поля текстом про помилку або відсутність даних (використовуємо нові LineEdit)
         const QString errorText = tr("(Помилка завантаження або дані відсутні)");
-        ui->profileFirstNameLabel->setText(errorText);
-        ui->profileLastNameLabel->setText(errorText);
+        ui->profileFirstNameLineEdit->setText("");
+        ui->profileFirstNameLineEdit->setPlaceholderText(errorText);
+        ui->profileFirstNameLineEdit->setEnabled(false);
+        ui->profileLastNameLineEdit->setText("");
+        ui->profileLastNameLineEdit->setPlaceholderText(errorText);
+        ui->profileLastNameLineEdit->setEnabled(false);
         ui->profileEmailLabel->setText(errorText);
-        ui->profilePhoneLineEdit->setText(""); // Очищаємо поле вводу
-        ui->profilePhoneLineEdit->setPlaceholderText(errorText); // Показуємо помилку як плейсхолдер
-        ui->profileAddressLabel->setText(errorText);
+        ui->profilePhoneLineEdit->setText("");
+        ui->profilePhoneLineEdit->setPlaceholderText(errorText);
+        ui->profilePhoneLineEdit->setEnabled(false);
+        ui->profileAddressLineEdit->setText("");
+        ui->profileAddressLineEdit->setPlaceholderText(errorText);
+        ui->profileAddressLineEdit->setEnabled(false);
         ui->profileJoinDateLabel->setText(errorText);
         ui->profileLoyaltyLabel->setText(errorText);
         ui->profilePointsLabel->setText("-");
+        ui->saveProfileButton->setEnabled(false); // Блокуємо кнопку збереження
         return;
     }
 
-    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині pageProfile)
-    ui->profileFirstNameLabel->setText(profileInfo.firstName.isEmpty() ? tr("(не вказано)") : profileInfo.firstName);
-    ui->profileLastNameLabel->setText(profileInfo.lastName.isEmpty() ? tr("(не вказано)") : profileInfo.lastName);
-    ui->profileEmailLabel->setText(profileInfo.email); // Email має бути завжди
-    ui->profilePhoneLineEdit->setText(profileInfo.phone); // Встановлюємо текст у QLineEdit
-    ui->profilePhoneLineEdit->setPlaceholderText(tr("Введіть номер телефону")); // Повертаємо стандартний плейсхолдер
-    ui->profileAddressLabel->setText(profileInfo.address.isEmpty() ? tr("(не вказано)") : profileInfo.address);
+    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (використовуємо нові LineEdit)
+    ui->profileFirstNameLineEdit->setText(profileInfo.firstName);
+    ui->profileFirstNameLineEdit->setPlaceholderText(tr("Введіть ім'я"));
+    ui->profileFirstNameLineEdit->setEnabled(true);
+    ui->profileLastNameLineEdit->setText(profileInfo.lastName);
+    ui->profileLastNameLineEdit->setPlaceholderText(tr("Введіть прізвище"));
+    ui->profileLastNameLineEdit->setEnabled(true);
+    ui->profileEmailLabel->setText(profileInfo.email); // Email залишається QLabel
+    ui->profilePhoneLineEdit->setText(profileInfo.phone);
+    ui->profilePhoneLineEdit->setPlaceholderText(tr("Введіть номер телефону"));
+    ui->profilePhoneLineEdit->setEnabled(true);
+    ui->profileAddressLineEdit->setText(profileInfo.address);
+    ui->profileAddressLineEdit->setPlaceholderText(tr("Введіть адресу"));
+    ui->profileAddressLineEdit->setEnabled(true);
     ui->profileJoinDateLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
     ui->profileLoyaltyLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
     ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
+
+    // Розблоковуємо кнопку збереження
+    ui->saveProfileButton->setEnabled(true);
+
+    // Поля, які не редагуються (Email, Дата реєстрації, Лояльність), можна зробити візуально неактивними
+    ui->profileEmailLabel->setEnabled(false);
+    ui->profileJoinDateLabel->setEnabled(false);
+    ui->profileLoyaltyLabel->setEnabled(false);
+    ui->profilePointsLabel->setEnabled(false);
 }
 
 // Слот для кнопки збереження змін у профілі
@@ -915,33 +939,50 @@ void MainWindow::on_saveProfileButton_clicked()
          QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних. Неможливо зберегти зміни."));
          return;
     }
-    if (!ui->profilePhoneLineEdit) {
-        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти поле для номера телефону."));
+    // Перевіряємо вказівники на нові LineEdit
+    if (!ui->profileFirstNameLineEdit || !ui->profileLastNameLineEdit || !ui->profilePhoneLineEdit || !ui->profileAddressLineEdit) {
+        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти одне або декілька полів профілю."));
         return;
     }
 
-    // Отримуємо новий номер телефону
+    // Отримуємо нові значення з полів
+    QString newFirstName = ui->profileFirstNameLineEdit->text().trimmed();
+    QString newLastName = ui->profileLastNameLineEdit->text().trimmed();
     QString newPhoneNumber = ui->profilePhoneLineEdit->text().trimmed();
+    QString newAddress = ui->profileAddressLineEdit->text().trimmed();
 
-    // TODO: Додати валідацію номера телефону (наприклад, перевірка на цифри, довжину)
-    // if (newPhoneNumber.isEmpty()) {
-    //     QMessageBox::warning(this, tr("Збереження профілю"), tr("Номер телефону не може бути порожнім."));
-    //     return;
-    // }
+    // Валідація (приклад)
+    if (newFirstName.isEmpty()) {
+        QMessageBox::warning(this, tr("Збереження профілю"), tr("Ім'я не може бути порожнім."));
+        ui->profileFirstNameLineEdit->setFocus();
+        return;
+    }
+    if (newLastName.isEmpty()) {
+        QMessageBox::warning(this, tr("Збереження профілю"), tr("Прізвище не може бути порожнім."));
+        ui->profileLastNameLineEdit->setFocus();
+        return;
+    }
+    // TODO: Додати валідацію номера телефону та адреси
 
-    // Викликаємо метод DatabaseManager для оновлення
-    bool success = m_dbManager->updateCustomerPhone(m_currentCustomerId, newPhoneNumber);
+    // Викликаємо методи DatabaseManager для оновлення
+    bool nameSuccess = m_dbManager->updateCustomerName(m_currentCustomerId, newFirstName, newLastName);
+    bool phoneSuccess = m_dbManager->updateCustomerPhone(m_currentCustomerId, newPhoneNumber);
+    bool addressSuccess = m_dbManager->updateCustomerAddress(m_currentCustomerId, newAddress);
 
-    if (success) {
-        ui->statusBar->showMessage(tr("Номер телефону успішно оновлено!"), 5000);
-        qInfo() << "Phone number updated successfully for customer ID:" << m_currentCustomerId;
-        // Можна перезавантажити дані профілю, щоб переконатися, що все відображається коректно
-        // (хоча ми щойно самі встановили значення в QLineEdit)
+    if (nameSuccess && phoneSuccess && addressSuccess) {
+        ui->statusBar->showMessage(tr("Дані профілю успішно оновлено!"), 5000);
+        qInfo() << "Profile data updated successfully for customer ID:" << m_currentCustomerId;
+        // Можна перезавантажити дані, щоб переконатися, що все відображається коректно
         // CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
         // populateProfilePanel(profile);
     } else {
-        QMessageBox::critical(this, tr("Помилка збереження"), tr("Не вдалося оновити номер телефону в базі даних. Перевірте журнал помилок."));
-        qWarning() << "Failed to update phone number for customer ID:" << m_currentCustomerId << "Error:" << m_dbManager->lastError().text();
+        QString errorMessage = tr("Не вдалося оновити дані профілю:\n");
+        if (!nameSuccess) errorMessage += tr("- Помилка оновлення імені/прізвища.\n");
+        if (!phoneSuccess) errorMessage += tr("- Помилка оновлення телефону.\n");
+        if (!addressSuccess) errorMessage += tr("- Помилка оновлення адреси.\n");
+        errorMessage += tr("\nПеревірте журнал помилок.");
+        QMessageBox::critical(this, tr("Помилка збереження"), errorMessage);
+        qWarning() << "Failed to update profile data for customer ID:" << m_currentCustomerId << "Error:" << m_dbManager->lastError().text();
     }
 }
 
