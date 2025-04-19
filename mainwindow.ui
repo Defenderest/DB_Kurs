@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>800</height>
+    <height>700</height> <!-- Зменшено висоту -->
    </rect>
   </property>
   <property name="windowTitle">
@@ -1745,10 +1745,32 @@ border-bottom: 1px solid #eeeeee;</string>
          </layout>
         </widget>
         <widget class="QWidget" name="bookDetailsPage">
-         <layout class="QVBoxLayout" name="bookDetailsPageLayout">
-          <property name="spacing">
-           <number>20</number> <!-- Збільшено spacing -->
+         <!-- Додаємо зовнішній QVBoxLayout для сторінки, щоб розмістити ScrollArea -->
+         <layout class="QVBoxLayout" name="outerBookDetailsLayout">
+          <property name="leftMargin">
+           <number>0</number>
           </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <!-- Додаємо QScrollArea -->
+           <widget class="QScrollArea" name="bookDetailsScrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="bookDetailsScrollContents">
+             <!-- Переносимо існуючий QVBoxLayout сюди -->
+             <layout class="QVBoxLayout" name="bookDetailsPageLayout">
+              <property name="spacing">
+               <number>20</number> <!-- Збільшено spacing -->
+              </property>
           <property name="leftMargin">
            <number>30</number> <!-- Збільшено margin -->
           </property>
@@ -2273,10 +2295,14 @@ QTextEdit:focus {
             </property>
            </spacer>
           </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
+         </layout> <!-- Закриваємо bookDetailsPageLayout -->
+        </widget> <!-- Закриваємо bookDetailsScrollContents -->
+       </widget> <!-- Закриваємо bookDetailsScrollArea -->
+      </item> <!-- Закриваємо item для ScrollArea -->
+     </layout> <!-- Закриваємо outerBookDetailsLayout -->
+    </widget> <!-- Закриваємо bookDetailsPage -->
+   </widget> <!-- Закриваємо contentStackedWidget -->
+  </item> <!-- Закриваємо item для StackedWidget -->
      </layout>
     </item>
    </layout>
