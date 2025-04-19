@@ -2018,11 +2018,7 @@ line-height: 1.6; /* Збільшуємо міжрядковий інтерва�
              <bool>true</bool> <!-- Увімкнути перенесення слів -->
             </property>
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred"> <!-- Додано sizePolicy -->
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch> <!-- Дозволяємо розтягуватись по вертикалі -->
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding"> <!-- Змінено vsizetype на MinimumExpanding -->
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding"> <!-- Виправлено: залишено тільки один коректний sizePolicy -->
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
