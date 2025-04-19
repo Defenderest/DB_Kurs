@@ -316,19 +316,21 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
 
     QList<AuthorData> authors = {
         // Українські класики (3)
-        {"Тарас", "Шевченко", QDate(1814, 3, 9), "українець", "", -1}, // Додано порожній imagePath
-        {"Леся", "Українка", QDate(1871, 2, 25), "українка", "", -1}, // Додано порожній imagePath
-        {"Іван", "Франко", QDate(1856, 8, 27), "українець", "", -1}, // Додано порожній imagePath
+        {"Тарас", "Шевченко", QDate(1814, 3, 9), "українець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Taras_Shevchenko.jpg", -1}, // Додано порожній imagePath
+        {"Леся", "Українка", QDate(1871, 2, 25), "українка", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Lesia_Ukrainka.jpg", -1}, // Додано порожній imagePath
+        {"Іван", "Франко", QDate(1856, 8, 27), "українець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Ivan_Franko.jpg", -1}, // Додано порожній imagePath
         // Зарубіжні (9)
-        {"George", "Orwell", QDate(1903, 6, 25), "британець", "", -1}, // Додано порожній imagePath
-        {"J.K.", "Rowling", QDate(1965, 7, 31), "британка", "", -1}, // Додано порожній imagePath
-        {"Stephen", "King", QDate(1947, 9, 21), "американець", "", -1}, // Додано порожній imagePath
-        {"Haruki", "Murakami", QDate(1949, 1, 12), "японець", "", -1}, // Додано порожній imagePath
-        {"Neil", "Gaiman", QDate(1960, 11, 10), "британець", "", -1}, // Додано порожній imagePath
-        {"Margaret", "Atwood", QDate(1939, 11, 18), "канадка", "", -1}, // Додано порожній imagePath
-        {"Yuval Noah", "Harari", QDate(1976, 2, 24), "ізраїльтянин", "", -1}, // Додано порожній imagePath
-        {"Andrzej", "Sapkowski", QDate(1948, 6, 21), "поляк", "", -1}, // Додано порожній imagePath
-        {"J.R.R.", "Tolkien", QDate(1892, 1, 3), "британець", "", -1} // Додано порожній imagePath
+        {"George", "Orwell", QDate(1903, 6, 25), "британець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\George_Orwell.jpg", -1}, // Додано порожній imagePath
+        {"J.K.", "Rowling", QDate(1965, 7, 31), "британка", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\J.K.-Rowling-2021.jpg", -1}, // Додано порожній imagePath
+        {"Stephen", "King", QDate(1947, 9, 21), "американець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Stephen_King.jpg", -1}, // Додано порожній imagePath
+        {"Haruki", "Murakami", QDate(1949, 1, 12), "японець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\haruki-murakami.jpg", -1}, // Додано порожній imagePath
+        {"Neil", "Gaiman", QDate(1960, 11, 10), "британець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Neil_Gaiman.jpg", -1}, // Додано порожній imagePath
+        {"Margaret", "Atwood", QDate(1939, 11, 18), "канадка", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Margaret_Atwood.jpg", -1}, // Додано порожній imagePath
+        {"Yuval Noah", "Harari", QDate(1976, 2, 24), "ізраїльтянин", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Yuval Noah_Harari.jpg", -1}, // Додано порожній imagePath
+        {"Andrzej", "Sapkowski", QDate(1948, 6, 21), "поляк", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Andrzej_Sapkowski.jpg", -1},
+        {"George R.R.", "Martin", QDate(1948, 9, 20), "американець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\George_RR_Martin.jpg", -1},        // Додано порожній imagePath
+        {"J.R.R.", "Tolkien", QDate(1892, 1, 3), "британець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Tolkien.jpg", -1} // Додано порожній imagePath
+
     };
 
     QList<BookData> books = {
