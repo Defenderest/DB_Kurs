@@ -1,9 +1,6 @@
 #ifndef PROFILEDIALOG_H
 #define PROFILEDIALOG_H
 
-#ifndef PROFILEDIALOG_H
-#define PROFILEDIALOG_H
-
 #include <QDialog>
 #include "database.h" // Вже включено
 
@@ -37,4 +34,4 @@ private:
     void populateProfileData();
 };
 
-#endif
+#endif // PROFILEDIALOG_H
