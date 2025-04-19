@@ -1804,10 +1804,10 @@ box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
               <item>
                <widget class="QLabel" name="bookDetailTitleLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 22pt; /* Збільшено шрифт */
+                 <string notr="true">font-size: 24pt; /* Ще збільшено шрифт */
 font-weight: 600;
-color: #212529; /* Темніший колір */
-margin-bottom: 5px; /* Додано відступ знизу */</string>
+color: #1a1a1a; /* Дуже темний колір */
+margin-bottom: 4px; /* Зменшено відступ знизу */</string>
                 </property>
                 <property name="text">
                  <string>(Назва книги)</string>
@@ -1823,9 +1823,9 @@ margin-bottom: 5px; /* Додано відступ знизу */</string>
               <item>
                <widget class="QLabel" name="bookDetailAuthorLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 14pt; /* Збільшено шрифт */
-color: #495057; /* Трохи темніший сірий */
-margin-bottom: 15px; /* Збільшено відступ знизу */</string>
+                 <string notr="true">font-size: 16pt; /* Збільшено шрифт автора */
+color: #5a5a5a; /* Світліший сірий */
+margin-bottom: 20px; /* Збільшено відступ знизу */</string>
                 </property>
                 <property name="text">
                  <string>(Автор)</string>
