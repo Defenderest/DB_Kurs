@@ -1192,6 +1192,55 @@ CustomerProfileInfo DatabaseManager::getCustomerProfileInfo(int customerId) cons
 }
 
 
+// Реалізація нового методу для реєстрації користувача
+bool DatabaseManager::registerCustomer(const CustomerRegistrationInfo &regInfo, int &newCustomerId) const
+{
+    newCustomerId = -1; // Ініціалізуємо ID помилковим значенням
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо зареєструвати користувача: немає з'єднання з БД.";
+        return false;
+    }
+    if (regInfo.email.isEmpty() || regInfo.password.isEmpty() || regInfo.firstName.isEmpty() || regInfo.lastName.isEmpty()) {
+        qWarning() << "Неможливо зареєструвати користувача: не всі поля заповнені.";
+        return false;
+    }
+
+    // Хешуємо пароль
+    QByteArray passwordHashBytes = QCryptographicHash::hash(regInfo.password.toUtf8(), QCryptographicHash::Sha256);
+    QString passwordHashHex = QString::fromUtf8(passwordHashBytes.toHex());
+
+    const QString sql = R"(
+        INSERT INTO customer (first_name, last_name, email, password_hash, join_date, loyalty_program, loyalty_points)
+        VALUES (:first_name, :last_name, :email, :password_hash, CURRENT_DATE, FALSE, 0)
+        RETURNING customer_id;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":first_name", regInfo.firstName);
+    query.bindValue(":last_name", regInfo.lastName);
+    query.bindValue(":email", regInfo.email);
+    query.bindValue(":password_hash", passwordHashHex);
+
+    qInfo() << "Executing SQL to register new customer with email:" << regInfo.email;
+
+    QVariant insertedId;
+    if (executeInsertQuery(query, QString("Register Customer %1").arg(regInfo.email), insertedId)) {
+        newCustomerId = insertedId.toInt();
+        qInfo() << "Customer registered successfully. Email:" << regInfo.email << "New ID:" << newCustomerId;
+        return true;
+    } else {
+        // Перевіряємо, чи помилка пов'язана з унікальністю email
+        if (lastError().text().contains("customer_email_key") || lastError().text().contains("duplicate key value violates unique constraint")) {
+            qWarning() << "Registration failed: Email already exists -" << regInfo.email;
+        } else {
+            qCritical() << "Registration failed for email '" << regInfo.email << "':" << lastError().text();
+        }
+        return false;
+    }
+}
+
+
 
 // Реалізація нового методу для отримання книг за жанром
 QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, int limit) const

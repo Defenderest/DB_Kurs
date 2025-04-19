@@ -40,6 +40,14 @@ struct CustomerLoginInfo {
     bool found = false; // Прапорець, чи знайдено користувача
 };
 
+// Структура для передачі даних для реєстрації нового користувача
+struct CustomerRegistrationInfo {
+    QString firstName;
+    QString lastName;
+    QString email;
+    QString password; // Пароль у відкритому вигляді перед хешуванням
+};
+
 // Структура для позиції замовлення в UI
 struct OrderItemDisplayInfo {
     QString bookTitle;
@@ -122,6 +130,9 @@ public:
 
     // Новий метод для отримання замовлень користувача для відображення
     QList<OrderDisplayInfo> getCustomerOrdersForDisplay(int customerId) const;
+
+    // Новий метод для реєстрації користувача
+    bool registerCustomer(const CustomerRegistrationInfo &regInfo, int &newCustomerId) const;
 
 
 private:
