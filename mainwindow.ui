@@ -321,10 +321,16 @@ QWidget#bookDetailsPage /* Додано сторінку деталей книг
 QWidget#discoverScrollContents,
 QWidget#booksContainerWidget,
 QWidget#authorsContainerWidget,
-QWidget#ordersContainerWidget,
-QWidget#bookDetailsScrollContents /* Додано для білого фону деталей книги */ {
-     background-color: #ffffff; /* Змінено на білий */
+QWidget#ordersContainerWidget {
+     background-color: #ffffff;
 }
+
+/* Явно встановлюємо білий фон для області прокрутки деталей книги та її вмісту */
+QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
+    background-color: #ffffff;
+    border: none; /* Прибираємо можливу рамку */
+}
+
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
