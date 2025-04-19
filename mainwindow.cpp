@@ -27,6 +27,7 @@
 #include <QLineEdit>        // Додано для QLineEdit у профілі
 #include <QCompleter>       // Додано для автодоповнення
 #include <QStringListModel> // Додано для моделі автодоповнення
+#include <QListView>        // Додано для QListView (використовується в автодоповненні)
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -637,7 +638,7 @@ void MainWindow::setupSearchCompleter()
     m_searchCompleter->setCaseSensitivity(Qt::CaseInsensitive); // Нечутливий до регістру
     m_searchCompleter->setCompletionMode(QCompleter::PopupCompletion); // Випадаючий список
     m_searchCompleter->setFilterMode(Qt::MatchStartsWith); // Пропозиції, що починаються з введеного тексту
-    m_searchCompleter->setPopup(ui->globalSearchLineEdit->findChild<QListView*>()); // Використовуємо стандартний popup
+    // m_searchCompleter->setPopup(ui->globalSearchLineEdit->findChild<QListView*>()); // Використовуємо стандартний popup - findChild може бути ненадійним, краще залишити стандартний popup комплітера
 
     ui->globalSearchLineEdit->setCompleter(m_searchCompleter);
 
