@@ -320,10 +320,10 @@ QWidget#pageProfile {
 QWidget#discoverScrollContents,
 QWidget#booksContainerWidget,
 QWidget#authorsContainerWidget,
-QWidget#ordersContainerWidget {
-     background-color: transparent; /* Робимо фон контейнерів прозорим */
+QWidget#ordersContainerWidget,
+QWidget#bookDetailsScrollContents /* Додано для білого фону деталей книги */ {
+     background-color: #ffffff; /* Змінено на білий */
 }
-
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
