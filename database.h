@@ -132,7 +132,7 @@ public:
     QList<OrderDisplayInfo> getCustomerOrdersForDisplay(int customerId) const;
 
     // Новий метод для реєстрації користувача
-    bool registerCustomer(const CustomerRegistrationInfo &regInfo, int &newCustomerId) const;
+    bool registerCustomer(const CustomerRegistrationInfo &regInfo, int &newCustomerId);
 
 
 private:

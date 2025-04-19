@@ -45,29 +45,6 @@ int LoginDialog::getLoggedInCustomerId() const
     return m_loggedInCustomerId;
 }
 
-// Слот, який викликається при натисканні кнопки "Увійти" (OK)
-void LoginDialog::on_buttonBox_accepted()
-{
-    ui->errorLabel->clear(); // Очищаємо попередні помилки
-    const QString email = ui->emailLineEdit->text().trimmed();
-    const QString password = ui->passwordLineEdit->text();
-
-    if (email.isEmpty() || password.isEmpty()) {
-        ui->errorLabel->setText(tr("Будь ласка, введіть email та пароль."));
-        return; // Не закриваємо діалог
-    }
-
-    if (checkCredentials(email, password)) {
-        // Якщо дані вірні, діалог автоматично закриється через accept()
-        // Ми вже зберегли ID в m_loggedInCustomerId
-        qInfo() << "Login successful for user ID:" << m_loggedInCustomerId;
-        accept(); // Закриваємо діалог з результатом Accepted
-    } else {
-        // Якщо дані невірні, показуємо помилку і залишаємо діалог відкритим
-        ui->errorLabel->setText(tr("Невірний email або пароль."));
-        // Не викликаємо accept() або reject() - залишаємо діалог відкритим
-    }
-}
 
 // Слот для кнопки "Немає акаунту? Зареєструватися"
 void LoginDialog::on_switchToRegisterButton_clicked()

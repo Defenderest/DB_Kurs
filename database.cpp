@@ -1193,7 +1193,7 @@ CustomerProfileInfo DatabaseManager::getCustomerProfileInfo(int customerId) cons
 
 
 // Реалізація нового методу для реєстрації користувача
-bool DatabaseManager::registerCustomer(const CustomerRegistrationInfo &regInfo, int &newCustomerId) const
+bool DatabaseManager::registerCustomer(const CustomerRegistrationInfo &regInfo, int &newCustomerId)
 {
     newCustomerId = -1; // Ініціалізуємо ID помилковим значенням
     if (!m_isConnected || !m_db.isOpen()) {
