@@ -24,7 +24,8 @@
 #include <QGroupBox>        // Для групування елементів замовлення
 #include <QTableWidget>     // Для відображення позицій та статусів
 #include <QHeaderView>      // Для налаштування заголовків таблиці
-#include "profiledialog.h" // Додаємо для використання діалогу профілю
+// #include "profiledialog.h" // Видалено
+#include <QLineEdit>        // Додано для QLineEdit у профілі
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -522,30 +523,26 @@ void MainWindow::on_navOrdersButton_clicked()
 // Слот для кнопки профілю в бічній панелі
 void MainWindow::on_navProfileButton_clicked()
 {
-    qInfo() << "Profile button clicked. Opening ProfileDialog for customer ID:" << m_currentCustomerId;
+    qInfo() << "Navigating to profile page for customer ID:" << m_currentCustomerId;
+    ui->contentStackedWidget->setCurrentWidget(ui->pageProfile);
 
-    // Перевіряємо необхідні дані перед відкриттям діалогу
+    // Завантажуємо дані профілю при переході на сторінку
     if (m_currentCustomerId <= 0) {
-        QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо відкрити профіль, оскільки користувач не визначений."));
+        QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо завантажити профіль, оскільки користувач не визначений."));
+        populateProfilePanel(CustomerProfileInfo()); // Показати помилку в полях
         return;
     }
     if (!m_dbManager) {
-         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних. Неможливо відкрити профіль."));
+         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+         populateProfilePanel(CustomerProfileInfo()); // Показати помилку в полях
          return;
     }
 
-    // Створюємо та показуємо діалогове вікно профілю
-    ProfileDialog profileDialog(m_dbManager, m_currentCustomerId, this); // Передаємо dbManager та customerId
-    profileDialog.exec(); // Показуємо діалог модально
-
-    // Тут можна додати логіку після закриття діалогу, якщо потрібно
-    // Наприклад, оновити якусь інформацію в головному вікні,
-    // якщо діалог був закритий через "Зберегти" (profileDialog.result() == QDialog::Accepted)
-    qInfo() << "ProfileDialog closed with result:" << profileDialog.result();
-
-    // Більше не перемикаємо сторінку і не заповнюємо панель тут
-    // ui->contentStackedWidget->setCurrentWidget(ui->pageProfile);
-    // populateProfilePanel(...);
+    CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
+    if (!profile.found) {
+        QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
+    }
+    populateProfilePanel(profile); // Заповнюємо сторінку профілю
 }
 
 
@@ -852,12 +849,98 @@ void MainWindow::loadAndDisplayOrders()
     }
 }
 
-// Видаляємо функцію populateProfilePanel, оскільки вона більше не використовується в MainWindow
-/*
+
+// Заповнення полів сторінки профілю даними
 void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
 {
-    // ... (код функції) ...
+    // Перевіряємо, чи вказівники на віджети існують (важливо після змін в UI)
+    if (!ui->profileFirstNameLabel || !ui->profileLastNameLabel || !ui->profileEmailLabel ||
+        !ui->profilePhoneLineEdit || !ui->profileAddressLabel || !ui->profileJoinDateLabel || // Змінено profilePhoneLabel на profilePhoneLineEdit
+        !ui->profileLoyaltyLabel || !ui->profilePointsLabel)
+    {
+        qWarning() << "populateProfilePanel: One or more profile labels are null!";
+        // Не показуємо QMessageBox тут, щоб не заважати користувачу
+        // Просто виходимо або встановлюємо текст помилки
+        if(ui->pageProfile) { // Спробуємо показати помилку на самій сторінці
+             clearLayout(ui->profilePageLayout); // Очистимо, щоб не було старих даних
+             QLabel *errorLabel = new QLabel(tr("Помилка інтерфейсу: Не вдалося знайти поля для відображення профілю."), ui->pageProfile);
+             errorLabel->setAlignment(Qt::AlignCenter);
+             errorLabel->setWordWrap(true);
+             ui->profilePageLayout->addWidget(errorLabel);
+        }
+        return;
+    }
+
+     // Перевіряємо, чи дані взагалі були знайдені
+    if (!profileInfo.found || profileInfo.customerId <= 0) {
+        // Заповнюємо поля текстом про помилку або відсутність даних
+        const QString errorText = tr("(Помилка завантаження або дані відсутні)");
+        ui->profileFirstNameLabel->setText(errorText);
+        ui->profileLastNameLabel->setText(errorText);
+        ui->profileEmailLabel->setText(errorText);
+        ui->profilePhoneLineEdit->setText(""); // Очищаємо поле вводу
+        ui->profilePhoneLineEdit->setPlaceholderText(errorText); // Показуємо помилку як плейсхолдер
+        ui->profileAddressLabel->setText(errorText);
+        ui->profileJoinDateLabel->setText(errorText);
+        ui->profileLoyaltyLabel->setText(errorText);
+        ui->profilePointsLabel->setText("-");
+        return;
+    }
+
+    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині pageProfile)
+    ui->profileFirstNameLabel->setText(profileInfo.firstName.isEmpty() ? tr("(не вказано)") : profileInfo.firstName);
+    ui->profileLastNameLabel->setText(profileInfo.lastName.isEmpty() ? tr("(не вказано)") : profileInfo.lastName);
+    ui->profileEmailLabel->setText(profileInfo.email); // Email має бути завжди
+    ui->profilePhoneLineEdit->setText(profileInfo.phone); // Встановлюємо текст у QLineEdit
+    ui->profilePhoneLineEdit->setPlaceholderText(tr("Введіть номер телефону")); // Повертаємо стандартний плейсхолдер
+    ui->profileAddressLabel->setText(profileInfo.address.isEmpty() ? tr("(не вказано)") : profileInfo.address);
+    ui->profileJoinDateLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
+    ui->profileLoyaltyLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
+    ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
 }
-*/
+
+// Слот для кнопки збереження змін у профілі
+void MainWindow::on_saveProfileButton_clicked()
+{
+    qInfo() << "Attempting to save profile changes for customer ID:" << m_currentCustomerId;
+
+    if (m_currentCustomerId <= 0) {
+        QMessageBox::warning(this, tr("Збереження профілю"), tr("Неможливо зберегти зміни, користувач не визначений."));
+        return;
+    }
+    if (!m_dbManager) {
+         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних. Неможливо зберегти зміни."));
+         return;
+    }
+    if (!ui->profilePhoneLineEdit) {
+        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти поле для номера телефону."));
+        return;
+    }
+
+    // Отримуємо новий номер телефону
+    QString newPhoneNumber = ui->profilePhoneLineEdit->text().trimmed();
+
+    // TODO: Додати валідацію номера телефону (наприклад, перевірка на цифри, довжину)
+    // if (newPhoneNumber.isEmpty()) {
+    //     QMessageBox::warning(this, tr("Збереження профілю"), tr("Номер телефону не може бути порожнім."));
+    //     return;
+    // }
+
+    // Викликаємо метод DatabaseManager для оновлення
+    bool success = m_dbManager->updateCustomerPhone(m_currentCustomerId, newPhoneNumber);
+
+    if (success) {
+        ui->statusBar->showMessage(tr("Номер телефону успішно оновлено!"), 5000);
+        qInfo() << "Phone number updated successfully for customer ID:" << m_currentCustomerId;
+        // Можна перезавантажити дані профілю, щоб переконатися, що все відображається коректно
+        // (хоча ми щойно самі встановили значення в QLineEdit)
+        // CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
+        // populateProfilePanel(profile);
+    } else {
+        QMessageBox::critical(this, tr("Помилка збереження"), tr("Не вдалося оновити номер телефону в базі даних. Перевірте журнал помилок."));
+        qWarning() << "Failed to update phone number for customer ID:" << m_currentCustomerId << "Error:" << m_dbManager->lastError().text();
+    }
+}
+
 
 // --- Кінець реалізації слотів та функцій ---

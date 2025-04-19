@@ -12,7 +12,8 @@
 #include <QEvent>       // Для eventFilter
 #include <QEnterEvent>  // Для подій наведення миші
 #include <QMap>         // Для збереження тексту кнопок
-#include "profiledialog.h" // Додаємо для використання діалогу профілю
+// #include "profiledialog.h" // Видалено, профіль тепер сторінка
+#include <QLineEdit>    // Додано для редагування телефону
 
 // Forward declarations
 class DatabaseManager;
@@ -47,6 +48,7 @@ private slots:
     void on_navAuthorsButton_clicked();
     void on_navOrdersButton_clicked();
     void on_navProfileButton_clicked(); // Слот для кнопки профілю в бічній панелі
+    void on_saveProfileButton_clicked(); // Слот для кнопки збереження профілю
 
 private:
     // Допоміжні функції для відображення даних
@@ -55,7 +57,7 @@ private:
     void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
     QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
     QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
-    // void populateProfilePanel(const CustomerProfileInfo &profileInfo); // Видалено, використовуємо ProfileDialog
+    void populateProfilePanel(const CustomerProfileInfo &profileInfo); // Заповнення сторінки профілю
 
     // Функції для відображення замовлень
     QWidget* createOrderWidget(const OrderDisplayInfo &orderInfo);
