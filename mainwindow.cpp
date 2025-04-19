@@ -683,50 +683,75 @@ void MainWindow::showBookDetails(int bookId)
     ui->contentStackedWidget->setCurrentWidget(ui->bookDetailsPage);
 }
 
-// Допоміжна функція для створення віджету коментаря
+// Допоміжна функція для створення віджету коментаря (оновлений дизайн)
 QWidget* MainWindow::createCommentWidget(const CommentDisplayInfo &commentInfo)
 {
+    // Основний контейнер коментаря
     QFrame *commentFrame = new QFrame();
+    commentFrame->setObjectName("commentFrame"); // Для стилізації
     commentFrame->setFrameShape(QFrame::StyledPanel);
-    commentFrame->setFrameShadow(QFrame::Plain); // Проста рамка
-    commentFrame->setLineWidth(1);
-    commentFrame->setStyleSheet("QFrame { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 10px; }");
+    commentFrame->setFrameShadow(QFrame::Plain); // Використовуємо тінь через стиль
+    commentFrame->setLineWidth(0); // Рамка через стиль
+    // Стиль з тінню, заокругленням та відступами
+    commentFrame->setStyleSheet(R"(
+        QFrame#commentFrame {
+            background-color: #ffffff; /* Білий фон */
+            border: 1px solid #e9ecef; /* Світло-сіра рамка */
+            border-radius: 8px; /* Більше заокруглення */
+            padding: 15px; /* Збільшені відступи */
+            margin-bottom: 10px; /* Відступ між коментарями */
+            /* Можна додати тінь, але це може вплинути на продуктивність */
+            /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); */
+        }
+    )");
 
-    QVBoxLayout *layout = new QVBoxLayout(commentFrame);
-    layout->setSpacing(6);
+    QVBoxLayout *mainLayout = new QVBoxLayout(commentFrame);
+    mainLayout->setSpacing(8); // Збільшений відступ між елементами
+    mainLayout->setContentsMargins(0, 0, 0, 0); // Відступи керуються padding у стилі фрейму
 
-    // Верхній рядок: Автор та Дата
+    // --- Верхній рядок: Автор та Дата ---
     QHBoxLayout *headerLayout = new QHBoxLayout();
+    headerLayout->setSpacing(10);
+
+    // Ім'я автора (виділено)
     QLabel *authorLabel = new QLabel(commentInfo.authorName);
-    authorLabel->setStyleSheet("font-weight: bold; color: #343a40;");
-    QLabel *dateLabel = new QLabel(QLocale::system().toString(commentInfo.commentDate, QLocale::ShortFormat)); // Форматована дата
-    dateLabel->setStyleSheet("color: #6c757d; font-size: 9pt;");
+    authorLabel->setStyleSheet("font-weight: 600; font-size: 11pt; color: #343a40;"); // Жирний, трохи більший
+
+    // Дата (менш помітна, праворуч)
+    QLabel *dateLabel = new QLabel(QLocale::system().toString(commentInfo.commentDate, QLocale::ShortFormat));
+    dateLabel->setStyleSheet("color: #868e96; font-size: 9pt;"); // Світліший сірий, менший шрифт
     dateLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     headerLayout->addWidget(authorLabel);
-    headerLayout->addStretch(1);
+    headerLayout->addStretch(1); // Розтягувач між автором та датою
     headerLayout->addWidget(dateLabel);
-    layout->addLayout(headerLayout);
+    mainLayout->addLayout(headerLayout);
 
-    // Рядок рейтингу (якщо є)
+    // --- Рядок рейтингу (якщо є) ---
     if (commentInfo.rating > 0) {
         QLabel *ratingLabel = new QLabel();
         QString stars;
         for (int i = 0; i < 5; ++i) {
-            stars += (i < commentInfo.rating) ? "⭐" : "☆";
+            // Використовуємо заповнену та порожню зірку
+            stars += (i < commentInfo.rating) ? "★" : "☆";
         }
         ratingLabel->setText(stars);
-        ratingLabel->setStyleSheet("color: #ffc107; font-size: 12pt;"); // Жовтий колір для зірок
-        layout->addWidget(ratingLabel);
+        // Стиль для зірок (жовтий/золотий колір)
+        ratingLabel->setStyleSheet("color: #ffc107; font-size: 13pt; margin-top: 2px; margin-bottom: 4px;");
+        mainLayout->addWidget(ratingLabel);
+    } else {
+        // Можна додати невеликий відступ, якщо немає рейтингу, щоб вирівняти текст
+        mainLayout->addSpacing(5);
     }
 
-    // Текст коментаря
+    // --- Текст коментаря ---
     QLabel *commentTextLabel = new QLabel(commentInfo.commentText);
-    commentTextLabel->setWordWrap(true);
-    commentTextLabel->setStyleSheet("color: #212529;");
-    layout->addWidget(commentTextLabel);
+    commentTextLabel->setWordWrap(true); // Перенесення слів обов'язкове
+    commentTextLabel->setStyleSheet("color: #495057; font-size: 10pt; line-height: 1.5;"); // Стандартний текст, міжрядковий інтервал
+    mainLayout->addWidget(commentTextLabel);
 
-    commentFrame->setLayout(layout);
+    // Встановлюємо layout для фрейму
+    commentFrame->setLayout(mainLayout);
     return commentFrame;
 }
 
