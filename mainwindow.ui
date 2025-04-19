@@ -1812,6 +1812,9 @@ margin-bottom: 5px; /* Додано відступ знизу */</string>
                 <property name="text">
                  <string>(Назва книги)</string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set> <!-- Вирівнювання по лівому краю -->
+                </property>
                 <property name="wordWrap">
                  <bool>true</bool>
                 </property>
@@ -1827,6 +1830,9 @@ margin-bottom: 15px; /* Збільшено відступ знизу */</string>
                 <property name="text">
                  <string>(Автор)</string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set> <!-- Вирівнювання по лівому краю -->
+                </property>
                 <property name="wordWrap">
                  <bool>true</bool>
                 </property>
@@ -1840,6 +1846,9 @@ margin-bottom: 15px; /* Збільшено відступ знизу */</string>
                 <property name="text">
                  <string>Жанр: (жанр)</string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set> <!-- Вирівнювання по лівому краю -->
+                </property>
                </widget>
               </item>
               <item>
@@ -1849,6 +1858,9 @@ margin-bottom: 15px; /* Збільшено відступ знизу */</string>
                 </property>
                 <property name="text">
                  <string>Видавництво: (видавництво)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set> <!-- Вирівнювання по лівому краю -->
                 </property>
                </widget>
               </item>
@@ -1860,6 +1872,9 @@ margin-bottom: 15px; /* Збільшено відступ знизу */</string>
                 <property name="text">
                  <string>Рік видання: (рік)</string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set> <!-- Вирівнювання по лівому краю -->
+                </property>
                </widget>
               </item>
               <item>
@@ -1870,6 +1885,9 @@ margin-bottom: 15px; /* Збільшено відступ знизу */</string>
                 <property name="text">
                  <string>Сторінок: (кількість)</string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set> <!-- Вирівнювання по лівому краю -->
+                </property>
                </widget>
               </item>
               <item>
@@ -1879,6 +1897,9 @@ margin-bottom: 15px; /* Збільшено відступ знизу */</string>
                 </property>
                 <property name="text">
                  <string>ISBN: (isbn)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set> <!-- Вирівнювання по лівому краю -->
                 </property>
                </widget>
               </item>
@@ -1924,7 +1945,7 @@ margin-bottom: 10px; /* Додано відступ */</string>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>250</width>
+                  <width>200</width> <!-- Зменшено максимальну ширину -->
                   <height>16777215</height>
                  </size>
                 </property>
