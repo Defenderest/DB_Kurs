@@ -683,6 +683,54 @@ void MainWindow::showBookDetails(int bookId)
     ui->contentStackedWidget->setCurrentWidget(ui->bookDetailsPage);
 }
 
+// Допоміжна функція для створення віджету коментаря
+QWidget* MainWindow::createCommentWidget(const CommentDisplayInfo &commentInfo)
+{
+    QFrame *commentFrame = new QFrame();
+    commentFrame->setFrameShape(QFrame::StyledPanel);
+    commentFrame->setFrameShadow(QFrame::Plain); // Проста рамка
+    commentFrame->setLineWidth(1);
+    commentFrame->setStyleSheet("QFrame { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 10px; }");
+
+    QVBoxLayout *layout = new QVBoxLayout(commentFrame);
+    layout->setSpacing(6);
+
+    // Верхній рядок: Автор та Дата
+    QHBoxLayout *headerLayout = new QHBoxLayout();
+    QLabel *authorLabel = new QLabel(commentInfo.authorName);
+    authorLabel->setStyleSheet("font-weight: bold; color: #343a40;");
+    QLabel *dateLabel = new QLabel(QLocale::system().toString(commentInfo.commentDate, QLocale::ShortFormat)); // Форматована дата
+    dateLabel->setStyleSheet("color: #6c757d; font-size: 9pt;");
+    dateLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+    headerLayout->addWidget(authorLabel);
+    headerLayout->addStretch(1);
+    headerLayout->addWidget(dateLabel);
+    layout->addLayout(headerLayout);
+
+    // Рядок рейтингу (якщо є)
+    if (commentInfo.rating > 0) {
+        QLabel *ratingLabel = new QLabel();
+        QString stars;
+        for (int i = 0; i < 5; ++i) {
+            stars += (i < commentInfo.rating) ? "⭐" : "☆";
+        }
+        ratingLabel->setText(stars);
+        ratingLabel->setStyleSheet("color: #ffc107; font-size: 12pt;"); // Жовтий колір для зірок
+        layout->addWidget(ratingLabel);
+    }
+
+    // Текст коментаря
+    QLabel *commentTextLabel = new QLabel(commentInfo.commentText);
+    commentTextLabel->setWordWrap(true);
+    commentTextLabel->setStyleSheet("color: #212529;");
+    layout->addWidget(commentTextLabel);
+
+    commentFrame->setLayout(layout);
+    return commentFrame;
+}
+
+
 // Заповнення сторінки деталей книги даними
 void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
 {
