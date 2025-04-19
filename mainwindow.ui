@@ -1747,41 +1747,46 @@ border-bottom: 1px solid #eeeeee;</string>
         <widget class="QWidget" name="bookDetailsPage">
          <layout class="QVBoxLayout" name="bookDetailsPageLayout">
           <property name="spacing">
-           <number>15</number>
+           <number>20</number> <!-- Збільшено spacing -->
           </property>
           <property name="leftMargin">
-           <number>25</number>
+           <number>30</number> <!-- Збільшено margin -->
           </property>
           <property name="topMargin">
-           <number>20</number>
+           <number>25</number> <!-- Збільшено margin -->
           </property>
           <property name="rightMargin">
-           <number>25</number>
+           <number>30</number> <!-- Збільшено margin -->
           </property>
           <property name="bottomMargin">
-           <number>20</number>
+           <number>25</number> <!-- Збільшено margin -->
           </property>
           <item>
            <layout class="QHBoxLayout" name="bookDetailsHeaderLayout">
             <property name="spacing">
-             <number>20</number>
+             <number>30</number> <!-- Збільшено spacing -->
             </property>
             <item>
              <widget class="QLabel" name="bookDetailCoverLabel">
               <property name="minimumSize">
                <size>
-                <width>200</width>
-                <height>280</height>
+                <width>220</width> <!-- Трохи збільшено -->
+                <height>310</height> <!-- Трохи збільшено -->
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>200</width>
-                <height>280</height>
+                <width>220</width> <!-- Трохи збільшено -->
+                <height>310</height> <!-- Трохи збільшено -->
                </size>
               </property>
               <property name="styleSheet">
-               <string notr="true">background-color: #e0e0e0; border: 1px solid #cccccc; border-radius: 4px;</string>
+               <string notr="true">background-color: #f0f0f0; /* Світліший фон */
+border: 1px solid #e0e0e0; /* Світліша рамка */
+border-radius: 6px; /* Трохи більше заокруглення */
+/* Додаємо тінь для об'єму */
+box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+</string>
               </property>
               <property name="text">
                <string>(Обкладинка)</string>
@@ -1794,12 +1799,15 @@ border-bottom: 1px solid #eeeeee;</string>
             <item>
              <layout class="QVBoxLayout" name="bookDetailsInfoLayout">
               <property name="spacing">
-               <number>8</number>
+               <number>10</number> <!-- Збільшено spacing -->
               </property>
               <item>
                <widget class="QLabel" name="bookDetailTitleLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 18pt; font-weight: 600; color: #333;</string>
+                 <string notr="true">font-size: 22pt; /* Збільшено шрифт */
+font-weight: 600;
+color: #212529; /* Темніший колір */
+margin-bottom: 5px; /* Додано відступ знизу */</string>
                 </property>
                 <property name="text">
                  <string>(Назва книги)</string>
@@ -1812,7 +1820,9 @@ border-bottom: 1px solid #eeeeee;</string>
               <item>
                <widget class="QLabel" name="bookDetailAuthorLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 12pt; color: #555; font-style: italic;</string>
+                 <string notr="true">font-size: 14pt; /* Збільшено шрифт */
+color: #495057; /* Трохи темніший сірий */
+margin-bottom: 15px; /* Збільшено відступ знизу */</string>
                 </property>
                 <property name="text">
                  <string>(Автор)</string>
@@ -1825,7 +1835,7 @@ border-bottom: 1px solid #eeeeee;</string>
               <item>
                <widget class="QLabel" name="bookDetailGenreLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 10pt; color: #777;</string>
+                 <string notr="true">font-size: 10pt; color: #6c757d;</string> <!-- Стандартний сірий -->
                 </property>
                 <property name="text">
                  <string>Жанр: (жанр)</string>
@@ -1835,7 +1845,7 @@ border-bottom: 1px solid #eeeeee;</string>
               <item>
                <widget class="QLabel" name="bookDetailPublisherLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 10pt; color: #777;</string>
+                 <string notr="true">font-size: 10pt; color: #6c757d;</string>
                 </property>
                 <property name="text">
                  <string>Видавництво: (видавництво)</string>
@@ -1845,7 +1855,7 @@ border-bottom: 1px solid #eeeeee;</string>
               <item>
                <widget class="QLabel" name="bookDetailYearLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 10pt; color: #777;</string>
+                 <string notr="true">font-size: 10pt; color: #6c757d;</string>
                 </property>
                 <property name="text">
                  <string>Рік видання: (рік)</string>
@@ -1855,7 +1865,7 @@ border-bottom: 1px solid #eeeeee;</string>
               <item>
                <widget class="QLabel" name="bookDetailPagesLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 10pt; color: #777;</string>
+                 <string notr="true">font-size: 10pt; color: #6c757d;</string>
                 </property>
                 <property name="text">
                  <string>Сторінок: (кількість)</string>
@@ -1865,7 +1875,7 @@ border-bottom: 1px solid #eeeeee;</string>
               <item>
                <widget class="QLabel" name="bookDetailIsbnLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 10pt; color: #777;</string>
+                 <string notr="true">font-size: 10pt; color: #6c757d; margin-bottom: 15px;</string> <!-- Додано відступ -->
                 </property>
                 <property name="text">
                  <string>ISBN: (isbn)</string>
@@ -1891,7 +1901,10 @@ border-bottom: 1px solid #eeeeee;</string>
               <item>
                <widget class="QLabel" name="bookDetailPriceLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 16pt; font-weight: bold; color: #007bff;</string>
+                 <string notr="true">font-size: 20pt; /* Збільшено шрифт */
+font-weight: bold;
+color: #0d6efd; /* Основний синій */
+margin-bottom: 10px; /* Додано відступ */</string>
                 </property>
                 <property name="text">
                  <string>(Ціна) грн</string>
@@ -1916,7 +1929,15 @@ border-bottom: 1px solid #eeeeee;</string>
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: #28a745; color: white; font-size: 11pt; padding: 10px;</string>
+                 <string notr="true">/* Використовуємо стандартний стиль QPushButton, але можна додати акцент */
+background-color: #198754; /* Темніший зелений */
+border-color: #198754;
+color: white;
+font-size: 12pt; /* Трохи більший шрифт */
+font-weight: 500;
+padding: 12px 20px; /* Збільшено padding */
+border-radius: 6px; /* Трохи більше заокруглення */
+</string>
                 </property>
                 <property name="text">
                  <string>🛒 Додати в кошик</string>
@@ -1971,9 +1992,23 @@ border-bottom: 1px solid #eeeeee;</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_2">
+           <widget class="Line" name="separatorLine2">
             <property name="styleSheet">
-             <string notr="true">font-size: 14pt; font-weight: 600; color: #333; margin-top: 10px; margin-bottom: 5px;</string>
+             <string notr="true">background-color: #e0e0e0;</string>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="reviewsHeaderLabel">
+            <property name="styleSheet">
+             <string notr="true">font-size: 16pt;
+font-weight: 600;
+color: #343a40;
+margin-top: 15px; /* Збільшено відступ зверху */
+margin-bottom: 8px;</string>
             </property>
             <property name="text">
              <string>Відгуки та Рейтинг</string>
@@ -1982,8 +2017,11 @@ border-bottom: 1px solid #eeeeee;</string>
           </item>
           <item>
            <widget class="QLabel" name="bookDetailRatingLabel">
+            <property name="styleSheet">
+             <string notr="true">font-size: 11pt; color: #6c757d; margin-bottom: 10px;</string> <!-- Стиль для рейтингу -->
+            </property>
             <property name="text">
-             <string>(Рейтинг: ⭐⭐⭐⭐☆)</string>
+             <string>(Рейтинг: ⭐⭐⭐⭐☆ - функціонал в розробці)</string> <!-- Додано примітку -->
             </property>
            </widget>
           </item>
@@ -1992,15 +2030,19 @@ border-bottom: 1px solid #eeeeee;</string>
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>150</height>
+              <height>200</height> <!-- Збільшено мінімальну висоту -->
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QScrollArea { border: none; } /* Прибираємо рамку самої ScrollArea */</string>
             </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
             <widget class="QWidget" name="bookDetailCommentsContents">
              <property name="styleSheet">
-              <string notr="true">background-color: white;</string>
+              <string notr="true">background-color: #f8f9fa; /* Дуже світлий фон для області коментарів */
+border-radius: 4px;</string>
              </property>
              <property name="geometry">
               <rect>
@@ -2011,13 +2053,25 @@ border-bottom: 1px solid #eeeeee;</string>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="bookDetailCommentsLayout">
+              <property name="leftMargin">
+               <number>15</number> <!-- Додано відступи всередині області коментарів -->
+              </property>
+              <property name="topMargin">
+               <number>15</number>
+              </property>
+              <property name="rightMargin">
+               <number>15</number>
+              </property>
+              <property name="bottomMargin">
+               <number>15</number>
+              </property>
               <item>
-               <widget class="QLabel" name="label_3">
+               <widget class="QLabel" name="commentsPlaceholderLabel">
                 <property name="styleSheet">
-                 <string notr="true">color: black;</string>
+                 <string notr="true">color: #6c757d; font-style: italic;</string> <!-- Стиль для заглушки -->
                 </property>
                 <property name="text">
-                 <string>(Тут будуть відгуки...)</string>
+                 <string>(Функціонал відгуків знаходиться в розробці)</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
