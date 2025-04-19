@@ -498,7 +498,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
                 }
                 bookQuery.bindValue(":price", book.price);
                 bookQuery.bindValue(":stock_quantity", book.stockQuantity);
-                bookQuery.bindValue(":description", book.description);
+                bookQuery.bindValue(":description", book.description.isEmpty() ? QVariant(QVariant::String) : book.description); // Прив'язуємо опис (з перевіркою на порожній рядок)
                 bookQuery.bindValue(":language", book.language);
                 bookQuery.bindValue(":page_count", book.pageCount);
                 bookQuery.bindValue(":cover_image_path", book.coverImagePath.isEmpty() ? QVariant(QVariant::String) : book.coverImagePath);
