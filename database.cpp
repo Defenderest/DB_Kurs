@@ -946,6 +946,46 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для оновлення телефону користувача
+bool DatabaseManager::updateCustomerPhone(int customerId, const QString &newPhone)
+{
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0) {
+        qWarning() << "Неможливо оновити телефон: немає з'єднання або невірний customerId.";
+        return false;
+    }
+
+    const QString sql = R"(
+        UPDATE customer
+        SET phone = :phone
+        WHERE customer_id = :customerId;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":phone", newPhone.isEmpty() ? QVariant(QVariant::String) : newPhone); // Дозволяємо встановлювати NULL, якщо рядок порожній
+    query.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to update phone for customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при оновленні телефону для customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return false;
+    }
+
+    // Перевіряємо, чи був оновлений хоча б один рядок (опціонально, але корисно)
+    if (query.numRowsAffected() > 0) {
+        qInfo() << "Phone number updated successfully for customer ID:" << customerId;
+        return true;
+    } else {
+        qWarning() << "Phone number update query executed, but no rows were affected for customer ID:" << customerId << "(Customer might not exist)";
+        // Можна повернути true, якщо запит виконався без помилок, або false, якщо рядок не знайдено
+        return false; // Повертаємо false, якщо користувача не знайдено або телефон вже був таким самим
+    }
+}
+
+
 // Реалізація нового методу для отримання замовлень користувача
 QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int customerId) const
 {

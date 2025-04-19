@@ -134,6 +134,9 @@ public:
     // Новий метод для реєстрації користувача
     bool registerCustomer(const CustomerRegistrationInfo &regInfo, int &newCustomerId);
 
+    // Новий метод для оновлення телефону користувача
+    bool updateCustomerPhone(int customerId, const QString &newPhone);
+
 
 private:
     QSqlDatabase m_db;
