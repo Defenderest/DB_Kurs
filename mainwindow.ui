@@ -2017,6 +2017,12 @@ line-height: 1.6; /* Збільшуємо міжрядковий інтерва�
             <property name="wordWrap">
              <bool>true</bool> <!-- Увімкнути перенесення слів -->
             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred"> <!-- Додано sizePolicy -->
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch> <!-- Дозволяємо розтягуватись по вертикалі -->
+             </sizepolicy>
+            </property>
            </widget>
           </item>
           <item>
