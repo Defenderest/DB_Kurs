@@ -56,8 +56,19 @@ struct BookDetailsInfo {
     int pageCount = 0;
     QString language;
     bool found = false; // Прапорець, чи знайдено книгу
-    // TODO: Додати поля для рейтингу та коментарів, коли вони будуть реалізовані
+    // Поля для рейтингу та коментарів
+    // double averageRating; // Можна додати середній рейтинг
+    QList<struct CommentDisplayInfo> comments; // Список коментарів
 };
+
+// Структура для відображення одного коментаря
+struct CommentDisplayInfo {
+    QString authorName; // Ім'я та прізвище автора коментаря
+    QDateTime commentDate;
+    int rating; // 0-5 (0 - без оцінки)
+    QString commentText;
+};
+
 
 // Структура для передачі даних для реєстрації нового користувача
 struct CustomerRegistrationInfo {
@@ -167,6 +178,9 @@ public:
 
     // Новий метод для отримання детальної інформації про книгу за ID
     BookDetailsInfo getBookDetails(int bookId) const;
+
+    // Новий метод для отримання коментарів до книги
+    QList<CommentDisplayInfo> getBookComments(int bookId) const;
 
 
 private:

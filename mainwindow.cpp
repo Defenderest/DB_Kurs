@@ -728,10 +728,55 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
     ui->bookDetailAddToCartButton->setToolTip(details.stockQuantity > 0 ? tr("Додати '%1' до кошика").arg(details.title) : tr("Немає в наявності"));
     // TODO: Підключити сигнал кнопки до слота додавання в кошик
 
-    // 4. Рейтинг та коментарі (поки що заглушки)
-    // ui->bookDetailRatingLabel->setText(tr("Рейтинг: (ще не реалізовано)"));
-    // clearLayout(ui->bookDetailCommentsLayout);
-    // ui->bookDetailCommentsLayout->addWidget(new QLabel(tr("(Коментарі ще не реалізовано)")));
+    // 4. Рейтинг (поки що просто текст)
+    // TODO: Розрахувати середній рейтинг з details.comments
+    QString ratingText = tr("Рейтинг: (ще не розраховано)");
+    if (!details.comments.isEmpty()) {
+        double totalRating = 0;
+        int ratedCount = 0;
+        for(const auto& comment : details.comments) {
+            if (comment.rating > 0) {
+                totalRating += comment.rating;
+                ratedCount++;
+            }
+        }
+        if (ratedCount > 0) {
+            double avgRating = totalRating / ratedCount;
+            QString stars;
+            int fullStars = qRound(avgRating);
+            for(int i=0; i<5; ++i) stars += (i < fullStars ? "⭐" : "☆");
+            ratingText = tr("Середній рейтинг: %1 (%2 відгуків)").arg(stars).arg(ratedCount);
+        } else {
+            ratingText = tr("Рейтинг: (ще немає оцінок)");
+        }
+    }
+    ui->bookDetailRatingLabel->setText(ratingText);
+
+
+    // 5. Коментарі
+    // Очищаємо попередні коментарі та спейсер
+    clearLayout(ui->commentsListLayout); // Використовуємо правильний layout
+
+    if (details.comments.isEmpty()) {
+        QLabel *noCommentsLabel = new QLabel(tr("Відгуків ще немає. Будьте першим!"));
+        noCommentsLabel->setAlignment(Qt::AlignCenter);
+        noCommentsLabel->setStyleSheet("color: #6c757d; font-style: italic; padding: 20px;");
+        ui->commentsListLayout->addWidget(noCommentsLabel);
+        // Додаємо спейсер, щоб мітка була по центру, якщо немає коментарів
+        ui->commentsListLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    } else {
+        for (const CommentDisplayInfo &commentInfo : details.comments) {
+            QWidget *commentWidget = createCommentWidget(commentInfo);
+            if (commentWidget) {
+                ui->commentsListLayout->addWidget(commentWidget);
+            }
+        }
+        // Додаємо спейсер в кінці, щоб притиснути коментарі вгору
+        ui->commentsListLayout->addSpacerItem(new QSpacerItem(20, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    }
+    // Оновлюємо геометрію контейнера коментарів
+    ui->commentsContainerWidget->updateGeometry();
+
 
     qInfo() << "Book details page populated for:" << details.title;
 }

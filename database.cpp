@@ -1107,7 +1107,65 @@ BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
         // details.found залишається false
     }
 
+    // Отримуємо коментарі до книги
+    details.comments = getBookComments(bookId);
+    qInfo() << "Fetched" << details.comments.size() << "comments for book ID:" << bookId;
+
+
     return details;
+}
+
+
+// Реалізація нового методу для отримання коментарів до книги
+QList<CommentDisplayInfo> DatabaseManager::getBookComments(int bookId) const
+{
+    QList<CommentDisplayInfo> comments;
+    if (!m_isConnected || !m_db.isOpen() || bookId <= 0) {
+        qWarning() << "Неможливо отримати коментарі: немає з'єднання або невірний bookId.";
+        return comments;
+    }
+
+    const QString sql = R"(
+        SELECT
+            c.comment_text,
+            c.comment_date,
+            c.rating,
+            cust.first_name || ' ' || cust.last_name AS author_name
+        FROM comment c
+        JOIN customer cust ON c.customer_id = cust.customer_id
+        WHERE c.book_id = :bookId
+        ORDER BY c.comment_date DESC; -- Показуємо новіші коментарі першими
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":bookId", bookId);
+
+    qInfo() << "Executing SQL to get comments for book ID:" << bookId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні коментарів для book ID '" << bookId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return comments;
+    }
+
+    qInfo() << "Successfully fetched comments. Processing results...";
+    int count = 0;
+    while (query.next()) {
+        CommentDisplayInfo commentInfo;
+        commentInfo.authorName = query.value("author_name").toString();
+        commentInfo.commentDate = query.value("comment_date").toDateTime();
+        // Обробка NULL для рейтингу
+        QVariant ratingValue = query.value("rating");
+        commentInfo.rating = ratingValue.isNull() ? 0 : ratingValue.toInt();
+        commentInfo.commentText = query.value("comment_text").toString();
+
+        comments.append(commentInfo);
+        count++;
+    }
+    qInfo() << "Processed" << count << "comments for book ID" << bookId;
+
+    return comments;
 }
 
 
