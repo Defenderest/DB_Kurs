@@ -63,6 +63,9 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     // Підключаємо зміну комбо-боксу статусу замовлень до перезавантаження списку
     connect(ui->orderStatusComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::loadAndDisplayOrders);
 
+    // Підключаємо кнопку збереження профілю
+    connect(ui->saveProfileButton, &QPushButton::clicked, this, &MainWindow::on_saveProfileButton_clicked);
+
     // Видалено з'єднання для кнопки профілю з хедера
 
     // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
