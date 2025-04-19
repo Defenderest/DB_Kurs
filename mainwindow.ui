@@ -312,7 +312,8 @@ QWidget#discoverPage,
 QWidget#booksPage,
 QWidget#authorsPage,
 QWidget#ordersPage,
-QWidget#pageProfile {
+QWidget#pageProfile,
+QWidget#bookDetailsPage /* Додано сторінку деталей книги */ {
     background-color: #ffffff; /* Білий фон для сторінок */
 }
 
