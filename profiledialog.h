@@ -14,16 +14,16 @@ class ProfileDialog;
 
 class ProfileDialog : public QDialog
 {
-    Q_OBJECT
+    // Q_OBJECT // Temporarily commented out for debugging
 
 public:
     // Оновлений конструктор: приймає DatabaseManager та ID користувача
     explicit ProfileDialog(DatabaseManager *dbManager, int customerId, QWidget *parent = nullptr);
     ~ProfileDialog();
 
-private slots:
+// private slots: // Temporarily commented out for debugging
     // Слот для обробки натискання кнопки "Зберегти" (підключається до accepted сигналу buttonBox)
-    void on_buttonBox_accepted();
+    // void on_buttonBox_accepted(); // Temporarily commented out for debugging
 
 private:
     Ui::ProfileDialog *ui;
