@@ -57,6 +57,7 @@ struct BookData {
     QString coverImagePath;
     QStringList authorLastNames; // Посилання на авторів за прізвищем (спрощено)
     QString genre; // Додано поле жанру
+    QString description; // Додано поле опису
     int dbId = -1; // Для збереження ID книги
     int publisherDbId = -1; // ID видавця з БД
     QList<int> authorDbIds; // ID авторів з БД
@@ -167,7 +168,7 @@ bool DatabaseManager::createSchemaTables()
     const QString createBookSQL = R"(
         CREATE TABLE book ( book_id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, isbn VARCHAR(20) UNIQUE,
             publication_date DATE, publisher_id INTEGER, price NUMERIC(10, 2) CHECK (price >= 0),
-            stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0), description TEXT, language VARCHAR(50),
+            stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0), description TEXT, language VARCHAR(50), -- Description already exists here, no change needed in CREATE TABLE
             page_count INTEGER CHECK (page_count > 0),
             cover_image_path VARCHAR(512),
             genre VARCHAR(100), -- Додано поле для жанру
@@ -443,6 +444,7 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
     // 3. Books and Book_Author (Вставка реальних книг та зв'язків)
     if (success) {
         qInfo() << "Populating table book and book_author with real data...";
+        // Переконуємось, що 'description' є в списку стовпців
         QString insertBookSQL = R"(
              INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count, cover_image_path, genre)
              VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count, :cover_image_path, :genre)
