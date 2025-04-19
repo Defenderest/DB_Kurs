@@ -1959,6 +1959,9 @@ border-bottom: 1px solid #eeeeee;</string>
           </item>
           <item>
            <widget class="QTextEdit" name="bookDetailDescriptionTextEdit">
+            <property name="styleSheet">
+             <string notr="true">background-color: white; color: black; border: 1px solid #ced4da; border-radius: 4px; padding: 5px;</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -1996,6 +1999,9 @@ border-bottom: 1px solid #eeeeee;</string>
              <bool>true</bool>
             </property>
             <widget class="QWidget" name="bookDetailCommentsContents">
+             <property name="styleSheet">
+              <string notr="true">background-color: white;</string>
+             </property>
              <property name="geometry">
               <rect>
                <x>0</x>
@@ -2007,6 +2013,9 @@ border-bottom: 1px solid #eeeeee;</string>
              <layout class="QVBoxLayout" name="bookDetailCommentsLayout">
               <item>
                <widget class="QLabel" name="label_3">
+                <property name="styleSheet">
+                 <string notr="true">color: black;</string>
+                </property>
                 <property name="text">
                  <string>(Тут будуть відгуки...)</string>
                 </property>
