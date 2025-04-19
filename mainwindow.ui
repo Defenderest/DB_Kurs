@@ -2089,69 +2089,32 @@ margin-bottom: 8px;</string>
             </property>
            </widget>
           </item>
-          <!-- Змінений блок для відображення коментарів -->
+          <!-- Блок для відображення коментарів (без окремої прокрутки) -->
           <item>
-           <widget class="QScrollArea" name="commentsScrollArea"> <!-- Перейменовано -->
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>200</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>400</height> <!-- Обмеження максимальної висоти -->
-             </size>
-            </property>
+           <widget class="QWidget" name="commentsContainerWidget"> <!-- Використовуємо QWidget замість QScrollArea -->
             <property name="styleSheet">
-             <string notr="true">QScrollArea { border: none; background-color: transparent; } /* Прибрано рамку та фон */
-QWidget#commentsContainerWidget { background-color: transparent; } /* Фон контейнера прозорий */</string>
+             <string notr="true">QWidget#commentsContainerWidget { background-color: transparent; } /* Фон контейнера прозорий */</string>
             </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="commentsContainerWidget"> <!-- Перейменовано -->
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>98</width> <!-- Ширина буде автоматичною -->
-               <height>198</height> <!-- Висота буде автоматичною -->
-              </rect>
+            <!-- Layout для коментарів залишається всередині -->
+            <layout class="QVBoxLayout" name="commentsListLayout">
+             <property name="spacing">
+              <number>10</number> <!-- Відступ між коментарями -->
              </property>
-             <layout class="QVBoxLayout" name="commentsListLayout"> <!-- Перейменовано -->
-              <property name="spacing">
-               <number>10</number> <!-- Відступ між коментарями -->
-              </property>
-              <property name="leftMargin">
-               <number>15</number>
-              </property>
-              <property name="topMargin">
-               <number>15</number>
-              </property>
-              <property name="rightMargin">
-               <number>15</number>
-              </property>
-              <property name="bottomMargin">
-               <number>15</number>
-              </property>
-              <!-- Сюди будуть динамічно додаватися віджети коментарів -->
-              <item>
-               <spacer name="commentsVerticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>0</height> <!-- Початкова висота 0, буде розтягуватись -->
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
+             <property name="leftMargin">
+              <number>0</number> <!-- Забираємо відступи, якщо вони не потрібні для контейнера -->
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <!-- Сюди будуть динамічно додаватися віджети коментарів -->
+             <!-- Спейсер тут більше не потрібен, бо layout розтягуватиметься -->
+            </layout>
            </widget>
           </item>
           <!-- Нова секція для додавання коментаря -->
