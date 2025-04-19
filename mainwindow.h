@@ -12,8 +12,9 @@
 #include <QEvent>       // Для eventFilter
 #include <QEnterEvent>  // Для подій наведення миші
 #include <QMap>         // Для збереження тексту кнопок
-// #include "profiledialog.h" // Видалено, профіль тепер сторінка
 #include <QLineEdit>    // Додано для редагування телефону
+#include <QCompleter>   // Додано для автодоповнення
+#include <QStringListModel> // Додано для моделі автодоповнення
 
 // Forward declarations
 class DatabaseManager;
@@ -50,6 +51,7 @@ private slots:
     void on_navProfileButton_clicked(); // Слот для кнопки профілю в бічній панелі
     void on_editProfileButton_clicked(); // Слот для кнопки редагування профілю
     void on_saveProfileButton_clicked(); // Слот для кнопки збереження профілю
+    void updateSearchSuggestions(const QString &text); // Слот для оновлення пропозицій пошуку
 
 private:
     // Допоміжні функції для відображення даних
@@ -74,6 +76,7 @@ private:
     // Налаштування анімації та стану бічної панелі
     void setupSidebarAnimation();
     void toggleSidebar(bool expand);
+    void setupSearchCompleter(); // Налаштування автодоповнення для пошуку
 
     // Члени класу
     Ui::MainWindow *ui;
@@ -85,6 +88,10 @@ private:
     int m_collapsedWidth = 50;                        // Ширина згорнутої панелі
     int m_expandedWidth = 200;                       // Ширина розгорнутої панелі
     QMap<QPushButton*, QString> m_buttonOriginalText; // Зберігання оригінального тексту кнопок
+
+    // Члени для автодоповнення пошуку
+    QCompleter *m_searchCompleter = nullptr;
+    QStringListModel *m_searchSuggestionModel = nullptr;
 
 protected:
     // Перехоплення подій для sidebarFrame

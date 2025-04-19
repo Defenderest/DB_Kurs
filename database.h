@@ -143,6 +143,9 @@ public:
     // Новий метод для оновлення адреси користувача
     bool updateCustomerAddress(int customerId, const QString &newAddress);
 
+    // Новий метод для отримання пропозицій пошуку (автодоповнення)
+    QStringList getSearchSuggestions(const QString &prefix, int limit = 10) const;
+
 
 private:
     QSqlDatabase m_db;

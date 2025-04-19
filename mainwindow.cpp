@@ -24,8 +24,9 @@
 #include <QGroupBox>        // Для групування елементів замовлення
 #include <QTableWidget>     // Для відображення позицій та статусів
 #include <QHeaderView>      // Для налаштування заголовків таблиці
-// #include "profiledialog.h" // Видалено
 #include <QLineEdit>        // Додано для QLineEdit у профілі
+#include <QCompleter>       // Додано для автодоповнення
+#include <QStringListModel> // Додано для моделі автодоповнення
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -145,6 +146,9 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Встановлюємо початковий стан сторінки профілю (не в режимі редагування)
     setProfileEditingEnabled(false);
+
+    // Налаштовуємо автодоповнення для глобального пошуку
+    setupSearchCompleter();
 
     // Блок else для помилки підключення більше не потрібен тут,
     // оскільки dbManager передається і перевіряється на початку конструктора.
@@ -616,6 +620,50 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     }
     // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
+}
+
+
+// Налаштування автодоповнення для глобального пошуку
+void MainWindow::setupSearchCompleter()
+{
+    if (!ui->globalSearchLineEdit) {
+        qWarning() << "setupSearchCompleter: globalSearchLineEdit is null!";
+        return;
+    }
+
+    m_searchSuggestionModel = new QStringListModel(this); // Модель для пропозицій
+    m_searchCompleter = new QCompleter(m_searchSuggestionModel, this); // Комплітер
+
+    m_searchCompleter->setCaseSensitivity(Qt::CaseInsensitive); // Нечутливий до регістру
+    m_searchCompleter->setCompletionMode(QCompleter::PopupCompletion); // Випадаючий список
+    m_searchCompleter->setFilterMode(Qt::MatchStartsWith); // Пропозиції, що починаються з введеного тексту
+    m_searchCompleter->setPopup(ui->globalSearchLineEdit->findChild<QListView*>()); // Використовуємо стандартний popup
+
+    ui->globalSearchLineEdit->setCompleter(m_searchCompleter);
+
+    // Підключаємо сигнал зміни тексту до слота оновлення пропозицій
+    connect(ui->globalSearchLineEdit, &QLineEdit::textChanged, this, &MainWindow::updateSearchSuggestions);
+
+    qInfo() << "Search completer setup complete for globalSearchLineEdit.";
+}
+
+// Слот для оновлення пропозицій пошуку при зміні тексту
+void MainWindow::updateSearchSuggestions(const QString &text)
+{
+    if (!m_dbManager || !m_searchSuggestionModel) {
+        return; // Немає менеджера БД або моделі
+    }
+
+    // Отримуємо пропозиції, тільки якщо текст достатньо довгий
+    if (text.length() < 2) { // Мінімальна довжина для пошуку (можна змінити)
+        m_searchSuggestionModel->setStringList({}); // Очищаємо модель, якщо текст короткий
+        return;
+    }
+
+    QStringList suggestions = m_dbManager->getSearchSuggestions(text);
+    m_searchSuggestionModel->setStringList(suggestions); // Оновлюємо модель пропозиціями
+
+    // qInfo() << "Updated search suggestions for text:" << text << "Count:" << suggestions.count();
 }
 
 // Метод для створення віджету картки замовлення
