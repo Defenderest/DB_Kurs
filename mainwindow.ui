@@ -853,13 +853,13 @@ border-bottom: 1px solid #eeeeee;</string>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>320</height>
+                  <height>380</height> <!-- Збільшено мінімальну висоту -->
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>350</height>
+                  <height>400</height> <!-- Збільшено максимальну висоту -->
                  </size>
                 </property>
                 <property name="frameShape">
@@ -916,13 +916,13 @@ border-bottom: 1px solid #eeeeee;</string>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>320</height>
+                  <height>380</height> <!-- Збільшено мінімальну висоту -->
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>350</height>
+                  <height>400</height> <!-- Збільшено максимальну висоту -->
                  </size>
                 </property>
                 <property name="frameShape">
@@ -979,13 +979,13 @@ border-bottom: 1px solid #eeeeee;</string>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>320</height>
+                  <height>380</height> <!-- Збільшено мінімальну висоту -->
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>350</height>
+                  <height>400</height> <!-- Збільшено максимальну висоту -->
                  </size>
                 </property>
                 <property name="frameShape">
