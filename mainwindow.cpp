@@ -844,13 +844,11 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
                 ui->commentsListLayout->addWidget(commentWidget);
             }
         }
-        // Додаємо спейсер в кінці, щоб притиснути коментарі вгору
-        ui->commentsListLayout->addSpacerItem(new QSpacerItem(20, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+        // Спейсер більше не потрібен тут, оскільки layout є частиною основного потоку
     }
-    // Оновлюємо геометрію контейнера коментарів
-    ui->commentsContainerWidget->updateGeometry();
-
-
+    // Оновлення геометрії commentsContainerWidget більше не потрібне
+ 
+ 
     qInfo() << "Book details page populated for:" << details.title;
 }
 
