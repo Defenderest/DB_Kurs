@@ -24,7 +24,7 @@
 #include <QGroupBox>        // Для групування елементів замовлення
 #include <QTableWidget>     // Для відображення позицій та статусів
 #include <QHeaderView>      // Для налаштування заголовків таблиці
-// #include "profiledialog.h" // Видалено
+#include "profiledialog.h" // Додаємо для використання діалогу профілю
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -852,52 +852,12 @@ void MainWindow::loadAndDisplayOrders()
     }
 }
 
-
-// Заповнення полів сторінки профілю даними
+// Видаляємо функцію populateProfilePanel, оскільки вона більше не використовується в MainWindow
+/*
 void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
 {
-    // Перевіряємо, чи вказівники на QLabel існують (важливо після змін в UI)
-    if (!ui->profileFirstNameLabel || !ui->profileLastNameLabel || !ui->profileEmailLabel ||
-        !ui->profilePhoneLabel || !ui->profileAddressLabel || !ui->profileJoinDateLabel ||
-        !ui->profileLoyaltyLabel || !ui->profilePointsLabel)
-    {
-        qWarning() << "populateProfilePanel: One or more profile labels are null!";
-        // Не показуємо QMessageBox тут, щоб не заважати користувачу
-        // Просто виходимо або встановлюємо текст помилки
-        if(ui->pageProfile) { // Спробуємо показати помилку на самій сторінці
-             clearLayout(ui->profilePageLayout); // Очистимо, щоб не було старих даних
-             QLabel *errorLabel = new QLabel(tr("Помилка інтерфейсу: Не вдалося знайти поля для відображення профілю."), ui->pageProfile);
-             errorLabel->setAlignment(Qt::AlignCenter);
-             errorLabel->setWordWrap(true);
-             ui->profilePageLayout->addWidget(errorLabel);
-        }
-        return;
-    }
-
-     // Перевіряємо, чи дані взагалі були знайдені
-    if (!profileInfo.found || profileInfo.customerId <= 0) {
-        // Заповнюємо поля текстом про помилку або відсутність даних
-        const QString errorText = tr("(Помилка завантаження або дані відсутні)");
-        ui->profileFirstNameLabel->setText(errorText);
-        ui->profileLastNameLabel->setText(errorText);
-        ui->profileEmailLabel->setText(errorText);
-        ui->profilePhoneLabel->setText(errorText);
-        ui->profileAddressLabel->setText(errorText);
-        ui->profileJoinDateLabel->setText(errorText);
-        ui->profileLoyaltyLabel->setText(errorText);
-        ui->profilePointsLabel->setText("-");
-        return;
-    }
-
-    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (всередині pageProfile)
-    ui->profileFirstNameLabel->setText(profileInfo.firstName.isEmpty() ? tr("(не вказано)") : profileInfo.firstName);
-    ui->profileLastNameLabel->setText(profileInfo.lastName.isEmpty() ? tr("(не вказано)") : profileInfo.lastName);
-    ui->profileEmailLabel->setText(profileInfo.email); // Email має бути завжди
-    ui->profilePhoneLabel->setText(profileInfo.phone.isEmpty() ? tr("(не вказано)") : profileInfo.phone);
-    ui->profileAddressLabel->setText(profileInfo.address.isEmpty() ? tr("(не вказано)") : profileInfo.address);
-    ui->profileJoinDateLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
-    ui->profileLoyaltyLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
-    ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
+    // ... (код функції) ...
 }
+*/
 
 // --- Кінець реалізації слотів та функцій ---
