@@ -135,9 +135,11 @@ bool DatabaseManager::createSchemaTables()
     const QString dropAuthorSQL = R"(DROP TABLE IF EXISTS author CASCADE;)";
     const QString dropPublisherSQL = R"(DROP TABLE IF EXISTS publisher CASCADE;)";
     const QString dropCustomerSQL = R"(DROP TABLE IF EXISTS customer CASCADE;)";
+    const QString dropCommentSQL = R"(DROP TABLE IF EXISTS comment CASCADE;)"; // Додано видалення comment
 
     success &= executeQuery(query, dropOrderStatusSQL, "Удаление order_status");
     if(success) success &= executeQuery(query, dropOrderItemSQL,   "Удаление order_item");
+    if(success) success &= executeQuery(query, dropCommentSQL,     "Удаление comment"); // Додано видалення comment
     if(success) success &= executeQuery(query, dropBookAuthorSQL,  "Удаление book_author");
     if(success) success &= executeQuery(query, dropOrderSQL,       "Удаление \"order\"");
     if(success) success &= executeQuery(query, dropBookSQL,        "Удаление book");
@@ -201,6 +203,21 @@ bool DatabaseManager::createSchemaTables()
             status_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, tracking_number VARCHAR(100),
             CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES "order"(order_id) ON DELETE CASCADE ); )";
     if(success) success &= executeQuery(query, createOrderStatusSQL, "Создание order_status");
+
+    const QString createCommentSQL = R"(
+        CREATE TABLE comment (
+            comment_id SERIAL PRIMARY KEY,
+            book_id INTEGER NOT NULL,
+            customer_id INTEGER NOT NULL,
+            comment_text TEXT NOT NULL,
+            comment_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            rating INTEGER CHECK (rating >= 0 AND rating <= 5), -- 0 = no rating, 1-5 stars
+            CONSTRAINT fk_book_comment FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
+            CONSTRAINT fk_customer_comment FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
+        );
+    )";
+    if(success) success &= executeQuery(query, createCommentSQL, "Создание comment");
+
 
     // 3. Добавление комментариев и индексов (опционально)
     // ... (код для комментариев и индексов) ...
@@ -793,11 +810,57 @@ bool DatabaseManager::populateTestData(int numberOfRecords)
         }
     }
 
+    // 8. comment (Генерація тестових коментарів)
+    if (success && !bookIds.isEmpty() && !customerIds.isEmpty()) {
+        qInfo() << "Populating table comment (generating test data)...";
+        QString insertCommentSQL = R"(
+            INSERT INTO comment (book_id, customer_id, comment_text, comment_date, rating)
+            VALUES (:book_id, :customer_id, :comment_text, :comment_date, :rating);
+        )";
+        if (!query.prepare(insertCommentSQL)) {
+            qCritical() << "Помилка підготовки запиту для comment:" << query.lastError().text();
+            success = false;
+        } else {
+            int commentsCreated = 0;
+            int targetCommentCount = numberOfRecords * 3; // Спробуємо створити більше коментарів
+            QStringList sampleComments = {
+                "Чудова книга!", "Дуже сподобалось.", "Рекомендую!", "Неймовірна історія.",
+                "Захоплює з перших сторінок.", "Не міг відірватися.", "Варто прочитати.",
+                "Глибокий зміст.", "Цікавий сюжет.", "Добре написано.", "Непогано.",
+                "Очікував більшого.", "На один раз.", "Не дуже вразило.", "Спірно."
+            };
 
-    // Завершуємо транзакцію
+            for (int i = 0; i < targetCommentCount && success; ++i) {
+                int bookId = bookIds.at(QRandomGenerator::global()->bounded(bookIds.size()));
+                int customerId = customerIds.at(QRandomGenerator::global()->bounded(customerIds.size()));
+                QString commentText = sampleComments.at(QRandomGenerator::global()->bounded(sampleComments.size()));
+                QDateTime commentDate = randomDateTime(QDateTime::currentDateTime().addDays(-180), QDateTime::currentDateTime());
+                int rating = QRandomGenerator::global()->bounded(0, 6); // 0-5
+
+                query.bindValue(":book_id", bookId);
+                query.bindValue(":customer_id", customerId);
+                query.bindValue(":comment_text", commentText);
+                query.bindValue(":comment_date", commentDate);
+                query.bindValue(":rating", rating == 0 ? QVariant(QVariant::Int) : rating); // NULL if 0
+
+                if (query.exec()) {
+                    commentsCreated++;
+                } else {
+                    qCritical().noquote() << QString("Error executing prepared INSERT (Comment %1):").arg(commentsCreated + 1);
+                    qCritical() << query.lastError().text();
+                    qCritical() << "Bound values:" << query.boundValues();
+                    success = false; // Any error here is critical
+                }
+            }
+             qInfo() << "Created" << commentsCreated << "comments.";
+        }
+    }
+
+
+    // Завершуємо транзакцію (перенесено з кінця функції)
     if (success) {
         if (m_db.commit()) {
-            qInfo() << "Data population transaction committed successfully. Added real books/authors and ~" << numberOfRecords << "customers/orders."; // Changed log to English
+            qInfo() << "Data population transaction committed successfully. Added real books/authors, comments and ~" << numberOfRecords << "customers/orders.";
             return true;
         } else {
             qCritical() << "Error committing data population transaction:" << m_db.lastError().text(); // Changed log to English
