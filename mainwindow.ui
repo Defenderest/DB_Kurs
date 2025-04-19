@@ -15,7 +15,7 @@
   </property>
   <property name="styleSheet">
    <string>QMainWindow {
-    background-color: #f8f9fa;
+    background-color: #ffffff; /* Змінено на білий */
     color: #212529;
 }
 
