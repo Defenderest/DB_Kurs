@@ -403,7 +403,7 @@ QWidget#ordersContainerWidget {
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>30</height> <!-- Змінено висоту -->
+           <height>40</height> <!-- Змінено висоту -->
           </size>
          </property>
          <property name="sizePolicy">
@@ -415,7 +415,7 @@ QWidget#ordersContainerWidget {
          <property name="maximumSize">
           <size>
            <width>500</width>
-           <height>30</height> <!-- Повертаємо максимальну висоту -->
+           <height>40</height> <!-- Повертаємо максимальну висоту -->
           </size>
          </property>
          <property name="placeholderText">
