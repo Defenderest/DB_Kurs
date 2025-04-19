@@ -32,6 +32,6 @@ private:
 
     // Приватний метод для заповнення полів при створенні
     void populateProfileData();
-};
+}; // <-- Added semicolon for good measure
 
 #endif // PROFILEDIALOG_H
