@@ -2105,7 +2105,7 @@ margin-bottom: 8px;</string>
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">QScrollArea { border: 1px solid #dee2e6; border-radius: 4px; background-color: #ffffff; } /* Додано рамку та фон */
+             <string notr="true">QScrollArea { border: none; background-color: transparent; } /* Прибрано рамку та фон */
 QWidget#commentsContainerWidget { background-color: transparent; } /* Фон контейнера прозорий */</string>
             </property>
             <property name="widgetResizable">
