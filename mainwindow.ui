@@ -2000,20 +2000,22 @@ border-radius: 6px; /* Трохи більше заокруглення */
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="bookDetailDescriptionTextEdit">
+           <widget class="QLabel" name="bookDetailDescriptionLabel"> <!-- Змінено тип на QLabel та ім'я -->
             <property name="styleSheet">
-             <string notr="true">background-color: transparent; /* Прозорий фон */
-color: #212529; /* Стандартний чорний текст */
-border: none; /* Без рамки */
-padding: 0px; /* Прибираємо внутрішній відступ, якщо не потрібен */
+             <string notr="true">color: #212529; /* Стандартний чорний текст */
 font-size: 11pt; /* Трохи більший шрифт для опису */
-line-height: 1.6; /* Збільшуємо міжрядковий інтервал */</string>
+line-height: 1.6; /* Збільшуємо міжрядковий інтервал */
+/* background-color, border, padding - не потрібні для QLabel в цьому випадку */
+</string>
             </property>
-            <property name="readOnly">
-             <bool>true</bool>
+            <property name="text">
+             <string>(Опис книги завантажується...)</string> <!-- Використовуємо text замість placeholderText -->
             </property>
-            <property name="placeholderText">
-             <string>(Опис книги завантажується...)</string>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set> <!-- Вирівнювання тексту -->
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool> <!-- Увімкнути перенесення слів -->
             </property>
            </widget>
           </item>

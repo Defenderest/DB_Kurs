@@ -686,11 +686,11 @@ void MainWindow::showBookDetails(int bookId)
 // Заповнення сторінки деталей книги даними
 void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
 {
-    // Перевірка існування віджетів на сторінці деталей
+    // Перевірка існування віджетів на сторінці деталей (використовуємо нове ім'я bookDetailDescriptionLabel)
     if (!ui->bookDetailCoverLabel || !ui->bookDetailTitleLabel || !ui->bookDetailAuthorLabel ||
         !ui->bookDetailGenreLabel || !ui->bookDetailPublisherLabel || !ui->bookDetailYearLabel ||
         !ui->bookDetailPagesLabel || !ui->bookDetailIsbnLabel || !ui->bookDetailPriceLabel ||
-        !ui->bookDetailDescriptionTextEdit || !ui->bookDetailAddToCartButton)
+        !ui->bookDetailDescriptionLabel || !ui->bookDetailAddToCartButton) // Змінено QTextEdit на QLabel
     {
         qWarning() << "populateBookDetailsPage: One or more detail page widgets are null!";
         // Можна показати повідомлення про помилку на самій сторінці
@@ -721,7 +721,7 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
     ui->bookDetailPagesLabel->setText(tr("Сторінок: %1").arg(details.pageCount > 0 ? QString::number(details.pageCount) : "-"));
     ui->bookDetailIsbnLabel->setText(tr("ISBN: %1").arg(details.isbn.isEmpty() ? "-" : details.isbn));
     ui->bookDetailPriceLabel->setText(QString::number(details.price, 'f', 2) + tr(" грн"));
-    ui->bookDetailDescriptionTextEdit->setPlainText(details.description.isEmpty() ? tr("(Опис відсутній)") : details.description);
+    ui->bookDetailDescriptionLabel->setText(details.description.isEmpty() ? tr("(Опис відсутній)") : details.description); // Використовуємо setText для QLabel
 
     // 3. Кнопка "Додати в кошик" (можна додати логіку або сховати, якщо немає в наявності)
     ui->bookDetailAddToCartButton->setEnabled(details.stockQuantity > 0);
