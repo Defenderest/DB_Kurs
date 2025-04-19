@@ -522,26 +522,30 @@ void MainWindow::on_navOrdersButton_clicked()
 // Слот для кнопки профілю в бічній панелі
 void MainWindow::on_navProfileButton_clicked()
 {
-    qInfo() << "Navigating to profile page for customer ID:" << m_currentCustomerId;
-    ui->contentStackedWidget->setCurrentWidget(ui->pageProfile);
+    qInfo() << "Profile button clicked. Opening ProfileDialog for customer ID:" << m_currentCustomerId;
 
-    // Завантажуємо дані профілю при переході на сторінку
+    // Перевіряємо необхідні дані перед відкриттям діалогу
     if (m_currentCustomerId <= 0) {
-        QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо завантажити профіль, оскільки користувач не визначений."));
-        populateProfilePanel(CustomerProfileInfo()); // Показати помилку в полях
+        QMessageBox::warning(this, tr("Профіль користувача"), tr("Неможливо відкрити профіль, оскільки користувач не визначений."));
         return;
     }
     if (!m_dbManager) {
-         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
-         populateProfilePanel(CustomerProfileInfo()); // Показати помилку в полях
+         QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних. Неможливо відкрити профіль."));
          return;
     }
 
-    CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
-    if (!profile.found) {
-        QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
-    }
-    populateProfilePanel(profile); // Заповнюємо сторінку профілю
+    // Створюємо та показуємо діалогове вікно профілю
+    ProfileDialog profileDialog(m_dbManager, m_currentCustomerId, this); // Передаємо dbManager та customerId
+    profileDialog.exec(); // Показуємо діалог модально
+
+    // Тут можна додати логіку після закриття діалогу, якщо потрібно
+    // Наприклад, оновити якусь інформацію в головному вікні,
+    // якщо діалог був закритий через "Зберегти" (profileDialog.result() == QDialog::Accepted)
+    qInfo() << "ProfileDialog closed with result:" << profileDialog.result();
+
+    // Більше не перемикаємо сторінку і не заповнюємо панель тут
+    // ui->contentStackedWidget->setCurrentWidget(ui->pageProfile);
+    // populateProfilePanel(...);
 }
 
 
