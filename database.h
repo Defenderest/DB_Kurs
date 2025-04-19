@@ -40,6 +40,25 @@ struct CustomerLoginInfo {
     bool found = false; // Прапорець, чи знайдено користувача
 };
 
+// Структура для передачі детальної інформації про книгу в UI
+struct BookDetailsInfo {
+    int bookId = -1;
+    QString title;
+    QString authors; // Об'єднані імена авторів
+    double price = 0.0;
+    QString coverImagePath;
+    int stockQuantity = 0;
+    QString genre;
+    QString description;
+    QString publisherName;
+    QDate publicationDate;
+    QString isbn;
+    int pageCount = 0;
+    QString language;
+    bool found = false; // Прапорець, чи знайдено книгу
+    // TODO: Додати поля для рейтингу та коментарів, коли вони будуть реалізовані
+};
+
 // Структура для передачі даних для реєстрації нового користувача
 struct CustomerRegistrationInfo {
     QString firstName;
@@ -145,6 +164,9 @@ public:
 
     // Новий метод для отримання пропозицій пошуку (автодоповнення)
     QStringList getSearchSuggestions(const QString &prefix, int limit = 10) const;
+
+    // Новий метод для отримання детальної інформації про книгу за ID
+    BookDetailsInfo getBookDetails(int bookId) const;
 
 
 private:

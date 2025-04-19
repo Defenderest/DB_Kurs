@@ -946,6 +946,70 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для отримання детальної інформації про книгу
+BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
+{
+    BookDetailsInfo details;
+    if (!m_isConnected || !m_db.isOpen() || bookId <= 0) {
+        qWarning() << "Неможливо отримати деталі книги: немає з'єднання або невірний bookId.";
+        return details; // Повертаємо порожню структуру
+    }
+
+    const QString sql = R"(
+        SELECT
+            b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity,
+            b.genre, b.description, b.publication_date, b.isbn, b.page_count, b.language,
+            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
+            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
+        FROM book b
+        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
+        LEFT JOIN book_author ba ON b.book_id = ba.book_id
+        LEFT JOIN author a ON ba.author_id = a.author_id
+        WHERE b.book_id = :bookId
+        GROUP BY b.book_id, p.name -- Групуємо за всіма полями книги та видавця
+        LIMIT 1; -- Очікуємо тільки один результат
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":bookId", bookId);
+
+    qInfo() << "Executing SQL to get book details for book ID:" << bookId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні деталей книги для book ID '" << bookId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return details;
+    }
+
+    if (query.next()) {
+        details.bookId = query.value("book_id").toInt();
+        details.title = query.value("title").toString();
+        details.price = query.value("price").toDouble();
+        details.coverImagePath = query.value("cover_image_path").toString();
+        details.stockQuantity = query.value("stock_quantity").toInt();
+        details.genre = query.value("genre").toString();
+        details.description = query.value("description").toString();
+        details.publicationDate = query.value("publication_date").toDate();
+        details.isbn = query.value("isbn").toString();
+        details.pageCount = query.value("page_count").toInt();
+        details.language = query.value("language").toString();
+        details.publisherName = query.value("publisher_name").toString();
+        details.authors = query.value("authors").toString();
+        if (query.value("authors").isNull()) {
+             details.authors = ""; // Порожній рядок, якщо немає авторів
+        }
+        details.found = true;
+        qInfo() << "Book details found for book ID:" << bookId;
+    } else {
+        qInfo() << "Book details not found for book ID:" << bookId;
+        // details.found залишається false
+    }
+
+    return details;
+}
+
+
 // Реалізація нового методу для отримання пропозицій пошуку
 QStringList DatabaseManager::getSearchSuggestions(const QString &prefix, int limit) const
 {

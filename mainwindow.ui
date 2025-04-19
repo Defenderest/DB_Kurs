@@ -1744,6 +1744,296 @@ border-bottom: 1px solid #eeeeee;</string>
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="bookDetailsPage">
+         <layout class="QVBoxLayout" name="bookDetailsPageLayout">
+          <property name="spacing">
+           <number>15</number>
+          </property>
+          <property name="leftMargin">
+           <number>25</number>
+          </property>
+          <property name="topMargin">
+           <number>20</number>
+          </property>
+          <property name="rightMargin">
+           <number>25</number>
+          </property>
+          <property name="bottomMargin">
+           <number>20</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="bookDetailsHeaderLayout">
+            <property name="spacing">
+             <number>20</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="bookDetailCoverLabel">
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>280</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>200</width>
+                <height>280</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: #e0e0e0; border: 1px solid #cccccc; border-radius: 4px;</string>
+              </property>
+              <property name="text">
+               <string>(Обкладинка)</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="bookDetailsInfoLayout">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="bookDetailTitleLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 18pt; font-weight: 600; color: #333;</string>
+                </property>
+                <property name="text">
+                 <string>(Назва книги)</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="bookDetailAuthorLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 12pt; color: #555; font-style: italic;</string>
+                </property>
+                <property name="text">
+                 <string>(Автор)</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="bookDetailGenreLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 10pt; color: #777;</string>
+                </property>
+                <property name="text">
+                 <string>Жанр: (жанр)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="bookDetailPublisherLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 10pt; color: #777;</string>
+                </property>
+                <property name="text">
+                 <string>Видавництво: (видавництво)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="bookDetailYearLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 10pt; color: #777;</string>
+                </property>
+                <property name="text">
+                 <string>Рік видання: (рік)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="bookDetailPagesLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 10pt; color: #777;</string>
+                </property>
+                <property name="text">
+                 <string>Сторінок: (кількість)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="bookDetailIsbnLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 10pt; color: #777;</string>
+                </property>
+                <property name="text">
+                 <string>ISBN: (isbn)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Policy::MinimumExpanding</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>10</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="bookDetailPriceLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 16pt; font-weight: bold; color: #007bff;</string>
+                </property>
+                <property name="text">
+                 <string>(Ціна) грн</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="bookDetailAddToCartButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>180</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>250</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: #28a745; color: white; font-size: 11pt; padding: 10px;</string>
+                </property>
+                <property name="text">
+                 <string>🛒 Додати в кошик</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="styleSheet">
+             <string notr="true">font-size: 14pt; font-weight: 600; color: #333; margin-bottom: 5px;</string>
+            </property>
+            <property name="text">
+             <string>Опис</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="bookDetailDescriptionTextEdit">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="placeholderText">
+             <string>(Опис книги завантажується...)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="styleSheet">
+             <string notr="true">font-size: 14pt; font-weight: 600; color: #333; margin-top: 10px; margin-bottom: 5px;</string>
+            </property>
+            <property name="text">
+             <string>Відгуки та Рейтинг</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="bookDetailRatingLabel">
+            <property name="text">
+             <string>(Рейтинг: ⭐⭐⭐⭐☆)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QScrollArea" name="bookDetailCommentsScrollArea">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>150</height>
+             </size>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="bookDetailCommentsContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>100</width>
+               <height>100</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="bookDetailCommentsLayout">
+              <item>
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>(Тут будуть відгуки...)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>

@@ -28,6 +28,8 @@
 #include <QCompleter>       // Додано для автодоповнення
 #include <QStringListModel> // Додано для моделі автодоповнення
 #include <QListView>        // Додано для QListView (використовується в автодоповненні)
+#include <QMouseEvent>      // Додано для подій миші
+#include <QTextEdit>        // Додано для QTextEdit (опис книги)
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -243,6 +245,15 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     // Тут можна підключити сигнал кнопки до слота
     // connect(addToCartButton, &QPushButton::clicked, this, [this, bookInfo](){ /* логіка додавання в кошик */ });
     cardLayout->addWidget(addToCartButton);
+
+
+    // --- Додавання обробки кліків ---
+    // Встановлюємо bookId як динамічну властивість для легкого доступу в eventFilter
+    cardFrame->setProperty("bookId", bookInfo.bookId);
+    // Встановлюємо фільтр подій на сам фрейм картки
+    cardFrame->installEventFilter(this);
+    // Змінюємо курсор при наведенні, щоб показати клікабельність
+    cardFrame->setCursor(Qt::PointingHandCursor);
 
 
     cardFrame->setLayout(cardLayout); // Встановлюємо layout для фрейму
@@ -619,8 +630,110 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             return true; // Подія оброблена
         }
     }
+    // --- Обробка кліків на картках книг ---
+    // Перевіряємо, чи об'єкт є QFrame (картка книги) і чи має властивість bookId
+    if (qobject_cast<QFrame*>(watched) && watched->property("bookId").isValid()) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            // Переконуємось, що це ліва кнопка миші
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                int bookId = watched->property("bookId").toInt();
+                qInfo() << "Book card clicked, bookId:" << bookId;
+                showBookDetails(bookId); // Викликаємо слот для показу деталей
+                return true; // Подія оброблена
+            }
+        }
+    }
+
     // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
+}
+
+
+// Слот для відображення сторінки з деталями книги
+void MainWindow::showBookDetails(int bookId)
+{
+    qInfo() << "Attempting to show details for book ID:" << bookId;
+    if (bookId <= 0) {
+        qWarning() << "Invalid book ID received:" << bookId;
+        QMessageBox::warning(this, tr("Помилка"), tr("Некоректний ідентифікатор книги."));
+        return;
+    }
+    if (!m_dbManager) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+        return;
+    }
+    if (!ui->bookDetailsPage) {
+         QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Сторінка деталей книги не знайдена."));
+         return;
+    }
+
+    // Отримуємо деталі книги з бази даних
+    BookDetailsInfo bookDetails = m_dbManager->getBookDetails(bookId);
+
+    if (!bookDetails.found) {
+        QMessageBox::warning(this, tr("Помилка"), tr("Не вдалося знайти інформацію для книги з ID %1.").arg(bookId));
+        return;
+    }
+
+    // Заповнюємо сторінку даними
+    populateBookDetailsPage(bookDetails);
+
+    // Переключаємо StackedWidget на сторінку деталей
+    ui->contentStackedWidget->setCurrentWidget(ui->bookDetailsPage);
+}
+
+// Заповнення сторінки деталей книги даними
+void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
+{
+    // Перевірка існування віджетів на сторінці деталей
+    if (!ui->bookDetailCoverLabel || !ui->bookDetailTitleLabel || !ui->bookDetailAuthorLabel ||
+        !ui->bookDetailGenreLabel || !ui->bookDetailPublisherLabel || !ui->bookDetailYearLabel ||
+        !ui->bookDetailPagesLabel || !ui->bookDetailIsbnLabel || !ui->bookDetailPriceLabel ||
+        !ui->bookDetailDescriptionTextEdit || !ui->bookDetailAddToCartButton)
+    {
+        qWarning() << "populateBookDetailsPage: One or more detail page widgets are null!";
+        // Можна показати повідомлення про помилку на самій сторінці
+        if(ui->bookDetailsPageLayout) {
+            clearLayout(ui->bookDetailsPageLayout);
+            QLabel *errorLabel = new QLabel(tr("Помилка інтерфейсу: Не вдалося відобразити деталі книги."), ui->bookDetailsPage);
+            ui->bookDetailsPageLayout->addWidget(errorLabel);
+        }
+        return;
+    }
+
+    // 1. Обкладинка
+    QPixmap coverPixmap(details.coverImagePath);
+    if (coverPixmap.isNull() || details.coverImagePath.isEmpty()) {
+        ui->bookDetailCoverLabel->setText(tr("Немає\nобкладинки"));
+        ui->bookDetailCoverLabel->setStyleSheet("QLabel { background-color: #e0e0e0; color: #555; border: 1px solid #ccc; border-radius: 4px; }");
+    } else {
+        ui->bookDetailCoverLabel->setPixmap(coverPixmap.scaled(ui->bookDetailCoverLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        ui->bookDetailCoverLabel->setStyleSheet("QLabel { background-color: transparent; border: 1px solid #ccc; border-radius: 4px; }"); // Забираємо фон
+    }
+
+    // 2. Текстові поля
+    ui->bookDetailTitleLabel->setText(details.title.isEmpty() ? tr("(Без назви)") : details.title);
+    ui->bookDetailAuthorLabel->setText(details.authors.isEmpty() ? tr("(Автор невідомий)") : details.authors);
+    ui->bookDetailGenreLabel->setText(tr("Жанр: %1").arg(details.genre.isEmpty() ? "-" : details.genre));
+    ui->bookDetailPublisherLabel->setText(tr("Видавництво: %1").arg(details.publisherName.isEmpty() ? "-" : details.publisherName));
+    ui->bookDetailYearLabel->setText(tr("Рік видання: %1").arg(details.publicationDate.isValid() ? QString::number(details.publicationDate.year()) : "-"));
+    ui->bookDetailPagesLabel->setText(tr("Сторінок: %1").arg(details.pageCount > 0 ? QString::number(details.pageCount) : "-"));
+    ui->bookDetailIsbnLabel->setText(tr("ISBN: %1").arg(details.isbn.isEmpty() ? "-" : details.isbn));
+    ui->bookDetailPriceLabel->setText(QString::number(details.price, 'f', 2) + tr(" грн"));
+    ui->bookDetailDescriptionTextEdit->setPlainText(details.description.isEmpty() ? tr("(Опис відсутній)") : details.description);
+
+    // 3. Кнопка "Додати в кошик" (можна додати логіку або сховати, якщо немає в наявності)
+    ui->bookDetailAddToCartButton->setEnabled(details.stockQuantity > 0);
+    ui->bookDetailAddToCartButton->setToolTip(details.stockQuantity > 0 ? tr("Додати '%1' до кошика").arg(details.title) : tr("Немає в наявності"));
+    // TODO: Підключити сигнал кнопки до слота додавання в кошик
+
+    // 4. Рейтинг та коментарі (поки що заглушки)
+    // ui->bookDetailRatingLabel->setText(tr("Рейтинг: (ще не реалізовано)"));
+    // clearLayout(ui->bookDetailCommentsLayout);
+    // ui->bookDetailCommentsLayout->addWidget(new QLabel(tr("(Коментарі ще не реалізовано)")));
+
+    qInfo() << "Book details page populated for:" << details.title;
 }
 
 

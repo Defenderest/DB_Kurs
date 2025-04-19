@@ -15,10 +15,12 @@
 #include <QLineEdit>    // Додано для редагування телефону
 #include <QCompleter>   // Додано для автодоповнення
 #include <QStringListModel> // Додано для моделі автодоповнення
+#include <QMouseEvent> // Додано для обробки кліків миші
 
 // Forward declarations
 class DatabaseManager;
 struct CustomerProfileInfo;
+struct BookDetailsInfo; // Додано forward declaration
 class QLabel;
 class QVBoxLayout;
 class QGridLayout;
@@ -52,6 +54,7 @@ private slots:
     void on_editProfileButton_clicked(); // Слот для кнопки редагування профілю
     void on_saveProfileButton_clicked(); // Слот для кнопки збереження профілю
     void updateSearchSuggestions(const QString &text); // Слот для оновлення пропозицій пошуку
+    void showBookDetails(int bookId); // Слот для відображення деталей книги
 
 private:
     // Допоміжні функції для відображення даних
@@ -72,6 +75,8 @@ private:
 
     // Керування режимом редагування профілю
     void setProfileEditingEnabled(bool enabled);
+    // Заповнення сторінки деталей книги
+    void populateBookDetailsPage(const BookDetailsInfo &details);
 
     // Налаштування анімації та стану бічної панелі
     void setupSidebarAnimation();
