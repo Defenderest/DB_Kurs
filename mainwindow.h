@@ -63,6 +63,7 @@ private:
     void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
     QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
     QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
+    QWidget* createCommentWidget(const CommentDisplayInfo &commentInfo); // Додано оголошення
     void populateProfilePanel(const CustomerProfileInfo &profileInfo); // Заповнення сторінки профілю
 
     // Функції для відображення замовлень
