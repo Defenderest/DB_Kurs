@@ -1548,6 +1548,9 @@ border-bottom: 1px solid #eeeeee;</string>
             </item>
             <item row="0" column="1">
              <widget class="QLineEdit" name="profileFirstNameLineEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
               <property name="placeholderText">
                <string>Введіть ім'я</string>
               </property>
@@ -1565,6 +1568,9 @@ border-bottom: 1px solid #eeeeee;</string>
             </item>
             <item row="1" column="1">
              <widget class="QLineEdit" name="profileLastNameLineEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
               <property name="placeholderText">
                <string>Введіть прізвище</string>
               </property>
@@ -1599,6 +1605,9 @@ border-bottom: 1px solid #eeeeee;</string>
             </item>
             <item row="3" column="1">
              <widget class="QLineEdit" name="profilePhoneLineEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
               <property name="placeholderText">
                <string>Введіть номер телефону</string>
               </property>
@@ -1616,6 +1625,9 @@ border-bottom: 1px solid #eeeeee;</string>
             </item>
             <item row="4" column="1">
              <widget class="QLineEdit" name="profileAddressLineEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
               <property name="placeholderText">
                <string>Введіть адресу</string>
               </property>
@@ -1675,10 +1687,78 @@ border-bottom: 1px solid #eeeeee;</string>
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="saveProfileButton">
-            <property name="minimumSize">
+           <layout class="QHBoxLayout" name="profileButtonLayout">
+            <item>
+             <widget class="QPushButton" name="editProfileButton">
+              <property name="minimumSize">
+               <size>
+                <width>120</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Редагувати</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="saveProfileButton">
+              <property name="minimumSize">
+               <size>
+                <width>120</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Зберегти зміни</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="profileButtonSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="profileVerticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
              <size>
-              <width>120</width>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
               <height>0</height>
              </size>
             </property>

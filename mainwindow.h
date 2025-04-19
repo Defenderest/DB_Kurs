@@ -48,6 +48,7 @@ private slots:
     void on_navAuthorsButton_clicked();
     void on_navOrdersButton_clicked();
     void on_navProfileButton_clicked(); // Слот для кнопки профілю в бічній панелі
+    void on_editProfileButton_clicked(); // Слот для кнопки редагування профілю
     void on_saveProfileButton_clicked(); // Слот для кнопки збереження профілю
 
 private:
@@ -66,6 +67,9 @@ private:
 
     // Допоміжна функція для очищення layout
     void clearLayout(QLayout* layout);
+
+    // Керування режимом редагування профілю
+    void setProfileEditingEnabled(bool enabled);
 
     // Налаштування анімації та стану бічної панелі
     void setupSidebarAnimation();

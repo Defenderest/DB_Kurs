@@ -63,10 +63,11 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     // Підключаємо зміну комбо-боксу статусу замовлень до перезавантаження списку
     connect(ui->orderStatusComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::loadAndDisplayOrders);
 
-    // Підключаємо кнопку збереження профілю
+    // Підключаємо кнопки редагування та збереження профілю
+    connect(ui->editProfileButton, &QPushButton::clicked, this, &MainWindow::on_editProfileButton_clicked);
     connect(ui->saveProfileButton, &QPushButton::clicked, this, &MainWindow::on_saveProfileButton_clicked);
 
-    // Видалено з'єднання для кнопки профілю з хедера
+    // Видалено з'єднання для кнопки профілю з хедера (якщо воно було)
 
     // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
     m_buttonOriginalText[ui->navHomeButton] = tr("🏠 Головна");
@@ -140,7 +141,10 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     // (Завантаження відбувається при кліку на кнопку профілю в бічній панелі)
 
     // Завантаження замовлень (якщо потрібно при старті)
-    // loadAndDisplayOrders(); // Потрібно реалізувати цю функцію та відповідну сторінку ui->ordersPage
+    // loadAndDisplayOrders();
+
+    // Встановлюємо початковий стан сторінки профілю (не в режимі редагування)
+    setProfileEditingEnabled(false);
 
     // Блок else для помилки підключення більше не потрібен тут,
     // оскільки dbManager передається і перевіряється на початку конструктора.
@@ -546,8 +550,14 @@ void MainWindow::on_navProfileButton_clicked()
         QMessageBox::warning(this, tr("Профіль користувача"), tr("Не вдалося знайти інформацію для вашого профілю."));
     }
     populateProfilePanel(profile); // Заповнюємо сторінку профілю
+    setProfileEditingEnabled(false); // Переконуємось, що режим редагування вимкнено при переході
 }
 
+// Слот для кнопки редагування профілю
+void MainWindow::on_editProfileButton_clicked()
+{
+    setProfileEditingEnabled(true);
+}
 
 // Налаштування анімації бокової панелі
 void MainWindow::setupSidebarAnimation()
@@ -924,7 +934,48 @@ void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
     ui->profileJoinDateLabel->setEnabled(false);
     ui->profileLoyaltyLabel->setEnabled(false);
     ui->profilePointsLabel->setEnabled(false);
+
+    // Встановлюємо початковий стан редагування (зазвичай false)
+    // setProfileEditingEnabled(false); // Перенесено в on_navProfileButton_clicked та конструктор
 }
+
+
+// Функція для ввімкнення/вимкнення режиму редагування профілю
+void MainWindow::setProfileEditingEnabled(bool enabled)
+{
+    // Перевірка існування віджетів
+    if (!ui->profileFirstNameLineEdit || !ui->profileLastNameLineEdit || !ui->profilePhoneLineEdit ||
+        !ui->profileAddressLineEdit || !ui->editProfileButton || !ui->saveProfileButton)
+    {
+        qWarning() << "setProfileEditingEnabled: One or more profile widgets are null!";
+        return;
+    }
+
+    // Вмикаємо/вимикаємо редагування полів
+    ui->profileFirstNameLineEdit->setReadOnly(!enabled);
+    ui->profileLastNameLineEdit->setReadOnly(!enabled);
+    ui->profilePhoneLineEdit->setReadOnly(!enabled);
+    ui->profileAddressLineEdit->setReadOnly(!enabled);
+
+    // Показуємо/ховаємо кнопки
+    ui->editProfileButton->setVisible(!enabled);
+    ui->saveProfileButton->setVisible(enabled);
+
+    // Змінюємо стиль полів для візуального розрізнення (опціонально)
+    QString lineEditStyle = enabled
+        ? "QLineEdit { background-color: white; border: 1px solid #86b7fe; }" // Стиль при редагуванні
+        : "QLineEdit { background-color: #f8f9fa; border: 1px solid #dee2e6; }"; // Стиль при читанні
+    ui->profileFirstNameLineEdit->setStyleSheet(lineEditStyle);
+    ui->profileLastNameLineEdit->setStyleSheet(lineEditStyle);
+    ui->profilePhoneLineEdit->setStyleSheet(lineEditStyle);
+    ui->profileAddressLineEdit->setStyleSheet(lineEditStyle);
+
+    // Встановлюємо фокус на перше поле при ввімкненні редагування
+    if (enabled) {
+        ui->profileFirstNameLineEdit->setFocus();
+    }
+}
+
 
 // Слот для кнопки збереження змін у профілі
 void MainWindow::on_saveProfileButton_clicked()
@@ -972,9 +1023,10 @@ void MainWindow::on_saveProfileButton_clicked()
     if (nameSuccess && phoneSuccess && addressSuccess) {
         ui->statusBar->showMessage(tr("Дані профілю успішно оновлено!"), 5000);
         qInfo() << "Profile data updated successfully for customer ID:" << m_currentCustomerId;
+        setProfileEditingEnabled(false); // Вимикаємо режим редагування після успішного збереження
         // Можна перезавантажити дані, щоб переконатися, що все відображається коректно
         // CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
-        // populateProfilePanel(profile);
+        // populateProfilePanel(profile); // Це оновить поля, але знову вимкне редагування
     } else {
         QString errorMessage = tr("Не вдалося оновити дані профілю:\n");
         if (!nameSuccess) errorMessage += tr("- Помилка оновлення імені/прізвища.\n");
