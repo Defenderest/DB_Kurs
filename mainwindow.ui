@@ -2021,6 +2021,10 @@ line-height: 1.6; /* Збільшуємо міжрядковий інтерва�
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred"> <!-- Додано sizePolicy -->
               <horstretch>0</horstretch>
               <verstretch>0</verstretch> <!-- Дозволяємо розтягуватись по вертикалі -->
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding"> <!-- Змінено vsizetype на MinimumExpanding -->
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
              </sizepolicy>
             </property>
            </widget>
