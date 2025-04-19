@@ -403,7 +403,7 @@ QWidget#ordersContainerWidget {
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>40</height> <!-- Змінено висоту -->
+           <height>20</height> <!-- Змінено висоту -->
           </size>
          </property>
          <property name="sizePolicy">
