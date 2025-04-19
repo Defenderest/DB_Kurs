@@ -683,72 +683,71 @@ void MainWindow::showBookDetails(int bookId)
     ui->contentStackedWidget->setCurrentWidget(ui->bookDetailsPage);
 }
 
-// Допоміжна функція для створення віджету коментаря (дизайн у стилі Steam)
+// Допоміжна функція для створення віджету коментаря (оновлений дизайн)
 QWidget* MainWindow::createCommentWidget(const CommentDisplayInfo &commentInfo)
 {
     // Основний контейнер коментаря
     QFrame *commentFrame = new QFrame();
-    commentFrame->setObjectName("commentFrameSteam"); // Нове ім'я для стилізації
+    commentFrame->setObjectName("commentFrame"); // Для стилізації
     commentFrame->setFrameShape(QFrame::StyledPanel);
-    commentFrame->setFrameShadow(QFrame::Plain);
-    commentFrame->setLineWidth(0);
-    // Стиль, схожий на Steam (темніший фон, світлий текст, тонка рамка)
+    commentFrame->setFrameShadow(QFrame::Plain); // Використовуємо тінь через стиль
+    commentFrame->setLineWidth(0); // Рамка через стиль
+    // Стиль з тінню, заокругленням та відступами
     commentFrame->setStyleSheet(R"(
-        QFrame#commentFrameSteam {
-            background-color: #2a2e35; /* Темно-сірий фон */
-            border: 1px solid #1b1d21; /* Дуже темна рамка */
-            border-radius: 3px; /* Невелике заокруглення */
-            padding: 12px;
-            margin-bottom: 8px; /* Менший відступ між коментарями */
-            color: #c7d5e0; /* Світло-сірий текст за замовчуванням */
-        }
-        QLabel { /* Застосовуємо колір тексту до всіх QLabel всередині */
-            color: #c7d5e0;
-            background-color: transparent; /* Прозорий фон для міток */
+        QFrame#commentFrame {
+            background-color: #ffffff; /* Білий фон */
+            border: 1px solid #e9ecef; /* Світло-сіра рамка */
+            border-radius: 8px; /* Більше заокруглення */
+            padding: 15px; /* Збільшені відступи */
+            margin-bottom: 10px; /* Відступ між коментарями */
+            /* Можна додати тінь, але це може вплинути на продуктивність */
+            /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); */
         }
     )");
 
     QVBoxLayout *mainLayout = new QVBoxLayout(commentFrame);
-    mainLayout->setSpacing(10); // Відступ між хедером та текстом
+    mainLayout->setSpacing(8); // Збільшений відступ між елементами
     mainLayout->setContentsMargins(0, 0, 0, 0); // Відступи керуються padding у стилі фрейму
 
-    // --- Верхній рядок: Автор, Рекомендація, Дата ---
+    // --- Верхній рядок: Автор та Дата ---
     QHBoxLayout *headerLayout = new QHBoxLayout();
-    headerLayout->setSpacing(15);
+    headerLayout->setSpacing(10);
 
-    // Ім'я автора
+    // Ім'я автора (виділено)
     QLabel *authorLabel = new QLabel(commentInfo.authorName);
-    authorLabel->setStyleSheet("font-weight: bold; font-size: 11pt; color: #ffffff;"); // Білий жирний
-
-    // Індикатор Рекомендації (на основі рейтингу)
-    QLabel *recommendationLabel = new QLabel();
-    if (commentInfo.rating >= 4) {
-        recommendationLabel->setText("👍 Рекомендовано");
-        recommendationLabel->setStyleSheet("font-weight: bold; color: #66c0f4;"); // Синій колір Steam
-    } else if (commentInfo.rating >= 1 && commentInfo.rating <= 3) {
-        recommendationLabel->setText("👎 Не рекомендовано");
-        recommendationLabel->setStyleSheet("font-weight: bold; color: #c44c44;"); // Червонуватий колір
-    } else {
-        recommendationLabel->setText(""); // Без індикатора, якщо немає рейтингу (rating == 0)
-        recommendationLabel->setVisible(false); // Ховаємо мітку, якщо немає тексту
-    }
-    recommendationLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred); // Займає мінімум місця
+    authorLabel->setStyleSheet("font-weight: 600; font-size: 11pt; color: #343a40;"); // Жирний, трохи більший
 
     // Дата (менш помітна, праворуч)
-    QLabel *dateLabel = new QLabel(QLocale::system().toString(commentInfo.commentDate, "dd MMMM yyyy")); // Більш повний формат дати
-    dateLabel->setStyleSheet("color: #8f98a0; font-size: 9pt;"); // Сірий колір Steam
+    QLabel *dateLabel = new QLabel(QLocale::system().toString(commentInfo.commentDate, QLocale::ShortFormat));
+    dateLabel->setStyleSheet("color: #868e96; font-size: 9pt;"); // Світліший сірий, менший шрифт
     dateLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     headerLayout->addWidget(authorLabel);
-    headerLayout->addWidget(recommendationLabel);
-    headerLayout->addStretch(1); // Розтягувач між рекомендацією та датою
+    headerLayout->addStretch(1); // Розтягувач між автором та датою
     headerLayout->addWidget(dateLabel);
     mainLayout->addLayout(headerLayout);
 
+    // --- Рядок рейтингу (якщо є) ---
+    if (commentInfo.rating > 0) {
+        QLabel *ratingLabel = new QLabel();
+        QString stars;
+        for (int i = 0; i < 5; ++i) {
+            // Використовуємо заповнену та порожню зірку
+            stars += (i < commentInfo.rating) ? "★" : "☆";
+        }
+        ratingLabel->setText(stars);
+        // Стиль для зірок (жовтий/золотий колір)
+        ratingLabel->setStyleSheet("color: #ffc107; font-size: 13pt; margin-top: 2px; margin-bottom: 4px;");
+        mainLayout->addWidget(ratingLabel);
+    } else {
+        // Можна додати невеликий відступ, якщо немає рейтингу, щоб вирівняти текст
+        mainLayout->addSpacing(5);
+    }
+
     // --- Текст коментаря ---
     QLabel *commentTextLabel = new QLabel(commentInfo.commentText);
-    commentTextLabel->setWordWrap(true);
-    commentTextLabel->setStyleSheet("color: #acb2b8; font-size: 10pt; line-height: 1.5;"); // Трохи світліший сірий для тексту
+    commentTextLabel->setWordWrap(true); // Перенесення слів обов'язкове
+    commentTextLabel->setStyleSheet("color: #495057; font-size: 10pt; line-height: 1.5;"); // Стандартний текст, міжрядковий інтервал
     mainLayout->addWidget(commentTextLabel);
 
     // Встановлюємо layout для фрейму
