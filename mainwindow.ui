@@ -533,6 +533,17 @@ QPushButton#navProfileButton:checked {
     color: white;
     font-weight: 600;
 }
+
+/* Стиль для кнопок в згорнутому стані */
+QPushButton#navHomeButton[collapsed="true"],
+QPushButton#navBooksButton[collapsed="true"],
+QPushButton#navAuthorsButton[collapsed="true"],
+QPushButton#navOrdersButton[collapsed="true"],
+QPushButton#navProfileButton[collapsed="true"] {
+    text-align: center; /* Центруємо іконку */
+    padding-left: 5px; /* Можна налаштувати відступи */
+    padding-right: 5px;
+}
 </string>
         </property>
         <property name="frameShape">
