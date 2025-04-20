@@ -1998,7 +1998,7 @@ margin-bottom: 20px; /* Збільшено відступ знизу */</string>
                 <property name="styleSheet">
                  <string notr="true">font-size: 20pt; /* Збільшено шрифт */
 font-weight: bold;
-color: #58a6ff; /* Змінено на світліший синій */
+color: #343a40; /* Змінено на темно-сірий */
 margin-bottom: 10px; /* Додано відступ */</string>
                 </property>
                 <property name="text">
