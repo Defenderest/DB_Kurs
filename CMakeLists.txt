@@ -108,4 +108,4 @@ endif()
 
 # --- (Опционально, но рекомендуется) Добавление путей для заголовочных файлов ---
 # Если структура проекта сложная, это может помочь IDE и компилятору
-# target_include_directories(untitled PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(untitled PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
