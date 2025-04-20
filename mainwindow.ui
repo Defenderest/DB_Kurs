@@ -99,7 +99,7 @@ QComboBox::down-arrow {
 QComboBox QAbstractItemView {
     border: 1px solid #ced4da;
     background-color: #ffffff;
-    selection-background-color: #cfe2ff;
+    selection-background-color: #e9ecef; /* Змінено на світло-сірий */
     selection-color: #000;
     padding: 4px;
 }
