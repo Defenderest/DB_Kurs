@@ -1,13 +1,13 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>icons/down-arrow.svg</file>
-        <file>icons/up-arrow.svg</file>
-        <file>icons/home.svg</file>
-        <file>icons/book.svg</file>
-        <file>icons/users.svg</file>
-        <file>icons/shopping-bag.svg</file>
-        <file>icons/user.svg</file>
-        <file>../icons/home.png</file>
+        <file>icons/down-arrow.png</file>
+        <file>icons/up-arrow.png</file>
+        <file>icons/home.png</file>
+        <file>icons/book.png</file>
+        <file>icons/users.png</file>
+        <file>icons/shopping-bag.png</file>
+        <file>icons/user.png</file>
+        <file>../icons/home.png</file> <!-- Цей вже був png -->
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>

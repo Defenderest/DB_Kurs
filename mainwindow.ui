@@ -93,7 +93,7 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-     image: url(:/icons/down-arrow.svg);
+     image: url(:/icons/down-arrow.png);
      width: 10px;
      height: 10px;
 }
@@ -598,7 +598,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
            </property>
            <property name="icon">
             <iconset resource="resourses.qrc">
-             <normaloff>:/icons/icons/home.svg</normaloff>:/icons/icons/home.svg</iconset>
+             <normaloff>:/icons/icons/home.png</normaloff>:/icons/icons/home.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -624,7 +624,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
            </property>
            <property name="icon">
             <iconset resource="resourses.qrc">
-             <normaloff>:/icons/icons/book.svg</normaloff>:/icons/icons/book.svg</iconset>
+             <normaloff>:/icons/icons/book.png</normaloff>:/icons/icons/book.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -647,7 +647,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
            </property>
            <property name="icon">
             <iconset resource="resourses.qrc">
-             <normaloff>:/icons/icons/users.svg</normaloff>:/icons/icons/users.svg</iconset>
+             <normaloff>:/icons/icons/users.png</normaloff>:/icons/icons/users.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -670,7 +670,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
            </property>
            <property name="icon">
             <iconset resource="resourses.qrc">
-             <normaloff>:/icons/icons/shopping-bag.svg</normaloff>:/icons/icons/shopping-bag.svg</iconset>
+             <normaloff>:/icons/icons/shopping-bag.png</normaloff>:/icons/icons/shopping-bag.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -696,7 +696,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
            </property>
            <property name="icon">
             <iconset resource="resourses.qrc">
-             <normaloff>:/icons/icons/user.svg</normaloff>:/icons/icons/user.svg</iconset>
+             <normaloff>:/icons/icons/user.png</normaloff>:/icons/icons/user.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -2378,7 +2378,7 @@ QSpinBox#cartQuantitySpinBox::up-button:hover {
     background-color: #e9ecef; /* Світліший фон при наведенні */
 }
 QSpinBox#cartQuantitySpinBox::up-arrow {
-    image: url(:/icons/up-arrow.svg); /* Потрібно додати іконку */
+    image: url(:/icons/up-arrow.png); /* Потрібно додати іконку */
     width: 8px;
     height: 8px;
 }
@@ -2396,7 +2396,7 @@ QSpinBox#cartQuantitySpinBox::down-button:hover {
     background-color: #e9ecef;
 }
 QSpinBox#cartQuantitySpinBox::down-arrow {
-    image: url(:/icons/down-arrow.svg); /* Потрібно додати іконку */
+    image: url(:/icons/down-arrow.png); /* Потрібно додати іконку */
     width: 8px;
     height: 8px;
 }
