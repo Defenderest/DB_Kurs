@@ -46,7 +46,7 @@ QTabBar::tab {
 
 QTabBar::tab:selected {
     background-color: #ffffff;
-    color: #58a6ff; /* Змінено на світліший синій */
+    color: #495057; /* Змінено на темно-сірий */
     font-weight: 600;
     border-color: #dee2e6;
     border-bottom: 1px solid #ffffff;
@@ -73,10 +73,9 @@ QLineEdit, QComboBox, QDateEdit, QSpinBox { /* Додано QSpinBox */
     min-height: 34px;
     font-size: 10pt;
 }
-
 QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
-    border-color: #86b7fe; /* Залишаємо світлу рамку фокусу */
-    box-shadow: 0 0 0 0.2rem rgba(88, 166, 255, 0.25); /* Змінено колір тіні на світліший */
+    border-color: #adb5bd; /* Змінено на сірий */
+    box-shadow: 0 0 0 0.2rem rgba(173, 181, 189, 0.25); /* Змінено колір тіні на сірий */
 }
 
 QLineEdit::placeholder {
@@ -107,9 +106,9 @@ QComboBox QAbstractItemView {
 
 QPushButton {
     padding: 8px 14px;
-    background-color: #58a6ff; /* Змінено на світліший синій */
+    background-color: #6c757d; /* Змінено на сірий */
     color: white;
-    border: 1px solid #58a6ff; /* Змінено на світліший синій */
+    border: 1px solid #6c757d; /* Змінено на сірий */
     border-radius: 8px; /* Збільшено заокруглення */
     font-weight: 500;
     min-height: 34px;
@@ -117,12 +116,12 @@ QPushButton {
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 QPushButton:hover {
-    background-color: #4096f6; /* Трохи темніший варіант світлого синього */
-    border-color: #3086e6; /* Трохи темніший варіант світлого синього */
+    background-color: #5a6268; /* Змінено на темніший сірий */
+    border-color: #545b62; /* Змінено на темніший сірий */
 }
 QPushButton:pressed {
-    background-color: #3086e6; /* Такий самий, як hover, або ще темніший */
-    border-color: #2076d6; /* Ще темніший варіант світлого синього */
+    background-color: #545b62; /* Змінено на темніший сірий */
+    border-color: #4e555b; /* Змінено на ще темніший сірий */
 }
 QPushButton:disabled {
     background-color: #6c757d;
@@ -170,9 +169,9 @@ QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#vi
     background-color: #e9ecef;
 }
 QPushButton#viewModeButton:checked {
-    background-color: #cfe2ff; /* Залишаємо світлий фон */
-    border-color: #86b7fe; /* Залишаємо світлу рамку */
-    color: #58a6ff; /* Змінено на світліший синій */
+    background-color: #e9ecef; /* Змінено на світло-сірий */
+    border-color: #ced4da; /* Змінено на сірий */
+    color: #495057; /* Змінено на темно-сірий */
 }
 
 QScrollArea {
@@ -261,7 +260,7 @@ QLabel#dateFilterLabel {
 
 QWidget#categoriesWidget QPushButton {
     background-color: #ffffff;
-    color: #58a6ff; /* Змінено на світліший синій */
+    color: #495057; /* Змінено на темно-сірий */
     border: 1px solid #ced4da;
     font-weight: 500;
     text-align: center;
@@ -272,7 +271,7 @@ QWidget#categoriesWidget QPushButton {
 }
 QWidget#categoriesWidget QPushButton:hover {
     background-color: #f8f9fa;
-    color: #4096f6; /* Використовуємо темніший варіант світлого синього */
+    color: #343a40; /* Змінено на темніший сірий */
     border-color: #adb5bd;
 }
 QWidget#categoriesWidget QPushButton:pressed {
@@ -509,8 +508,8 @@ QPushButton#navBooksButton:hover,
 QPushButton#navAuthorsButton:hover,
 QPushButton#navOrdersButton:hover,
 QPushButton#navProfileButton:hover {
-    background-color: #cfe2ff; /* Залишаємо світлий фон */
-    color: #58a6ff; /* Змінено на світліший синій */
+    background-color: #e9ecef; /* Змінено на світло-сірий */
+    color: #495057; /* Змінено на темно-сірий */
 }
 
 QPushButton#navHomeButton:checked,
@@ -518,7 +517,7 @@ QPushButton#navBooksButton:checked,
 QPushButton#navAuthorsButton:checked,
 QPushButton#navOrdersButton:checked,
 QPushButton#navProfileButton:checked {
-    background-color: #58a6ff; /* Змінено на світліший синій */
+    background-color: #6c757d; /* Змінено на сірий */
     color: white;
     font-weight: 600;
 }
@@ -562,7 +561,7 @@ QPushButton#navBooksButton[collapsed="true"]:checked,
 QPushButton#navAuthorsButton[collapsed="true"]:checked,
 QPushButton#navOrdersButton[collapsed="true"]:checked,
 QPushButton#navProfileButton[collapsed="true"]:checked {
-    background-color: #58a6ff; /* Змінено на світліший синій */
+    background-color: #6c757d; /* Змінено на сірий */
     border: none; /* Переконуємось, що рамки немає */
     color: white; /* Білий колір іконки (як у розгорнутому стані) */
     font-weight: 600; /* Можна додати жирність, якщо потрібно */
