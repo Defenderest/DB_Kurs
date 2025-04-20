@@ -2390,10 +2390,10 @@ QPushButton#placeOrderButton {
     /* Використовує загальний стиль QPushButton, але можна зробити його більш виразним */
     background-color: #198754; /* Зелений */
     border-color: #198754;
-    padding: 12px 25px; /* Збільшено padding */
-    font-size: 12pt;
+    padding: 8px 18px; /* Зменшено padding */
+    font-size: 11pt; /* Зменшено шрифт */
     font-weight: 500;
-    min-height: 40px; /* Збільшено висоту */
+    min-height: 36px; /* Зменшено висоту до стандартної */
 }
 QPushButton#placeOrderButton:hover {
     background-color: #157347;
@@ -2525,8 +2525,8 @@ QLabel#emptyCartLabel {
           <widget class="QPushButton" name="placeOrderButton">
            <property name="minimumSize">
             <size>
-             <width>220</width> <!-- Трохи ширша кнопка -->
-             <height>0</height>
+             <width>180</width> <!-- Зменшено мінімальну ширину -->
+             <height>0</height> <!-- Висота керується стилем -->
             </size>
            </property>
            <property name="styleSheet">
