@@ -541,8 +541,36 @@ QPushButton#navAuthorsButton[collapsed="true"],
 QPushButton#navOrdersButton[collapsed="true"],
 QPushButton#navProfileButton[collapsed="true"] {
     text-align: center; /* Центруємо іконку */
-    padding-left: 5px; /* Можна налаштувати відступи */
-    padding-right: 5px;
+    padding: 10px 0; /* Вертикальний відступ, горизонтальний 0 */
+    border-left: 3px solid transparent; /* Прозора рамка для вирівнювання */
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    margin-left: 0; /* Забираємо відступи, якщо є */
+    margin-right: 0;
+    min-width: 44px; /* Ширина = collapsedWidth - border-left - border-right */
+    max-width: 44px;
+}
+
+/* Стиль для НАВЕДЕННЯ на кнопки в згорнутому стані */
+QPushButton#navHomeButton[collapsed="true"]:hover,
+QPushButton#navBooksButton[collapsed="true"]:hover,
+QPushButton#navAuthorsButton[collapsed="true"]:hover,
+QPushButton#navOrdersButton[collapsed="true"]:hover,
+QPushButton#navProfileButton[collapsed="true"]:hover {
+    background-color: #d3d9df; /* Трохи темніший фон при наведенні */
+    border-left: 3px solid transparent; /* Зберігаємо прозору рамку */
+}
+
+/* Стиль для АКТИВНОЇ кнопки в згорнутому стані */
+QPushButton#navHomeButton[collapsed="true"]:checked,
+QPushButton#navBooksButton[collapsed="true"]:checked,
+QPushButton#navAuthorsButton[collapsed="true"]:checked,
+QPushButton#navOrdersButton[collapsed="true"]:checked,
+QPushButton#navProfileButton[collapsed="true"]:checked {
+    background-color: #cfe2ff; /* Світло-синій фон для активної */
+    border-left: 3px solid #0d6efd; /* Синій індикатор зліва */
+    color: #0d6efd; /* Можна змінити колір іконки на синій */
 }
 </string>
         </property>
