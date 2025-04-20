@@ -27,11 +27,11 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Sql Widgets)
 # Перечисляем .cpp и .h файлы. .ui и .qrc будут добавлены ниже.
 set(PROJECT_SOURCES
     main.cpp
+    starratingwidget.cpp
+    starratingwidget.h
     mainwindow.cpp
     mainwindow.h
     database.cpp
-    starratingwidget.cpp
-    starratingwidget.h
     database.h
     logindialog.cpp
     logindialog.h
