@@ -18,10 +18,11 @@
 #include <QMouseEvent> // Додано для обробки кліків миші
 #include <QMap>        // Додано для QMap (використовується для кошика)
 #include <QSpinBox>    // Додано для QSpinBox (використовується в кошику)
+#include <QScrollArea> // Додано для QScrollArea (новий кошик)
 
 // Forward declarations
 class DatabaseManager;
-class QTableWidget; // Додано forward declaration
+// class QTableWidget; // Більше не використовується для кошика
 struct CustomerProfileInfo;
 struct BookDetailsInfo; // Додано forward declaration
 class QLabel;
@@ -98,6 +99,7 @@ private:
     void populateCartPage(); // Заповнення сторінки кошика
     void updateCartTotal(); // Оновлення загальної суми кошика
     void updateCartIcon(); // Оновлення іконки кошика (кількість товарів)
+    QWidget* createCartItemWidget(const CartItem &item, int bookId); // Створення віджету товару для кошика
 
     // Налаштування анімації та стану бічної панелі
     void setupSidebarAnimation();

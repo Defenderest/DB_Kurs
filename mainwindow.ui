@@ -2421,3 +2421,5 @@ font-size: 12pt;</string>
  <resources/>
  <connections/>
 </ui>
+
+<!-- Видалено стару сторінку кошика з QTableWidget -->

@@ -31,11 +31,12 @@
 #include <QMouseEvent>      // Додано для подій миші
 #include <QTextEdit>        // Додано для QTextEdit (опис книги)
 #include "starratingwidget.h" // Додано для StarRatingWidget
-#include <QTableWidget>     // Додано для таблиці кошика
-#include <QHeaderView>      // Додано для налаштування таблиці кошика
+// #include <QTableWidget>     // Більше не потрібен для кошика
+#include <QHeaderView>      // Може бути потрібен для інших таблиць
 #include <QSpinBox>         // Додано для зміни кількості в кошику
 #include <QToolButton>      // Додано для кнопки видалення в кошику
 #include <QMap>             // Додано для m_cartItems
+#include <QScrollArea>      // Додано для нового кошика
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -102,6 +103,30 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     ui->sidebarFrame->installEventFilter(this);
     // Переконуємось, що панель спочатку згорнута
     toggleSidebar(false); // Згорнути без анімації при старті
+
+    // --- Налаштування сторінки кошика ---
+    // Переконуємось, що layout для елементів кошика існує
+    if (!ui->cartItemsLayout) {
+        qCritical() << "cartItemsLayout is null! Cart page might not work correctly.";
+        // Можна створити layout динамічно, якщо його немає, але краще виправити UI
+        if (ui->cartItemsContainerWidget) {
+            QVBoxLayout *layout = new QVBoxLayout(ui->cartItemsContainerWidget);
+            layout->setObjectName("cartItemsLayout");
+            ui->cartItemsContainerWidget->setLayout(layout);
+            qWarning() << "Dynamically created cartItemsLayout.";
+        }
+    } else {
+         // Видаляємо спейсер, який був потрібен для таблиці/порожнього повідомлення
+         QLayoutItem* item = ui->cartItemsLayout->takeAt(0); // Припускаємо, що спейсер перший
+         if (item && item->spacerItem()) {
+             delete item;
+             qInfo() << "Removed initial spacer from cartItemsLayout.";
+         } else if (item) {
+             // Якщо це не спейсер, повертаємо його назад
+             ui->cartItemsLayout->insertItem(0, item);
+         }
+    }
+
 
     // --- Завантаження та відображення даних для початкової сторінки (Головна) ---
     // Переконуємося, що відповідні layout'и існують перед заповненням
@@ -1340,9 +1365,90 @@ void MainWindow::on_saveProfileButton_clicked()
 }
 
 
-// --- Логіка кошика ---
+// --- Логіка кошика (Новий дизайн) ---
 
-// Слот для кнопки "Додати в кошик"
+// Допоміжна функція для створення віджету одного товару в кошику
+QWidget* MainWindow::createCartItemWidget(const CartItem &item, int bookId)
+{
+    // Основний фрейм для картки товару
+    QFrame *itemFrame = new QFrame();
+    itemFrame->setObjectName("cartItemFrame"); // Для стилізації
+    itemFrame->setFrameShape(QFrame::StyledPanel); // Невидима рамка, керується стилем
+    itemFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed); // Розширюється по ширині, фіксована висота
+
+    QHBoxLayout *mainLayout = new QHBoxLayout(itemFrame);
+    mainLayout->setSpacing(15);
+    mainLayout->setContentsMargins(0, 0, 0, 0); // Відступи керуються стилем фрейму
+
+    // 1. Обкладинка
+    QLabel *coverLabel = new QLabel();
+    coverLabel->setObjectName("cartItemCoverLabel");
+    coverLabel->setAlignment(Qt::AlignCenter);
+    QPixmap coverPixmap(item.book.coverImagePath);
+    if (coverPixmap.isNull() || item.book.coverImagePath.isEmpty()) {
+        coverLabel->setText(tr("Фото"));
+    } else {
+        coverLabel->setPixmap(coverPixmap.scaled(coverLabel->minimumSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
+    mainLayout->addWidget(coverLabel);
+
+    // 2. Інформація про книгу (Назва, Автор)
+    QVBoxLayout *infoLayout = new QVBoxLayout();
+    infoLayout->setSpacing(2);
+    QLabel *titleLabel = new QLabel(item.book.title);
+    titleLabel->setObjectName("cartItemTitleLabel");
+    titleLabel->setWordWrap(true);
+    QLabel *authorLabel = new QLabel(item.book.authors);
+    authorLabel->setObjectName("cartItemAuthorLabel");
+    authorLabel->setWordWrap(true);
+    infoLayout->addWidget(titleLabel);
+    infoLayout->addWidget(authorLabel);
+    infoLayout->addStretch(1); // Притискає текст вгору
+    mainLayout->addLayout(infoLayout, 2); // Даємо більше місця для назви/автора
+
+    // 3. Ціна за одиницю
+    QLabel *priceLabel = new QLabel(QString::number(item.book.price, 'f', 2) + tr(" грн"));
+    priceLabel->setObjectName("cartItemPriceLabel");
+    priceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    mainLayout->addWidget(priceLabel, 1); // Менше місця для ціни
+
+    // 4. Кількість (SpinBox)
+    QSpinBox *quantitySpinBox = new QSpinBox();
+    quantitySpinBox->setObjectName("cartQuantitySpinBox");
+    quantitySpinBox->setMinimum(1);
+    quantitySpinBox->setMaximum(item.book.stockQuantity); // Обмеження по складу
+    quantitySpinBox->setValue(item.quantity);
+    quantitySpinBox->setAlignment(Qt::AlignCenter);
+    quantitySpinBox->setProperty("bookId", bookId); // Зберігаємо ID для слота
+    connect(quantitySpinBox, &QSpinBox::valueChanged, this, [this, bookId](int newValue){
+        updateCartItemQuantity(bookId, newValue);
+    });
+    mainLayout->addWidget(quantitySpinBox);
+
+    // 5. Сума за позицію
+    QLabel *subtotalLabel = new QLabel(QString::number(item.book.price * item.quantity, 'f', 2) + tr(" грн"));
+    subtotalLabel->setObjectName("cartItemSubtotalLabel");
+    subtotalLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    subtotalLabel->setMinimumWidth(80); // Мінімальна ширина для суми
+    mainLayout->addWidget(subtotalLabel, 1); // Менше місця для суми
+
+    // 6. Кнопка видалення
+    QPushButton *removeButton = new QPushButton(); // Використовуємо QPushButton для кращої стилізації
+    removeButton->setObjectName("cartRemoveButton");
+    removeButton->setToolTip(tr("Видалити '%1' з кошика").arg(item.book.title));
+    removeButton->setCursor(Qt::PointingHandCursor);
+    removeButton->setProperty("bookId", bookId);
+    connect(removeButton, &QPushButton::clicked, this, [this, bookId](){
+        removeCartItem(bookId);
+    });
+    mainLayout->addWidget(removeButton);
+
+    itemFrame->setLayout(mainLayout);
+    return itemFrame;
+}
+
+
+// Слот для кнопки "Додати в кошик" (залишається без змін)
 void MainWindow::on_addToCartButtonClicked(int bookId)
 {
     qInfo() << "Add to cart button clicked for book ID:" << bookId;
@@ -1411,125 +1517,84 @@ void MainWindow::on_cartButton_clicked()
     populateCartPage(); // Заповнюємо/оновлюємо сторінку кошика
 }
 
-// Заповнення сторінки кошика
+// Заповнення сторінки кошика (Новий дизайн)
 void MainWindow::populateCartPage()
 {
-    qInfo() << "Populating cart page...";
-    // Перевіряємо існування віджетів сторінки кошика
-    if (!ui->cartTableWidget || !ui->cartTotalLabel || !ui->placeOrderButton) {
-        qWarning() << "populateCartPage: One or more cart page widgets are null!";
-        // Можна показати повідомлення про помилку на самій сторінці
+    qInfo() << "Populating cart page (new design)...";
+    // Перевіряємо існування ключових віджетів нового дизайну
+    if (!ui->cartScrollArea || !ui->cartItemsContainerWidget || !ui->cartItemsLayout || !ui->cartTotalLabel || !ui->placeOrderButton || !ui->cartTotalsWidget) {
+        qWarning() << "populateCartPage: One or more new cart page widgets are null!";
+        // Можна показати повідомлення про помилку
         if(ui->cartPage && ui->cartPage->layout()) {
-             clearLayout(ui->cartPage->layout());
+             clearLayout(ui->cartPage->layout()); // Очистити, щоб не було старих елементів
              QLabel *errorLabel = new QLabel(tr("Помилка інтерфейсу: Не вдалося відобразити кошик."), ui->cartPage);
              ui->cartPage->layout()->addWidget(errorLabel);
         }
         return;
     }
 
-    // Очищаємо таблицю перед заповненням
-    ui->cartTableWidget->clearContents();
-    ui->cartTableWidget->setRowCount(0);
+    // Очищаємо layout від попередніх елементів (карток товарів та спейсера/мітки)
+    clearLayout(ui->cartItemsLayout);
+
+    // Видаляємо мітку про порожній кошик, якщо вона була додана раніше
+    QLabel* emptyCartLabel = ui->cartItemsContainerWidget->findChild<QLabel*>("emptyCartLabel");
+    if(emptyCartLabel) {
+        delete emptyCartLabel;
+    }
 
     if (m_cartItems.isEmpty()) {
         qInfo() << "Cart is empty.";
-        // Показуємо повідомлення в таблиці
-        ui->cartTableWidget->setRowCount(1);
-        QTableWidgetItem *emptyItem = new QTableWidgetItem(tr("Ваш кошик порожній."));
-        emptyItem->setTextAlignment(Qt::AlignCenter);
-        ui->cartTableWidget->setItem(0, 0, emptyItem);
-        ui->cartTableWidget->setSpan(0, 0, 1, ui->cartTableWidget->columnCount()); // Об'єднати комірки
-        ui->cartTableWidget->verticalHeader()->setVisible(false); // Сховати нумерацію рядків
+        // Показуємо мітку про порожній кошик всередині контейнера
+        QLabel *noItemsLabel = new QLabel(tr("🛒\n\nВаш кошик порожній.\nЧас додати щось цікаве!"), ui->cartItemsContainerWidget);
+        noItemsLabel->setObjectName("emptyCartLabel"); // Для стилізації
+        noItemsLabel->setAlignment(Qt::AlignCenter);
+        noItemsLabel->setWordWrap(true);
+        // Додаємо мітку безпосередньо в layout контейнера (не в cartItemsLayout)
+        // Потрібно переконатися, що cartItemsContainerWidget має свій layout, якщо ми хочемо центрувати мітку
+        // Простіше додати її в cartItemsLayout і потім спейсер
+        ui->cartItemsLayout->addWidget(noItemsLabel);
+        ui->cartItemsLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
         ui->placeOrderButton->setEnabled(false); // Вимкнути кнопку замовлення
         ui->cartTotalLabel->setText(tr("Загальна сума: 0.00 грн")); // Скинути суму
+        ui->cartTotalsWidget->setVisible(false); // Ховаємо блок з підсумками
         return;
     }
 
-    ui->cartTableWidget->setRowCount(m_cartItems.size());
-    ui->cartTableWidget->verticalHeader()->setVisible(true); // Показати нумерацію
+    // Показуємо блок з підсумками
+    ui->cartTotalsWidget->setVisible(true);
 
-    int row = 0;
+    // Додаємо віджети для кожного товару
     for (auto it = m_cartItems.constBegin(); it != m_cartItems.constEnd(); ++it) {
-        const CartItem &item = it.value();
-        int bookId = it.key();
-
-        // 0: Назва книги
-        QTableWidgetItem *titleItem = new QTableWidgetItem(item.book.title);
-        titleItem->setFlags(titleItem->flags() & ~Qt::ItemIsEditable); // Не редагується
-        ui->cartTableWidget->setItem(row, 0, titleItem);
-
-        // 1: Ціна за одиницю
-        QTableWidgetItem *priceItem = new QTableWidgetItem(QString::number(item.book.price, 'f', 2) + tr(" грн"));
-        priceItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        priceItem->setFlags(priceItem->flags() & ~Qt::ItemIsEditable);
-        ui->cartTableWidget->setItem(row, 1, priceItem);
-
-        // 2: Кількість (SpinBox)
-        QSpinBox *quantitySpinBox = new QSpinBox();
-        quantitySpinBox->setMinimum(1);
-        quantitySpinBox->setMaximum(item.book.stockQuantity); // Обмеження по складу
-        quantitySpinBox->setValue(item.quantity);
-        quantitySpinBox->setAlignment(Qt::AlignCenter);
-        quantitySpinBox->setProperty("bookId", bookId); // Зберігаємо ID для слота
-        connect(quantitySpinBox, &QSpinBox::valueChanged, this, [this, bookId](int newValue){
-            updateCartItemQuantity(bookId, newValue);
-        });
-        ui->cartTableWidget->setCellWidget(row, 2, quantitySpinBox);
-
-        // 3: Сума за позицію
-        double itemTotal = item.book.price * item.quantity;
-        QTableWidgetItem *totalItem = new QTableWidgetItem(QString::number(itemTotal, 'f', 2) + tr(" грн"));
-        totalItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable);
-        totalItem->setData(Qt::UserRole, itemTotal); // Зберігаємо числове значення для підрахунку загальної суми
-        ui->cartTableWidget->setItem(row, 3, totalItem);
-
-        // 4: Кнопка видалення
-        QToolButton *removeButton = new QToolButton();
-        removeButton->setText("❌"); // Або іконка
-        removeButton->setToolTip(tr("Видалити '%1' з кошика").arg(item.book.title));
-        removeButton->setStyleSheet("QToolButton { border: none; background-color: transparent; color: red; } QToolButton:hover { background-color: #ffebee; }");
-        removeButton->setProperty("bookId", bookId);
-        connect(removeButton, &QToolButton::clicked, this, [this, bookId](){
-            removeCartItem(bookId);
-        });
-        // Центруємо кнопку в комірці
-        QWidget *buttonContainer = new QWidget();
-        QHBoxLayout *buttonLayout = new QHBoxLayout(buttonContainer);
-        buttonLayout->addWidget(removeButton);
-        buttonLayout->setAlignment(Qt::AlignCenter);
-        buttonLayout->setContentsMargins(0,0,0,0);
-        ui->cartTableWidget->setCellWidget(row, 4, buttonContainer);
-
-
-        row++;
+        QWidget *itemWidget = createCartItemWidget(it.value(), it.key());
+        if (itemWidget) {
+            ui->cartItemsLayout->addWidget(itemWidget);
+        }
     }
 
-    // Налаштування розмірів колонок
-    ui->cartTableWidget->resizeColumnsToContents();
-    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch); // Назва розтягується
-    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
-    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(4, QHeaderView::ResizeToContents); // Кнопка видалення
+    // Додаємо спейсер в кінці, щоб притиснути картки вгору
+    ui->cartItemsLayout->addSpacerItem(new QSpacerItem(20, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
     updateCartTotal(); // Оновлюємо загальну суму
     ui->placeOrderButton->setEnabled(true); // Увімкнути кнопку замовлення
     qInfo() << "Cart page populated with" << m_cartItems.size() << "items.";
+
+    // Оновлюємо геометрію контейнера, щоб ScrollArea знала розмір вмісту
+    ui->cartItemsContainerWidget->adjustSize();
 }
 
-// Оновлення загальної суми кошика
+
+// Оновлення загальної суми кошика (Новий дизайн)
 void MainWindow::updateCartTotal()
 {
-    if (!ui->cartTableWidget || !ui->cartTotalLabel) return; // Перевірка
+    if (!ui->cartTotalLabel) return; // Перевірка
 
     double total = 0.0;
-    for (int row = 0; row < ui->cartTableWidget->rowCount(); ++row) {
-        QTableWidgetItem *item = ui->cartTableWidget->item(row, 3); // Колонка "Сума за позицію"
-        if (item) {
-            total += item->data(Qt::UserRole).toDouble(); // Беремо збережене значення
-        }
+    // Рахуємо суму безпосередньо з m_cartItems
+    for (const auto &item : m_cartItems) {
+        total += item.book.price * item.quantity;
     }
+
     ui->cartTotalLabel->setText(tr("Загальна сума: %1 грн").arg(QString::number(total, 'f', 2)));
     qInfo() << "Cart total updated:" << total;
 }
@@ -1556,37 +1621,36 @@ void MainWindow::updateCartIcon()
     qInfo() << "Cart icon updated. Total items:" << totalItems;
 }
 
-// Слот для зміни кількості товару в кошику (від SpinBox)
+// Слот для зміни кількості товару в кошику (Новий дизайн)
 void MainWindow::updateCartItemQuantity(int bookId, int quantity)
 {
-    if (!ui->cartTableWidget) return; // Перевірка
-
     if (m_cartItems.contains(bookId)) {
         qInfo() << "Updating quantity for book ID" << bookId << "to" << quantity;
+        // Перевіряємо, чи кількість не перевищує доступну
+        if (quantity > m_cartItems[bookId].book.stockQuantity) {
+            qWarning() << "Attempted to set quantity" << quantity << "but only" << m_cartItems[bookId].book.stockQuantity << "available for book ID" << bookId;
+            // Можна показати повідомлення користувачу або просто встановити максимальну кількість
+            quantity = m_cartItems[bookId].book.stockQuantity;
+            // Потрібно оновити значення в SpinBox, якщо воно змінилося
+            // Це складніше зробити без прямого доступу до віджету.
+            // Простіше перезавантажити всю сторінку кошика.
+        }
+
         m_cartItems[bookId].quantity = quantity;
 
-        // Оновлюємо суму для цього рядка в таблиці
-        for (int row = 0; row < ui->cartTableWidget->rowCount(); ++row) {
-             QWidget* widget = ui->cartTableWidget->cellWidget(row, 2); // Колонка зі SpinBox
-             if (widget && widget->property("bookId").toInt() == bookId) {
-                 double price = m_cartItems[bookId].book.price;
-                 double itemTotal = price * quantity;
-                 QTableWidgetItem *totalItem = ui->cartTableWidget->item(row, 3); // Колонка "Сума за позицію"
-                 if (totalItem) {
-                     totalItem->setText(QString::number(itemTotal, 'f', 2) + tr(" грн"));
-                     totalItem->setData(Qt::UserRole, itemTotal);
-                 }
-                 break; // Знайшли потрібний рядок
-             }
+        // Замість оновлення окремого рядка, просто перезавантажуємо всю сторінку кошика
+        // Це простіше і гарантує консистентність даних
+        if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
+            populateCartPage();
         }
-        updateCartTotal(); // Перераховуємо загальну суму
+        // updateCartTotal(); // populateCartPage вже викликає updateCartTotal
         updateCartIcon(); // Оновлюємо іконку
     } else {
         qWarning() << "Attempted to update quantity for non-existent book ID in cart:" << bookId;
     }
 }
 
-// Слот для видалення товару з кошика
+// Слот для видалення товару з кошика (Новий дизайн)
 void MainWindow::removeCartItem(int bookId)
 {
      if (m_cartItems.contains(bookId)) {
@@ -1594,7 +1658,12 @@ void MainWindow::removeCartItem(int bookId)
          m_cartItems.remove(bookId);
          qInfo() << "Removed book ID" << bookId << "from cart.";
          ui->statusBar->showMessage(tr("Книгу '%1' видалено з кошика.").arg(bookTitle), 3000);
-         populateCartPage(); // Перезаповнюємо таблицю кошика
+
+         // Перезаповнюємо сторінку кошика, щоб видалити віджет
+         if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
+            populateCartPage();
+         }
+         // updateCartTotal(); // populateCartPage вже викликає updateCartTotal
          updateCartIcon(); // Оновлюємо іконку
      } else {
          qWarning() << "Attempted to remove non-existent book ID from cart:" << bookId;
