@@ -2119,44 +2119,27 @@ QLineEdit:focus {
               </property>
              </widget>
             </item>
+            <!-- Замінюємо QComboBox на StarRatingWidget для введення нового рейтингу -->
             <item>
-             <widget class="QComboBox" name="newCommentRatingComboBox">
+             <widget class="StarRatingWidget" name="newCommentStarRatingWidget">
+              <property name="toolTip">
+               <string>Виберіть вашу оцінку (0-5 зірок)</string>
+              </property>
+              <property name="readOnly">
+               <bool>false</bool> <!-- Дозволяємо вибір -->
+              </property>
               <property name="minimumSize">
                <size>
-                <width>150</width>
-                <height>0</height>
+                <width>120</width> <!-- Приблизна ширина для 5 зірок -->
+                <height>25</height>
                </size>
               </property>
-              <item>
-               <property name="text">
-                <string>(Без оцінки)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>⭐ (1 - Жахливо)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>⭐⭐ (2 - Погано)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>⭐⭐⭐ (3 - Задовільно)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>⭐⭐⭐⭐ (4 - Добре)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>⭐⭐⭐⭐⭐ (5 - Чудово)</string>
-               </property>
-              </item>
+              <property name="maximumSize">
+               <size>
+                <width>120</width>
+                <height>25</height>
+               </size>
+              </property>
              </widget>
             </item>
             <item>
@@ -2204,13 +2187,28 @@ margin-bottom: 8px;</string>
             </property>
            </widget>
           </item>
+          <!-- Замінюємо QLabel на StarRatingWidget для відображення середнього рейтингу -->
           <item>
-           <widget class="QLabel" name="bookDetailRatingLabel">
-            <property name="styleSheet">
-             <string notr="true">font-size: 11pt; color: #6c757d; margin-bottom: 10px;</string> <!-- Стиль для рейтингу -->
+           <widget class="StarRatingWidget" name="bookDetailStarRatingWidget">
+            <property name="toolTip">
+             <string>Середній рейтинг книги</string>
             </property>
-            <property name="text">
-             <string>(Рейтинг: ⭐⭐⭐⭐☆ - функціонал в розробці)</string> <!-- Додано примітку -->
+            <property name="readOnly">
+             <bool>true</bool> <!-- Середній рейтинг тільки для читання -->
+            </property>
+            <!-- Розмір можна налаштувати тут або в коді -->
+            <property name="minimumSize">
+             <size>
+              <width>120</width> <!-- Приблизна ширина для 5 зірок -->
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>25</height>
+             </size>
+            </property>
             </property>
            </widget>
           </item>
@@ -2274,6 +2272,14 @@ margin-bottom: 8px;</string>
    </property>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>StarRatingWidget</class>
+   <extends>QWidget</extends>
+   <header>starratingwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -30,6 +30,7 @@
 #include <QListView>        // Додано для QListView (використовується в автодоповненні)
 #include <QMouseEvent>      // Додано для подій миші
 #include <QTextEdit>        // Додано для QTextEdit (опис книги)
+#include "starratingwidget.h" // Додано для StarRatingWidget
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -727,22 +728,17 @@ QWidget* MainWindow::createCommentWidget(const CommentDisplayInfo &commentInfo)
     headerLayout->addWidget(dateLabel);
     mainLayout->addLayout(headerLayout);
 
-    // --- Рядок рейтингу (якщо є) ---
-    if (commentInfo.rating > 0) {
-        QLabel *ratingLabel = new QLabel();
-        QString stars;
-        for (int i = 0; i < 5; ++i) {
-            // Використовуємо заповнену та порожню зірку
-            stars += (i < commentInfo.rating) ? "★" : "☆";
-        }
-        ratingLabel->setText(stars);
-        // Стиль для зірок (жовтий/золотий колір)
-        ratingLabel->setStyleSheet("color: #ffc107; font-size: 13pt; margin-top: 2px; margin-bottom: 4px;");
-        mainLayout->addWidget(ratingLabel);
-    } else {
-        // Можна додати невеликий відступ, якщо немає рейтингу, щоб вирівняти текст
-        mainLayout->addSpacing(5);
-    }
+    mainLayout->addLayout(headerLayout); // Додаємо хедер
+
+    // --- Рядок рейтингу (використовуємо StarRatingWidget) ---
+    StarRatingWidget *ratingWidget = new StarRatingWidget();
+    ratingWidget->setMaxRating(5);
+    ratingWidget->setRating(commentInfo.rating > 0 ? commentInfo.rating : 0); // Встановлюємо рейтинг (0 якщо не було)
+    ratingWidget->setReadOnly(true); // Тільки для відображення
+    // Можна налаштувати розмір, якщо потрібно
+    ratingWidget->setMinimumHeight(20);
+    ratingWidget->setMaximumHeight(20);
+    mainLayout->addWidget(ratingWidget); // Додаємо віджет рейтингу
 
     // --- Текст коментаря ---
     QLabel *commentTextLabel = new QLabel(commentInfo.commentText);
@@ -759,11 +755,11 @@ QWidget* MainWindow::createCommentWidget(const CommentDisplayInfo &commentInfo)
 // Заповнення сторінки деталей книги даними
 void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
 {
-    // Перевірка існування віджетів на сторінці деталей (використовуємо нове ім'я bookDetailDescriptionLabel)
+    // Перевірка існування віджетів на сторінці деталей (замінено bookDetailRatingLabel на bookDetailStarRatingWidget)
     if (!ui->bookDetailCoverLabel || !ui->bookDetailTitleLabel || !ui->bookDetailAuthorLabel ||
         !ui->bookDetailGenreLabel || !ui->bookDetailPublisherLabel || !ui->bookDetailYearLabel ||
         !ui->bookDetailPagesLabel || !ui->bookDetailIsbnLabel || !ui->bookDetailPriceLabel ||
-        !ui->bookDetailDescriptionLabel || !ui->bookDetailAddToCartButton) // Змінено QTextEdit на QLabel
+        !ui->bookDetailDescriptionLabel || !ui->bookDetailAddToCartButton || !ui->bookDetailStarRatingWidget) // Додано перевірку нового віджета
     {
         qWarning() << "populateBookDetailsPage: One or more detail page widgets are null!";
         // Можна показати повідомлення про помилку на самій сторінці
@@ -802,11 +798,11 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
     // TODO: Підключити сигнал кнопки до слота додавання в кошик
 
     // 4. Рейтинг (поки що просто текст)
-    // TODO: Розрахувати середній рейтинг з details.comments
-    QString ratingText = tr("Рейтинг: (ще не розраховано)");
+    // 4. Рейтинг (використовуємо StarRatingWidget)
+    int averageRating = 0; // За замовчуванням 0 зірок
+    int ratedCount = 0;
     if (!details.comments.isEmpty()) {
         double totalRating = 0;
-        int ratedCount = 0;
         for(const auto& comment : details.comments) {
             if (comment.rating > 0) {
                 totalRating += comment.rating;
@@ -814,16 +810,15 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
             }
         }
         if (ratedCount > 0) {
-            double avgRating = totalRating / ratedCount;
-            QString stars;
-            int fullStars = qRound(avgRating);
-            for(int i=0; i<5; ++i) stars += (i < fullStars ? "⭐" : "☆");
-            ratingText = tr("Середній рейтинг: %1 (%2 відгуків)").arg(stars).arg(ratedCount);
-        } else {
-            ratingText = tr("Рейтинг: (ще немає оцінок)");
+            averageRating = qRound(totalRating / ratedCount); // Округлюємо до цілого
         }
     }
-    ui->bookDetailRatingLabel->setText(ratingText);
+    // Встановлюємо рейтинг у віджет
+    ui->bookDetailStarRatingWidget->setRating(averageRating);
+    // Можна додати підказку з кількістю відгуків
+    ui->bookDetailStarRatingWidget->setToolTip(tr("Середній рейтинг: %1 з 5 (%2 відгуків)")
+                                                 .arg(averageRating)
+                                                 .arg(ratedCount));
 
 
     // 5. Коментарі
@@ -847,8 +842,13 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
         // Спейсер більше не потрібен тут, оскільки layout є частиною основного потоку
     }
     // Оновлення геометрії commentsContainerWidget більше не потрібне
- 
- 
+
+
+    // 6. Скидання полів для нового коментаря
+    ui->newCommentTextEdit->clear();
+    ui->newCommentStarRatingWidget->setRating(0); // Скидаємо рейтинг на 0
+
+
     qInfo() << "Book details page populated for:" << details.title;
 }
 
