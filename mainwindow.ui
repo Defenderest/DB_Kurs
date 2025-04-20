@@ -561,7 +561,7 @@ QPushButton#navBooksButton[collapsed="true"]:checked,
 QPushButton#navAuthorsButton[collapsed="true"]:checked,
 QPushButton#navOrdersButton[collapsed="true"]:checked,
 QPushButton#navProfileButton[collapsed="true"]:checked {
-    background-color: #6c757d; /* Змінено на сірий */
+    background-color: #adb5bd; /* Змінено на світліший сірий */
     border: none; /* Переконуємось, що рамки немає */
     color: white; /* Білий колір іконки (як у розгорнутому стані) */
     font-weight: 600; /* Можна додати жирність, якщо потрібно */
