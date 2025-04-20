@@ -234,9 +234,13 @@ QLabel#logoLabel {
    padding-left: 0px;
 }
 QLabel#bannerLabel {
-   background-color: #cfe2ff; /* Залишаємо світлий фон */
+   background-image: url(:/images/banner.jpg); /* Шлях до фонового зображення */
+   background-repeat: no-repeat;
+   background-position: center;
+   background-size: cover; /* Масштабування зображення */
    border-radius: 6px;
-   color: #3086e6; /* Використовуємо темніший варіант світлого синього */
+   color: #ffffff; /* Білий колір тексту */
+   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Тінь для тексту */
    font-size: 20pt;
    font-weight: 500;
    padding: 25px;
