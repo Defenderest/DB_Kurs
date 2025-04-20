@@ -105,6 +105,7 @@ private:
     void setupSidebarAnimation();
     void toggleSidebar(bool expand);
     void setupSearchCompleter();
+    void setupBannerImage(); // Додано оголошення для встановлення банера
 
     // Члени класу
     Ui::MainWindow *ui;
