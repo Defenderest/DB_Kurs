@@ -46,7 +46,7 @@ QTabBar::tab {
 
 QTabBar::tab:selected {
     background-color: #ffffff;
-    color: #0d6efd;
+    color: #58a6ff; /* Змінено на світліший синій */
     font-weight: 600;
     border-color: #dee2e6;
     border-bottom: 1px solid #ffffff;
@@ -75,8 +75,8 @@ QLineEdit, QComboBox, QDateEdit {
 }
 
 QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    border-color: #86b7fe; /* Залишаємо світлу рамку фокусу */
+    box-shadow: 0 0 0 0.2rem rgba(88, 166, 255, 0.25); /* Змінено колір тіні на світліший */
 }
 
 QLineEdit::placeholder {
@@ -107,9 +107,9 @@ QComboBox QAbstractItemView {
 
 QPushButton {
     padding: 8px 14px;
-    background-color: #0d6efd;
+    background-color: #58a6ff; /* Змінено на світліший синій */
     color: white;
-    border: 1px solid #0d6efd;
+    border: 1px solid #58a6ff; /* Змінено на світліший синій */
     border-radius: 4px;
     font-weight: 500;
     min-height: 34px;
@@ -117,12 +117,12 @@ QPushButton {
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 QPushButton:hover {
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
+    background-color: #4096f6; /* Трохи темніший варіант світлого синього */
+    border-color: #3086e6; /* Трохи темніший варіант світлого синього */
 }
 QPushButton:pressed {
-    background-color: #0a58ca;
-    border-color: #0a53be;
+    background-color: #3086e6; /* Такий самий, як hover, або ще темніший */
+    border-color: #2076d6; /* Ще темніший варіант світлого синього */
 }
 QPushButton:disabled {
     background-color: #6c757d;
@@ -170,9 +170,9 @@ QPushButton#filterButton:pressed, QPushButton#sortButton:pressed, QPushButton#vi
     background-color: #e9ecef;
 }
 QPushButton#viewModeButton:checked {
-    background-color: #cfe2ff;
-    border-color: #86b7fe;
-    color: #0d6efd;
+    background-color: #cfe2ff; /* Залишаємо світлий фон */
+    border-color: #86b7fe; /* Залишаємо світлу рамку */
+    color: #58a6ff; /* Змінено на світліший синій */
 }
 
 QScrollArea {
@@ -235,9 +235,9 @@ QLabel#logoLabel {
    padding-left: 0px;
 }
 QLabel#bannerLabel {
-   background-color: #cfe2ff;
+   background-color: #cfe2ff; /* Залишаємо світлий фон */
    border-radius: 6px;
-   color: #0a58ca;
+   color: #3086e6; /* Використовуємо темніший варіант світлого синього */
    font-size: 20pt;
    font-weight: 500;
    padding: 25px;
@@ -261,7 +261,7 @@ QLabel#dateFilterLabel {
 
 QWidget#categoriesWidget QPushButton {
     background-color: #ffffff;
-    color: #0d6efd;
+    color: #58a6ff; /* Змінено на світліший синій */
     border: 1px solid #ced4da;
     font-weight: 500;
     text-align: center;
@@ -272,7 +272,7 @@ QWidget#categoriesWidget QPushButton {
 }
 QWidget#categoriesWidget QPushButton:hover {
     background-color: #f8f9fa;
-    color: #0b5ed7;
+    color: #4096f6; /* Використовуємо темніший варіант світлого синього */
     border-color: #adb5bd;
 }
 QWidget#categoriesWidget QPushButton:pressed {
@@ -523,8 +523,8 @@ QPushButton#navBooksButton:hover,
 QPushButton#navAuthorsButton:hover,
 QPushButton#navOrdersButton:hover,
 QPushButton#navProfileButton:hover {
-    background-color: #cfe2ff;
-    color: #0d6efd;
+    background-color: #cfe2ff; /* Залишаємо світлий фон */
+    color: #58a6ff; /* Змінено на світліший синій */
 }
 
 QPushButton#navHomeButton:checked,
@@ -532,7 +532,7 @@ QPushButton#navBooksButton:checked,
 QPushButton#navAuthorsButton:checked,
 QPushButton#navOrdersButton:checked,
 QPushButton#navProfileButton:checked {
-    background-color: #0d6efd;
+    background-color: #58a6ff; /* Змінено на світліший синій */
     color: white;
     font-weight: 600;
 }
@@ -577,7 +577,7 @@ QPushButton#navBooksButton[collapsed="true"]:checked,
 QPushButton#navAuthorsButton[collapsed="true"]:checked,
 QPushButton#navOrdersButton[collapsed="true"]:checked,
 QPushButton#navProfileButton[collapsed="true"]:checked {
-    background-color: #0d6efd; /* Основний синій фон (як у розгорнутому стані) */
+    background-color: #58a6ff; /* Змінено на світліший синій */
     border: none; /* Переконуємось, що рамки немає */
     color: white; /* Білий колір іконки (як у розгорнутому стані) */
     font-weight: 600; /* Можна додати жирність, якщо потрібно */
@@ -2002,7 +2002,7 @@ margin-bottom: 20px; /* Збільшено відступ знизу */</string>
                 <property name="styleSheet">
                  <string notr="true">font-size: 20pt; /* Збільшено шрифт */
 font-weight: bold;
-color: #0d6efd; /* Основний синій */
+color: #58a6ff; /* Змінено на світліший синій */
 margin-bottom: 10px; /* Додано відступ */</string>
                 </property>
                 <property name="text">
