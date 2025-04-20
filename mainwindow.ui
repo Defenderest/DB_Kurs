@@ -577,10 +577,10 @@ QPushButton#navBooksButton[collapsed="true"]:checked,
 QPushButton#navAuthorsButton[collapsed="true"]:checked,
 QPushButton#navOrdersButton[collapsed="true"]:checked,
 QPushButton#navProfileButton[collapsed="true"]:checked {
-    background-color: #cfe2ff; /* Світло-синій фон для активної */
-    /* border-left: 3px solid #0d6efd; - Прибрано індикатор */
+    background-color: #0d6efd; /* Основний синій фон (як у розгорнутому стані) */
     border: none; /* Переконуємось, що рамки немає */
-    color: #0d6efd; /* Колір іконки синій */
+    color: white; /* Білий колір іконки (як у розгорнутому стані) */
+    font-weight: 600; /* Можна додати жирність, якщо потрібно */
 }
 </string>
         </property>
