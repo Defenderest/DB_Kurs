@@ -27,6 +27,8 @@ set(PROJECT_SOURCES
     mainwindow.cpp
     mainwindow.h
     database.cpp
+    starratingwidget.cpp
+    starratingwidget.h
     database.h
     logindialog.cpp
     logindialog.h
@@ -45,7 +47,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mainwindow.ui
         logindialog.ui # Додано UI файл діалогу входу
         profiledialog.ui # Додано UI файл діалогу профілю
-        resourses.qrc # Убедитесь, что имя файла правильное (resources?)
+        resourses.qrc
+        starratingwidget.h starratingwidget.cpp # Убедитесь, что имя файла правильное (resources?)
     )
 else()
     # add_executable (стандартный CMake, используется для Qt 5)
