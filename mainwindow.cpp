@@ -604,11 +604,16 @@ void MainWindow::toggleSidebar(bool expand)
         if (expand) {
             button->setText(originalText);
             button->setToolTip(""); // Очистити підказку, коли текст видно
+            button->setProperty("collapsed", false); // Встановлюємо властивість
         } else {
             // Залишаємо тільки перший символ (іконку)
             button->setText(originalText.left(originalText.indexOf(' ') > 0 ? originalText.indexOf(' ') : 1));
-             button->setToolTip(originalText.mid(originalText.indexOf(' ') + 1)); // Показати текст як підказку
+            button->setToolTip(originalText.mid(originalText.indexOf(' ') + 1)); // Показати текст як підказку
+            button->setProperty("collapsed", true); // Встановлюємо властивість
         }
+        // Примусово оновлюємо стиль кнопки
+        button->style()->unpolish(button);
+        button->style()->polish(button);
     }
 
     m_sidebarAnimation->setStartValue(ui->sidebarFrame->width());
