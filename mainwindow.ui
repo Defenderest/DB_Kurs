@@ -2376,8 +2376,8 @@ QWidget#cartTotalsWidget {
     background-color: #f8f9fa; /* Світлий фон для блоку суми */
     border: 1px solid #dee2e6;
     border-radius: 8px;
-    padding: 20px;
-    margin-top: 15px;
+    padding: 10px 15px; /* Зменшено вертикальний та горизонтальний padding */
+    margin-top: 10px; /* Зменшено відступ зверху */
 }
 
 QLabel#cartTotalTextLabel {
