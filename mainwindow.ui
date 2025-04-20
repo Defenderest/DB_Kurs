@@ -2209,7 +2209,7 @@ margin-bottom: 8px;</string>
               <height>25</height>
              </size>
             </property>
-            </property>
+            <!-- Зайвий </property> видалено -->
            </widget>
           </item>
           <!-- Блок для відображення коментарів (без окремої прокрутки) -->
