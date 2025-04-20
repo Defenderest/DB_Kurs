@@ -1387,8 +1387,19 @@ QWidget* MainWindow::createCartItemWidget(const CartItem &item, int bookId)
     QPixmap coverPixmap(item.book.coverImagePath);
     if (coverPixmap.isNull() || item.book.coverImagePath.isEmpty()) {
         coverLabel->setText(tr("Фото"));
+        // Можна додати стиль для плейсхолдера, якщо потрібно
+        // coverLabel->setStyleSheet("background-color: #e9ecef; color: #6c757d; border: 1px solid #dee2e6; border-radius: 4px;");
     } else {
-        coverLabel->setPixmap(coverPixmap.scaled(coverLabel->minimumSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        // Масштабуємо зображення до розміру QLabel (використовуємо minimumSize, визначений у стилі)
+        // Переконуємось, що розмір QLabel встановлено (наприклад, через стиль або minimumSize)
+        QSize labelSize = coverLabel->minimumSize(); // Беремо розмір з UI/стилю
+        if (!labelSize.isValid() || labelSize.width() <= 0 || labelSize.height() <= 0) {
+             // Якщо розмір не встановлено, використовуємо типовий
+             labelSize = QSize(60, 85);
+             qWarning() << "Cart item cover label size not set, using default:" << labelSize;
+        }
+        coverLabel->setPixmap(coverPixmap.scaled(labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        coverLabel->setText(""); // Прибираємо текст, якщо є зображення
     }
     mainLayout->addWidget(coverLabel);
 
