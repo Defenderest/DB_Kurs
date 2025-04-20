@@ -2065,58 +2065,6 @@ line-height: 1.6; /* Збільшуємо міжрядковий інтерва�
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="reviewsHeaderLabel">
-            <property name="styleSheet">
-             <string notr="true">font-size: 16pt;
-font-weight: 600;
-color: #343a40;
-margin-top: 15px; /* Збільшено відступ зверху */
-margin-bottom: 8px;</string>
-            </property>
-            <property name="text">
-             <string>Відгуки та Рейтинг</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="bookDetailRatingLabel">
-            <property name="styleSheet">
-             <string notr="true">font-size: 11pt; color: #6c757d; margin-bottom: 10px;</string> <!-- Стиль для рейтингу -->
-            </property>
-            <property name="text">
-             <string>(Рейтинг: ⭐⭐⭐⭐☆ - функціонал в розробці)</string> <!-- Додано примітку -->
-            </property>
-           </widget>
-          </item>
-          <!-- Блок для відображення коментарів (без окремої прокрутки) -->
-          <item>
-           <widget class="QWidget" name="commentsContainerWidget"> <!-- Використовуємо QWidget замість QScrollArea -->
-            <property name="styleSheet">
-             <string notr="true">QWidget#commentsContainerWidget { background-color: transparent; } /* Фон контейнера прозорий */</string>
-            </property>
-            <!-- Layout для коментарів залишається всередині -->
-            <layout class="QVBoxLayout" name="commentsListLayout">
-             <property name="spacing">
-              <number>10</number> <!-- Відступ між коментарями -->
-             </property>
-             <property name="leftMargin">
-              <number>0</number> <!-- Забираємо відступи, якщо вони не потрібні для контейнера -->
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <!-- Сюди будуть динамічно додаватися віджети коментарів -->
-             <!-- Спейсер тут більше не потрібен, бо layout розтягуватиметься -->
-            </layout>
-           </widget>
-          </item>
           <!-- Нова секція для додавання коментаря -->
           <item>
            <widget class="Line" name="addCommentSeparator">
@@ -2151,16 +2099,17 @@ margin-bottom: 8px;</string>
             </property>
             <property name="styleSheet">
              <string notr="true">QTextEdit {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 8px 10px;
-    background-color: #ffffff;
+    background-color: #f1f3f5; /* Світліший фон */
+    border: 1px solid #e9ecef; /* Дуже світла рамка */
+    border-radius: 6px; /* Невелике заокруглення */
+    padding: 8px 12px; /* Відступи */
     color: #212529;
     font-size: 10pt;
 }
 QTextEdit:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    border-color: #ced4da; /* Трохи темніша рамка при фокусі */
+    background-color: #ffffff; /* Білий фон при фокусі */
+    /* box-shadow можна прибрати або залишити, якщо потрібно */
 }</string>
             </property>
             <property name="placeholderText">
@@ -2250,6 +2199,58 @@ QTextEdit:focus {
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="reviewsHeaderLabel">
+            <property name="styleSheet">
+             <string notr="true">font-size: 16pt;
+font-weight: 600;
+color: #343a40;
+margin-top: 15px; /* Збільшено відступ зверху */
+margin-bottom: 8px;</string>
+            </property>
+            <property name="text">
+             <string>Відгуки та Рейтинг</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="bookDetailRatingLabel">
+            <property name="styleSheet">
+             <string notr="true">font-size: 11pt; color: #6c757d; margin-bottom: 10px;</string> <!-- Стиль для рейтингу -->
+            </property>
+            <property name="text">
+             <string>(Рейтинг: ⭐⭐⭐⭐☆ - функціонал в розробці)</string> <!-- Додано примітку -->
+            </property>
+           </widget>
+          </item>
+          <!-- Блок для відображення коментарів (без окремої прокрутки) -->
+          <item>
+           <widget class="QWidget" name="commentsContainerWidget"> <!-- Використовуємо QWidget замість QScrollArea -->
+            <property name="styleSheet">
+             <string notr="true">QWidget#commentsContainerWidget { background-color: transparent; } /* Фон контейнера прозорий */</string>
+            </property>
+            <!-- Layout для коментарів залишається всередині -->
+            <layout class="QVBoxLayout" name="commentsListLayout">
+             <property name="spacing">
+              <number>10</number> <!-- Відступ між коментарями -->
+             </property>
+             <property name="leftMargin">
+              <number>0</number> <!-- Забираємо відступи, якщо вони не потрібні для контейнера -->
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <!-- Сюди будуть динамічно додаватися віджети коментарів -->
+             <!-- Спейсер тут більше не потрібен, бо layout розтягуватиметься -->
+            </layout>
+           </widget>
           </item>
           <!-- Існуючий вертикальний спейсер залишається в кінці -->
           <item>
