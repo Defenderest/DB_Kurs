@@ -780,14 +780,14 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>250</height>
+                  <height>300</height> <!-- Збільшено мінімальну висоту -->
                  </size>
                 </property>
                 <property name="styleSheet">
                  <string/>
                 </property>
                 <property name="text">
-                 <string>📚 Новинки та Популярні Книги 📚</string>
+                 <string>📚 Новинки та Популярні Книги 📚</string> <!-- Додано символи книги -->
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignmentFlag::AlignCenter</set>
