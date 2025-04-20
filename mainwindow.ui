@@ -493,8 +493,11 @@ QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
         </property>
         <property name="styleSheet">
          <string notr="true">QFrame#sidebarFrame {
-    background-color: #e9ecef;
+    background-color: #f8f9fa; /* Змінено фон на світліший */
     border-right: 1px solid #dee2e6;
+    border-top-right-radius: 8px; /* Додано заокруглення */
+    border-bottom-right-radius: 8px; /* Додано заокруглення */
+    /* border-left, border-top, border-bottom - не потрібні */
 }
 
 QPushButton#navHomeButton,
@@ -542,9 +545,14 @@ QPushButton#navOrdersButton[collapsed="true"],
 QPushButton#navProfileButton[collapsed="true"] {
     text-align: center; /* Центруємо іконку */
     padding: 10px 0; /* Вертикальний відступ, горизонтальний 0 */
-    border-left: 3px solid transparent; /* Прозора рамка для вирівнювання */
-    border-right: none;
-    border-top: none;
+    /* border-left: 3px solid transparent; - Прибрано рамку */
+    border: none; /* Прибираємо всі рамки */
+    border-radius: 4px; /* Додаємо невелике заокруглення до самої кнопки */
+    margin-left: 4px; /* Додаємо невеликі відступи, щоб кнопка не прилипала до країв */
+    margin-right: 4px;
+    min-width: 42px; /* Ширина = collapsedWidth - margin-left - margin-right */
+    max-width: 42px;
+}
     border-bottom: none;
     margin-left: 0; /* Забираємо відступи, якщо є */
     margin-right: 0;
@@ -558,8 +566,9 @@ QPushButton#navBooksButton[collapsed="true"]:hover,
 QPushButton#navAuthorsButton[collapsed="true"]:hover,
 QPushButton#navOrdersButton[collapsed="true"]:hover,
 QPushButton#navProfileButton[collapsed="true"]:hover {
-    background-color: #d3d9df; /* Трохи темніший фон при наведенні */
-    border-left: 3px solid transparent; /* Зберігаємо прозору рамку */
+    background-color: #e9ecef; /* Світліший фон при наведенні */
+    /* border-left: 3px solid transparent; - Прибрано рамку */
+    border: none; /* Переконуємось, що рамки немає */
 }
 
 /* Стиль для АКТИВНОЇ кнопки в згорнутому стані */
@@ -569,8 +578,9 @@ QPushButton#navAuthorsButton[collapsed="true"]:checked,
 QPushButton#navOrdersButton[collapsed="true"]:checked,
 QPushButton#navProfileButton[collapsed="true"]:checked {
     background-color: #cfe2ff; /* Світло-синій фон для активної */
-    border-left: 3px solid #0d6efd; /* Синій індикатор зліва */
-    color: #0d6efd; /* Можна змінити колір іконки на синій */
+    /* border-left: 3px solid #0d6efd; - Прибрано індикатор */
+    border: none; /* Переконуємось, що рамки немає */
+    color: #0d6efd; /* Колір іконки синій */
 }
 </string>
         </property>
