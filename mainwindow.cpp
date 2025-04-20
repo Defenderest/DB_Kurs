@@ -1442,6 +1442,9 @@ QWidget* MainWindow::createCartItemWidget(const CartItem &item, int bookId)
     subtotalLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     subtotalLabel->setMinimumWidth(80); // Мінімальна ширина для суми
     mainLayout->addWidget(subtotalLabel, 1); // Менше місця для суми
+    // Зберігаємо вказівник на мітку підсумку
+    m_cartSubtotalLabels.insert(bookId, subtotalLabel);
+
 
     // 6. Кнопка видалення
     QPushButton *removeButton = new QPushButton(); // Використовуємо QPushButton для кращої стилізації
@@ -1546,6 +1549,9 @@ void MainWindow::populateCartPage()
 
     // Очищаємо layout від попередніх елементів (карток товарів та спейсера/мітки)
     clearLayout(ui->cartItemsLayout);
+    // Очищаємо мапу вказівників на мітки підсумків
+    m_cartSubtotalLabels.clear();
+
 
     // Видаляємо мітку про порожній кошик, якщо вона була додана раніше
     QLabel* emptyCartLabel = ui->cartItemsContainerWidget->findChild<QLabel*>("emptyCartLabel");
@@ -1632,30 +1638,48 @@ void MainWindow::updateCartIcon()
     qInfo() << "Cart icon updated. Total items:" << totalItems;
 }
 
-// Слот для зміни кількості товару в кошику (Новий дизайн)
+// Слот для зміни кількості товару в кошику (Новий дизайн - виправлено виліт)
 void MainWindow::updateCartItemQuantity(int bookId, int quantity)
 {
     if (m_cartItems.contains(bookId)) {
         qInfo() << "Updating quantity for book ID" << bookId << "to" << quantity;
-        // Перевіряємо, чи кількість не перевищує доступну
-        if (quantity > m_cartItems[bookId].book.stockQuantity) {
-            qWarning() << "Attempted to set quantity" << quantity << "but only" << m_cartItems[bookId].book.stockQuantity << "available for book ID" << bookId;
-            // Можна показати повідомлення користувачу або просто встановити максимальну кількість
-            quantity = m_cartItems[bookId].book.stockQuantity;
-            // Потрібно оновити значення в SpinBox, якщо воно змінилося
-            // Це складніше зробити без прямого доступу до віджету.
-            // Простіше перезавантажити всю сторінку кошика.
+
+        // Перевіряємо, чи кількість не перевищує доступну (SpinBox сам обмежує, але для безпеки)
+        int stockQuantity = m_cartItems[bookId].book.stockQuantity;
+        if (quantity > stockQuantity) {
+            qWarning() << "Attempted to set quantity" << quantity << "but only" << stockQuantity << "available for book ID" << bookId;
+            quantity = stockQuantity;
+            // Потрібно знайти SpinBox і встановити йому правильне значення, якщо воно змінилося
+            // Це може бути складно, простіше попередити користувача або дозволити SpinBox обробити це.
+            // Наразі просто використовуємо скориговане значення.
+        }
+        if (quantity < 1) { // Мінімальна кількість - 1
+             qWarning() << "Attempted to set quantity less than 1 for book ID" << bookId;
+             quantity = 1;
         }
 
+
+        // Оновлюємо кількість у внутрішній структурі даних
         m_cartItems[bookId].quantity = quantity;
 
-        // Замість оновлення окремого рядка, просто перезавантажуємо всю сторінку кошика
-        // Це простіше і гарантує консистентність даних
-        if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
-            populateCartPage();
+        // Оновлюємо мітку підсумку для цього товару
+        QLabel *subtotalLabel = m_cartSubtotalLabels.value(bookId, nullptr);
+        if (subtotalLabel) {
+            double newSubtotal = m_cartItems[bookId].book.price * quantity;
+            subtotalLabel->setText(QString::number(newSubtotal, 'f', 2) + tr(" грн"));
+            qInfo() << "Updated subtotal label for book ID" << bookId;
+        } else {
+            qWarning() << "Could not find subtotal label for book ID" << bookId << "to update.";
+            // Якщо мітки немає, можливо, варто перезавантажити кошик для консистентності
+            if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
+                populateCartPage();
+            }
         }
-        // updateCartTotal(); // populateCartPage вже викликає updateCartTotal
-        updateCartIcon(); // Оновлюємо іконку
+
+        // Оновлюємо загальну суму та іконку кошика
+        updateCartTotal();
+        updateCartIcon();
+
     } else {
         qWarning() << "Attempted to update quantity for non-existent book ID in cart:" << bookId;
     }

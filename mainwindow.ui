@@ -64,7 +64,7 @@ QTabWidget::tab-bar {
     left: 5px;
 }
 
-QLineEdit, QComboBox, QDateEdit {
+QLineEdit, QComboBox, QDateEdit, QSpinBox { /* Додано QSpinBox */
     padding: 8px 10px;
     border: 1px solid #ced4da;
     border-radius: 4px;
@@ -2304,7 +2304,9 @@ QLabel#cartItemPriceLabel, QLabel#cartItemSubtotalLabel {
 QSpinBox#cartQuantitySpinBox {
     min-width: 60px;
     max-width: 70px;
-    /* Використовує загальний стиль QLineEdit/QComboBox */
+    background-color: #ffffff; /* Явно встановлюємо білий фон */
+    color: #212529; /* Явно встановлюємо колір тексту */
+    /* Інші стилі (рамка, заокруглення) успадковуються з загального правила */
 }
 
 QPushButton#cartRemoveButton {

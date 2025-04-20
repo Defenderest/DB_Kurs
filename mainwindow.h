@@ -123,6 +123,7 @@ private:
 
     // Кошик
     QMap<int, CartItem> m_cartItems; // Ключ - bookId
+    QMap<int, QLabel*> m_cartSubtotalLabels; // Ключ - bookId, Значення - вказівник на мітку підсумку
 
 protected:
     // Перехоплення подій для sidebarFrame
