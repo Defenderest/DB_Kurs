@@ -31,6 +31,11 @@
 #include <QMouseEvent>      // Додано для подій миші
 #include <QTextEdit>        // Додано для QTextEdit (опис книги)
 #include "starratingwidget.h" // Додано для StarRatingWidget
+#include <QTableWidget>     // Додано для таблиці кошика
+#include <QHeaderView>      // Додано для налаштування таблиці кошика
+#include <QSpinBox>         // Додано для зміни кількості в кошику
+#include <QToolButton>      // Додано для кнопки видалення в кошику
+#include <QMap>             // Додано для m_cartItems
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -72,7 +77,16 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     connect(ui->editProfileButton, &QPushButton::clicked, this, &MainWindow::on_editProfileButton_clicked);
     connect(ui->saveProfileButton, &QPushButton::clicked, this, &MainWindow::on_saveProfileButton_clicked);
 
-    // Видалено з'єднання для кнопки профілю з хедера (якщо воно було)
+    // Підключаємо кнопку кошика в хедері
+    connect(ui->cartButton, &QPushButton::clicked, this, &MainWindow::on_cartButton_clicked);
+
+    // Підключаємо кнопку "Оформити замовлення" на сторінці кошика (якщо вона вже існує в UI)
+    // Переконайтесь, що віджет cartPage та placeOrderButton існують у вашому .ui файлі
+    if (ui->cartPage && ui->placeOrderButton) {
+        connect(ui->placeOrderButton, &QPushButton::clicked, this, &MainWindow::on_placeOrderButton_clicked);
+    } else {
+        qWarning() << "Cart page or place order button not found in UI. Cannot connect signal.";
+    }
 
     // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
     m_buttonOriginalText[ui->navHomeButton] = tr("🏠 Головна");
@@ -241,10 +255,14 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
 
     // 5. Кнопка "Додати в кошик" (QPushButton - приклад)
     QPushButton *addToCartButton = new QPushButton(tr("🛒 Додати"));
-    addToCartButton->setStyleSheet("QPushButton { background-color: #28a745; color: white; border: none; border-radius: 8px; padding: 8px; font-size: 9pt; } QPushButton:hover { background-color: #218838; }"); // Збільшено border-radius
+    addToCartButton->setStyleSheet("QPushButton { background-color: #28a745; color: white; border: none; border-radius: 8px; padding: 8px; font-size: 9pt; } QPushButton:hover { background-color: #218838; }");
     addToCartButton->setToolTip(tr("Додати '%1' до кошика").arg(bookInfo.title));
-    // Тут можна підключити сигнал кнопки до слота
-    // connect(addToCartButton, &QPushButton::clicked, this, [this, bookInfo](){ /* логіка додавання в кошик */ });
+    // Зберігаємо bookId як властивість кнопки для легкого доступу в слоті
+    addToCartButton->setProperty("bookId", bookInfo.bookId);
+    // Підключаємо сигнал кнопки до слота on_addToCartButtonClicked
+    connect(addToCartButton, &QPushButton::clicked, this, [this, bookId = bookInfo.bookId](){
+        on_addToCartButtonClicked(bookId);
+    });
     cardLayout->addWidget(addToCartButton);
 
 
@@ -1320,6 +1338,333 @@ void MainWindow::on_saveProfileButton_clicked()
         qWarning() << "Failed to update profile data for customer ID:" << m_currentCustomerId << "Error:" << m_dbManager->lastError().text();
     }
 }
+
+
+// --- Логіка кошика ---
+
+// Слот для кнопки "Додати в кошик"
+void MainWindow::on_addToCartButtonClicked(int bookId)
+{
+    qInfo() << "Add to cart button clicked for book ID:" << bookId;
+    if (!m_dbManager) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+        return;
+    }
+
+    // Отримуємо інформацію про книгу за допомогою нового методу
+    BookDisplayInfo bookInfo = m_dbManager->getBookDisplayInfoById(bookId);
+
+    if (!bookInfo.found) { // Перевіряємо прапорець found
+         qWarning() << "Book with ID" << bookId << "not found for adding to cart.";
+         QMessageBox::warning(this, tr("Помилка"), tr("Не вдалося знайти інформацію про книгу (ID: %1).").arg(bookId));
+         return;
+    }
+
+    // Перевірка наявності на складі
+    if (bookInfo.stockQuantity <= 0) {
+        QMessageBox::information(this, tr("Немає в наявності"), tr("На жаль, книги '%1' зараз немає в наявності.").arg(bookInfo.title));
+        return;
+    }
+
+    // Перевіряємо, чи товар вже є в кошику
+    if (m_cartItems.contains(bookId)) {
+        // Перевіряємо, чи не перевищить кількість наявну на складі
+        if (m_cartItems[bookId].quantity + 1 > bookInfo.stockQuantity) {
+             QMessageBox::information(this, tr("Обмеження кількості"), tr("Ви не можете додати більше одиниць книги '%1', ніж є на складі (%2).").arg(bookInfo.title).arg(bookInfo.stockQuantity));
+             return;
+        }
+        // Збільшуємо кількість
+        m_cartItems[bookId].quantity++;
+        qInfo() << "Increased quantity for book ID" << bookId << "to" << m_cartItems[bookId].quantity;
+    } else {
+        // Додаємо новий товар
+        CartItem newItem;
+        newItem.book = bookInfo; // Зберігаємо інформацію про книгу
+        newItem.quantity = 1;
+        m_cartItems.insert(bookId, newItem);
+        qInfo() << "Added new book ID" << bookId << "to cart.";
+    }
+
+    // Оновлюємо іконку кошика
+    updateCartIcon();
+
+    // Показуємо повідомлення в статус барі
+    ui->statusBar->showMessage(tr("Книгу '%1' додано до кошика.").arg(bookInfo.title), 3000);
+
+    // Оновлюємо сторінку кошика, якщо вона відкрита
+    if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
+        populateCartPage();
+    }
+}
+
+// Слот для кнопки кошика в хедері
+void MainWindow::on_cartButton_clicked()
+{
+    qInfo() << "Cart button clicked. Navigating to cart page.";
+    // Перевіряємо, чи існує сторінка кошика
+    if (!ui->cartPage) {
+        qWarning() << "Cart page widget not found in UI!";
+        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Сторінка кошика не знайдена."));
+        return;
+    }
+    ui->contentStackedWidget->setCurrentWidget(ui->cartPage);
+    populateCartPage(); // Заповнюємо/оновлюємо сторінку кошика
+}
+
+// Заповнення сторінки кошика
+void MainWindow::populateCartPage()
+{
+    qInfo() << "Populating cart page...";
+    // Перевіряємо існування віджетів сторінки кошика
+    if (!ui->cartTableWidget || !ui->cartTotalLabel || !ui->placeOrderButton) {
+        qWarning() << "populateCartPage: One or more cart page widgets are null!";
+        // Можна показати повідомлення про помилку на самій сторінці
+        if(ui->cartPage && ui->cartPage->layout()) {
+             clearLayout(ui->cartPage->layout());
+             QLabel *errorLabel = new QLabel(tr("Помилка інтерфейсу: Не вдалося відобразити кошик."), ui->cartPage);
+             ui->cartPage->layout()->addWidget(errorLabel);
+        }
+        return;
+    }
+
+    // Очищаємо таблицю перед заповненням
+    ui->cartTableWidget->clearContents();
+    ui->cartTableWidget->setRowCount(0);
+
+    if (m_cartItems.isEmpty()) {
+        qInfo() << "Cart is empty.";
+        // Показуємо повідомлення в таблиці
+        ui->cartTableWidget->setRowCount(1);
+        QTableWidgetItem *emptyItem = new QTableWidgetItem(tr("Ваш кошик порожній."));
+        emptyItem->setTextAlignment(Qt::AlignCenter);
+        ui->cartTableWidget->setItem(0, 0, emptyItem);
+        ui->cartTableWidget->setSpan(0, 0, 1, ui->cartTableWidget->columnCount()); // Об'єднати комірки
+        ui->cartTableWidget->verticalHeader()->setVisible(false); // Сховати нумерацію рядків
+        ui->placeOrderButton->setEnabled(false); // Вимкнути кнопку замовлення
+        ui->cartTotalLabel->setText(tr("Загальна сума: 0.00 грн")); // Скинути суму
+        return;
+    }
+
+    ui->cartTableWidget->setRowCount(m_cartItems.size());
+    ui->cartTableWidget->verticalHeader()->setVisible(true); // Показати нумерацію
+
+    int row = 0;
+    for (auto it = m_cartItems.constBegin(); it != m_cartItems.constEnd(); ++it) {
+        const CartItem &item = it.value();
+        int bookId = it.key();
+
+        // 0: Назва книги
+        QTableWidgetItem *titleItem = new QTableWidgetItem(item.book.title);
+        titleItem->setFlags(titleItem->flags() & ~Qt::ItemIsEditable); // Не редагується
+        ui->cartTableWidget->setItem(row, 0, titleItem);
+
+        // 1: Ціна за одиницю
+        QTableWidgetItem *priceItem = new QTableWidgetItem(QString::number(item.book.price, 'f', 2) + tr(" грн"));
+        priceItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        priceItem->setFlags(priceItem->flags() & ~Qt::ItemIsEditable);
+        ui->cartTableWidget->setItem(row, 1, priceItem);
+
+        // 2: Кількість (SpinBox)
+        QSpinBox *quantitySpinBox = new QSpinBox();
+        quantitySpinBox->setMinimum(1);
+        quantitySpinBox->setMaximum(item.book.stockQuantity); // Обмеження по складу
+        quantitySpinBox->setValue(item.quantity);
+        quantitySpinBox->setAlignment(Qt::AlignCenter);
+        quantitySpinBox->setProperty("bookId", bookId); // Зберігаємо ID для слота
+        connect(quantitySpinBox, &QSpinBox::valueChanged, this, [this, bookId](int newValue){
+            updateCartItemQuantity(bookId, newValue);
+        });
+        ui->cartTableWidget->setCellWidget(row, 2, quantitySpinBox);
+
+        // 3: Сума за позицію
+        double itemTotal = item.book.price * item.quantity;
+        QTableWidgetItem *totalItem = new QTableWidgetItem(QString::number(itemTotal, 'f', 2) + tr(" грн"));
+        totalItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        totalItem->setFlags(totalItem->flags() & ~Qt::ItemIsEditable);
+        totalItem->setData(Qt::UserRole, itemTotal); // Зберігаємо числове значення для підрахунку загальної суми
+        ui->cartTableWidget->setItem(row, 3, totalItem);
+
+        // 4: Кнопка видалення
+        QToolButton *removeButton = new QToolButton();
+        removeButton->setText("❌"); // Або іконка
+        removeButton->setToolTip(tr("Видалити '%1' з кошика").arg(item.book.title));
+        removeButton->setStyleSheet("QToolButton { border: none; background-color: transparent; color: red; } QToolButton:hover { background-color: #ffebee; }");
+        removeButton->setProperty("bookId", bookId);
+        connect(removeButton, &QToolButton::clicked, this, [this, bookId](){
+            removeCartItem(bookId);
+        });
+        // Центруємо кнопку в комірці
+        QWidget *buttonContainer = new QWidget();
+        QHBoxLayout *buttonLayout = new QHBoxLayout(buttonContainer);
+        buttonLayout->addWidget(removeButton);
+        buttonLayout->setAlignment(Qt::AlignCenter);
+        buttonLayout->setContentsMargins(0,0,0,0);
+        ui->cartTableWidget->setCellWidget(row, 4, buttonContainer);
+
+
+        row++;
+    }
+
+    // Налаштування розмірів колонок
+    ui->cartTableWidget->resizeColumnsToContents();
+    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch); // Назва розтягується
+    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    ui->cartTableWidget->horizontalHeader()->setSectionResizeMode(4, QHeaderView::ResizeToContents); // Кнопка видалення
+
+    updateCartTotal(); // Оновлюємо загальну суму
+    ui->placeOrderButton->setEnabled(true); // Увімкнути кнопку замовлення
+    qInfo() << "Cart page populated with" << m_cartItems.size() << "items.";
+}
+
+// Оновлення загальної суми кошика
+void MainWindow::updateCartTotal()
+{
+    if (!ui->cartTableWidget || !ui->cartTotalLabel) return; // Перевірка
+
+    double total = 0.0;
+    for (int row = 0; row < ui->cartTableWidget->rowCount(); ++row) {
+        QTableWidgetItem *item = ui->cartTableWidget->item(row, 3); // Колонка "Сума за позицію"
+        if (item) {
+            total += item->data(Qt::UserRole).toDouble(); // Беремо збережене значення
+        }
+    }
+    ui->cartTotalLabel->setText(tr("Загальна сума: %1 грн").arg(QString::number(total, 'f', 2)));
+    qInfo() << "Cart total updated:" << total;
+}
+
+// Оновлення іконки кошика (кількість товарів)
+void MainWindow::updateCartIcon()
+{
+    if (!ui->cartButton) return; // Перевірка
+
+    int totalItems = 0;
+    for (const auto &item : m_cartItems) {
+        totalItems += item.quantity;
+    }
+
+    if (totalItems > 0) {
+        // Показуємо кількість на кнопці (простий варіант - змінити текст)
+        ui->cartButton->setText(QString("🛒 (%1)").arg(totalItems));
+        ui->cartButton->setToolTip(tr("Кошик (%1 товар(ів))").arg(totalItems));
+    } else {
+        // Повертаємо стандартний вигляд
+        ui->cartButton->setText("🛒");
+        ui->cartButton->setToolTip(tr("Кошик"));
+    }
+    qInfo() << "Cart icon updated. Total items:" << totalItems;
+}
+
+// Слот для зміни кількості товару в кошику (від SpinBox)
+void MainWindow::updateCartItemQuantity(int bookId, int quantity)
+{
+    if (!ui->cartTableWidget) return; // Перевірка
+
+    if (m_cartItems.contains(bookId)) {
+        qInfo() << "Updating quantity for book ID" << bookId << "to" << quantity;
+        m_cartItems[bookId].quantity = quantity;
+
+        // Оновлюємо суму для цього рядка в таблиці
+        for (int row = 0; row < ui->cartTableWidget->rowCount(); ++row) {
+             QWidget* widget = ui->cartTableWidget->cellWidget(row, 2); // Колонка зі SpinBox
+             if (widget && widget->property("bookId").toInt() == bookId) {
+                 double price = m_cartItems[bookId].book.price;
+                 double itemTotal = price * quantity;
+                 QTableWidgetItem *totalItem = ui->cartTableWidget->item(row, 3); // Колонка "Сума за позицію"
+                 if (totalItem) {
+                     totalItem->setText(QString::number(itemTotal, 'f', 2) + tr(" грн"));
+                     totalItem->setData(Qt::UserRole, itemTotal);
+                 }
+                 break; // Знайшли потрібний рядок
+             }
+        }
+        updateCartTotal(); // Перераховуємо загальну суму
+        updateCartIcon(); // Оновлюємо іконку
+    } else {
+        qWarning() << "Attempted to update quantity for non-existent book ID in cart:" << bookId;
+    }
+}
+
+// Слот для видалення товару з кошика
+void MainWindow::removeCartItem(int bookId)
+{
+     if (m_cartItems.contains(bookId)) {
+         QString bookTitle = m_cartItems[bookId].book.title; // Зберігаємо назву для повідомлення
+         m_cartItems.remove(bookId);
+         qInfo() << "Removed book ID" << bookId << "from cart.";
+         ui->statusBar->showMessage(tr("Книгу '%1' видалено з кошика.").arg(bookTitle), 3000);
+         populateCartPage(); // Перезаповнюємо таблицю кошика
+         updateCartIcon(); // Оновлюємо іконку
+     } else {
+         qWarning() << "Attempted to remove non-existent book ID from cart:" << bookId;
+     }
+}
+
+// Слот для кнопки "Оформити замовлення"
+void MainWindow::on_placeOrderButton_clicked()
+{
+    qInfo() << "Place order button clicked.";
+    if (m_cartItems.isEmpty()) {
+        QMessageBox::information(this, tr("Порожній кошик"), tr("Ваш кошик порожній. Додайте товари перед оформленням замовлення."));
+        return;
+    }
+    if (!m_dbManager) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних. Неможливо оформити замовлення."));
+        return;
+    }
+     if (m_currentCustomerId <= 0) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Неможливо оформити замовлення, користувач не визначений."));
+        return;
+    }
+
+    // --- Отримання даних для замовлення ---
+    // 1. Адреса доставки (беремо з профілю або запитуємо)
+    CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
+    QString shippingAddress = profile.found ? profile.address : "";
+    if (shippingAddress.isEmpty()) {
+        // Перевіряємо існування віджетів профілю перед фокусуванням
+        if (!ui->pageProfile || !ui->profileAddressLineEdit) {
+             QMessageBox::warning(this, tr("Адреса доставки"), tr("Будь ласка, вкажіть адресу доставки у вашому профілі перед оформленням замовлення.\n(Помилка: не знайдено поля адреси в інтерфейсі профілю)"));
+             return;
+        }
+        QMessageBox::warning(this, tr("Адреса доставки"), tr("Будь ласка, вкажіть адресу доставки у вашому профілі перед оформленням замовлення."));
+        // Перенаправляємо на сторінку профілю
+        on_navProfileButton_clicked();
+        ui->profileAddressLineEdit->setFocus(); // Встановлюємо фокус на поле адреси
+        setProfileEditingEnabled(true); // Вмикаємо редагування
+        return;
+    }
+
+    // 2. Спосіб оплати (поки що фіксований)
+    QString paymentMethod = tr("Готівка при отриманні"); // Або показати діалог вибору
+
+    // Готуємо дані для createOrder (bookId -> quantity)
+    QMap<int, int> itemsMap;
+    for (auto it = m_cartItems.constBegin(); it != m_cartItems.constEnd(); ++it) {
+        itemsMap.insert(it.key(), it.value().quantity);
+    }
+
+
+    // --- Виклик методу DatabaseManager для створення замовлення ---
+    int newOrderId = -1;
+    bool success = m_dbManager->createOrder(m_currentCustomerId, itemsMap, shippingAddress, paymentMethod, newOrderId);
+
+    if (success && newOrderId > 0) {
+        QMessageBox::information(this, tr("Замовлення оформлено"), tr("Ваше замовлення №%1 успішно оформлено!").arg(newOrderId));
+        m_cartItems.clear(); // Очищаємо кошик
+        updateCartIcon(); // Оновлюємо іконку
+        populateCartPage(); // Оновлюємо сторінку кошика (стане порожньою)
+        // Можна перейти на сторінку замовлень
+        on_navOrdersButton_clicked();
+    } else {
+        QMessageBox::critical(this, tr("Помилка оформлення"), tr("Не вдалося оформити замовлення. Перевірте журнал помилок або спробуйте пізніше."));
+        qWarning() << "Failed to create order. DB Error:" << m_dbManager->lastError().text();
+    }
+}
+
+
+// --- Кінець логіки кошика ---
 
 
 // --- Кінець реалізації слотів та функцій ---
