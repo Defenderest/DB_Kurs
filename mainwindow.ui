@@ -494,7 +494,7 @@ QPushButton#navProfileButton {
     padding: 10px 10px; /* Збільшено горизонтальний padding */
     border: none;
     border-radius: 8px; /* Збільшено заокруглення */
-    text-align: left;
+    /* text-align: left; - Видалено, керується іконкою/текстом */
     font-size: 11pt;
     font-weight: 500;
     color: #343a40;
@@ -529,9 +529,8 @@ QPushButton#navBooksButton[collapsed="true"],
 QPushButton#navAuthorsButton[collapsed="true"],
 QPushButton#navOrdersButton[collapsed="true"],
 QPushButton#navProfileButton[collapsed="true"] {
-    text-align: center; /* Центруємо іконку */
+    /* text-align: center; - Видалено, іконка центрується автоматично */
     padding: 10px 0; /* Вертикальний відступ, горизонтальний 0 */
-    /* border-left: 3px solid transparent; - Прибрано рамку */
     border: none; /* Прибираємо всі рамки */
     border-radius: 8px; /* Збільшено заокруглення */
     margin-left: 4px; /* Додаємо невеликі відступи, щоб кнопка не прилипала до країв */
@@ -595,7 +594,17 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
          <item>
           <widget class="QPushButton" name="navHomeButton">
            <property name="text">
-            <string>🏠 Головна</string>
+            <string>Головна</string> <!-- Видалено емодзі -->
+           </property>
+           <property name="icon">
+            <iconset resource="resourses.qrc">
+             <normaloff>:/icons/icons/home.svg</normaloff>:/icons/icons/home.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width> <!-- Розмір іконки -->
+             <height>20</height>
+            </size>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -611,7 +620,17 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
          <item>
           <widget class="QPushButton" name="navBooksButton">
            <property name="text">
-            <string>📚 Книги</string>
+            <string>Книги</string> <!-- Видалено емодзі -->
+           </property>
+           <property name="icon">
+            <iconset resource="resourses.qrc">
+             <normaloff>:/icons/icons/book.svg</normaloff>:/icons/icons/book.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -624,7 +643,17 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
          <item>
           <widget class="QPushButton" name="navAuthorsButton">
            <property name="text">
-            <string>👥 Автори</string>
+            <string>Автори</string> <!-- Видалено емодзі -->
+           </property>
+           <property name="icon">
+            <iconset resource="resourses.qrc">
+             <normaloff>:/icons/icons/users.svg</normaloff>:/icons/icons/users.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -637,7 +666,17 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
          <item>
           <widget class="QPushButton" name="navOrdersButton">
            <property name="text">
-            <string>🛍️ Мої замовлення</string>
+            <string>Мої замовлення</string> <!-- Видалено емодзі -->
+           </property>
+           <property name="icon">
+            <iconset resource="resourses.qrc">
+             <normaloff>:/icons/icons/shopping-bag.svg</normaloff>:/icons/icons/shopping-bag.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -653,7 +692,17 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
             <string>Профіль</string>
            </property>
            <property name="text">
-            <string>👤</string>
+            <string>Профіль</string> <!-- Видалено емодзі, додано текст -->
+           </property>
+           <property name="icon">
+            <iconset resource="resourses.qrc">
+             <normaloff>:/icons/icons/user.svg</normaloff>:/icons/icons/user.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="checkable">
             <bool>true</bool>

@@ -89,12 +89,12 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         qWarning() << "Cart page or place order button not found in UI. Cannot connect signal.";
     }
 
-    // Зберігаємо оригінальний текст кнопок (з .ui файлу, де він повний)
-    m_buttonOriginalText[ui->navHomeButton] = tr("🏠 Головна");
-    m_buttonOriginalText[ui->navBooksButton] = tr("📚 Книги");
-    m_buttonOriginalText[ui->navAuthorsButton] = tr("👥 Автори");
-    m_buttonOriginalText[ui->navOrdersButton] = tr("🛍️ Мої замовлення");
-    m_buttonOriginalText[ui->navProfileButton] = tr("👤 Профіль"); // Додано текст для кнопки профілю
+    // Зберігаємо оригінальний текст кнопок (без емодзі, беремо з UI)
+    m_buttonOriginalText[ui->navHomeButton] = ui->navHomeButton->text();
+    m_buttonOriginalText[ui->navBooksButton] = ui->navBooksButton->text();
+    m_buttonOriginalText[ui->navAuthorsButton] = ui->navAuthorsButton->text();
+    m_buttonOriginalText[ui->navOrdersButton] = ui->navOrdersButton->text();
+    m_buttonOriginalText[ui->navProfileButton] = ui->navProfileButton->text();
 
     // Налаштовуємо анімацію бокової панелі
     setupSidebarAnimation();
@@ -645,13 +645,14 @@ void MainWindow::toggleSidebar(bool expand)
         QPushButton *button = it.key();
         const QString &originalText = it.value();
         if (expand) {
-            button->setText(originalText);
+            button->setText(originalText); // Встановлюємо повний текст
+            button->setIcon(button->icon()); // Переконуємось, що іконка є (вона вже має бути встановлена з UI)
             button->setToolTip(""); // Очистити підказку, коли текст видно
             button->setProperty("collapsed", false); // Встановлюємо властивість
         } else {
-            // Залишаємо тільки перший символ (іконку)
-            button->setText(originalText.left(originalText.indexOf(' ') > 0 ? originalText.indexOf(' ') : 1));
-            button->setToolTip(originalText.mid(originalText.indexOf(' ') + 1)); // Показати текст як підказку
+            button->setText(""); // Прибираємо текст
+            button->setIcon(button->icon()); // Залишаємо тільки іконку
+            button->setToolTip(originalText); // Показати текст як підказку
             button->setProperty("collapsed", true); // Встановлюємо властивість
         }
         // Примусово оновлюємо стиль кнопки
