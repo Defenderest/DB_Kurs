@@ -2302,12 +2302,56 @@ QLabel#cartItemPriceLabel, QLabel#cartItemSubtotalLabel {
 }
 
 QSpinBox#cartQuantitySpinBox {
-    min-width: 60px;
-    max-width: 70px;
-    background-color: #ffffff; /* Явно встановлюємо білий фон */
-    color: #212529; /* Явно встановлюємо колір тексту */
-    /* Інші стилі (рамка, заокруглення) успадковуються з загального правила */
+    min-width: 55px; /* Зменшено ширину */
+    max-width: 55px; /* Зменшено ширину */
+    min-height: 30px; /* Зменшено висоту */
+    max-height: 30px; /* Зменшено висоту */
+    background-color: #ffffff;
+    color: #212529;
+    border: 1px solid #ced4da; /* Залишаємо рамку */
+    border-radius: 15px; /* Додаємо заокруглення (половина висоти) */
+    padding: 0px 5px; /* Зменшуємо внутрішні відступи */
+    font-size: 10pt; /* Залишаємо розмір шрифту */
 }
+
+/* Стилі для кнопок SpinBox (стрілки вгору/вниз) */
+QSpinBox#cartQuantitySpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 18px; /* Ширина кнопки */
+    height: 15px; /* Висота кнопки (половина висоти SpinBox) */
+    border-left: 1px solid #ced4da;
+    border-bottom: 1px solid #ced4da; /* Додаємо нижню межу для розділення */
+    border-top-right-radius: 15px; /* Заокруглення верхнього правого кута */
+    background-color: #f8f9fa; /* Світлий фон для кнопки */
+}
+QSpinBox#cartQuantitySpinBox::up-button:hover {
+    background-color: #e9ecef; /* Світліший фон при наведенні */
+}
+QSpinBox#cartQuantitySpinBox::up-arrow {
+    image: url(:/icons/up-arrow.svg); /* Потрібно додати іконку */
+    width: 8px;
+    height: 8px;
+}
+
+QSpinBox#cartQuantitySpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 18px;
+    height: 15px;
+    border-left: 1px solid #ced4da;
+    border-bottom-right-radius: 15px; /* Заокруглення нижнього правого кута */
+    background-color: #f8f9fa;
+}
+QSpinBox#cartQuantitySpinBox::down-button:hover {
+    background-color: #e9ecef;
+}
+QSpinBox#cartQuantitySpinBox::down-arrow {
+    image: url(:/icons/down-arrow.svg); /* Потрібно додати іконку */
+    width: 8px;
+    height: 8px;
+}
+
 
 QPushButton#cartRemoveButton {
     background-color: transparent;
