@@ -31,6 +31,8 @@
 #include <QMouseEvent>      // Додано для подій миші
 #include <QTextEdit>        // Додано для QTextEdit (опис книги)
 #include "starratingwidget.h" // Додано для StarRatingWidget
+#include <QCoreApplication> // Додано для applicationDirPath
+#include <QDir>             // Додано для роботи зі шляхами
 // #include <QTableWidget>     // Більше не потрібен для кошика
 #include <QHeaderView>      // Може бути потрібен для інших таблиць
 #include <QSpinBox>         // Додано для зміни кількості в кошику
