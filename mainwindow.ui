@@ -780,11 +780,22 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>300</height> <!-- Збільшено мінімальну висоту -->
+                  <height>600</height> <!-- Збільшено мінімальну висоту вдвічі -->
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string/>
+                 <string>/* Повертаємо стилі для фону, щоб текст був видимий */
+background-image: url(:/images/banner.jpg);
+background-repeat: no-repeat;
+background-position: center;
+background-size: cover;
+border-radius: 6px;
+color: #ffffff;
+text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+font-size: 20pt;
+font-weight: 500;
+padding: 25px;
+text-align: center;</string>
                 </property>
                 <property name="text">
                  <string>📚 Новинки та Популярні Книги 📚</string> <!-- Додано символи книги -->
