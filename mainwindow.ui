@@ -2084,36 +2084,26 @@ line-height: 1.6; /* Збільшуємо міжрядковий інтерва�
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="newCommentTextEdit">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>80</height> <!-- Мінімальна висота поля вводу -->
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>150</height> <!-- Максимальна висота поля вводу -->
-             </size>
-            </property>
+           <widget class="QLineEdit" name="newCommentTextEdit"> <!-- Змінено QTextEdit на QLineEdit -->
+            <!-- Видалено minimumSize та maximumSize для висоти -->
             <property name="styleSheet">
-             <string notr="true">QTextEdit {
+             <string notr="true">QLineEdit { /* Стиль скопійовано з globalSearchLineEdit */
+    min-height: 30px; /* Висота як у пошуку */
     background-color: #f1f3f5; /* Світліший фон */
     border: 1px solid #e9ecef; /* Дуже світла рамка */
-    border-radius: 6px; /* Невелике заокруглення */
-    padding: 8px 12px; /* Відступи */
+    border-radius: 15px; /* Округлі краї (половина висоти) */
+    padding-left: 15px; /* Відступ для тексту */
+    padding-right: 15px;
     color: #212529;
     font-size: 10pt;
 }
-QTextEdit:focus {
+QLineEdit:focus {
     border-color: #ced4da; /* Трохи темніша рамка при фокусі */
     background-color: #ffffff; /* Білий фон при фокусі */
-    /* box-shadow можна прибрати або залишити, якщо потрібно */
 }</string>
             </property>
             <property name="placeholderText">
-             <string>Напишіть ваш відгук тут...</string>
+             <string>Напишіть ваш відгук...</string> <!-- Оновлено placeholder -->
             </property>
            </widget>
           </item>
