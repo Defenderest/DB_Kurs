@@ -580,8 +580,8 @@ void MainWindow::on_editProfileButton_clicked()
 void MainWindow::setupSidebarAnimation()
 {
     m_sidebarAnimation = new QPropertyAnimation(ui->sidebarFrame, "maximumWidth", this);
-    m_sidebarAnimation->setDuration(250); // Тривалість анімації в мс
-    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Плавність анімації
+    m_sidebarAnimation->setDuration(350); // Збільшено тривалість анімації
+    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutCubic); // Змінено криву на більш плавну
 }
 
 // Функція для розгортання/згортання панелі

@@ -502,7 +502,7 @@ QPushButton#navBooksButton,
 QPushButton#navAuthorsButton,
 QPushButton#navOrdersButton,
 QPushButton#navProfileButton {
-    padding: 10px 5px;
+    padding: 10px 10px; /* Збільшено горизонтальний padding */
     border: none;
     border-radius: 4px;
     text-align: left;
@@ -510,7 +510,7 @@ QPushButton#navProfileButton {
     font-weight: 500;
     color: #343a40;
     background-color: transparent;
-    margin: 4px 8px;
+    margin: 4px 0px; /* Забрано горизонтальні margin */
     min-height: 38px;
     /* Text visibility managed in C++ */
 }
@@ -557,13 +557,13 @@ QPushButton#navProfileButton[collapsed="true"] {
           <number>8</number>
          </property>
          <property name="leftMargin">
-          <number>10</number>
+          <number>0</number> <!-- Забрано лівий відступ -->
          </property>
          <property name="topMargin">
           <number>20</number>
          </property>
          <property name="rightMargin">
-          <number>10</number>
+          <number>0</number> <!-- Забрано правий відступ -->
          </property>
          <property name="bottomMargin">
           <number>10</number>
