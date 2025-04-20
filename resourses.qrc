@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>icons/down-arrow.png</file>
         <file>icons/up-arrow.png</file>
         <file>icons/home.png</file>
         <file>icons/book.png</file>
