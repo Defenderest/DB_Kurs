@@ -16,9 +16,12 @@
 #include <QCompleter>   // Додано для автодоповнення
 #include <QStringListModel> // Додано для моделі автодоповнення
 #include <QMouseEvent> // Додано для обробки кліків миші
+#include <QMap>        // Додано для QMap (використовується для кошика)
+#include <QSpinBox>    // Додано для QSpinBox (використовується в кошику)
 
 // Forward declarations
 class DatabaseManager;
+class QTableWidget; // Додано forward declaration
 struct CustomerProfileInfo;
 struct BookDetailsInfo; // Додано forward declaration
 class QLabel;
@@ -26,8 +29,15 @@ class QVBoxLayout;
 class QGridLayout;
 class QPushButton;
 class QFrame;
-class QStackedWidget; // Додано
-class QPropertyAnimation; // Додано
+class QStackedWidget;
+class QPropertyAnimation;
+
+// Структура для елемента кошика
+struct CartItem {
+    BookDisplayInfo book; // Зберігаємо основну інформацію про книгу
+    int quantity;
+};
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -52,9 +62,14 @@ private slots:
     void on_navOrdersButton_clicked();
     void on_navProfileButton_clicked(); // Слот для кнопки профілю в бічній панелі
     void on_editProfileButton_clicked(); // Слот для кнопки редагування профілю
-    void on_saveProfileButton_clicked(); // Слот для кнопки збереження профілю
-    void updateSearchSuggestions(const QString &text); // Слот для оновлення пропозицій пошуку
-    void showBookDetails(int bookId); // Слот для відображення деталей книги
+    void on_saveProfileButton_clicked();
+    void updateSearchSuggestions(const QString &text);
+    void showBookDetails(int bookId);
+    void on_addToCartButtonClicked(int bookId); // Слот для кнопки "Додати в кошик"
+    void on_cartButton_clicked(); // Слот для кнопки кошика в хедері
+    void updateCartItemQuantity(int bookId, int quantity); // Слот для зміни кількості
+    void removeCartItem(int bookId); // Слот для видалення товару
+    void on_placeOrderButton_clicked(); // Слот для кнопки "Оформити замовлення"
 
 private:
     // Допоміжні функції для відображення даних
@@ -79,10 +94,15 @@ private:
     // Заповнення сторінки деталей книги
     void populateBookDetailsPage(const BookDetailsInfo &details);
 
+    // Керування кошиком
+    void populateCartPage(); // Заповнення сторінки кошика
+    void updateCartTotal(); // Оновлення загальної суми кошика
+    void updateCartIcon(); // Оновлення іконки кошика (кількість товарів)
+
     // Налаштування анімації та стану бічної панелі
     void setupSidebarAnimation();
     void toggleSidebar(bool expand);
-    void setupSearchCompleter(); // Налаштування автодоповнення для пошуку
+    void setupSearchCompleter();
 
     // Члени класу
     Ui::MainWindow *ui;
@@ -98,6 +118,9 @@ private:
     // Члени для автодоповнення пошуку
     QCompleter *m_searchCompleter = nullptr;
     QStringListModel *m_searchSuggestionModel = nullptr;
+
+    // Кошик
+    QMap<int, CartItem> m_cartItems; // Ключ - bookId
 
 protected:
     // Перехоплення подій для sidebarFrame
