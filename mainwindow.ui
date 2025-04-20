@@ -110,7 +110,7 @@ QPushButton {
     background-color: #58a6ff; /* Змінено на світліший синій */
     color: white;
     border: 1px solid #58a6ff; /* Змінено на світліший синій */
-    border-radius: 4px;
+    border-radius: 8px; /* Збільшено заокруглення */
     font-weight: 500;
     min-height: 34px;
     font-size: 10pt;
@@ -135,7 +135,7 @@ QPushButton#cartButton, QPushButton#wishlistButton, QPushButton#profileButton {
     background-color: transparent;
     border: 1px solid transparent;
     padding: 6px;
-    border-radius: 4px;
+    border-radius: 8px; /* Збільшено заокруглення */
     min-height: 36px; min-width: 36px;
     max-width: 36px; max-height: 36px;
     color: #495057;
@@ -158,7 +158,7 @@ QPushButton#filterButton, QPushButton#sortButton, QPushButton#viewModeButton {
     min-width: 36px; max-width: 36px;
     min-height: 34px; max-height: 34px;
     padding: 6px;
-    border-radius: 4px;
+    border-radius: 8px; /* Збільшено заокруглення */
     font-size: 12pt;
 }
 QPushButton#filterButton:hover, QPushButton#sortButton:hover, QPushButton#viewModeButton:hover {
@@ -267,7 +267,7 @@ QWidget#categoriesWidget QPushButton {
     text-align: center;
     padding: 12px;
     min-height: 100px;
-    border-radius: 4px;
+    border-radius: 8px; /* Збільшено заокруглення */
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 QWidget#categoriesWidget QPushButton:hover {
@@ -493,7 +493,7 @@ QPushButton#navOrdersButton,
 QPushButton#navProfileButton {
     padding: 10px 10px; /* Збільшено горизонтальний padding */
     border: none;
-    border-radius: 4px;
+    border-radius: 8px; /* Збільшено заокруглення */
     text-align: left;
     font-size: 11pt;
     font-weight: 500;
@@ -533,7 +533,7 @@ QPushButton#navProfileButton[collapsed="true"] {
     padding: 10px 0; /* Вертикальний відступ, горизонтальний 0 */
     /* border-left: 3px solid transparent; - Прибрано рамку */
     border: none; /* Прибираємо всі рамки */
-    border-radius: 4px; /* Додаємо невелике заокруглення до самої кнопки */
+    border-radius: 8px; /* Збільшено заокруглення */
     margin-left: 4px; /* Додаємо невеликі відступи, щоб кнопка не прилипала до країв */
     margin-right: 4px;
     min-width: 42px; /* Ширина = collapsedWidth - margin-left - margin-right */
@@ -1983,7 +1983,7 @@ color: white;
 font-size: 12pt; /* Трохи більший шрифт */
 font-weight: 500;
 padding: 12px 20px; /* Збільшено padding */
-border-radius: 6px; /* Трохи більше заокруглення */
+border-radius: 8px; /* Збільшено заокруглення */
 </string>
                 </property>
                 <property name="text">

@@ -241,7 +241,7 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
 
     // 5. Кнопка "Додати в кошик" (QPushButton - приклад)
     QPushButton *addToCartButton = new QPushButton(tr("🛒 Додати"));
-    addToCartButton->setStyleSheet("QPushButton { background-color: #28a745; color: white; border: none; border-radius: 4px; padding: 8px; font-size: 9pt; } QPushButton:hover { background-color: #218838; }");
+    addToCartButton->setStyleSheet("QPushButton { background-color: #28a745; color: white; border: none; border-radius: 8px; padding: 8px; font-size: 9pt; } QPushButton:hover { background-color: #218838; }"); // Збільшено border-radius
     addToCartButton->setToolTip(tr("Додати '%1' до кошика").arg(bookInfo.title));
     // Тут можна підключити сигнал кнопки до слота
     // connect(addToCartButton, &QPushButton::clicked, this, [this, bookInfo](){ /* логіка додавання в кошик */ });
@@ -443,7 +443,7 @@ QWidget* MainWindow::createAuthorCardWidget(const AuthorDisplayInfo &authorInfo)
 
     // 4. Кнопка "Переглянути книги" (приклад)
     QPushButton *viewBooksButton = new QPushButton(tr("Переглянути книги"));
-    viewBooksButton->setStyleSheet("QPushButton { background-color: #0078d4; color: white; border: none; border-radius: 4px; padding: 6px; font-size: 9pt; } QPushButton:hover { background-color: #106ebe; }");
+    viewBooksButton->setStyleSheet("QPushButton { background-color: #0078d4; color: white; border: none; border-radius: 8px; padding: 6px; font-size: 9pt; } QPushButton:hover { background-color: #106ebe; }"); // Збільшено border-radius
     viewBooksButton->setToolTip(tr("Переглянути книги автора %1 %2").arg(authorInfo.firstName, authorInfo.lastName));
     // connect(viewBooksButton, &QPushButton::clicked, this, [this, authorInfo](){ /* логіка перегляду книг автора */ });
     cardLayout->addWidget(viewBooksButton);
