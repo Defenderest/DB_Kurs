@@ -682,7 +682,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
       <item>
        <widget class="QStackedWidget" name="contentStackedWidget">
         <property name="currentIndex">
-         <number>6</number> <!-- Встановіть правильний індекс для cartPage -->
+         <number>0</number> <!-- Змінено на індекс Головної сторінки (discoverPage) -->
         </property>
         <widget class="QWidget" name="discoverPage">
          <layout class="QVBoxLayout" name="discoverPageLayout">
