@@ -22,6 +22,7 @@ struct BookDisplayInfo {
     QString coverImagePath;
     int stockQuantity;
     QString genre; // Додано поле жанру
+    bool found = false; // Прапорець, чи знайдено книгу
 };
 
 // Структура для передачі даних автора в UI
@@ -181,6 +182,12 @@ public:
 
     // Новий метод для отримання коментарів до книги
     QList<CommentDisplayInfo> getBookComments(int bookId) const;
+
+    // Новий метод для отримання BookDisplayInfo за ID (для кошика)
+    BookDisplayInfo getBookDisplayInfoById(int bookId) const;
+
+    // Новий метод для створення замовлення
+    bool createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId);
 
 
 private:

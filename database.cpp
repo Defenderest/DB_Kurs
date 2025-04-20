@@ -1047,6 +1047,188 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для створення замовлення
+bool DatabaseManager::createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId)
+{
+    newOrderId = -1;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо створити замовлення: немає з'єднання з БД.";
+        return false;
+    }
+    if (customerId <= 0 || items.isEmpty() || shippingAddress.isEmpty()) {
+        qWarning() << "Неможливо створити замовлення: невірний ID користувача, порожній кошик або не вказано адресу.";
+        return false;
+    }
+
+    // Починаємо транзакцію
+    if (!m_db.transaction()) {
+        qCritical() << "Не вдалося почати транзакцію для створення замовлення:" << m_db.lastError().text();
+        return false;
+    }
+    qInfo() << "Транзакція для створення замовлення розпочата...";
+
+    QSqlQuery query(m_db);
+    bool success = true;
+    double calculatedTotalAmount = 0.0;
+    QVariant lastId;
+
+    // 1. Створюємо запис в таблиці "order" (поки що з total_amount = 0)
+    const QString insertOrderSQL = R"(
+        INSERT INTO "order" (customer_id, order_date, total_amount, shipping_address, payment_method)
+        VALUES (:customer_id, CURRENT_TIMESTAMP, 0.0, :shipping_address, :payment_method)
+        RETURNING order_id;
+    )";
+    if (!query.prepare(insertOrderSQL)) {
+        qCritical() << "Помилка підготовки запиту для вставки замовлення:" << query.lastError().text();
+        success = false;
+    } else {
+        query.bindValue(":customer_id", customerId);
+        query.bindValue(":shipping_address", shippingAddress);
+        query.bindValue(":payment_method", paymentMethod.isEmpty() ? QVariant(QVariant::String) : paymentMethod);
+
+        if (executeInsertQuery(query, "Insert Order Header", lastId)) {
+            newOrderId = lastId.toInt();
+            qInfo() << "Створено заголовок замовлення з ID:" << newOrderId;
+        } else {
+            success = false;
+        }
+    }
+
+    // 2. Додаємо позиції в order_item та розраховуємо суму
+    if (success) {
+        const QString insertItemSQL = R"(
+            INSERT INTO order_item (order_id, book_id, quantity, price_per_unit)
+            VALUES (:order_id, :book_id, :quantity, :price_per_unit);
+        )";
+        const QString getBookPriceSQL = "SELECT price, stock_quantity FROM book WHERE book_id = :book_id FOR UPDATE;"; // FOR UPDATE для блокування рядка
+
+        QSqlQuery itemQuery(m_db); // Окремий запит для позицій
+        QSqlQuery priceQuery(m_db); // Окремий запит для отримання ціни та кількості
+
+        if (!itemQuery.prepare(insertItemSQL) || !priceQuery.prepare(getBookPriceSQL)) {
+            qCritical() << "Помилка підготовки запиту для позицій замовлення або ціни:" << itemQuery.lastError().text() << priceQuery.lastError().text();
+            success = false;
+        } else {
+            for (auto it = items.constBegin(); it != items.constEnd() && success; ++it) {
+                int bookId = it.key();
+                int quantity = it.value();
+
+                if (quantity <= 0) continue; // Пропускаємо невірну кількість
+
+                // Отримуємо актуальну ціну та кількість на складі
+                priceQuery.bindValue(":book_id", bookId);
+                if (!priceQuery.exec()) {
+                    qCritical() << "Помилка отримання ціни для книги ID" << bookId << ":" << priceQuery.lastError().text();
+                    success = false;
+                    break;
+                }
+
+                if (priceQuery.next()) {
+                    double currentPrice = priceQuery.value(0).toDouble();
+                    int currentStock = priceQuery.value(1).toInt();
+
+                    // Перевірка наявності
+                    if (quantity > currentStock) {
+                         qWarning() << "Недостатньо товару на складі для книги ID" << bookId << "(замовлено:" << quantity << ", на складі:" << currentStock << "). Замовлення скасовано.";
+                         // Можна повернути спеціальну помилку або просто false
+                         success = false;
+                         break;
+                    }
+
+                    // Додаємо позицію
+                    itemQuery.bindValue(":order_id", newOrderId);
+                    itemQuery.bindValue(":book_id", bookId);
+                    itemQuery.bindValue(":quantity", quantity);
+                    itemQuery.bindValue(":price_per_unit", currentPrice);
+
+                    if (!itemQuery.exec()) {
+                        qCritical() << "Помилка вставки позиції замовлення для книги ID" << bookId << ":" << itemQuery.lastError().text();
+                        success = false;
+                        break;
+                    }
+                    calculatedTotalAmount += currentPrice * quantity;
+                    qInfo() << "Додано позицію: Книга ID" << bookId << ", Кількість:" << quantity << ", Ціна:" << currentPrice;
+
+                    // TODO: Зменшити stock_quantity в таблиці book (опціонально, залежить від бізнес-логіки)
+                    // QSqlQuery updateStockQuery(m_db);
+                    // updateStockQuery.prepare("UPDATE book SET stock_quantity = stock_quantity - :quantity WHERE book_id = :book_id");
+                    // updateStockQuery.bindValue(":quantity", quantity);
+                    // updateStockQuery.bindValue(":book_id", bookId);
+                    // if (!updateStockQuery.exec()) { ... обробка помилки ... }
+
+                } else {
+                    qWarning() << "Книгу з ID" << bookId << "не знайдено при створенні замовлення. Позицію пропущено.";
+                    // Можливо, варто скасувати все замовлення?
+                    // success = false;
+                    // break;
+                }
+            }
+        }
+    }
+
+    // 3. Оновлюємо total_amount в замовленні
+    if (success) {
+        const QString updateTotalSQL = R"(UPDATE "order" SET total_amount = :total WHERE order_id = :order_id;)";
+        if (!query.prepare(updateTotalSQL)) {
+            qCritical() << "Помилка підготовки запиту для оновлення суми замовлення:" << query.lastError().text();
+            success = false;
+        } else {
+            query.bindValue(":total", calculatedTotalAmount);
+            query.bindValue(":order_id", newOrderId);
+            if (!query.exec()) {
+                qCritical() << "Помилка оновлення суми замовлення ID" << newOrderId << ":" << query.lastError().text();
+                success = false;
+            } else {
+                qInfo() << "Оновлено загальну суму замовлення ID" << newOrderId << "до" << calculatedTotalAmount;
+            }
+        }
+    }
+
+    // 4. Додаємо початковий статус замовлення
+    if (success) {
+        const QString insertStatusSQL = R"(
+            INSERT INTO order_status (order_id, status, status_date)
+            VALUES (:order_id, :status, CURRENT_TIMESTAMP);
+        )";
+        if (!query.prepare(insertStatusSQL)) {
+            qCritical() << "Помилка підготовки запиту для вставки статусу замовлення:" << query.lastError().text();
+            success = false;
+        } else {
+            query.bindValue(":order_id", newOrderId);
+            query.bindValue(":status", tr("Нове")); // Початковий статус
+            if (!query.exec()) {
+                qCritical() << "Помилка вставки статусу для замовлення ID" << newOrderId << ":" << query.lastError().text();
+                success = false;
+            } else {
+                qInfo() << "Додано початковий статус 'Нове' для замовлення ID" << newOrderId;
+            }
+        }
+    }
+
+
+    // Завершуємо транзакцію
+    if (success) {
+        if (m_db.commit()) {
+            qInfo() << "Транзакція створення замовлення ID" << newOrderId << "успішно завершена.";
+            return true;
+        } else {
+            qCritical() << "Помилка при коміті транзакції створення замовлення:" << m_db.lastError().text();
+            m_db.rollback(); // Спробувати відкат
+            return false;
+        }
+    } else {
+        qWarning() << "Виникла помилка під час створення замовлення. Відкат транзакції...";
+        if (!m_db.rollback()) {
+            qCritical() << "Помилка при відкаті транзакції створення замовлення:" << m_db.lastError().text();
+        } else {
+            qInfo() << "Транзакція створення замовлення успішно скасована.";
+        }
+        newOrderId = -1; // Скидаємо ID, оскільки замовлення не створено
+        return false;
+    }
+}
+
+
 // Реалізація нового методу для отримання детальної інформації про книгу
 BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
 {
@@ -1166,6 +1348,66 @@ QList<CommentDisplayInfo> DatabaseManager::getBookComments(int bookId) const
     qInfo() << "Processed" << count << "comments for book ID" << bookId;
 
     return comments;
+}
+
+
+// Реалізація нового методу для отримання BookDisplayInfo за ID
+BookDisplayInfo DatabaseManager::getBookDisplayInfoById(int bookId) const
+{
+    BookDisplayInfo bookInfo; // found = false за замовчуванням
+    if (!m_isConnected || !m_db.isOpen() || bookId <= 0) {
+        qWarning() << "Неможливо отримати BookDisplayInfo: немає з'єднання або невірний bookId.";
+        return bookInfo;
+    }
+
+    // Запит схожий на getAllBooksForDisplay, але з WHERE b.book_id = :bookId
+    const QString sql = R"(
+        SELECT
+            b.book_id,
+            b.title,
+            b.price,
+            b.cover_image_path,
+            b.stock_quantity,
+            b.genre,
+            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
+        FROM book b
+        LEFT JOIN book_author ba ON b.book_id = ba.book_id
+        LEFT JOIN author a ON ba.author_id = a.author_id
+        WHERE b.book_id = :bookId
+        GROUP BY b.book_id -- Групуємо за ID книги, інші поля агрегуються або є унікальними
+        LIMIT 1;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":bookId", bookId);
+
+    qInfo() << "Executing SQL to get BookDisplayInfo for book ID:" << bookId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні BookDisplayInfo для book ID '" << bookId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return bookInfo;
+    }
+
+    if (query.next()) {
+        bookInfo.bookId = query.value("book_id").toInt();
+        bookInfo.title = query.value("title").toString();
+        bookInfo.price = query.value("price").toDouble();
+        bookInfo.coverImagePath = query.value("cover_image_path").toString();
+        bookInfo.stockQuantity = query.value("stock_quantity").toInt();
+        bookInfo.authors = query.value("authors").toString();
+        bookInfo.genre = query.value("genre").toString();
+        if (query.value("authors").isNull()) {
+             bookInfo.authors = "";
+        }
+        bookInfo.found = true; // Позначаємо, що книгу знайдено
+        qInfo() << "BookDisplayInfo found for book ID:" << bookId;
+    } else {
+        qInfo() << "BookDisplayInfo not found for book ID:" << bookId;
+    }
+
+    return bookInfo;
 }
 
 
