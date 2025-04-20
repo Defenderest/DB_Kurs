@@ -7,7 +7,6 @@
         <file>icons/users.png</file>
         <file>icons/shopping-bag.png</file>
         <file>icons/user.png</file>
-        <file>../icons/home.png</file> <!-- Цей вже був png -->
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>
