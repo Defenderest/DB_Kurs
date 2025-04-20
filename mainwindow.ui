@@ -2276,7 +2276,7 @@ margin-bottom: 8px;</string>
   <customwidget>
    <class>StarRatingWidget</class>
    <extends>QWidget</extends>
-   <header>starratingwidget.h</header>
+   <header>starratingwidget.h</header> <!-- Ensure this is just the filename -->
    <container>1</container>
   </customwidget>
  </customwidgets>

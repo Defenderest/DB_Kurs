@@ -13,6 +13,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Explicitly tell AUTOUIC where to find headers for custom widgets
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR})
+
 # --- Поиск Qt ---
 # Ищем Qt6 или Qt5 и запрашиваем ВСЕ необходимые компоненты СРАЗУ.
 # Это установит QT_VERSION_MAJOR и другие переменные.
