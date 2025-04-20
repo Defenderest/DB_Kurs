@@ -2257,7 +2257,118 @@ margin-bottom: 8px;</string>
       </item> <!-- Закриваємо item для ScrollArea -->
      </layout> <!-- Закриваємо outerBookDetailsLayout -->
     </widget> <!-- Закриваємо bookDetailsPage -->
-    <widget class="QWidget" name="cartPage"> <!-- Додаємо нову сторінку -->
+    <widget class="QWidget" name="cartPage"> <!-- Замінюємо вміст існуючої сторінки -->
+     <property name="styleSheet">
+      <string notr="true">/* Стилі для елементів кошика */
+QWidget#cartItemFrame {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px; /* Відступ між картками */
+}
+
+QWidget#cartItemFrame:hover {
+    border-color: #adb5bd;
+}
+
+QLabel#cartItemCoverLabel {
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #6c757d;
+    min-width: 60px;
+    max-width: 60px;
+    min-height: 85px;
+    max-height: 85px;
+    qproperty-alignment: AlignCenter; /* Центруємо текст "Фото" */
+}
+
+QLabel#cartItemTitleLabel {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #212529;
+}
+
+QLabel#cartItemAuthorLabel {
+    font-size: 10pt;
+    color: #6c757d;
+}
+
+QLabel#cartItemPriceLabel, QLabel#cartItemSubtotalLabel {
+    font-size: 11pt;
+    font-weight: 500;
+    color: #343a40;
+}
+
+QSpinBox#cartQuantitySpinBox {
+    min-width: 60px;
+    max-width: 70px;
+    /* Використовує загальний стиль QLineEdit/QComboBox */
+}
+
+QPushButton#cartRemoveButton {
+    background-color: transparent;
+    border: none;
+    color: #dc3545; /* Червоний колір */
+    font-size: 16pt; /* Більший розмір іконки/тексту */
+    font-weight: bold;
+    min-width: 30px;
+    max-width: 30px;
+    min-height: 30px;
+    max-height: 30px;
+    padding: 0; /* Забираємо внутрішні відступи */
+    qproperty-text: "🗑️"; /* Іконка кошика */
+}
+QPushButton#cartRemoveButton:hover {
+    color: #a02030; /* Темніший червоний при наведенні */
+    background-color: #f8d7da; /* Дуже світлий червоний фон */
+    border-radius: 4px;
+}
+
+QWidget#cartTotalsWidget {
+    background-color: #f8f9fa; /* Світлий фон для блоку суми */
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+QLabel#cartTotalTextLabel {
+    font-size: 14pt;
+    font-weight: 600;
+    color: #212529;
+}
+
+QPushButton#placeOrderButton {
+    /* Використовує загальний стиль QPushButton, але можна зробити його більш виразним */
+    background-color: #198754; /* Зелений */
+    border-color: #198754;
+    padding: 12px 25px; /* Збільшено padding */
+    font-size: 12pt;
+    font-weight: 500;
+    min-height: 40px; /* Збільшено висоту */
+}
+QPushButton#placeOrderButton:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+QPushButton#placeOrderButton:pressed {
+    background-color: #146c43;
+    border-color: #13653f;
+}
+
+QLabel#emptyCartLabel {
+    font-size: 14pt;
+    color: #6c757d;
+    padding: 40px;
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: 8px;
+    qproperty-alignment: AlignCenter; /* Центруємо текст */
+}
+</string>
+     </property>
      <layout class="QVBoxLayout" name="cartPageLayout">
       <property name="spacing">
        <number>15</number>
@@ -2285,116 +2396,103 @@ margin-bottom: 8px;</string>
        </widget>
       </item>
       <item>
-       <widget class="QTableWidget" name="cartTableWidget">
-        <property name="editTriggers">
-         <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
-        </property>
-        <property name="showGrid">
+       <!-- Замінюємо QTableWidget на QScrollArea -->
+       <widget class="QScrollArea" name="cartScrollArea">
+        <property name="widgetResizable">
          <bool>true</bool>
         </property>
-        <property name="gridStyle">
-         <enum>Qt::PenStyle::SolidLine</enum>
+        <property name="styleSheet">
+         <string notr="true">QScrollArea { border: none; background-color: transparent; } /* Прибираємо рамку */</string>
         </property>
-        <property name="sortingEnabled">
-         <bool>false</bool>
-        </property>
-        <property name="alternatingRowColors">
-         <bool>true</bool>
-        </property>
-        <attribute name="horizontalHeaderVisible">
-         <bool>true</bool>
-        </attribute>
-        <attribute name="horizontalHeaderCascadingSectionResizes">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="horizontalHeaderStretchLastSection">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="verticalHeaderVisible">
-         <bool>false</bool>
-        </attribute>
-        <column>
-         <property name="text">
-          <string>Назва книги</string>
+        <widget class="QWidget" name="cartItemsContainerWidget">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <!-- Розміри будуть встановлені автоматично -->
+           <width>100</width>
+           <height>100</height>
+          </rect>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Ціна</string>
+         <property name="styleSheet">
+          <string notr="true">QWidget#cartItemsContainerWidget { background-color: transparent; } /* Прозорий фон контейнера */</string>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Кількість</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Сума</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Видалити</string>
-         </property>
-        </column>
+         <layout class="QVBoxLayout" name="cartItemsLayout">
+          <property name="spacing">
+           <number>0</number> <!-- Відступи керуються margin-bottom у cartItemFrame -->
+          </property>
+          <property name="leftMargin">
+           <number>5</number> <!-- Невеликі відступи з боків -->
+          </property>
+          <property name="topMargin">
+           <number>5</number>
+          </property>
+          <property name="rightMargin">
+           <number>5</number>
+          </property>
+          <property name="bottomMargin">
+           <number>5</number>
+          </property>
+          <!-- Сюди будуть додаватися cartItemFrame -->
+          <!-- Спейсер тут більше не потрібен, він додається динамічно в коді -->
+         </layout>
+        </widget>
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="cartFooterLayout">
-        <item>
-         <spacer name="cartFooterSpacer">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="cartTotalLabel">
-          <property name="styleSheet">
-           <string notr="true">font-size: 14pt; font-weight: bold; color: #343a40;</string>
-          </property>
-          <property name="text">
-           <string>Загальна сума: 0.00 грн</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="placeOrderButton">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">/* Можна додати акцентний стиль */
-background-color: #198754; /* Зелений */
-border-color: #198754;
-padding: 10px 20px;
-font-size: 12pt;</string>
-          </property>
-          <property name="text">
-           <string>Оформити замовлення</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <!-- Новий блок для підсумків та кнопки замовлення -->
+       <widget class="QWidget" name="cartTotalsWidget" native="true">
+        <layout class="QHBoxLayout" name="cartFooterLayout">
+         <property name="spacing">
+          <number>20</number>
+         </property>
+         <item>
+          <spacer name="cartFooterSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="cartTotalLabel">
+           <property name="styleSheet">
+            <string notr="true">/* Використовує стиль cartTotalTextLabel */</string>
+           </property>
+           <property name="text">
+            <string>Загальна сума: 0.00 грн</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+           </property>
+           <property name="objectName">
+            <string>cartTotalTextLabel</string> <!-- Додаємо objectName для стилізації -->
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="placeOrderButton">
+           <property name="minimumSize">
+            <size>
+             <width>220</width> <!-- Трохи ширша кнопка -->
+             <height>0</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* Використовує стиль placeOrderButton */</string>
+           </property>
+           <property name="text">
+            <string>Оформити замовлення</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget> <!-- Закриваємо cartPage -->
