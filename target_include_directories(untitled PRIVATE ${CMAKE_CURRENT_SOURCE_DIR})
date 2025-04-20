@@ -1,3 +1,6 @@
 # --- (Опционально, но рекомендуется) Добавление путей для заголовочных файлов ---
 # Если структура проекта сложная, это может помочь IDE и компилятору
 # target_include_directories(untitled PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}) # Keep this commented out for now, let's test CMAKE_AUTOUIC_SEARCH_PATHS first
+# --- (Опционально, но рекомендуется) Добавление путей для заголовочных файлов ---
+# Если структура проекта сложная, это может помочь IDE и компилятору
+target_include_directories(untitled PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}) # Uncommented
