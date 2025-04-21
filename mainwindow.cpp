@@ -1083,10 +1083,10 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
     QPushButton *detailsButton = new QPushButton(tr("Деталі"));
     detailsButton->setObjectName("viewOrderDetailsButton"); // Ім'я для стилів
     detailsButton->setCursor(Qt::PointingHandCursor);
-    // TODO: Підключити сигнал кнопки до слота для показу деталей замовлення
-    // connect(detailsButton, &QPushButton::clicked, this, [this, orderId = orderInfo.orderId]() {
-    //     showOrderDetails(orderId); // Потрібно реалізувати showOrderDetails
-    // });
+    // Підключаємо сигнал кнопки до тимчасового слота для показу деталей замовлення
+    connect(detailsButton, &QPushButton::clicked, this, [this, orderId = orderInfo.orderId]() {
+        showOrderDetailsPlaceholder(orderId); // Використовуємо тимчасовий слот
+    });
     detailsButton->setToolTip(tr("Переглянути деталі замовлення №%1").arg(orderInfo.orderId));
 
     statusLayout->addWidget(statusLabel, 0, Qt::AlignRight); // Додаємо статус
