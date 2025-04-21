@@ -7,9 +7,9 @@
 #include <QVector>
 #include <QDate>
 #include <QDateTime>
+#include <QSqlRecord> // Needed for query.record()
 // #include <QRandomGenerator> // Більше не потрібен тут
 // #include <QSet>             // Більше не потрібен тут
-// #include <QSqlRecord>       // Більше не потрібен тут
 #include <QMap> // Потрібен для createOrder
 
 // Допоміжні функції randomDate, randomDateTime та структури PublisherData, AuthorData, BookData
