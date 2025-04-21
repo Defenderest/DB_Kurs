@@ -1047,6 +1047,107 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для отримання деталей одного замовлення за ID
+OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
+{
+    OrderDisplayInfo orderInfo; // Повернемо порожню, якщо не знайдено
+    orderInfo.orderId = -1; // Позначка, що не знайдено
+
+    if (!m_isConnected || !m_db.isOpen() || orderId <= 0) {
+        qWarning() << "Неможливо отримати деталі замовлення: немає з'єднання або невірний orderId.";
+        return orderInfo;
+    }
+
+    // 1. Отримуємо основну інформацію про замовлення
+    const QString orderSql = R"(
+        SELECT order_id, order_date, total_amount, shipping_address, payment_method
+        FROM "order"
+        WHERE order_id = :orderId;
+    )";
+
+    QSqlQuery orderQuery(m_db);
+    orderQuery.prepare(orderSql);
+    orderQuery.bindValue(":orderId", orderId);
+
+    qInfo() << "Executing SQL to get details for order ID:" << orderId;
+    if (!orderQuery.exec()) {
+        qCritical() << "Помилка при отриманні деталей замовлення для order ID '" << orderId << "':";
+        qCritical() << orderQuery.lastError().text();
+        qCritical() << "SQL запит:" << orderQuery.lastQuery();
+        return orderInfo;
+    }
+
+    if (orderQuery.next()) {
+        orderInfo.orderId = orderQuery.value("order_id").toInt();
+        orderInfo.orderDate = orderQuery.value("order_date").toDateTime();
+        orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
+        orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
+        orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
+        qInfo() << "Order header found for ID:" << orderId;
+    } else {
+        qWarning() << "Order not found for ID:" << orderId;
+        return orderInfo; // Повертаємо порожню структуру, якщо замовлення не знайдено
+    }
+
+    // 2. Отримуємо позиції для цього замовлення
+    QSqlQuery itemQuery(m_db);
+    const QString itemsSql = R"(
+        SELECT oi.quantity, oi.price_per_unit, b.title
+        FROM order_item oi
+        JOIN book b ON oi.book_id = b.book_id
+        WHERE oi.order_id = :orderId;
+    )";
+    if (!itemQuery.prepare(itemsSql)) {
+         qCritical() << "Помилка підготовки запиту для order_item (details):" << itemQuery.lastError().text();
+         return orderInfo; // Повертаємо те, що є
+    }
+    itemQuery.bindValue(":orderId", orderId);
+    if (!itemQuery.exec()) {
+        qCritical() << "Помилка при отриманні позицій для order ID '" << orderId << "':";
+        qCritical() << itemQuery.lastError().text();
+        // Продовжуємо, щоб отримати статуси
+    } else {
+        while (itemQuery.next()) {
+            OrderItemDisplayInfo itemInfo;
+            itemInfo.quantity = itemQuery.value("quantity").toInt();
+            itemInfo.pricePerUnit = itemQuery.value("price_per_unit").toDouble();
+            itemInfo.bookTitle = itemQuery.value("title").toString();
+            orderInfo.items.append(itemInfo);
+        }
+        qInfo() << "Fetched" << orderInfo.items.size() << "items for order ID:" << orderId;
+    }
+
+    // 3. Отримуємо статуси для цього замовлення
+    QSqlQuery statusQuery(m_db);
+    const QString statusesSql = R"(
+        SELECT status, status_date, tracking_number
+        FROM order_status
+        WHERE order_id = :orderId
+        ORDER BY status_date ASC;
+    )";
+     if (!statusQuery.prepare(statusesSql)) {
+         qCritical() << "Помилка підготовки запиту для order_status (details):" << statusQuery.lastError().text();
+         return orderInfo; // Повертаємо те, що є
+     }
+    statusQuery.bindValue(":orderId", orderId);
+    if (!statusQuery.exec()) {
+        qCritical() << "Помилка при отриманні статусів для order ID '" << orderId << "':";
+        qCritical() << statusQuery.lastError().text();
+    } else {
+        while (statusQuery.next()) {
+            OrderStatusDisplayInfo statusInfo;
+            statusInfo.status = statusQuery.value("status").toString();
+            statusInfo.statusDate = statusQuery.value("status_date").toDateTime();
+            statusInfo.trackingNumber = statusQuery.value("tracking_number").toString();
+            orderInfo.statuses.append(statusInfo);
+        }
+        qInfo() << "Fetched" << orderInfo.statuses.size() << "statuses for order ID:" << orderId;
+    }
+
+    return orderInfo;
+}
+
+
 // Реалізація нового методу для перевірки, чи користувач вже коментував книгу
 bool DatabaseManager::hasUserCommentedOnBook(int bookId, int customerId) const
 {
