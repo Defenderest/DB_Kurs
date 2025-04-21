@@ -1933,5 +1933,15 @@ void MainWindow::on_sendCommentButton_clicked()
     }
 }
 
+// Тимчасовий слот для кнопки "Деталі" замовлення
+void MainWindow::showOrderDetailsPlaceholder(int orderId)
+{
+    qInfo() << "Details button clicked for order ID:" << orderId;
+    QMessageBox::information(this,
+                             tr("Деталі замовлення"),
+                             tr("Тут будуть відображені деталі для замовлення №%1.").arg(orderId));
+    // TODO: Реалізувати показ повноцінного діалогу з деталями замовлення
+}
+
 
 // --- Кінець реалізації слотів та функцій ---
