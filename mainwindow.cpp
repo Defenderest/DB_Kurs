@@ -1114,8 +1114,19 @@ void MainWindow::displayOrders(const QList<OrderDisplayInfo> &orders)
     bool isEmpty = orders.isEmpty();
 
     // Показуємо/ховаємо мітку про порожній список та область прокрутки
-    ui->emptyOrdersLabel->setVisible(isEmpty);
-    ui->ordersScrollArea->setVisible(!isEmpty); // Ховаємо ScrollArea, якщо список порожній
+    // Додаємо додаткову перевірку перед використанням, щоб уникнути виключення
+    if (ui->emptyOrdersLabel) {
+        ui->emptyOrdersLabel->setVisible(isEmpty);
+    } else {
+        qWarning() << "displayOrders: emptyOrdersLabel is unexpectedly null right before setVisible()!";
+    }
+    // Аналогічна перевірка для ordersScrollArea (про всяк випадок)
+    if (ui->ordersScrollArea) {
+        ui->ordersScrollArea->setVisible(!isEmpty); // Ховаємо ScrollArea, якщо список порожній
+    } else {
+         qWarning() << "displayOrders: ordersScrollArea is unexpectedly null right before setVisible()!";
+    }
+
 
     if (!isEmpty) {
         // Додаємо картки для кожного замовлення
