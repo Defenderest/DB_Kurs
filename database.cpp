@@ -241,6 +241,17 @@ bool DatabaseManager::executeInsertQuery(QSqlQuery &query, const QString &descri
 
 // Метод populateTestData тепер знаходиться в testdata.cpp
 
+// Реалізація публічних методів доступу
+bool DatabaseManager::isConnected() const
+{
+    return m_isConnected;
+}
+
+QSqlDatabase& DatabaseManager::database()
+{
+    return m_db;
+}
+
 
 QSqlError DatabaseManager::lastError() const
 {
