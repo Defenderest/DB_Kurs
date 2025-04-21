@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "logindialog.h" // Додано для діалогу входу
 #include "database.h"    // Додано для DatabaseManager
+#include "testdata.h"    // Додано для populateTestData
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +44,8 @@ int main(int argc, char *argv[])
     //     // Можливо, варто вийти, якщо схема критична
     //     // return 1;
     // } else {
-    //     if (!dbManager.populateTestData(30)) { // Заповнюємо даними
+    //     // Викликаємо функцію populateTestData з testdata.cpp, передаючи вказівник на dbManager
+    //     if (!populateTestData(&dbManager, 30)) { // Заповнюємо даними
     //          QMessageBox::warning(nullptr, QObject::tr("Помилка заповнення даних"),
     //                               QObject::tr("Не вдалося заповнити таблиці тестовими даними.\nДивіться логи для деталей."));
     //     }
