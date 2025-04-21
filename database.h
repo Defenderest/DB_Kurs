@@ -98,10 +98,9 @@ public:
     // Публічні методи доступу до стану та об'єкту БД
     bool isConnected() const;
     QSqlDatabase& database(); // Повертає посилання для можливості операцій (транзакції, запити)
-
-private:
     QSqlDatabase m_db;
     bool m_isConnected = false;
+
 
     // Вспомогательная функция для выполнения запроса с проверкой ошибки
     bool executeQuery(QSqlQuery &query, const QString &sql, const QString &description);
