@@ -1114,12 +1114,9 @@ void MainWindow::displayOrders(const QList<OrderDisplayInfo> &orders)
     bool isEmpty = orders.isEmpty();
 
     // Показуємо/ховаємо мітку про порожній список та область прокрутки
-    // Додаємо додаткову перевірку та діагностику перед використанням, щоб уникнути виключення
-    qDebug() << "displayOrders: Checking ui->emptyOrdersLabel. Pointer value:" << ui->emptyOrdersLabel << "isEmpty:" << isEmpty; // Діагностика перед перевіркою
+    // Додаємо додаткову перевірку перед використанням, щоб уникнути виключення
     if (ui->emptyOrdersLabel) {
-        qDebug() << "displayOrders: Inside if block. Pointer value before setVisible:" << ui->emptyOrdersLabel; // Діагностика всередині if
-        ui->emptyOrdersLabel->setVisible(isEmpty); // Проблемний рядок
-        qDebug() << "displayOrders: setVisible(isEmpty) called successfully."; // Діагностика після виклику
+        ui->emptyOrdersLabel->setVisible(isEmpty);
     } else {
         qWarning() << "displayOrders: emptyOrdersLabel was null during the 'if' check.";
     }
