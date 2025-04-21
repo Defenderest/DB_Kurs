@@ -1615,6 +1615,33 @@ border-bottom: 1px solid #eeeeee;</string>
             </layout>
            </widget>
           </item>
+          <!-- Додаємо мітку для порожнього списку сюди, поза ScrollArea -->
+          <item>
+           <widget class="QLabel" name="emptyOrdersLabel">
+            <property name="styleSheet">
+             <string notr="true">/* Стиль визначено вище */</string>
+            </property>
+            <property name="text">
+             <string>У вас ще немає замовлень.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="visible">
+             <bool>false</bool> <!-- Приховано за замовчуванням -->
+            </property>
+            <!-- Додаємо SizePolicy, щоб мітка могла розширюватися, коли видима -->
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>1</verstretch> <!-- Дозволяємо розтягуватися вертикально -->
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QScrollArea" name="ordersScrollArea">
             <property name="widgetResizable">
@@ -1644,26 +1671,7 @@ border-bottom: 1px solid #eeeeee;</string>
                <number>5</number>
               </property>
               <!-- Сюди будуть додаватися orderCardWidget -->
-              <!-- Додаємо мітку для порожнього списку (буде показана/прихована в коді) -->
-              <item>
-               <widget class="QLabel" name="emptyOrdersLabel">
-                <property name="styleSheet">
-                 <string notr="true">/* Стиль визначено вище */</string>
-                </property>
-                <property name="text">
-                 <string>У вас ще немає замовлень.</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignmentFlag::AlignCenter</set>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-                <property name="visible">
-                 <bool>false</bool> <!-- Приховано за замовчуванням -->
-                </property>
-               </widget>
-              </item>
+              <!-- Мітку emptyOrdersLabel перенесено в ordersPageLayout -->
               <!-- Спейсер тут більше не потрібен, він додається динамічно в коді -->
              </layout>
             </widget>
