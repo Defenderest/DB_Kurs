@@ -192,6 +192,9 @@ public:
     // Новий метод для додавання коментаря
     bool addComment(int bookId, int customerId, const QString &commentText, int rating);
 
+    // Новий метод для перевірки, чи користувач вже коментував книгу
+    bool hasUserCommentedOnBook(int bookId, int customerId) const;
+
 
 private:
     QSqlDatabase m_db;

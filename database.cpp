@@ -1047,6 +1047,44 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для перевірки, чи користувач вже коментував книгу
+bool DatabaseManager::hasUserCommentedOnBook(int bookId, int customerId) const
+{
+    if (!m_isConnected || !m_db.isOpen() || bookId <= 0 || customerId <= 0) {
+        qWarning() << "Неможливо перевірити коментар: немає з'єднання або невірний ID книги/користувача.";
+        return false; // Повертаємо false, щоб уникнути блокування, якщо є проблема з перевіркою
+    }
+
+    const QString sql = R"(
+        SELECT COUNT(*)
+        FROM comment
+        WHERE book_id = :bookId AND customer_id = :customerId;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":bookId", bookId);
+    query.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to check if customer" << customerId << "commented on book" << bookId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при перевірці наявності коментаря для book ID '" << bookId << "' та customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return false; // Повертаємо false при помилці запиту
+    }
+
+    if (query.next()) {
+        int count = query.value(0).toInt();
+        qInfo() << "Comment check result: count =" << count;
+        return count > 0; // Повертає true, якщо знайдено хоча б один коментар
+    }
+
+    qWarning() << "Comment check query did not return a result.";
+    return false; // Повертаємо false, якщо запит не повернув результат
+}
+
+
 // Реалізація нового методу для додавання коментаря
 bool DatabaseManager::addComment(int bookId, int customerId, const QString &commentText, int rating)
 {

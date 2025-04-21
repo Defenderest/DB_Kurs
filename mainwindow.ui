@@ -2143,6 +2143,26 @@ line-height: 1.6; /* Збільшуємо міжрядковий інтерва�
             </property>
            </widget>
           </item>
+          <!-- Додаємо мітку для повідомлення про вже існуючий коментар -->
+          <item>
+           <widget class="QLabel" name="alreadyCommentedLabel">
+            <property name="text">
+             <string>Ви вже залишили відгук для цієї книги.</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font-style: italic; color: #6c757d; padding: 5px 0;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="visible">
+             <bool>false</bool> <!-- Приховано за замовчуванням -->
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QLineEdit" name="newCommentTextEdit"> <!-- Змінено QTextEdit на QLineEdit -->
             <!-- Видалено minimumSize та maximumSize для висоти -->

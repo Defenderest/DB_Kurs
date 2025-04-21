@@ -925,9 +925,47 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
     // 5. Коментарі (використовуємо нову функцію)
     displayComments(details.comments);
 
-    // 6. Скидання полів для нового коментаря
-    ui->newCommentTextEdit->clear();
-    ui->newCommentStarRatingWidget->setRating(0); // Скидаємо рейтинг на 0
+    // 6. Налаштування секції додавання коментаря
+    bool userHasCommented = false;
+    bool canComment = (m_currentCustomerId > 0); // Чи може користувач взагалі коментувати (чи авторизований)
+
+    if (canComment && m_dbManager) {
+        userHasCommented = m_dbManager->hasUserCommentedOnBook(details.bookId, m_currentCustomerId);
+    }
+
+    // Отримуємо вказівники на віджети
+    QLineEdit *commentEdit = ui->newCommentTextEdit;
+    StarRatingWidget *ratingWidget = ui->newCommentStarRatingWidget;
+    QPushButton *sendButton = ui->sendCommentButton;
+    QLabel *alreadyCommentedLabel = ui->alreadyCommentedLabel;
+
+    if (commentEdit && ratingWidget && sendButton && alreadyCommentedLabel) {
+        if (!canComment) {
+            // Користувач не авторизований
+            commentEdit->setVisible(false);
+            ratingWidget->setVisible(false);
+            sendButton->setVisible(false);
+            alreadyCommentedLabel->setText(tr("Будь ласка, увійдіть, щоб залишити відгук."));
+            alreadyCommentedLabel->setVisible(true);
+        } else if (userHasCommented) {
+            // Користувач вже залишив відгук
+            commentEdit->setVisible(false);
+            ratingWidget->setVisible(false);
+            sendButton->setVisible(false);
+            alreadyCommentedLabel->setText(tr("Ви вже залишили відгук для цієї книги."));
+            alreadyCommentedLabel->setVisible(true);
+        } else {
+            // Користувач може залишити відгук
+            commentEdit->clear();
+            ratingWidget->setRating(0);
+            commentEdit->setVisible(true);
+            ratingWidget->setVisible(true);
+            sendButton->setVisible(true);
+            alreadyCommentedLabel->setVisible(false); // Ховаємо мітку
+        }
+    } else {
+        qWarning() << "populateBookDetailsPage: Could not find all comment input widgets!";
+    }
 
 
     qInfo() << "Book details page populated for:" << details.title;
@@ -1884,6 +1922,16 @@ void MainWindow::on_sendCommentButton_clicked()
          return;
     }
 
+    // Перевіряємо, чи користувач вже залишав коментар
+    if (m_dbManager->hasUserCommentedOnBook(m_currentBookDetailsId, m_currentCustomerId)) {
+        QMessageBox::information(this, tr("Відправка відгуку"), tr("Ви вже залишили відгук для цієї книги."));
+        qWarning() << "Attempted to add a second comment for book ID:" << m_currentBookDetailsId << "by customer ID:" << m_currentCustomerId;
+        // Оновлюємо UI на випадок, якщо він якось розсинхронізувався
+        refreshBookComments(); // Оновлення списку може бути не потрібне, але оновимо UI додавання
+        populateBookDetailsPage(m_dbManager->getBookDetails(m_currentBookDetailsId)); // Перезаповнюємо, щоб сховати поля
+        return;
+    }
+
     // Отримуємо дані з UI
     QString commentText = ui->newCommentTextEdit->text().trimmed(); // Використовуємо text() для QLineEdit
     int rating = ui->newCommentStarRatingWidget->rating();
@@ -1901,37 +1949,22 @@ void MainWindow::on_sendCommentButton_clicked()
 
     // Обробка результату
     if (success) {
-        ui->statusBar->showMessage(tr("Ваш відгук успішно додано!"), 4000);
+        // ui->statusBar->showMessage(tr("Ваш відгук успішно додано!"), 4000); // Прибираємо повідомлення в статус-барі
         qInfo() << "Comment added successfully.";
-        // Очищаємо поля введення
-        ui->newCommentTextEdit->clear();
+        // Очищаємо поля введення та ховаємо їх (перезаповненням сторінки)
+        // ui->newCommentTextEdit->clear(); // Більше не потрібно, бо перезаповнюємо
+        // ui->newCommentStarRatingWidget->setRating(0); // Більше не потрібно
         ui->newCommentStarRatingWidget->setRating(0);
-        // Оновлюємо список коментарів на сторінці
-        refreshBookComments();
-        // Оновлюємо середній рейтинг (якщо потрібно)
-        // TODO: Додати логіку оновлення bookDetailStarRatingWidget після додавання нового коментаря
-        // Можна перезавантажити деталі книги або розрахувати середнє значення на основі оновлених коментарів
+        // Оновлюємо всю сторінку деталей, щоб відобразити новий коментар,
+        // оновити середній рейтинг та сховати поля для введення
         BookDetailsInfo updatedDetails = m_dbManager->getBookDetails(m_currentBookDetailsId);
         if (updatedDetails.found) {
-            // Перераховуємо середній рейтинг (код з populateBookDetailsPage)
-            int averageRating = 0;
-            int ratedCount = 0;
-            if (!updatedDetails.comments.isEmpty()) {
-                double totalRating = 0;
-                for(const auto& comment : updatedDetails.comments) {
-                    if (comment.rating > 0) {
-                        totalRating += comment.rating;
-                        ratedCount++;
-                    }
-                }
-                if (ratedCount > 0) {
-                    averageRating = qRound(totalRating / ratedCount);
-                }
-            }
-            ui->bookDetailStarRatingWidget->setRating(averageRating);
-            ui->bookDetailStarRatingWidget->setToolTip(tr("Середній рейтинг: %1 з 5 (%2 відгуків)")
-                                                         .arg(averageRating)
-                                                         .arg(ratedCount));
+            populateBookDetailsPage(updatedDetails);
+        } else {
+            // Якщо раптом книгу видалили, поки писали коментар
+            qWarning() << "Book details not found after adding comment for ID:" << m_currentBookDetailsId;
+            // Можна перейти на іншу сторінку або показати помилку
+            ui->contentStackedWidget->setCurrentWidget(ui->booksPage);
         }
 
     } else {
