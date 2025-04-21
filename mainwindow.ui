@@ -310,8 +310,82 @@ QWidget#bookDetailsPage /* Додано сторінку деталей книг
 QWidget#discoverScrollContents,
 QWidget#booksContainerWidget,
 QWidget#authorsContainerWidget,
-QWidget#ordersContainerWidget {
-     background-color: #ffffff;
+QWidget#ordersContainerWidget, /* Додано контейнер замовлень */
+QWidget#cartItemsContainerWidget /* Додано контейнер кошика */ {
+     background-color: #ffffff; /* Або transparent, якщо фон сторінки вже білий */
+}
+
+/* === Стилі для сторінки "Мої замовлення" === */
+QLabel#ordersHeaderLabel {
+    font-size: 18pt;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 10px; /* Відступ знизу */
+}
+
+QWidget#orderCardWidget {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 18px 20px; /* Збільшено padding */
+    margin-bottom: 15px; /* Відступ між картками */
+}
+QWidget#orderCardWidget:hover {
+    border-color: #adb5bd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* Легка тінь при наведенні */
+}
+
+QLabel#orderIdLabel {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #343a40;
+}
+
+QLabel#orderDateLabel, QLabel#orderTotalLabel {
+    font-size: 10pt;
+    color: #495057;
+}
+
+QLabel#orderStatusLabel {
+    font-size: 10pt;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 12px; /* Округлі кути для статусу */
+    color: #ffffff; /* Білий текст за замовчуванням */
+    background-color: #6c757d; /* Сірий фон за замовчуванням */
+    min-width: 80px; /* Мінімальна ширина для вирівнювання */
+    qproperty-alignment: AlignCenter;
+}
+/* Стилі для різних статусів (можна додати більше) */
+QLabel#orderStatusLabel[status="new"] { background-color: #0d6efd; } /* Синій */
+QLabel#orderStatusLabel[status="processing"] { background-color: #ffc107; color: #343a40; } /* Жовтий */
+QLabel#orderStatusLabel[status="shipped"] { background-color: #0dcaf0; color: #343a40; } /* Бірюзовий */
+QLabel#orderStatusLabel[status="delivered"] { background-color: #198754; } /* Зелений */
+QLabel#orderStatusLabel[status="cancelled"] { background-color: #dc3545; } /* Червоний */
+
+QPushButton#viewOrderDetailsButton {
+    /* Використовує загальний стиль QPushButton */
+    padding: 6px 12px; /* Менший padding */
+    font-size: 9pt; /* Менший шрифт */
+    min-height: 30px; /* Менша висота */
+    background-color: #e9ecef; /* Світло-сірий фон */
+    color: #495057; /* Темно-сірий текст */
+    border-color: #dee2e6;
+}
+QPushButton#viewOrderDetailsButton:hover {
+    background-color: #dee2e6;
+    border-color: #ced4da;
+    color: #212529;
+}
+
+QLabel#emptyOrdersLabel {
+    font-size: 14pt;
+    color: #6c757d;
+    padding: 40px;
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: 8px;
+    qproperty-alignment: AlignCenter;
 }
 
 /* Явно встановлюємо білий фон для області прокрутки деталей книги та її вмісту */
@@ -1168,10 +1242,10 @@ border-bottom: 1px solid #eeeeee;</string>
             </property>
             <layout class="QHBoxLayout" name="booksFilterLayout">
              <property name="spacing">
-              <number>16</number>
+              <number>12</number> <!-- Зменшено spacing -->
              </property>
              <property name="leftMargin">
-              <number>0</number>
+              <number>0</number> <!-- Залишаємо без відступів, якщо не потрібно -->
              </property>
              <property name="topMargin">
               <number>0</number>
@@ -1180,15 +1254,18 @@ border-bottom: 1px solid #eeeeee;</string>
               <number>0</number>
              </property>
              <property name="bottomMargin">
-              <number>5</number>
+              <number>10</number> <!-- Збільшено нижній відступ -->
              </property>
              <item>
               <widget class="QComboBox" name="categoryFilterComboBox">
                <property name="minimumSize">
                 <size>
-                 <width>200</width>
-                 <height>54</height>
+                 <width>180</width> <!-- Трохи зменшено ширину -->
+                 <height>0</height> <!-- Висота керується стилем -->
                 </size>
+               </property>
+               <property name="placeholderText">
+                <string>Фільтр за статусом</string> <!-- Додано placeholder -->
                </property>
                <item>
                 <property name="text">
@@ -1398,20 +1475,31 @@ border-bottom: 1px solid #eeeeee;</string>
         <widget class="QWidget" name="ordersPage">
          <layout class="QVBoxLayout" name="ordersPageLayout">
           <property name="spacing">
-           <number>16</number>
+           <number>15</number> <!-- Трохи зменшено spacing -->
           </property>
           <property name="leftMargin">
-           <number>0</number>
+           <number>20</number> <!-- Збільшено лівий відступ -->
           </property>
           <property name="topMargin">
-           <number>10</number>
+           <number>20</number> <!-- Збільшено верхній відступ -->
           </property>
           <property name="rightMargin">
-           <number>0</number>
+           <number>20</number> <!-- Збільшено правий відступ -->
           </property>
           <property name="bottomMargin">
-           <number>0</number>
+           <number>20</number> <!-- Збільшено нижній відступ -->
           </property>
+          <item>
+           <!-- Додаємо заголовок сторінки -->
+           <widget class="QLabel" name="ordersHeaderLabel">
+            <property name="styleSheet">
+             <string notr="true">/* Стиль визначено вище */</string>
+            </property>
+            <property name="text">
+             <string>Мої замовлення</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QWidget" name="ordersFilterWidget" native="true">
             <property name="minimumSize">
@@ -1496,12 +1584,12 @@ border-bottom: 1px solid #eeeeee;</string>
               <widget class="QDateEdit" name="orderDateEdit">
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
-                 <height>54</height>
+                 <width>130</width> <!-- Трохи зменшено ширину -->
+                 <height>0</height> <!-- Висота керується стилем -->
                 </size>
                </property>
                <property name="toolTip">
-                <string>Фільтрувати замовлення від вказаної дати</string>
+                <string>Показати замовлення від вказаної дати</string> <!-- Оновлено підказку -->
                </property>
                <property name="displayFormat">
                 <string>dd.MM.yyyy</string>
@@ -1532,10 +1620,16 @@ border-bottom: 1px solid #eeeeee;</string>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QScrollArea { border: none; background-color: transparent; } /* Прибираємо рамку */</string> <!-- Додано стиль для ScrollArea -->
+            </property>
             <widget class="QWidget" name="ordersContainerWidget">
+             <property name="styleSheet">
+              <string notr="true">QWidget#ordersContainerWidget { background-color: transparent; } /* Прозорий фон контейнера */</string> <!-- Додано стиль для контейнера -->
+             </property>
              <layout class="QVBoxLayout" name="ordersContentLayout">
               <property name="spacing">
-               <number>15</number>
+               <number>0</number> <!-- Відступи керуються margin-bottom у orderCardWidget -->
               </property>
               <property name="leftMargin">
                <number>5</number>
@@ -1544,24 +1638,33 @@ border-bottom: 1px solid #eeeeee;</string>
                <number>10</number>
               </property>
               <property name="rightMargin">
-               <number>5</number>
+               <number>5</number> <!-- Невеликі відступи з боків -->
               </property>
               <property name="bottomMargin">
-               <number>10</number>
+               <number>5</number>
               </property>
+              <!-- Сюди будуть додаватися orderCardWidget -->
+              <!-- Додаємо мітку для порожнього списку (буде показана/прихована в коді) -->
               <item>
-               <spacer name="ordersVerticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
+               <widget class="QLabel" name="emptyOrdersLabel">
+                <property name="styleSheet">
+                 <string notr="true">/* Стиль визначено вище */</string>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
+                <property name="text">
+                 <string>У вас ще немає замовлень.</string>
                 </property>
-               </spacer>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+                <property name="visible">
+                 <bool>false</bool> <!-- Приховано за замовчуванням -->
+                </property>
+               </widget>
               </item>
+              <!-- Спейсер тут більше не потрібен, він додається динамічно в коді -->
              </layout>
             </widget>
            </widget>
