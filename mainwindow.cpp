@@ -200,6 +200,9 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Встановлюємо банер програмно
     setupBannerImage();
+
+    // Підключаємо кнопку відправки коментаря
+    connect(ui->sendCommentButton, &QPushButton::clicked, this, &MainWindow::on_sendCommentButton_clicked);
 }
 
 MainWindow::~MainWindow()
@@ -734,9 +737,53 @@ void MainWindow::showBookDetails(int bookId)
     // Заповнюємо сторінку даними
     populateBookDetailsPage(bookDetails);
 
+    // Зберігаємо ID поточної книги
+    m_currentBookDetailsId = bookId;
+
     // Переключаємо StackedWidget на сторінку деталей
     ui->contentStackedWidget->setCurrentWidget(ui->bookDetailsPage);
 }
+
+
+// Допоміжна функція для відображення списку коментарів
+void MainWindow::displayComments(const QList<CommentDisplayInfo> &comments)
+{
+    // Очищаємо попередні коментарі та спейсер
+    clearLayout(ui->commentsListLayout); // Використовуємо правильний layout
+
+    if (comments.isEmpty()) {
+        QLabel *noCommentsLabel = new QLabel(tr("Відгуків ще немає. Будьте першим!"));
+        noCommentsLabel->setAlignment(Qt::AlignCenter);
+        noCommentsLabel->setStyleSheet("color: #6c757d; font-style: italic; padding: 20px;");
+        ui->commentsListLayout->addWidget(noCommentsLabel);
+        // Додаємо спейсер, щоб мітка була по центру, якщо немає коментарів
+        ui->commentsListLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    } else {
+        for (const CommentDisplayInfo &commentInfo : comments) {
+            QWidget *commentWidget = createCommentWidget(commentInfo);
+            if (commentWidget) {
+                ui->commentsListLayout->addWidget(commentWidget);
+            }
+        }
+        // Додаємо спейсер в кінці, щоб притиснути коментарі вгору
+        ui->commentsListLayout->addSpacerItem(new QSpacerItem(20, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    }
+}
+
+// Допоміжна функція для оновлення списку коментарів на сторінці деталей
+void MainWindow::refreshBookComments()
+{
+    if (m_currentBookDetailsId <= 0 || !m_dbManager) {
+        qWarning() << "Cannot refresh comments: invalid book ID or DB manager.";
+        // Можна очистити список або показати помилку
+        displayComments({});
+        return;
+    }
+    qInfo() << "Refreshing comments for book ID:" << m_currentBookDetailsId;
+    QList<CommentDisplayInfo> comments = m_dbManager->getBookComments(m_currentBookDetailsId);
+    displayComments(comments);
+}
+
 
 // Допоміжна функція для створення віджету коментаря (оновлений дизайн)
 QWidget* MainWindow::createCommentWidget(const CommentDisplayInfo &commentInfo)
@@ -875,28 +922,8 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
                                                  .arg(ratedCount));
 
 
-    // 5. Коментарі
-    // Очищаємо попередні коментарі та спейсер
-    clearLayout(ui->commentsListLayout); // Використовуємо правильний layout
-
-    if (details.comments.isEmpty()) {
-        QLabel *noCommentsLabel = new QLabel(tr("Відгуків ще немає. Будьте першим!"));
-        noCommentsLabel->setAlignment(Qt::AlignCenter);
-        noCommentsLabel->setStyleSheet("color: #6c757d; font-style: italic; padding: 20px;");
-        ui->commentsListLayout->addWidget(noCommentsLabel);
-        // Додаємо спейсер, щоб мітка була по центру, якщо немає коментарів
-        ui->commentsListLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
-    } else {
-        for (const CommentDisplayInfo &commentInfo : details.comments) {
-            QWidget *commentWidget = createCommentWidget(commentInfo);
-            if (commentWidget) {
-                ui->commentsListLayout->addWidget(commentWidget);
-            }
-        }
-        // Спейсер більше не потрібен тут, оскільки layout є частиною основного потоку
-    }
-    // Оновлення геометрії commentsContainerWidget більше не потрібне
-
+    // 5. Коментарі (використовуємо нову функцію)
+    displayComments(details.comments);
 
     // 6. Скидання полів для нового коментаря
     ui->newCommentTextEdit->clear();
@@ -1826,6 +1853,90 @@ void MainWindow::setupBannerImage()
         }
         ui->bannerLabel->setPixmap(scaledPixmap);
         // Переконуємось, що текст видно (стилі кольору/тіні залишаються з UI)
+    }
+}
+
+
+// Слот для кнопки відправки коментаря
+void MainWindow::on_sendCommentButton_clicked()
+{
+    qInfo() << "Send comment button clicked.";
+
+    // Перевірки
+    if (m_currentBookDetailsId <= 0) {
+        QMessageBox::warning(this, tr("Помилка"), tr("Неможливо відправити відгук, не визначено книгу."));
+        qWarning() << "Cannot send comment: m_currentBookDetailsId is invalid:" << m_currentBookDetailsId;
+        return;
+    }
+    if (m_currentCustomerId <= 0) {
+        QMessageBox::warning(this, tr("Помилка"), tr("Неможливо відправити відгук, користувач не авторизований."));
+        qWarning() << "Cannot send comment: m_currentCustomerId is invalid:" << m_currentCustomerId;
+        return;
+    }
+    if (!m_dbManager) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних. Неможливо відправити відгук."));
+        qWarning() << "Cannot send comment: m_dbManager is null.";
+        return;
+    }
+    if (!ui->newCommentTextEdit || !ui->newCommentStarRatingWidget) {
+         QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не знайдено поля для введення відгуку або рейтингу."));
+         qWarning() << "Cannot send comment: UI elements missing.";
+         return;
+    }
+
+    // Отримуємо дані з UI
+    QString commentText = ui->newCommentTextEdit->text().trimmed(); // Використовуємо text() для QLineEdit
+    int rating = ui->newCommentStarRatingWidget->rating();
+
+    // Валідація
+    if (commentText.isEmpty()) {
+        QMessageBox::warning(this, tr("Відправка відгуку"), tr("Будь ласка, введіть текст вашого відгуку."));
+        ui->newCommentTextEdit->setFocus();
+        return;
+    }
+
+    // Викликаємо метод DatabaseManager
+    qInfo() << "Attempting to add comment for book ID:" << m_currentBookDetailsId << "by customer ID:" << m_currentCustomerId << "Rating:" << rating;
+    bool success = m_dbManager->addComment(m_currentBookDetailsId, m_currentCustomerId, commentText, rating);
+
+    // Обробка результату
+    if (success) {
+        ui->statusBar->showMessage(tr("Ваш відгук успішно додано!"), 4000);
+        qInfo() << "Comment added successfully.";
+        // Очищаємо поля введення
+        ui->newCommentTextEdit->clear();
+        ui->newCommentStarRatingWidget->setRating(0);
+        // Оновлюємо список коментарів на сторінці
+        refreshBookComments();
+        // Оновлюємо середній рейтинг (якщо потрібно)
+        // TODO: Додати логіку оновлення bookDetailStarRatingWidget після додавання нового коментаря
+        // Можна перезавантажити деталі книги або розрахувати середнє значення на основі оновлених коментарів
+        BookDetailsInfo updatedDetails = m_dbManager->getBookDetails(m_currentBookDetailsId);
+        if (updatedDetails.found) {
+            // Перераховуємо середній рейтинг (код з populateBookDetailsPage)
+            int averageRating = 0;
+            int ratedCount = 0;
+            if (!updatedDetails.comments.isEmpty()) {
+                double totalRating = 0;
+                for(const auto& comment : updatedDetails.comments) {
+                    if (comment.rating > 0) {
+                        totalRating += comment.rating;
+                        ratedCount++;
+                    }
+                }
+                if (ratedCount > 0) {
+                    averageRating = qRound(totalRating / ratedCount);
+                }
+            }
+            ui->bookDetailStarRatingWidget->setRating(averageRating);
+            ui->bookDetailStarRatingWidget->setToolTip(tr("Середній рейтинг: %1 з 5 (%2 відгуків)")
+                                                         .arg(averageRating)
+                                                         .arg(ratedCount));
+        }
+
+    } else {
+        QMessageBox::critical(this, tr("Помилка відправки"), tr("Не вдалося додати ваш відгук. Перевірте журнал помилок або спробуйте пізніше."));
+        qWarning() << "Failed to add comment. DB Error:" << m_dbManager->lastError().text();
     }
 }
 

@@ -1047,6 +1047,50 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
+// Реалізація нового методу для додавання коментаря
+bool DatabaseManager::addComment(int bookId, int customerId, const QString &commentText, int rating)
+{
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо додати коментар: немає з'єднання з БД.";
+        return false;
+    }
+    if (bookId <= 0 || customerId <= 0 || commentText.trimmed().isEmpty()) {
+        qWarning() << "Неможливо додати коментар: невірний ID книги/користувача або порожній текст.";
+        return false;
+    }
+    // Перевірка рейтингу (0 - без оцінки, 1-5 - з оцінкою)
+    if (rating < 0 || rating > 5) {
+        qWarning() << "Неможливо додати коментар: невірний рейтинг (" << rating << "). Допустимі значення: 0-5.";
+        return false;
+    }
+
+    const QString sql = R"(
+        INSERT INTO comment (book_id, customer_id, comment_text, comment_date, rating)
+        VALUES (:book_id, :customer_id, :comment_text, CURRENT_TIMESTAMP, :rating);
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":book_id", bookId);
+    query.bindValue(":customer_id", customerId);
+    query.bindValue(":comment_text", commentText.trimmed());
+    // Якщо рейтинг 0, вставляємо NULL, інакше - значення рейтингу
+    query.bindValue(":rating", (rating == 0) ? QVariant(QVariant::Int) : rating);
+
+    qInfo() << "Executing SQL to add comment for book ID:" << bookId << "by customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при додаванні коментаря для book ID '" << bookId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return false;
+    }
+
+    qInfo() << "Comment added successfully for book ID:" << bookId;
+    return true;
+}
+
+
 // Реалізація нового методу для створення замовлення
 bool DatabaseManager::createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId)
 {

@@ -189,6 +189,9 @@ public:
     // Новий метод для створення замовлення
     bool createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId);
 
+    // Новий метод для додавання коментаря
+    bool addComment(int bookId, int customerId, const QString &commentText, int rating);
+
 
 private:
     QSqlDatabase m_db;

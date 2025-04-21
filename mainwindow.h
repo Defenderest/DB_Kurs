@@ -71,6 +71,7 @@ private slots:
     void updateCartItemQuantity(int bookId, int quantity); // Слот для зміни кількості
     void removeCartItem(int bookId); // Слот для видалення товару
     void on_placeOrderButton_clicked(); // Слот для кнопки "Оформити замовлення"
+    void on_sendCommentButton_clicked(); // Слот для кнопки відправки коментаря
 
 private:
     // Допоміжні функції для відображення даних
@@ -125,6 +126,9 @@ private:
     // Кошик
     QMap<int, CartItem> m_cartItems; // Ключ - bookId
     QMap<int, QLabel*> m_cartSubtotalLabels; // Ключ - bookId, Значення - вказівник на мітку підсумку
+
+    // ID книги, що відображається на сторінці деталей
+    int m_currentBookDetailsId = -1;
 
 protected:
     // Перехоплення подій для sidebarFrame
