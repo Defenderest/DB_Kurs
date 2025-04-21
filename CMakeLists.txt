@@ -31,7 +31,13 @@ set(PROJECT_SOURCES
     starratingwidget.h
     mainwindow.cpp
     mainwindow.h
-    database.cpp
+    # database.cpp # Більше не потрібен або порожній
+    database_connection.cpp # Новий файл
+    database_customer.cpp   # Новий файл
+    database_book.cpp       # Новий файл
+    database_author.cpp     # Новий файл
+    database_order.cpp      # Новий файл
+    database_comment.cpp    # Новий файл
     database.h
     logindialog.cpp
     logindialog.h
