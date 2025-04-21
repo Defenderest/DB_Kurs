@@ -37,6 +37,9 @@ set(PROJECT_SOURCES
     logindialog.h
     profiledialog.cpp # Додано новий файл діалогу профілю
     profiledialog.h
+    datatypes.h       # Додано файл зі структурами даних
+    testdata.cpp      # Додано файл генерації тестових даних
+    testdata.h
 )
 
 # --- Создание исполняемого файла ---
