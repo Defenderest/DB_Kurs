@@ -15,6 +15,9 @@
 #include <QCryptographicHash> // Додано для хешування паролів
 #include "datatypes.h" // Включаємо файл з визначеннями структур
 
+// Forward declaration for QSqlQuery needed for helper methods
+class QSqlQuery;
+
 class DatabaseManager : public QObject
 {
     Q_OBJECT
@@ -107,6 +110,10 @@ public:
 
     // Вспомогательная функция для выполнения подготовленного INSERT с возвратом ID
     bool executeInsertQuery(QSqlQuery &query, const QString &description, QVariant &insertedId);
+
+    // Приватні допоміжні функції генерації даних (якщо вони були тут, їх слід видалити)
+    // QDate randomDate(const QDate &minDate, const QDate &maxDate); // Removed
+    // QDateTime randomDateTime(const QDateTime &minDateTime, const QDateTime &maxDateTime); // Removed
 };
 
 #endif // DATABASE_H
