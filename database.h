@@ -195,6 +195,9 @@ public:
     // Новий метод для перевірки, чи користувач вже коментував книгу
     bool hasUserCommentedOnBook(int bookId, int customerId) const;
 
+    // Новий метод для отримання деталей одного замовлення за ID
+    OrderDisplayInfo getOrderDetailsById(int orderId) const;
+
 
 private:
     QSqlDatabase m_db;
