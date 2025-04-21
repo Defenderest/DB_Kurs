@@ -35,8 +35,7 @@ public:
     // Метод для создания структуры таблиц
     bool createSchemaTables();
 
-    // Новый метод для заполнения таблиц тестовыми данными
-    bool populateTestData(int numberOfRecords = 20); // По умолчанию 20 записей
+    // Метод populateTestData тепер знаходиться в testdata.h/cpp
 
     QSqlError lastError() const;
     void closeConnection();
