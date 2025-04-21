@@ -237,10 +237,10 @@ QLabel#bannerLabel {
    background-image: url(:/images/banner.jpg); /* Шлях до фонового зображення */
    background-repeat: no-repeat;
    background-position: center;
-   background-size: cover; /* Масштабування зображення */
+   background-size: 100% 100%; /* Масштабування зображення */
    border-radius: 6px;
    color: #ffffff; /* Білий колір тексту */
-   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Тінь для тексту */
+   text-shadow: 1px 1px 3px rgba(0, 0, 0, 1); /* Тінь для тексту */
    font-size: 20pt;
    font-weight: 500;
    padding: 25px;
@@ -780,7 +780,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>600</height> <!-- Збільшено мінімальну висоту вдвічі -->
+                  <height>300</height> <!-- Збільшено мінімальну висоту вдвічі -->
                  </size>
                 </property>
                 <property name="styleSheet">
