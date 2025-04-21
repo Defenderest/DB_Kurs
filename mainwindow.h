@@ -75,6 +75,8 @@ private slots:
 
 private:
     // Допоміжні функції для відображення даних
+    void displayComments(const QList<CommentDisplayInfo> &comments); // Відображення списку коментарів
+    void refreshBookComments(); // Оновлення списку коментарів на сторінці деталей
     void displayBooks(const QList<BookDisplayInfo> &books); // Метод для відображення книг
     void displayAuthors(const QList<AuthorDisplayInfo> &authors);
     void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
