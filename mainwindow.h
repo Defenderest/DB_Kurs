@@ -72,6 +72,7 @@ private slots:
     void removeCartItem(int bookId); // Слот для видалення товару
     void on_placeOrderButton_clicked(); // Слот для кнопки "Оформити замовлення"
     void on_sendCommentButton_clicked(); // Слот для кнопки відправки коментаря
+    void showOrderDetailsPlaceholder(int orderId); // Тимчасовий слот для деталей замовлення
 
 private:
     // Допоміжні функції для відображення даних
