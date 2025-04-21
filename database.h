@@ -38,7 +38,7 @@ public:
     // Метод для создания структуры таблиц
     bool createSchemaTables();
 
-    // Метод populateTestData тепер знаходиться в testdata.h/cpp
+    // Declaration for populateTestData removed (moved to testdata.h)
 
     QSqlError lastError() const;
     void closeConnection();
