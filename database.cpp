@@ -237,6 +237,8 @@ bool DatabaseManager::executeInsertQuery(QSqlQuery &query, const QString &descri
         // return false; // Можно сделать это фатальной ошибкой
         return true; // Или продолжить, если ID не критичен для следующих шагов
     }
+} // <-- Додано відсутню закриваючу дужку
+
 // Метод populateTestData тепер знаходиться в testdata.cpp
 
 
