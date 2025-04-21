@@ -21,9 +21,9 @@
 #include <QMap>             // Для QMap
 #include <QDateTime>        // Для форматування дати/часу замовлення
 #include <QLocale>          // Для форматування чисел та дат
-#include <QGroupBox>        // Для групування елементів замовлення
-#include <QTableWidget>     // Для відображення позицій та статусів
-#include <QHeaderView>      // Для налаштування заголовків таблиці
+// #include <QGroupBox>        // Більше не потрібен для замовлень
+// #include <QTableWidget>     // Більше не потрібен для замовлень
+// #include <QHeaderView>      // Більше не потрібен для замовлень
 #include <QLineEdit>        // Додано для QLineEdit у профілі
 #include <QCompleter>       // Додано для автодоповнення
 #include <QStringListModel> // Додано для моделі автодоповнення
@@ -1015,190 +1015,121 @@ void MainWindow::updateSearchSuggestions(const QString &text)
     // qInfo() << "Updated search suggestions for text:" << text << "Count:" << suggestions.count();
 }
 
-// Метод для створення віджету картки замовлення
+// Метод для створення віджету картки замовлення (Новий дизайн)
 QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
 {
-    // Основний віджет-контейнер для замовлення (використовуємо QFrame)
-    QFrame *orderFrame = new QFrame();
-    orderFrame->setFrameShape(QFrame::StyledPanel);
-    orderFrame->setFrameShadow(QFrame::Sunken); // Трохи інший стиль для відокремлення
-    orderFrame->setLineWidth(1);
-    orderFrame->setStyleSheet("QFrame { background-color: #f8f9fa; border-radius: 6px; border: 1px solid #dee2e6; }");
-    orderFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); // Розширюється по ширині
+    // Основний віджет-контейнер для картки замовлення
+    QFrame *orderCard = new QFrame();
+    orderCard->setObjectName("orderCardWidget"); // Ім'я для застосування стилів з UI
+    orderCard->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed); // Розширюється по ширині, фіксована висота
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(orderFrame);
-    mainLayout->setSpacing(12);
-    mainLayout->setContentsMargins(15, 15, 15, 15);
+    // Головний горизонтальний layout картки
+    QHBoxLayout *mainLayout = new QHBoxLayout(orderCard);
+    mainLayout->setSpacing(15); // Відступ між основними блоками
+    mainLayout->setContentsMargins(0, 0, 0, 0); // Відступи керуються стилем QFrame#orderCardWidget
 
-    // --- Верхня частина: ID, Дата, Сума ---
-    QHBoxLayout *headerLayout = new QHBoxLayout();
-    headerLayout->setSpacing(20);
+    // --- Ліва частина: ID та Дата ---
+    QVBoxLayout *infoLayout = new QVBoxLayout();
+    infoLayout->setSpacing(4); // Менший відступ між ID та датою
 
-    QLabel *orderIdLabel = new QLabel(tr("Замовлення №%1").arg(orderInfo.orderId));
-    orderIdLabel->setStyleSheet("font-weight: bold; font-size: 12pt; color: black;"); // Змінено колір на чорний
+    QLabel *idLabel = new QLabel(tr("Замовлення №%1").arg(orderInfo.orderId));
+    idLabel->setObjectName("orderIdLabel"); // Ім'я для стилів
 
-    // Форматуємо дату більш явно і перевіряємо валідність
     QString dateString = orderInfo.orderDate.isValid()
-                         ? QLocale::system().toString(orderInfo.orderDate, "dd.MM.yyyy hh:mm")
+                         ? QLocale::system().toString(orderInfo.orderDate, "dd.MM.yyyy") // Тільки дата
                          : tr("(невідома дата)");
-    QLabel *orderDateLabel = new QLabel(tr("Дата: %1").arg(dateString));
-    orderDateLabel->setStyleSheet("color: black;"); // Змінено колір на чорний
+    QLabel *dateLabel = new QLabel(dateString);
+    dateLabel->setObjectName("orderDateLabel"); // Ім'я для стилів
 
-    QLabel *totalAmountLabel = new QLabel(tr("Сума: %1 грн").arg(QLocale::system().toString(orderInfo.totalAmount, 'f', 2)));
-    totalAmountLabel->setStyleSheet("font-weight: bold; color: black; font-size: 11pt;"); // Змінено колір на чорний
+    infoLayout->addWidget(idLabel);
+    infoLayout->addWidget(dateLabel);
+    infoLayout->addStretch(1); // Притискає ID та дату вгору
 
-    headerLayout->addWidget(orderIdLabel);
-    headerLayout->addWidget(orderDateLabel);
-    headerLayout->addStretch(1); // Розтягувач, щоб притиснути суму вправо
-    headerLayout->addWidget(totalAmountLabel);
+    mainLayout->addLayout(infoLayout, 1); // Додаємо ліву частину (з розтягуванням)
 
-    mainLayout->addLayout(headerLayout);
+    // --- Центральна частина: Сума ---
+    QLabel *totalLabel = new QLabel(QString::number(orderInfo.totalAmount, 'f', 2) + tr(" грн"));
+    totalLabel->setObjectName("orderTotalLabel"); // Ім'я для стилів
+    totalLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter); // Вирівнювання по правому краю
+    mainLayout->addWidget(totalLabel); // Додаємо суму
 
-    // --- Роздільник ---
-    QFrame *separator = new QFrame();
-    separator->setFrameShape(QFrame::HLine);
-    separator->setFrameShadow(QFrame::Sunken);
-    separator->setStyleSheet("border-color: #e0e0e0;");
-    mainLayout->addWidget(separator);
+    // --- Права частина: Статус та Кнопка ---
+    QVBoxLayout *statusLayout = new QVBoxLayout();
+    statusLayout->setSpacing(8); // Відступ між статусом та кнопкою
+    statusLayout->setAlignment(Qt::AlignRight); // Вирівнюємо вміст по правому краю
 
-    // --- Деталі: Адреса, Оплата ---
-    QFormLayout *detailsLayout = new QFormLayout();
-    detailsLayout->setSpacing(8);
-    detailsLayout->setLabelAlignment(Qt::AlignLeft); // Вирівнювання назв полів по лівому краю
+    QLabel *statusLabel = new QLabel();
+    statusLabel->setObjectName("orderStatusLabel"); // Ім'я для стилів
 
-    // Адреса доставки
-    QLabel *addressLabel = new QLabel(tr("Адреса доставки:"));
-    addressLabel->setStyleSheet("color: black; font-weight: bold;"); // Чорний жирний шрифт для назви поля
-    QLabel *addressValueLabel = new QLabel(orderInfo.shippingAddress.isEmpty() ? tr("(не вказано)") : orderInfo.shippingAddress);
-    addressValueLabel->setStyleSheet("color: black;"); // Чорний колір для значення
-    addressValueLabel->setWordWrap(true); // Дозволяємо перенос тексту адреси
-    detailsLayout->addRow(addressLabel, addressValueLabel);
-
-    // Спосіб оплати
-    QLabel *paymentLabel = new QLabel(tr("Спосіб оплати:"));
-    paymentLabel->setStyleSheet("color: black; font-weight: bold;"); // Чорний жирний шрифт для назви поля
-    QLabel *paymentValueLabel = new QLabel(orderInfo.paymentMethod.isEmpty() ? tr("(не вказано)") : orderInfo.paymentMethod);
-    paymentValueLabel->setStyleSheet("color: black;"); // Чорний колір для значення
-    detailsLayout->addRow(paymentLabel, paymentValueLabel);
-
-    mainLayout->addLayout(detailsLayout);
-
-    // --- Позиції замовлення (Таблиця) ---
-    if (!orderInfo.items.isEmpty()) {
-        QGroupBox *itemsGroup = new QGroupBox(tr("Товари в замовленні"));
-        itemsGroup->setStyleSheet("QGroupBox { color: black; font-weight: bold; }"); // Додано стиль для групи
-        QVBoxLayout *itemsLayout = new QVBoxLayout(itemsGroup);
-
-        QTableWidget *itemsTable = new QTableWidget(orderInfo.items.size(), 3);
-        itemsTable->setHorizontalHeaderLabels({tr("Назва книги"), tr("Кількість"), tr("Ціна за од.")});
-        itemsTable->verticalHeader()->setVisible(false); // Сховати вертикальні заголовки
-        itemsTable->setEditTriggers(QAbstractItemView::NoEditTriggers); // Заборонити редагування
-        itemsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-        itemsTable->setAlternatingRowColors(true);
-        itemsTable->horizontalHeader()->setStretchLastSection(false); // Не розтягувати останню колонку
-        itemsTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch); // Розтягнути назву
-        itemsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents); // Кількість по вмісту
-        itemsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents); // Ціна по вмісту
-        itemsTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; color: black; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; color: black; } "); // Додано color: black
-
-        for (int i = 0; i < orderInfo.items.size(); ++i) {
-            const auto &item = orderInfo.items.at(i);
-            itemsTable->setItem(i, 0, new QTableWidgetItem(item.bookTitle));
-            QTableWidgetItem *quantityItem = new QTableWidgetItem(QString::number(item.quantity));
-            quantityItem->setTextAlignment(Qt::AlignCenter);
-            itemsTable->setItem(i, 1, quantityItem);
-            QTableWidgetItem *priceItem = new QTableWidgetItem(QLocale::system().toString(item.pricePerUnit, 'f', 2) + tr(" грн"));
-            priceItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-            itemsTable->setItem(i, 2, priceItem);
-        }
-        itemsTable->resizeRowsToContents();
-        // Встановлюємо висоту таблиці на основі вмісту + заголовок
-        int tableHeight = itemsTable->horizontalHeader()->height();
-        for(int i=0; i<itemsTable->rowCount(); ++i) {
-            tableHeight += itemsTable->rowHeight(i);
-        }
-        // Обмежуємо максимальну висоту таблиці товарів, щоб уникнути надмірного розтягування картки
-        itemsTable->setMaximumHeight(tableHeight + 5 < 300 ? tableHeight + 5 : 300); // Збільшено макс. висоту до 300px
-
-        itemsLayout->addWidget(itemsTable);
-        mainLayout->addWidget(itemsGroup);
-    }
-
-    // --- Статуси замовлення (Таблиця) ---
+    // Визначаємо текст та CSS-властивість статусу
+    QString statusText = tr("Невідомо");
+    QString statusCss = "unknown"; // Статус для CSS (має бути lowercase)
     if (!orderInfo.statuses.isEmpty()) {
-        QGroupBox *statusGroup = new QGroupBox(tr("Історія статусів"));
-        statusGroup->setStyleSheet("QGroupBox { color: black; font-weight: bold; }"); // Додано стиль для групи
-        QVBoxLayout *statusLayout = new QVBoxLayout(statusGroup);
-
-        QTableWidget *statusTable = new QTableWidget(orderInfo.statuses.size(), 3);
-        statusTable->setHorizontalHeaderLabels({tr("Статус"), tr("Дата"), tr("Номер ТТН")});
-        statusTable->verticalHeader()->setVisible(false);
-        statusTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        statusTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-        statusTable->setAlternatingRowColors(true);
-        statusTable->horizontalHeader()->setStretchLastSection(false);
-        statusTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-        statusTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-        statusTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-        statusTable->setStyleSheet("QTableWidget { border: 1px solid #dee2e6; gridline-color: #e9ecef; color: black; } QHeaderView::section { background-color: #f1f3f5; padding: 4px; border: none; border-bottom: 1px solid #dee2e6; color: black; } "); // Додано color: black
-
-
-        for (int i = 0; i < orderInfo.statuses.size(); ++i) {
-            const auto &status = orderInfo.statuses.at(i);
-            statusTable->setItem(i, 0, new QTableWidgetItem(status.status));
-            statusTable->setItem(i, 1, new QTableWidgetItem(QLocale::system().toString(status.statusDate, QLocale::ShortFormat)));
-            statusTable->setItem(i, 2, new QTableWidgetItem(status.trackingNumber.isEmpty() ? "-" : status.trackingNumber));
-        }
-        statusTable->resizeRowsToContents();
-        // Встановлюємо висоту таблиці статусів
-        int tableHeight = statusTable->horizontalHeader()->height();
-        for(int i=0; i<statusTable->rowCount(); ++i) {
-            tableHeight += statusTable->rowHeight(i);
-        }
-        // Обмежуємо максимальну висоту таблиці статусів
-        statusTable->setMaximumHeight(tableHeight + 5 < 250 ? tableHeight + 5 : 250); // Збільшено макс. висоту до 250px
-
-        statusLayout->addWidget(statusTable);
-        mainLayout->addWidget(statusGroup);
+        // Беремо останній статус
+        statusText = orderInfo.statuses.last().status;
+        // TODO: Перетворити статус з БД на відповідний CSS-клас (new, processing, shipped, delivered, cancelled)
+        // Припускаємо, що вони співпадають після переведення в нижній регістр
+        statusCss = statusText.toLower();
+        // Приклад простого мапінгу (якщо назви відрізняються):
+        // if (statusText == "В обробці") statusCss = "processing";
+        // else if (statusText == "Відправлено") statusCss = "shipped";
+        // ... і т.д.
     }
+    statusLabel->setText(statusText);
+    statusLabel->setProperty("status", statusCss); // Встановлюємо властивість для CSS
+    statusLabel->ensurePolished(); // Застосовуємо стиль негайно
 
-    orderFrame->setLayout(mainLayout);
-    return orderFrame;
+    // Кнопка "Деталі" (використовує стиль viewOrderDetailsButton з UI)
+    QPushButton *detailsButton = new QPushButton(tr("Деталі"));
+    detailsButton->setObjectName("viewOrderDetailsButton"); // Ім'я для стилів
+    detailsButton->setCursor(Qt::PointingHandCursor);
+    // TODO: Підключити сигнал кнопки до слота для показу деталей замовлення
+    // connect(detailsButton, &QPushButton::clicked, this, [this, orderId = orderInfo.orderId]() {
+    //     showOrderDetails(orderId); // Потрібно реалізувати showOrderDetails
+    // });
+    detailsButton->setToolTip(tr("Переглянути деталі замовлення №%1").arg(orderInfo.orderId));
+
+    statusLayout->addWidget(statusLabel, 0, Qt::AlignRight); // Додаємо статус
+    statusLayout->addWidget(detailsButton, 0, Qt::AlignRight); // Додаємо кнопку
+
+    mainLayout->addLayout(statusLayout); // Додаємо праву частину
+
+    orderCard->setLayout(mainLayout);
+    return orderCard;
 }
 
-// Метод для відображення списку замовлень
+// Метод для відображення списку замовлень (Новий дизайн)
 void MainWindow::displayOrders(const QList<OrderDisplayInfo> &orders)
 {
-    if (!ui->ordersContentLayout) {
-        qWarning() << "displayOrders: ordersContentLayout is null!";
-        // Можна показати помилку в statusBar
+    // Перевіряємо наявність необхідних віджетів
+    if (!ui->ordersContentLayout || !ui->emptyOrdersLabel || !ui->ordersScrollArea) {
+        qWarning() << "displayOrders: Required widgets (ordersContentLayout, emptyOrdersLabel, or ordersScrollArea) are null!";
         ui->statusBar->showMessage(tr("Помилка інтерфейсу: Не вдалося відобразити замовлення."), 5000);
         return;
     }
 
-    // Очищаємо layout від попередніх замовлень та спейсера
+    // Очищаємо layout від попередніх карток замовлень
     clearLayout(ui->ordersContentLayout);
 
-    if (orders.isEmpty()) {
-        QLabel *noOrdersLabel = new QLabel(tr("У вас ще немає замовлень."), ui->ordersContainerWidget);
-        noOrdersLabel->setAlignment(Qt::AlignCenter);
-        noOrdersLabel->setStyleSheet("font-style: italic; color: black; padding: 20px;"); // Змінено колір на чорний
-        ui->ordersContentLayout->addWidget(noOrdersLabel);
-        // Додаємо спейсер знизу, щоб мітка була по центру вертикально
-        ui->ordersContentLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
-    } else {
+    bool isEmpty = orders.isEmpty();
+
+    // Показуємо/ховаємо мітку про порожній список та область прокрутки
+    ui->emptyOrdersLabel->setVisible(isEmpty);
+    ui->ordersScrollArea->setVisible(!isEmpty); // Ховаємо ScrollArea, якщо список порожній
+
+    if (!isEmpty) {
+        // Додаємо картки для кожного замовлення
         for (const OrderDisplayInfo &orderInfo : orders) {
-            QWidget *orderCard = createOrderWidget(orderInfo);
+            QWidget *orderCard = createOrderWidget(orderInfo); // Використовуємо оновлену функцію
             if (orderCard) {
                 ui->ordersContentLayout->addWidget(orderCard);
             }
         }
-        // Додаємо спейсер в кінці, щоб притиснути картки вгору
-        ui->ordersContentLayout->addSpacerItem(new QSpacerItem(20, 1, QSizePolicy::Minimum, QSizePolicy::Expanding)); // Зменшено висоту спейсера
+        // Спейсер в кінці більше не потрібен, відступи керуються стилями карток
     }
 
-    // Оновлюємо геометрію контейнера
-    ui->ordersContainerWidget->updateGeometry();
+    // Оновлюємо геометрію контейнера, щоб ScrollArea знала розмір
+    ui->ordersContainerWidget->adjustSize();
     // Переконуємось, що ScrollArea оновилась, якщо вміст змінився
     QCoreApplication::processEvents(); // Даємо можливість обробити події перед прокруткою
     ui->ordersScrollArea->ensureVisible(0,0); // Прокручуємо до верху
@@ -1225,26 +1156,44 @@ void MainWindow::loadAndDisplayOrders()
     QList<OrderDisplayInfo> allOrders = m_dbManager->getCustomerOrdersForDisplay(m_currentCustomerId);
     qInfo() << "Завантажено" << allOrders.size() << "замовлень.";
 
-    // Отримуємо вибраний статус для фільтрації
+    // Отримуємо вибраний статус та дату для фільтрації
     QString statusFilter = ui->orderStatusComboBox->currentText();
+    QDate dateFilter = ui->orderDateEdit->date(); // Отримуємо дату з QDateEdit
     QList<OrderDisplayInfo> filteredOrders;
 
-    if (statusFilter == tr("Всі статуси")) {
-        filteredOrders = allOrders; // Показуємо всі, якщо вибрано "Всі статуси"
-    } else {
-        // Фільтруємо замовлення за останнім статусом
-        for (const OrderDisplayInfo &order : allOrders) {
-            if (!order.statuses.isEmpty()) {
-                // Останній статус - це останній елемент у списку, оскільки вони відсортовані за датою в БД
-                const OrderStatusDisplayInfo &lastStatus = order.statuses.last();
-                if (lastStatus.status == statusFilter) {
-                    filteredOrders.append(order);
-                }
+    for (const OrderDisplayInfo &order : allOrders) {
+        bool statusMatch = false;
+        bool dateMatch = false;
+
+        // Перевірка статусу
+        if (statusFilter == tr("Всі статуси")) {
+            statusMatch = true;
+        } else if (!order.statuses.isEmpty()) {
+            // Порівнюємо останній статус замовлення з вибраним фільтром
+            // Важливо: Переконайтесь, що рядки статусу з БД точно відповідають рядкам у ComboBox
+            if (order.statuses.last().status == statusFilter) {
+                statusMatch = true;
             }
-            // Якщо у замовлення немає статусів, воно не потрапить у фільтрований список (крім "Всі статуси")
         }
-        qInfo() << "Відфільтровано" << filteredOrders.size() << "замовлень за статусом:" << statusFilter;
+
+        // Перевірка дати (замовлення має бути створене НЕ РАНІШЕ вибраної дати)
+        // Порівнюємо тільки дати, ігноруючи час
+        if (!dateFilter.isNull() && order.orderDate.isValid()) {
+             if (order.orderDate.date() >= dateFilter) {
+                 dateMatch = true;
+             }
+        } else {
+             // Якщо дата не вибрана (або дата замовлення невалідна), вважаємо, що дата підходить
+             dateMatch = true;
+        }
+
+
+        // Додаємо замовлення, якщо воно відповідає обом фільтрам
+        if (statusMatch && dateMatch) {
+            filteredOrders.append(order);
+        }
     }
+    qInfo() << "Відфільтровано" << filteredOrders.size() << "замовлень за статусом:" << statusFilter << "та датою від:" << dateFilter.toString(Qt::ISODate);
 
 
     displayOrders(filteredOrders); // Відображаємо відфільтровані замовлення
