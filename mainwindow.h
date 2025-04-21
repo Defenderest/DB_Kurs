@@ -32,13 +32,9 @@ class QPushButton;
 class QFrame;
 class QStackedWidget;
 class QPropertyAnimation;
+class QLabel; // Додано forward declaration для QLabel у m_cartSubtotalLabels
 
-// Структура для елемента кошика
-struct CartItem {
-    BookDisplayInfo book; // Зберігаємо основну інформацію про книгу
-    int quantity;
-};
-
+// Структура CartItem тепер визначена в datatypes.h
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -127,7 +123,7 @@ private:
     QStringListModel *m_searchSuggestionModel = nullptr;
 
     // Кошик
-    QMap<int, CartItem> m_cartItems; // Ключ - bookId
+    QMap<int, CartItem> m_cartItems; // Ключ - bookId (CartItem тепер з datatypes.h)
     QMap<int, QLabel*> m_cartSubtotalLabels; // Ключ - bookId, Значення - вказівник на мітку підсумку
 
     // ID книги, що відображається на сторінці деталей

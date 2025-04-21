@@ -10,119 +10,17 @@
 #include <QVariant> // Нужно для lastInsertId() или query.value()
 #include <QVector>  // Для хранения сгенерированных ID
 #include <QDebug>
-#include <QList>    // Потрібно для QList<BookDisplayInfo>
+#include <QList>    // Потрібно для QList
+#include <QMap>     // Потрібно для QMap
 #include <QCryptographicHash> // Додано для хешування паролів
-
-// Структура для передачі даних книги в UI (перенесено з .cpp)
-struct BookDisplayInfo {
-    int bookId;
-    QString title;
-    QString authors; // Об'єднані імена авторів
-    double price;
-    QString coverImagePath;
-    int stockQuantity;
-    QString genre; // Додано поле жанру
-    bool found = false; // Прапорець, чи знайдено книгу
-};
-
-// Структура для передачі даних автора в UI
-struct AuthorDisplayInfo {
-    int authorId;
-    QString firstName;
-    QString lastName;
-    QString nationality;
-    QString imagePath; // Шлях до зображення автора
-};
-
-// Структура для передачі даних для входу
-struct CustomerLoginInfo {
-    int customerId = -1;
-    QString passwordHash;
-    bool found = false; // Прапорець, чи знайдено користувача
-};
-
-// Структура для передачі детальної інформації про книгу в UI
-struct BookDetailsInfo {
-    int bookId = -1;
-    QString title;
-    QString authors; // Об'єднані імена авторів
-    double price = 0.0;
-    QString coverImagePath;
-    int stockQuantity = 0;
-    QString genre;
-    QString description;
-    QString publisherName;
-    QDate publicationDate;
-    QString isbn;
-    int pageCount = 0;
-    QString language;
-    bool found = false; // Прапорець, чи знайдено книгу
-    // Поля для рейтингу та коментарів
-    // double averageRating; // Можна додати середній рейтинг
-    QList<struct CommentDisplayInfo> comments; // Список коментарів
-};
-
-// Структура для відображення одного коментаря
-struct CommentDisplayInfo {
-    QString authorName; // Ім'я та прізвище автора коментаря
-    QDateTime commentDate;
-    int rating; // 0-5 (0 - без оцінки)
-    QString commentText;
-};
-
-
-// Структура для передачі даних для реєстрації нового користувача
-struct CustomerRegistrationInfo {
-    QString firstName;
-    QString lastName;
-    QString email;
-    QString password; // Пароль у відкритому вигляді перед хешуванням
-};
-
-// Структура для позиції замовлення в UI
-struct OrderItemDisplayInfo {
-    QString bookTitle;
-    int quantity;
-    double pricePerUnit;
-};
-
-// Структура для статусу замовлення в UI
-struct OrderStatusDisplayInfo {
-    QString status;
-    QDateTime statusDate;
-    QString trackingNumber;
-};
-
-// Структура для повного замовлення в UI
-struct OrderDisplayInfo {
-    int orderId;
-    QDateTime orderDate;
-    double totalAmount;
-    QString shippingAddress;
-    QString paymentMethod;
-    QList<OrderItemDisplayInfo> items;
-    QList<OrderStatusDisplayInfo> statuses;
-};
-
-
-// Структура для передачі повної інформації профілю користувача в UI
-struct CustomerProfileInfo {
-    int customerId = -1;
-    QString firstName;
-    QString lastName;
-    QString email;
-    QString phone;
-    QString address;
-    QDate joinDate;
-    bool loyaltyProgram = false;
-    int loyaltyPoints = 0;
-    bool found = false; // Прапорець, чи знайдено користувача
-};
-
+#include "datatypes.h" // Включаємо файл з визначеннями структур
 
 class DatabaseManager : public QObject
 {
     Q_OBJECT
+
+    // Forward declaration для QSqlDatabase, якщо потрібно
+    // class QSqlDatabase;
 
 public:
     explicit DatabaseManager(QObject *parent = nullptr);
