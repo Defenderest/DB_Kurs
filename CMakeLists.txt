@@ -46,6 +46,14 @@ set(PROJECT_SOURCES
     datatypes.h       # Додано файл зі структурами даних
     testdata.cpp      # Додано файл генерації тестових даних
     testdata.h
+    mainwindow_utils.cpp    # Додано файл з утилітами
+    mainwindow_books.cpp    # Додано файл для логіки книг
+    mainwindow_authors.cpp  # Додано файл для логіки авторів
+    mainwindow_orders.cpp   # Додано файл для логіки замовлень
+    mainwindow_profile.cpp  # Додано файл для логіки профілю
+    mainwindow_cart.cpp     # Додано файл для логіки кошика
+    mainwindow_comments.cpp # Додано файл для логіки коментарів
+    mainwindow_search.cpp   # Додано файл для логіки пошуку
 )
 
 # --- Создание исполняемого файла ---
@@ -115,6 +123,13 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(untitled)
 endif()
 
+
 # --- (Опционально, но рекомендуется) Добавление путей для заголовочных файлов ---
 # Если структура проекта сложная, это может помочь IDE и компилятору
 target_include_directories(untitled PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+
+# --- Додавання залежностей для компіляції (якщо потрібно) ---
+# Наприклад, якщо нові файли використовують специфічні бібліотеки,
+# їх потрібно додати до target_link_libraries вище.
+# У нашому випадку всі залежності (Core, Sql, Widgets) вже є.
