@@ -317,6 +317,8 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
     // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
+} // Closing brace for eventFilter
+
 // Налаштування автодоповнення для глобального пошуку
 void MainWindow::setupSearchCompleter()
 {
