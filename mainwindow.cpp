@@ -214,6 +214,7 @@ MainWindow::~MainWindow()
         // delete m_dbManager; // Не нужно, если 'this' был родителем
     }
     delete ui;
+} // Closing brace for destructor
 
 // TODO: Додати метод для завантаження та відображення замовлень
 // void MainWindow::loadAndDisplayOrders() { ... }
