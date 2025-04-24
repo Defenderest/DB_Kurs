@@ -7,7 +7,8 @@
         <file>icons/user.png</file>
     </qresource>
     <qresource prefix="/images">
-        <file>images/banner.jpg</file>
+        <file>build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/images/banner1.jpg</file>
+        <file>build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/images/banner2.jpg</file>
     </qresource>
     <qresource prefix="/new/prefix1"/>
 </RCC>
