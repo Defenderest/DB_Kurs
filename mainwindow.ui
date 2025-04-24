@@ -933,7 +933,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                      <set>Qt::AlignmentFlag::AlignCenter</set>
                     </property>
                     <property name="scaledContents">
-                     <bool>false</bool> <!-- Вимикаємо масштабування, щоб уникнути розтягування -->
+                     <bool>true</bool> <!-- Вмикаємо масштабування, щоб зображення заповнювало QLabel -->
                     </property>
                     <property name="objectName">
                      <string>bannerImageLabel</string> <!-- Однакове ім'я для стилізації -->
@@ -950,7 +950,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                      <set>Qt::AlignmentFlag::AlignCenter</set>
                     </property>
                     <property name="scaledContents">
-                     <bool>false</bool> <!-- Вимикаємо масштабування, щоб уникнути розтягування -->
+                     <bool>true</bool> <!-- Вмикаємо масштабування, щоб зображення заповнювало QLabel -->
                     </property>
                      <property name="objectName">
                       <string>bannerImageLabel</string>
@@ -967,7 +967,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                      <set>Qt::AlignmentFlag::AlignCenter</set>
                     </property>
                     <property name="scaledContents">
-                     <bool>false</bool> <!-- Вимикаємо масштабування, щоб уникнути розтягування -->
+                     <bool>true</bool> <!-- Вмикаємо масштабування, щоб зображення заповнювало QLabel -->
                     </property>
                      <property name="objectName">
                       <string>bannerImageLabel</string>
