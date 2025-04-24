@@ -326,21 +326,17 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::setupAutoBanner()
 {
-    // 1. Вказуємо директорію з банерами та імена файлів
-    QString bannerDir = "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/images"; // Використовуємо / замість \
-    QStringList bannerFiles = {"banner1.jpg", "banner2.jpg", "banner3.jpg"}; // Переконуємось, що цей рядок коректний
-
-    // Очищаємо список шляхів перед додаванням нових
-    m_bannerImagePaths.clear();
-
-    // Формуємо повні шляхи до файлів
-    for (const QString &fileName : bannerDir) {
-        m_bannerImagePaths << QDir(bannerDir).filePath(fileName);
-    }
+    // 1. Вкажіть шляхи до ваших трьох зображень банерів у ресурсах
+    m_bannerImagePaths.clear(); // Очищаємо список перед додаванням
+    m_bannerImagePaths << ":/images/banner1.jpg"
+                       << ":/images/banner2.jpg"
+                       << ":/images/banner3.jpg";
 
     // Перевірка кількості банерів (має бути 3, як міток в UI)
-    if (m_bannerImagePaths.size() != bannerDir.size()) { // Порівнюємо з кількістю файлів
-        qWarning() << "Expected 3 banner images, but found" << m_bannerImagePaths.size();
+    // Припускаємо, що в UI є 3 QLabel: bannerLabel1, bannerLabel2, bannerLabel3
+    const int expectedBannerCount = 3;
+    if (m_bannerImagePaths.size() != expectedBannerCount) {
+        qWarning() << "Expected" << expectedBannerCount << "banner images, but found" << m_bannerImagePaths.size();
         // Можна додати обробку помилки, наприклад, не запускати таймер
         return;
     }
