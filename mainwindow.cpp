@@ -347,7 +347,8 @@ void MainWindow::updateBannerImages()
                 QSize labelSize = bannerLabels[i]->size();
                 // Перевірка на валідний розмір (більше 0)
                 if (labelSize.isValid() && labelSize.width() > 0 && labelSize.height() > 0) {
-                    QPixmap scaledPixmap = bannerPixmap.scaled(labelSize, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+                    // Змінюємо режим масштабування на KeepAspectRatio, щоб зображення завжди вміщувалося
+                    QPixmap scaledPixmap = bannerPixmap.scaled(labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
                     bannerLabels[i]->setPixmap(scaledPixmap);
                 } else {
                     // Якщо розмір ще не встановлено, просто встановлюємо оригінальний pixmap
