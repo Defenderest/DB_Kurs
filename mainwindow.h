@@ -21,6 +21,7 @@
 #include <QScrollArea> // Додано для QScrollArea (новий кошик)
 #include <QTimer>      // Додано для таймера банера
 #include <QStringList> // Додано для списку шляхів до зображень банера
+#include <QRadioButton> // Додано для індикаторів банера
 
 
 // Forward declarations

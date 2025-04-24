@@ -247,6 +247,7 @@ QLabel#bannerImageLabel { /* Використовуємо objectName, встан
 /* Стиль для самого QStackedWidget банера */
 QStackedWidget#bannerStackedWidget {
     border-radius: 8px; /* Закруглені кути для контейнера */
+    /* Не встановлюємо тут border, щоб не було подвійної рамки */
     /* Переконайтесь, що фон прозорий, щоб бачити мітки всередині */
     background-color: transparent;
 }
@@ -397,6 +398,32 @@ QLabel#emptyOrdersLabel {
 QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
     background-color: #ffffff;
     border: none; /* Прибираємо можливу рамку */
+}
+
+/* Стилі для індикаторів банера */
+QWidget#bannerIndicatorWidget { /* Контейнер для індикаторів */
+    background-color: transparent; /* Прозорий фон */
+    margin-top: -15px; /* Піднімаємо індикатори трохи вище, накладаючи на банер */
+    padding-bottom: 5px; /* Невеликий відступ знизу */
+}
+
+QRadioButton::indicator {
+    width: 10px; /* Розмір індикатора */
+    height: 10px;
+    border-radius: 5px; /* Робимо його круглим */
+    background-color: #adb5bd; /* Колір неактивного індикатора (сірий) */
+    margin: 0 3px; /* Відступи між індикаторами */
+}
+
+QRadioButton::indicator:checked {
+    background-color: #ffffff; /* Колір активного індикатора (білий) */
+    border: 1px solid #adb5bd; /* Додаємо рамку активному */
+}
+
+/* Прибираємо текст радіокнопки */
+QRadioButton {
+    spacing: 0;
+    background: transparent;
 }
 
 </string>
@@ -921,7 +948,7 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                   <set>Qt::AlignmentFlag::AlignCenter</set>
                  </property>
                  <property name="scaledContents">
-                  <bool>true</bool>
+                  <bool>true</bool> <!-- Вмикаємо масштабування вмісту -->
                  </property>
                   <property name="objectName">
                    <string>bannerImageLabel</string>
