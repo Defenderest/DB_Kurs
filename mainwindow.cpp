@@ -324,10 +324,6 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 // --- Логіка автоматичного банера ---
 
-#include <QDir> // Додаємо QDir для роботи зі шляхами
-
-// ... інші include ...
-
 void MainWindow::setupAutoBanner()
 {
     // 1. Вказуємо директорію з банерами та імена файлів
