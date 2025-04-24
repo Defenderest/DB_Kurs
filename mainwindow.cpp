@@ -382,27 +382,10 @@ void MainWindow::setupAutoBanner()
         return;
     }
 
-    // 2. Завантажуємо зображення в QLabel
-    QList<QLabel*> bannerLabels = {ui->bannerLabel1, ui->bannerLabel2, ui->bannerLabel3};
-    for (int i = 0; i < bannerLabels.size(); ++i) {
-        if (i < m_bannerImagePaths.size()) {
-            QPixmap bannerPixmap(m_bannerImagePaths[i]);
-            if (bannerPixmap.isNull()) {
-                qWarning() << "Failed to load banner image:" << m_bannerImagePaths[i];
-                bannerLabels[i]->setText(tr("Помилка завантаження банера %1").arg(i + 1));
-                bannerLabels[i]->setAlignment(Qt::AlignCenter);
-            } else {
-                // Просто встановлюємо Pixmap, scaledContents=true в UI зробить решту
-                bannerLabels[i]->setPixmap(bannerPixmap);
-                bannerLabels[i]->setAlignment(Qt::AlignCenter); // Центруємо зображення
-            }
-        } else {
-             bannerLabels[i]->setText(tr("Банер %1").arg(i + 1)); // Текст за замовчуванням, якщо шляху немає
-             bannerLabels[i]->setAlignment(Qt::AlignCenter);
-        }
-        // Переконуємось, що scaledContents увімкнено (встановлено в UI)
-        // bannerLabels[i]->setScaledContents(true); // Вже встановлено в UI
-    }
+    // 2. Викликаємо функцію для початкового завантаження та масштабування зображень
+    // Важливо: розміри віджетів можуть бути ще не остаточними тут.
+    // resizeEvent буде викликаний пізніше для коректного масштабування.
+    updateBannerImages();
 
     // 3. Налаштовуємо та запускаємо таймер
     m_bannerTimer = new QTimer(this);

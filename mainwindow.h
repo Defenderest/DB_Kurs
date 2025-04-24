@@ -113,6 +113,7 @@ private:
     void setupSearchCompleter();
     // void setupBannerImage(); // Видалено, замінено на setupAutoBanner
     void setupAutoBanner(); // Налаштування автоматичного банера
+    void updateBannerImages(); // Оновлення зображень банера
 
     // Члени класу
     Ui::MainWindow *ui;
@@ -146,6 +147,8 @@ private:
 protected:
     // Перехоплення подій для sidebarFrame
     bool eventFilter(QObject *watched, QEvent *event) override;
+    // Перевизначення події зміни розміру вікна
+    void resizeEvent(QResizeEvent *event) override;
 
 };
 #endif // MAINWINDOW_H
