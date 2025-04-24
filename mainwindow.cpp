@@ -39,6 +39,7 @@
 #include <QToolButton>      // Додано для кнопки видалення в кошику
 #include <QMap>             // Додано для m_cartItems
 #include <QScrollArea>      // Додано для нового кошика
+#include <QTimer>           // Додано для таймера банера
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -198,8 +199,8 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     // Блок else для помилки підключення більше не потрібен тут,
     // оскільки dbManager передається і перевіряється на початку конструктора.
 
-    // Встановлюємо банер програмно
-    setupBannerImage();
+    // Встановлюємо автоматичний банер програмно
+    setupAutoBanner();
 
     // Підключаємо кнопку відправки коментаря
     connect(ui->sendCommentButton, &QPushButton::clicked, this, &MainWindow::on_sendCommentButton_clicked);
@@ -319,6 +320,66 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
 } // Closing brace for eventFilter
+
+
+// --- Логіка автоматичного банера ---
+
+void MainWindow::setupAutoBanner()
+{
+    // 1. Вкажіть шляхи до ваших трьох зображень банерів у ресурсах
+    m_bannerImagePaths << ":/images/banner1.jpg"
+                       << ":/images/banner2.jpg"
+                       << ":/images/banner3.jpg";
+
+    // Перевірка кількості банерів (має бути 3, як міток в UI)
+    if (m_bannerImagePaths.size() != 3) {
+        qWarning() << "Expected 3 banner images, but found" << m_bannerImagePaths.size();
+        // Можна додати обробку помилки, наприклад, не запускати таймер
+        return;
+    }
+
+    // 2. Завантажуємо зображення в QLabel
+    QList<QLabel*> bannerLabels = {ui->bannerLabel1, ui->bannerLabel2, ui->bannerLabel3};
+    for (int i = 0; i < bannerLabels.size(); ++i) {
+        if (i < m_bannerImagePaths.size()) {
+            QPixmap bannerPixmap(m_bannerImagePaths[i]);
+            if (bannerPixmap.isNull()) {
+                qWarning() << "Failed to load banner image:" << m_bannerImagePaths[i];
+                bannerLabels[i]->setText(tr("Помилка завантаження банера %1").arg(i + 1));
+            } else {
+                // Масштабуємо зображення, зберігаючи пропорції та заповнюючи QLabel
+                bannerLabels[i]->setPixmap(bannerPixmap.scaled(bannerLabels[i]->size(),
+                                                               Qt::KeepAspectRatioByExpanding, // Зберігаємо пропорції, обрізаючи зайве
+                                                               Qt::SmoothTransformation));
+                bannerLabels[i]->setAlignment(Qt::AlignCenter); // Центруємо зображення
+            }
+        } else {
+             bannerLabels[i]->setText(tr("Банер %1").arg(i + 1)); // Текст за замовчуванням, якщо шляху немає
+             bannerLabels[i]->setAlignment(Qt::AlignCenter);
+        }
+        // Переконуємось, що scaledContents увімкнено (хоча вже встановлено в UI)
+        bannerLabels[i]->setScaledContents(false); // Вимикаємо, бо масштабуємо вручну вище
+    }
+
+    // 3. Налаштовуємо та запускаємо таймер
+    m_bannerTimer = new QTimer(this);
+    connect(m_bannerTimer, &QTimer::timeout, this, &MainWindow::showNextBanner);
+    m_bannerTimer->start(5000); // Перемикати кожні 5 секунд (5000 мс)
+
+    // 4. Встановлюємо початковий банер
+    ui->bannerStackedWidget->setCurrentIndex(m_currentBannerIndex);
+}
+
+void MainWindow::showNextBanner()
+{
+    if (m_bannerImagePaths.isEmpty()) return; // Немає банерів для показу
+
+    m_currentBannerIndex = (m_currentBannerIndex + 1) % m_bannerImagePaths.size();
+    ui->bannerStackedWidget->setCurrentIndex(m_currentBannerIndex);
+}
+
+// --- Кінець логіки автоматичного банера ---
+
 
 // [Визначення функцій setupSearchCompleter та updateSearchSuggestions переміщено до mainwindow_search.cpp]
 

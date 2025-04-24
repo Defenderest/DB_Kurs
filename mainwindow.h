@@ -19,6 +19,9 @@
 #include <QMap>        // Додано для QMap (використовується для кошика)
 #include <QSpinBox>    // Додано для QSpinBox (використовується в кошику)
 #include <QScrollArea> // Додано для QScrollArea (новий кошик)
+#include <QTimer>      // Додано для таймера банера
+#include <QStringList> // Додано для списку шляхів до зображень банера
+
 
 // Forward declarations
 class DatabaseManager;
@@ -69,6 +72,7 @@ private slots:
     void on_placeOrderButton_clicked(); // Слот для кнопки "Оформити замовлення"
     void on_sendCommentButton_clicked(); // Слот для кнопки відправки коментаря
     void showOrderDetailsPlaceholder(int orderId); // Тимчасовий слот для деталей замовлення
+    void showNextBanner(); // Слот для перемикання банера
 
 private:
     // Допоміжні функції для відображення даних
@@ -105,7 +109,8 @@ private:
     void setupSidebarAnimation();
     void toggleSidebar(bool expand);
     void setupSearchCompleter();
-    void setupBannerImage(); // Додано оголошення для встановлення банера
+    // void setupBannerImage(); // Видалено, замінено на setupAutoBanner
+    void setupAutoBanner(); // Налаштування автоматичного банера
 
     // Члени класу
     Ui::MainWindow *ui;
@@ -128,6 +133,12 @@ private:
 
     // ID книги, що відображається на сторінці деталей
     int m_currentBookDetailsId = -1;
+
+    // Члени для автоматичного банера
+    QTimer *m_bannerTimer = nullptr;
+    QStringList m_bannerImagePaths;
+    int m_currentBannerIndex = 0;
+
 
 protected:
     // Перехоплення подій для sidebarFrame

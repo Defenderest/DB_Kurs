@@ -237,15 +237,19 @@ QLabel#bannerLabel {
    background-image: url(:/images/banner.jpg); /* Шлях до фонового зображення */
    background-repeat: no-repeat;
    background-position: center;
-   background-size: 100% 100%; /* Масштабування зображення */
-   border-radius: 6px;
-   color: #ffffff; /* Білий колір тексту */
-   text-shadow: 1px 1px 3px rgba(0, 0, 0, 1); /* Тінь для тексту */
-   font-size: 20pt;
-   font-weight: 500;
-   padding: 25px;
-   text-align: center;
+   /* Стиль для банерів всередині QStackedWidget */
+   border-radius: 8px; /* Закруглені кути */
+   background-color: #e0e0e0; /* Фоновий колір, якщо зображення не завантажено */
+   /* background-image, background-repeat, etc. будуть встановлені в коді */
 }
+
+/* Стиль для самого QStackedWidget банера */
+QStackedWidget#bannerStackedWidget {
+    border-radius: 8px; /* Закруглені кути для контейнера */
+    /* Переконайтесь, що фон прозорий, щоб бачити мітки всередині */
+    background-color: transparent;
+}
+
 
 QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel,
 QLabel#classicsHeaderLabel, QLabel#fantasyHeaderLabel, QLabel#nonFictionHeaderLabel {
@@ -850,36 +854,78 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                <number>20</number>
               </property>
               <item>
-               <widget class="QLabel" name="bannerLabel">
+               <!-- Замінюємо QLabel на QStackedWidget для банерів -->
+               <widget class="QStackedWidget" name="bannerStackedWidget">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>300</height> <!-- Збільшено мінімальну висоту вдвічі -->
+                  <height>250</height> <!-- Встановлюємо бажану висоту банера -->
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>250</height> <!-- Фіксована висота -->
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string>/* Повертаємо стилі для фону, щоб текст був видимий */
-background-image: url(:/images/banner.jpg);
-background-repeat: no-repeat;
-background-position: center;
-background-size: cover;
-border-radius: 6px;
-color: #ffffff;
-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-font-size: 20pt;
-font-weight: 500;
-padding: 25px;
-text-align: center;</string>
+                 <string notr="true">/* Стиль для QStackedWidget#bannerStackedWidget визначено вище */</string>
                 </property>
-                <property name="text">
-                 <string>📚 Новинки та Популярні Книги 📚</string> <!-- Додано символи книги -->
+                <property name="currentIndex">
+                 <number>0</number>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignmentFlag::AlignCenter</set>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
+                <!-- Додаємо три QLabel для банерів -->
+                <widget class="QLabel" name="bannerLabel1">
+                 <property name="styleSheet">
+                  <string notr="true">/* Стиль для QLabel#bannerLabel визначено вище */</string>
+                 </property>
+                 <property name="text">
+                  <string/> <!-- Текст не потрібен, буде зображення -->
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignmentFlag::AlignCenter</set>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool> <!-- Масштабуємо вміст (зображення) -->
+                 </property>
+                 <property name="objectName">
+                  <string>bannerImageLabel</string> <!-- Однакове ім'я для стилізації -->
+                 </property>
+                </widget>
+                <widget class="QLabel" name="bannerLabel2">
+                 <property name="styleSheet">
+                  <string notr="true">/* Стиль для QLabel#bannerLabel визначено вище */</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignmentFlag::AlignCenter</set>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                  <property name="objectName">
+                   <string>bannerImageLabel</string>
+                  </property>
+                </widget>
+                <widget class="QLabel" name="bannerLabel3">
+                 <property name="styleSheet">
+                  <string notr="true">/* Стиль для QLabel#bannerLabel визначено вище */</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignmentFlag::AlignCenter</set>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                  <property name="objectName">
+                   <string>bannerImageLabel</string>
+                  </property>
+                </widget>
                </widget>
               </item>
               <item>
