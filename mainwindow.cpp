@@ -349,9 +349,23 @@ void MainWindow::updateBannerImages()
                 if (labelSize.isValid() && labelSize.width() > 0 && labelSize.height() > 0) {
                     // Змінюємо режим масштабування на KeepAspectRatio, щоб зображення завжди вміщувалося
                     QPixmap scaledPixmap = bannerPixmap.scaled(labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+                    // Створюємо маску для заокруглення кутів
+                    QBitmap mask(scaledPixmap.size());
+                    mask.fill(Qt::color0); // Повністю прозора маска
+                    QPainter painter(&mask);
+                    painter.setRenderHint(QPainter::Antialiasing);
+                    painter.setBrush(Qt::color1); // Непрозорий колір для малювання
+                    painter.drawRoundedRect(scaledPixmap.rect(), 8, 8); // 8px радіус заокруглення
+                    painter.end();
+
+                    // Застосовуємо маску до зображення
+                    scaledPixmap.setMask(mask);
+
                     bannerLabels[i]->setPixmap(scaledPixmap);
                 } else {
                     // Якщо розмір ще не встановлено, просто встановлюємо оригінальний pixmap
+                    // (заокруглення тут не застосовується, бо розмір невідомий)
                     // або чекаємо наступного resizeEvent
                     bannerLabels[i]->setPixmap(bannerPixmap);
                     qDebug() << "Banner label" << i+1 << "size is invalid during update:" << labelSize << ". Setting original pixmap.";
@@ -383,10 +397,9 @@ void MainWindow::setupAutoBanner()
         return;
     }
 
-    // 2. Викликаємо функцію для початкового завантаження та масштабування зображень
-    // Важливо: розміри віджетів можуть бути ще не остаточними тут.
-    // resizeEvent буде викликаний пізніше для коректного масштабування.
-    updateBannerImages();
+    // 2. Плануємо початкове завантаження та масштабування зображень за допомогою QTimer::singleShot.
+    // Це гарантує, що розміри віджетів будуть розраховані перед першим оновленням.
+    QTimer::singleShot(0, this, &MainWindow::updateBannerImages);
 
     // 3. Налаштовуємо та запускаємо таймер
     m_bannerTimer = new QTimer(this);
