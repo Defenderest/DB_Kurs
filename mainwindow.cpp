@@ -334,12 +334,12 @@ void MainWindow::setupAutoBanner()
     m_bannerImagePaths.clear();
 
     // Формуємо повні шляхи до файлів
-    for (const QString &fileName : bannerFiles) {
+    for (const QString &fileName : bannerDir) {
         m_bannerImagePaths << QDir(bannerDir).filePath(fileName);
     }
 
     // Перевірка кількості банерів (має бути 3, як міток в UI)
-    if (m_bannerImagePaths.size() != bannerFiles.size()) { // Порівнюємо з кількістю файлів
+    if (m_bannerImagePaths.size() != bannerDir.size()) { // Порівнюємо з кількістю файлів
         qWarning() << "Expected 3 banner images, but found" << m_bannerImagePaths.size();
         // Можна додати обробку помилки, наприклад, не запускати таймер
         return;
