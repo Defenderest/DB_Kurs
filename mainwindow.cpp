@@ -397,9 +397,8 @@ void MainWindow::setupAutoBanner()
         return;
     }
 
-    // 2. Плануємо початкове завантаження та масштабування зображень за допомогою QTimer::singleShot.
-    // Це гарантує, що розміри віджетів будуть розраховані перед першим оновленням.
-    QTimer::singleShot(0, this, &MainWindow::updateBannerImages);
+    // 2. Початкове завантаження та масштабування зображень відбудеться під час першого resizeEvent.
+    // Тому тут не викликаємо updateBannerImages() або QTimer::singleShot.
 
     // 3. Налаштовуємо та запускаємо таймер
     m_bannerTimer = new QTimer(this);
