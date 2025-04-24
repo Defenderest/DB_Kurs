@@ -356,7 +356,7 @@ void MainWindow::updateBannerImages()
                     QPainter painter(&mask);
                     painter.setRenderHint(QPainter::Antialiasing);
                     painter.setBrush(Qt::color1); // Непрозорий колір для малювання
-                    painter.drawRoundedRect(scaledPixmap.rect(), 8, 8); // 8px радіус заокруглення
+                    painter.drawRoundedRect(scaledPixmap.rect(), 18, 18); // 18px радіус заокруглення
                     painter.end();
 
                     // Застосовуємо маску до зображення
