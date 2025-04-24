@@ -233,15 +233,16 @@ QLabel#logoLabel {
    color: #000000;
    padding-left: 0px;
 }
-QLabel#bannerLabel {
-   background-image: url(:/images/banner.jpg); /* Шлях до фонового зображення */
-   background-repeat: no-repeat;
-   background-position: center;
-   /* Стиль для банерів всередині QStackedWidget */
+/* Стиль для QLabel#bannerLabel більше не потрібен, оскільки банери встановлюються в коді */
+/* QLabel#bannerLabel { ... } */
+
+/* Стиль для міток банерів всередині QStackedWidget */
+QLabel#bannerImageLabel { /* Використовуємо objectName, встановлений в UI */
    border-radius: 8px; /* Закруглені кути */
    background-color: #e0e0e0; /* Фоновий колір, якщо зображення не завантажено */
-   /* background-image, background-repeat, etc. будуть встановлені в коді */
+   /* background-image встановлюється в коді */
 }
+
 
 /* Стиль для самого QStackedWidget банера */
 QStackedWidget#bannerStackedWidget {
