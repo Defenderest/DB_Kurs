@@ -328,7 +328,7 @@ void MainWindow::setupAutoBanner()
 {
     // 1. Вказуємо директорію з банерами та імена файлів
     QString bannerDir = "D:/projects/DB_Kurs/QtAPP/untitled/build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/images"; // Використовуємо / замість \
-    QStringList bannerFiles = {"banner1.jpg", "banner2.jpg", "banner3.jpg"};
+    QStringList bannerFiles = {"banner1.jpg", "banner2.jpg", "banner3.jpg"}; // Переконуємось, що цей рядок коректний
 
     // Очищаємо список шляхів перед додаванням нових
     m_bannerImagePaths.clear();
