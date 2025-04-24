@@ -324,6 +324,47 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 // --- Логіка автоматичного банера ---
 
+// Нова функція для оновлення зображень банера
+void MainWindow::updateBannerImages()
+{
+    QList<QLabel*> bannerLabels = {ui->bannerLabel1, ui->bannerLabel2, ui->bannerLabel3};
+
+    // Перевіряємо, чи шляхи до зображень вже завантажені
+    if (m_bannerImagePaths.isEmpty()) {
+        qWarning() << "Banner image paths are empty. Cannot update images.";
+        return;
+    }
+
+    for (int i = 0; i < bannerLabels.size(); ++i) {
+        if (i < m_bannerImagePaths.size() && bannerLabels[i]) {
+            QPixmap bannerPixmap(m_bannerImagePaths[i]);
+            if (bannerPixmap.isNull()) {
+                qWarning() << "Failed to load banner image:" << m_bannerImagePaths[i];
+                bannerLabels[i]->setText(tr("Помилка завантаження банера %1").arg(i + 1));
+                bannerLabels[i]->setAlignment(Qt::AlignCenter);
+            } else {
+                // Масштабуємо Pixmap до поточного розміру QLabel, зберігаючи пропорції та заповнюючи простір
+                QSize labelSize = bannerLabels[i]->size();
+                // Перевірка на валідний розмір (більше 0)
+                if (labelSize.isValid() && labelSize.width() > 0 && labelSize.height() > 0) {
+                    QPixmap scaledPixmap = bannerPixmap.scaled(labelSize, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+                    bannerLabels[i]->setPixmap(scaledPixmap);
+                } else {
+                    // Якщо розмір ще не встановлено, просто встановлюємо оригінальний pixmap
+                    // або чекаємо наступного resizeEvent
+                    bannerLabels[i]->setPixmap(bannerPixmap);
+                    qDebug() << "Banner label" << i+1 << "size is invalid during update:" << labelSize << ". Setting original pixmap.";
+                }
+                bannerLabels[i]->setAlignment(Qt::AlignCenter); // Центруємо зображення
+            }
+        } else if (bannerLabels[i]) {
+             bannerLabels[i]->setText(tr("Банер %1").arg(i + 1)); // Текст за замовчуванням, якщо шляху немає
+             bannerLabels[i]->setAlignment(Qt::AlignCenter);
+        }
+    }
+}
+
+
 void MainWindow::setupAutoBanner()
 {
     // 1. Вкажіть шляхи до ваших трьох зображень банерів у ресурсах
@@ -405,6 +446,18 @@ void MainWindow::showNextBanner()
 }
 
 // --- Кінець логіки автоматичного банера ---
+
+
+// --- Обробка зміни розміру вікна ---
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    // Викликаємо реалізацію базового класу
+    QMainWindow::resizeEvent(event);
+
+    // Оновлюємо зображення банерів відповідно до нового розміру
+    updateBannerImages();
+}
+// --- Кінець обробки зміни розміру вікна ---
 
 
 // [Визначення функцій setupSearchCompleter та updateSearchSuggestions переміщено до mainwindow_search.cpp]

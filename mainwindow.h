@@ -22,6 +22,7 @@
 #include <QTimer>      // Додано для таймера банера
 #include <QStringList> // Додано для списку шляхів до зображень банера
 #include <QRadioButton> // Додано для індикаторів банера
+#include <QResizeEvent> // Додано для обробки зміни розміру
 
 
 // Forward declarations
