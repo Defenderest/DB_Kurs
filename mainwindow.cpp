@@ -349,19 +349,18 @@ void MainWindow::setupAutoBanner()
             if (bannerPixmap.isNull()) {
                 qWarning() << "Failed to load banner image:" << m_bannerImagePaths[i];
                 bannerLabels[i]->setText(tr("Помилка завантаження банера %1").arg(i + 1));
+                bannerLabels[i]->setAlignment(Qt::AlignCenter);
             } else {
-                // Масштабуємо зображення, зберігаючи пропорції та заповнюючи QLabel
-                bannerLabels[i]->setPixmap(bannerPixmap.scaled(bannerLabels[i]->size(),
-                                                               Qt::KeepAspectRatioByExpanding, // Зберігаємо пропорції, обрізаючи зайве
-                                                               Qt::SmoothTransformation));
+                // Просто встановлюємо Pixmap, scaledContents=true в UI зробить решту
+                bannerLabels[i]->setPixmap(bannerPixmap);
                 bannerLabels[i]->setAlignment(Qt::AlignCenter); // Центруємо зображення
             }
         } else {
              bannerLabels[i]->setText(tr("Банер %1").arg(i + 1)); // Текст за замовчуванням, якщо шляху немає
              bannerLabels[i]->setAlignment(Qt::AlignCenter);
         }
-        // Переконуємось, що scaledContents увімкнено (хоча вже встановлено в UI)
-        bannerLabels[i]->setScaledContents(false); // Вимикаємо, бо масштабуємо вручну вище
+        // Переконуємось, що scaledContents увімкнено (встановлено в UI)
+        // bannerLabels[i]->setScaledContents(true); // Вже встановлено в UI
     }
 
     // 3. Налаштовуємо та запускаємо таймер
@@ -369,16 +368,40 @@ void MainWindow::setupAutoBanner()
     connect(m_bannerTimer, &QTimer::timeout, this, &MainWindow::showNextBanner);
     m_bannerTimer->start(5000); // Перемикати кожні 5 секунд (5000 мс)
 
-    // 4. Встановлюємо початковий банер
+    // 4. Збираємо індикатори
+    m_bannerIndicators << ui->indicatorDot1 << ui->indicatorDot2 << ui->indicatorDot3;
+    // Перевіряємо, чи кількість індикаторів відповідає кількості банерів
+    if (m_bannerIndicators.size() != m_bannerImagePaths.size()) {
+        qWarning() << "Mismatch between number of banner images and indicator dots!";
+        // Можливо, варто відключити індикатори або таймер
+    }
+
+    // 5. Встановлюємо початковий банер та індикатор
     ui->bannerStackedWidget->setCurrentIndex(m_currentBannerIndex);
+    if (!m_bannerIndicators.isEmpty() && m_currentBannerIndex < m_bannerIndicators.size()) {
+        m_bannerIndicators[m_currentBannerIndex]->setChecked(true);
+    }
 }
 
 void MainWindow::showNextBanner()
 {
-    if (m_bannerImagePaths.isEmpty()) return; // Немає банерів для показу
+    if (m_bannerImagePaths.isEmpty() || m_bannerIndicators.isEmpty()) return; // Немає банерів або індикаторів
 
+    // Знімаємо позначку з поточного індикатора
+    if (m_currentBannerIndex < m_bannerIndicators.size()) {
+        m_bannerIndicators[m_currentBannerIndex]->setChecked(false);
+    }
+
+    // Переходимо до наступного індексу
     m_currentBannerIndex = (m_currentBannerIndex + 1) % m_bannerImagePaths.size();
+
+    // Встановлюємо новий банер
     ui->bannerStackedWidget->setCurrentIndex(m_currentBannerIndex);
+
+    // Встановлюємо позначку на новому індикаторі
+    if (m_currentBannerIndex < m_bannerIndicators.size()) {
+        m_bannerIndicators[m_currentBannerIndex]->setChecked(true);
+    }
 }
 
 // --- Кінець логіки автоматичного банера ---

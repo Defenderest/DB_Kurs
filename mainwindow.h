@@ -138,6 +138,7 @@ private:
     QTimer *m_bannerTimer = nullptr;
     QStringList m_bannerImagePaths;
     int m_currentBannerIndex = 0;
+    QList<QRadioButton*> m_bannerIndicators; // Список індикаторів
 
 
 protected:
