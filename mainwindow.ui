@@ -870,13 +870,13 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                <number>20</number>
               </property>
               <property name="leftMargin">
-               <number>0</number> <!-- Прибираємо лівий відступ -->
+               <number>20</number> <!-- Додаємо лівий відступ -->
               </property>
               <property name="topMargin">
                <number>10</number>
               </property>
               <property name="rightMargin">
-               <number>0</number> <!-- Прибираємо правий відступ -->
+               <number>20</number> <!-- Додаємо правий відступ -->
               </property>
               <property name="bottomMargin">
                <number>20</number>
@@ -887,13 +887,13 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>200</height> <!-- Зменшено висоту банера -->
+                  <height>300</height> <!-- Збільшено висоту банера -->
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>200</height> <!-- Зменшено висоту банера -->
+                  <height>300</height> <!-- Збільшено висоту банера -->
                  </size>
                 </property>
                 <property name="styleSheet">
