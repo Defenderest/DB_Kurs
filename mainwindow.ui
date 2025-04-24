@@ -889,13 +889,13 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                   <number>0</number> <!-- Без відступу між банером та індикаторами -->
                  </property>
                  <property name="leftMargin">
-                  <number>20</number> <!-- Встановлюємо лівий відступ -->
+                  <number>0</number> <!-- Прибираємо лівий відступ -->
                  </property>
                  <property name="topMargin">
                   <number>0</number>
                  </property>
                  <property name="rightMargin">
-                  <number>20</number> <!-- Встановлюємо правий відступ -->
+                  <number>0</number> <!-- Прибираємо правий відступ -->
                  </property>
                  <property name="bottomMargin">
                   <number>0</number>
