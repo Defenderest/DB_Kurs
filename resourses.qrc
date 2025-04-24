@@ -5,10 +5,16 @@
         <file>icons/users.png</file>
         <file>icons/shopping-bag.png</file>
         <file>icons/user.png</file>
+        <file>icons/down-arrow.png</file> <!-- Додано іконку стрілки вниз -->
+        <file>icons/up-arrow.png</file>   <!-- Додано іконку стрілки вгору -->
     </qresource>
     <qresource prefix="/images">
-        <file>build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/images/banner1.jpg</file>
-        <file>build/Desktop_Qt_6_8_0_MinGW_64_bit-Debug/images/banner2.jpg</file>
+        <!-- Виправлено шляхи до банерів - тепер вони відносні до файлу .qrc -->
+        <!-- Переконайтесь, що папка 'images' існує поруч з .qrc файлом -->
+        <file alias="banner1.jpg">images/banner1.jpg</file>
+        <file alias="banner2.jpg">images/banner2.jpg</file>
+        <file alias="banner3.jpg">images/banner3.jpg</file> <!-- Додано третій банер -->
+        <!-- Додайте сюди інші зображення, якщо потрібно -->
     </qresource>
-    <qresource prefix="/new/prefix1"/>
+    <!-- <qresource prefix="/new/prefix1"/> - Можна видалити, якщо не використовується -->
 </RCC>
