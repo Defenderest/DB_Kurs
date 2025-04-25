@@ -373,6 +373,43 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
         qWarning() << "populateBookDetailsPage: Could not find all comment input widgets!";
     }
 
+    // 7. Схожі книги (додано)
+    // Перевіряємо наявність віджетів для схожих книг (припущення)
+    // Потрібно переконатися, що ui->similarBooksWidget та ui->similarBooksLayout існують у вашому .ui файлі
+    if (ui->similarBooksWidget && ui->similarBooksLayout) {
+        if (!details.genre.isEmpty() && m_dbManager) {
+            QList<BookDisplayInfo> similarBooks = m_dbManager->getSimilarBooks(details.bookId, details.genre, 5); // Отримуємо до 5 схожих книг
+
+            if (!similarBooks.isEmpty()) {
+                // Очищаємо попередній вміст layout для схожих книг
+                clearLayout(ui->similarBooksLayout);
+
+                // Додаємо заголовок секції (можна створити QLabel програмно або використати існуючий)
+                // Наприклад, якщо є ui->similarBooksTitleLabel:
+                // ui->similarBooksTitleLabel->setText(tr("Схожі книги"));
+                // ui->similarBooksTitleLabel->setVisible(true);
+
+                // Відображаємо книги у горизонтальному layout
+                displayBooksInHorizontalLayout(similarBooks, ui->similarBooksLayout);
+                ui->similarBooksWidget->setVisible(true); // Показуємо контейнер
+                qInfo() << "Displayed" << similarBooks.count() << "similar books.";
+            } else {
+                // Якщо схожих книг немає, ховаємо секцію
+                clearLayout(ui->similarBooksLayout); // Очищаємо layout на випадок, якщо там було повідомлення
+                ui->similarBooksWidget->setVisible(false);
+                qInfo() << "No similar books found for genre:" << details.genre;
+            }
+        } else {
+            // Якщо жанр невідомий або немає dbManager, ховаємо секцію
+            clearLayout(ui->similarBooksLayout);
+            ui->similarBooksWidget->setVisible(false);
+            qWarning() << "Cannot fetch similar books: Genre is empty or dbManager is null.";
+        }
+    } else {
+        qWarning() << "populateBookDetailsPage: similarBooksWidget or similarBooksLayout not found in UI definition! Cannot display similar books.";
+        // Можна опціонально сховати віджет, якщо він існує, але layout - ні
+        if(ui->similarBooksWidget) ui->similarBooksWidget->setVisible(false);
+    }
 
     qInfo() << "Book details page populated for:" << details.title;
 }
