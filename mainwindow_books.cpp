@@ -20,10 +20,10 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     // Основний віджет картки (використовуємо QFrame для рамки)
     QFrame *cardFrame = new QFrame();
     cardFrame->setFrameShape(QFrame::StyledPanel); // Додає рамку
-    cardFrame->setFrameShadow(QFrame::Plain); // Змінено тінь на Plain (або Sunken)
+    cardFrame->setFrameShadow(QFrame::Plain);
     cardFrame->setLineWidth(1);
-    cardFrame->setMinimumSize(180, 280); // Зменшено мінімальний розмір
-    // cardFrame->setMaximumSize(220, 320); // Можна встановити максимальний розмір
+    cardFrame->setMinimumSize(190, 350); // Збільшено висоту картки
+    // cardFrame->setMaximumSize(230, 370); // Можна встановити максимальний розмір
     cardFrame->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     // Оновлений стиль картки: білий фон, світла рамка, більше заокруглення
     cardFrame->setStyleSheet(
@@ -44,8 +44,8 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     // 1. Обкладинка книги (QLabel)
     QLabel *coverLabel = new QLabel();
     coverLabel->setAlignment(Qt::AlignCenter);
-    coverLabel->setMinimumHeight(140); // Зменшено мінімальну висоту
-    coverLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); // Змінено вертикальну політику
+    coverLabel->setMinimumHeight(200); // Збільшено мінімальну висоту для обкладинки
+    coverLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // Дозволяємо розтягуватись
     QPixmap coverPixmap(bookInfo.coverImagePath);
     if (coverPixmap.isNull() || bookInfo.coverImagePath.isEmpty()) {
         coverLabel->setText(tr("Фото")); // Коротший плейсхолдер
@@ -88,13 +88,42 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     priceLabel->setStyleSheet("QLabel { font-weight: 600; color: #212529; font-size: 11pt; }"); // Змінено стиль
     footerLayout->addWidget(priceLabel);
 
-    // Додаємо розтягувач між ціною та кнопкою
+    // Додаємо розтягувач між ціною та кнопками
     footerLayout->addStretch(1);
 
-    // 5. Кнопка "Додати в кошик" (QPushButton)
-    QPushButton *addToCartButton = new QPushButton("🛒"); // Тільки іконка
-    addToCartButton->setFixedSize(32, 32); // Фіксований розмір для круглої кнопки
-    // Стиль для круглої кнопки, схожий на кнопки в хедері
+    // 5. Кнопка "Додати в обране" (QPushButton)
+    QPushButton *wishlistButton = new QPushButton("❤️"); // Іконка серця
+    wishlistButton->setFixedSize(32, 32);
+    wishlistButton->setToolTip(tr("Додати '%1' до обраного").arg(bookInfo.title));
+    wishlistButton->setProperty("bookId", bookInfo.bookId);
+    // Стиль для кнопки "В обране" (аналогічно до кошика, але можна змінити колір при наведенні)
+    wishlistButton->setStyleSheet(
+        "QPushButton {"
+        "  background-color: #f8f9fa;"
+        "  color: #dc3545;"           // Червоний колір для серця
+        "  border: 1px solid #dee2e6;"
+        "  border-radius: 16px;"
+        "  font-size: 12pt;"
+        "}"
+        "QPushButton:hover {"
+        "  background-color: #f8d7da;" // Світло-червоний фон при наведенні
+        "  border-color: #f5c6cb;"
+        "}"
+        "QPushButton:pressed {"
+        "  background-color: #f1b0b7;"
+        "}");
+    // TODO: Підключити сигнал до слота додавання в обране
+    connect(wishlistButton, &QPushButton::clicked, this, [this, bookId = bookInfo.bookId]() {
+        qInfo() << "Wishlist button clicked for book ID:" << bookId;
+        // Тут буде виклик on_addToWishlistButtonClicked(bookId);
+        QMessageBox::information(this, tr("Обране"), tr("Функціонал додавання в обране ще не реалізовано."));
+    });
+    footerLayout->addWidget(wishlistButton); // Додаємо кнопку в горизонтальний layout
+
+    // 6. Кнопка "Додати в кошик" (QPushButton)
+    QPushButton *addToCartButton = new QPushButton("🛒"); // Іконка кошика
+    addToCartButton->setFixedSize(32, 32);
+    // Стиль для кнопки "В кошик"
     addToCartButton->setStyleSheet(
         "QPushButton {"
         "  background-color: #f8f9fa;" // Світлий фон
