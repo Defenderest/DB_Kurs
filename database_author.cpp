@@ -72,17 +72,28 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
         LIMIT 1;
     )";
 
-    QSqlQuery authorQuery(m_db);
-    authorQuery.prepare(authorSql);
-    authorQuery.bindValue(":authorId", authorId);
+    // --- Тимчасова зміна для діагностики помилки "EXECUTE (9)" ---
+    // !!! ПОПЕРЕДЖЕННЯ: Цей підхід вразливий до SQL ін'єкцій і використовується лише для тестування.
+    // !!! Поверніться до prepare/bindValue після діагностики.
+    QString directAuthorSql = QString(R"(
+        SELECT
+            author_id, first_name, last_name, nationality, image_path, biography, birth_date, death_date
+        FROM author
+        WHERE author_id = %1
+        LIMIT 1;
+    )").arg(authorId); // Пряма підстановка ID
 
-    qInfo() << "Executing SQL to get author details for author ID:" << authorId;
-    if (!authorQuery.exec()) {
-        qCritical() << "Помилка при отриманні деталей автора для author ID '" << authorId << "':";
+    QSqlQuery authorQuery(m_db);
+    qInfo() << "Executing DIRECT SQL to get author details for author ID:" << authorId;
+    qInfo() << "Direct SQL:" << directAuthorSql; // Логуємо прямий запит
+
+    if (!authorQuery.exec(directAuthorSql)) { // Виконуємо прямий запит
+        qCritical() << "Помилка при отриманні деталей автора (прямий запит) для author ID '" << authorId << "':";
         qCritical() << authorQuery.lastError().text();
-        qCritical() << "SQL запит:" << authorQuery.lastQuery();
+        qCritical() << "SQL запит:" << directAuthorSql; // Логуємо прямий запит у разі помилки
         return details;
     }
+    // --- Кінець тимчасової зміни ---
 
     if (authorQuery.next()) {
         details.authorId = authorQuery.value("author_id").toInt();
