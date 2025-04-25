@@ -2632,6 +2632,94 @@ margin-bottom: 8px;</string>
             </layout>
            </widget>
           </item>
+          <!-- Розділювач перед схожими книгами -->
+          <item>
+           <widget class="Line" name="similarBooksSeparator">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <!-- Секція Схожі книги -->
+          <item>
+           <widget class="QWidget" name="similarBooksWidget" native="true">
+            <property name="visible">
+             <bool>false</bool> <!-- Приховано за замовчуванням -->
+            </property>
+            <layout class="QVBoxLayout" name="similarBooksOuterLayout">
+             <property name="spacing">
+              <number>10</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="similarBooksHeaderLabel">
+               <property name="styleSheet">
+                <string notr="true">font-size: 14pt; font-weight: 600; color: #333; margin-bottom: 5px;</string>
+               </property>
+               <property name="text">
+                <string>Схожі книги</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QScrollArea" name="similarBooksScrollArea">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>340</height> <!-- Висота як у горизонтальних секцій на головній -->
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::Shape::NoFrame</enum>
+               </property>
+               <property name="verticalScrollBarPolicy">
+                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+               </property>
+               <property name="horizontalScrollBarPolicy">
+                <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+               </property>
+               <property name="widgetResizable">
+                <bool>true</bool>
+               </property>
+               <widget class="QWidget" name="similarBooksContainerWidget">
+                <property name="styleSheet">
+                 <string notr="true">background-color: transparent;</string>
+                </property>
+                <layout class="QHBoxLayout" name="similarBooksLayout">
+                 <property name="spacing">
+                  <number>15</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>10</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>10</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>10</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>10</number>
+                 </property>
+                 <!-- Сюди будуть додаватися картки схожих книг -->
+                </layout>
+               </widget>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
           <!-- Існуючий вертикальний спейсер залишається в кінці -->
           <item>
            <spacer name="verticalSpacer">

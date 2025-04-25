@@ -374,9 +374,8 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
     }
 
     // 7. Схожі книги (додано)
-    // Перевіряємо наявність віджетів для схожих книг (припущення)
-    // Потрібно переконатися, що ui->similarBooksWidget та ui->similarBooksLayout існують у вашому .ui файлі
-    if (ui->similarBooksWidget && ui->similarBooksLayout) {
+    // Перевіряємо наявність віджетів для схожих книг
+    if (ui->similarBooksWidget && ui->similarBooksLayout) { // Перевірка залишається корисною
         if (!details.genre.isEmpty() && m_dbManager) {
             QList<BookDisplayInfo> similarBooks = m_dbManager->getSimilarBooks(details.bookId, details.genre, 5); // Отримуємо до 5 схожих книг
 
