@@ -77,6 +77,7 @@ private slots:
     void on_sendCommentButton_clicked(); // Слот для кнопки відправки коментаря
     void showOrderDetailsPlaceholder(int orderId); // Тимчасовий слот для деталей замовлення
     void showNextBanner(); // Слот для перемикання банера
+    void onSearchSuggestionActivated(const QModelIndex &index); // Слот для обробки вибору пропозиції
 
 private:
     // Допоміжні функції для відображення даних

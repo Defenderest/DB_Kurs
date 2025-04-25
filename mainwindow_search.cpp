@@ -2,8 +2,11 @@
 #include "./ui_mainwindow.h"
 #include <QLineEdit>
 #include <QCompleter>
-#include <QStringListModel>
+#include <QStandardItemModel> // Змінено з QStringListModel
+#include <QStandardItem>      // Додано для створення елементів моделі
 #include <QDebug>
+#include <QListView>          // Додано для доступу до popup view
+#include "searchsuggestiondelegate.h" // Додано включення делегата
 
 // Налаштування автодоповнення для глобального пошуку
 void MainWindow::setupSearchCompleter()
