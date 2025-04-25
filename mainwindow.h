@@ -14,7 +14,7 @@
 #include <QMap>         // Для збереження тексту кнопок
 #include <QLineEdit>    // Додано для редагування телефону
 #include <QCompleter>   // Додано для автодоповнення
-#include <QStringListModel> // Додано для моделі автодоповнення
+#include <QStandardItemModel> // Змінено з QStringListModel
 #include <QMouseEvent> // Додано для обробки кліків миші
 #include <QMap>        // Додано для QMap (використовується для кошика)
 #include <QSpinBox>    // Додано для QSpinBox (використовується в кошику)
@@ -23,10 +23,12 @@
 #include <QStringList> // Додано для списку шляхів до зображень банера
 #include <QRadioButton> // Додано для індикаторів банера
 #include <QResizeEvent> // Додано для обробки зміни розміру
+#include "searchsuggestiondelegate.h" // Додано включення делегата
 
 
 // Forward declarations
 class DatabaseManager;
+class QStandardItemModel; // Додано forward declaration
 // class QTableWidget; // Більше не використовується для кошика
 struct CustomerProfileInfo;
 struct BookDetailsInfo; // Додано forward declaration
@@ -130,7 +132,8 @@ private:
 
     // Члени для автодоповнення пошуку
     QCompleter *m_searchCompleter = nullptr;
-    QStringListModel *m_searchSuggestionModel = nullptr;
+    QStandardItemModel *m_searchSuggestionModel = nullptr; // Змінено тип моделі
+    SearchSuggestionDelegate *m_searchDelegate = nullptr; // Додано вказівник на делегат
 
     // Кошик
     QMap<int, CartItem> m_cartItems; // Ключ - bookId (CartItem тепер з datatypes.h)

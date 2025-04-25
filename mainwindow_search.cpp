@@ -13,18 +13,50 @@ void MainWindow::setupSearchCompleter()
         return;
     }
 
-    m_searchSuggestionModel = new QStringListModel(this); // Модель для пропозицій
-    m_searchCompleter = new QCompleter(m_searchSuggestionModel, this); // Комплітер
+    // Використовуємо QStandardItemModel замість QStringListModel
+    m_searchSuggestionModel = new QStandardItemModel(this);
+    m_searchCompleter = new QCompleter(m_searchSuggestionModel, this);
 
-    m_searchCompleter->setCaseSensitivity(Qt::CaseInsensitive); // Нечутливий до регістру
-    m_searchCompleter->setCompletionMode(QCompleter::PopupCompletion); // Випадаючий список
-    m_searchCompleter->setFilterMode(Qt::MatchStartsWith); // Пропозиції, що починаються з введеного тексту
-    // m_searchCompleter->setPopup(ui->globalSearchLineEdit->findChild<QListView*>()); // Використовуємо стандартний popup - findChild може бути ненадійним, краще залишити стандартний popup комплітера
+    m_searchCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    m_searchCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    // Важливо: FilterMode більше не потрібен, оскільки ми самі фільтруємо в updateSearchSuggestions
+    // m_searchCompleter->setFilterMode(Qt::MatchStartsWith); // Видалено або закоментовано
+
+    // Створюємо та встановлюємо наш кастомний делегат
+    m_searchDelegate = new SearchSuggestionDelegate(this);
+    if (m_searchCompleter->popup()) {
+        m_searchCompleter->popup()->setItemDelegate(m_searchDelegate);
+        // Налаштування вигляду popup (опціонально)
+        m_searchCompleter->popup()->setStyleSheet(R"(
+            QListView {
+                background-color: white;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                padding: 2px; /* Невеликий внутрішній відступ */
+            }
+            QListView::item {
+                padding: 5px; /* Відступ для кожного елемента */
+                border-radius: 3px; /* Невелике заокруглення для елементів */
+            }
+            QListView::item:selected {
+                background-color: #e9ecef; /* Світло-сірий фон для вибраного */
+                color: #212529; /* Темний текст для вибраного */
+            }
+        )");
+    } else {
+        qWarning() << "setupSearchCompleter: Completer popup is null! Cannot set delegate.";
+    }
+
 
     ui->globalSearchLineEdit->setCompleter(m_searchCompleter);
 
     // Підключаємо сигнал зміни тексту до слота оновлення пропозицій
     connect(ui->globalSearchLineEdit, &QLineEdit::textChanged, this, &MainWindow::updateSearchSuggestions);
+
+    // Підключаємо сигнал активації елемента (вибір зі списку) до нашого слота
+    connect(m_searchCompleter, QOverload<const QModelIndex &>::of(&QCompleter::activated),
+            this, &MainWindow::onSearchSuggestionActivated);
+
 
     qInfo() << "Search completer setup complete for globalSearchLineEdit.";
 }
@@ -33,17 +65,77 @@ void MainWindow::setupSearchCompleter()
 void MainWindow::updateSearchSuggestions(const QString &text)
 {
     if (!m_dbManager || !m_searchSuggestionModel) {
+        qWarning() << "updateSearchSuggestions: dbManager or searchSuggestionModel is null!";
         return; // Немає менеджера БД або моделі
     }
 
-    // Отримуємо пропозиції, тільки якщо текст достатньо довгий
-    if (text.length() < 2) { // Мінімальна довжина для пошуку (можна змінити)
-        m_searchSuggestionModel->setStringList({}); // Очищаємо модель, якщо текст короткий
+    // Отримуємо пропозиції, якщо текст НЕ порожній (шукаємо з першої літери)
+    if (text.isEmpty()) {
+        m_searchSuggestionModel->clear(); // Очищаємо модель, якщо текст порожній
+        m_searchCompleter->popup()->hide(); // Ховаємо popup
         return;
     }
 
-    QStringList suggestions = m_dbManager->getSearchSuggestions(text);
-    m_searchSuggestionModel->setStringList(suggestions); // Оновлюємо модель пропозиціями
+    // Отримуємо розширені пропозиції
+    QList<SearchSuggestionInfo> suggestions = m_dbManager->getSearchSuggestions(text);
 
-    // qInfo() << "Updated search suggestions for text:" << text << "Count:" << suggestions.count();
+    // Очищаємо модель перед заповненням новими даними
+    m_searchSuggestionModel->clear();
+
+    // Заповнюємо модель даними
+    for (const SearchSuggestionInfo &suggestion : suggestions) {
+        QStandardItem *item = new QStandardItem();
+        item->setData(suggestion.displayText, SearchSuggestionRoles::DisplayTextRole); // Основний текст
+        item->setData(QVariant::fromValue(suggestion.type), SearchSuggestionRoles::TypeRole); // Тип (enum)
+        item->setData(suggestion.id, SearchSuggestionRoles::IdRole); // ID
+        item->setData(suggestion.imagePath, SearchSuggestionRoles::ImagePathRole); // Шлях до зображення
+
+        // Додаємо ToolTip для додаткової інформації (опціонально)
+        item->setToolTip(QString("Тип: %1\nID: %2")
+                         .arg(suggestion.type == SearchSuggestionInfo::Book ? tr("Книга") : tr("Автор"))
+                         .arg(suggestion.id));
+
+        m_searchSuggestionModel->appendRow(item);
+    }
+
+    // Показуємо або ховаємо popup залежно від наявності пропозицій
+    if (m_searchSuggestionModel->rowCount() > 0) {
+        // Якщо комплітер не активний, активуємо його
+        if (!m_searchCompleter->popup()->isVisible()) {
+             m_searchCompleter->complete();
+        }
+    } else {
+        m_searchCompleter->popup()->hide();
+    }
+
+    qInfo() << "Updated search suggestions for text:" << text << "Count:" << suggestions.count();
+}
+
+
+// Слот для обробки вибору пропозиції зі списку
+void MainWindow::onSearchSuggestionActivated(const QModelIndex &index)
+{
+    if (!index.isValid()) {
+        qWarning() << "Invalid index activated in search completer.";
+        return;
+    }
+
+    // Отримуємо дані з вибраного елемента моделі
+    SearchSuggestionInfo::SuggestionType type = static_cast<SearchSuggestionInfo::SuggestionType>(index.data(SearchSuggestionRoles::TypeRole).toInt());
+    int id = index.data(SearchSuggestionRoles::IdRole).toInt();
+    QString displayText = index.data(SearchSuggestionRoles::DisplayTextRole).toString();
+
+    qInfo() << "Search suggestion activated:" << displayText << "Type:" << type << "ID:" << id;
+
+    // Виконуємо дію залежно від типу
+    if (type == SearchSuggestionInfo::Book) {
+        showBookDetails(id); // Переходимо на сторінку деталей книги
+    } else if (type == SearchSuggestionInfo::Author) {
+        // TODO: Реалізувати перехід на сторінку автора (якщо вона є)
+        qInfo() << "Navigating to author page for ID:" << id << "(Not implemented yet)";
+        QMessageBox::information(this, tr("Навігація"), tr("Перехід на сторінку автора '%1' (ID: %2) ще не реалізовано.").arg(displayText).arg(id));
+    }
+
+    // Опціонально: очистити поле пошуку після вибору
+    // ui->globalSearchLineEdit->clear();
 }
