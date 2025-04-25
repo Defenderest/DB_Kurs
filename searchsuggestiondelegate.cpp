@@ -16,12 +16,15 @@ void SearchSuggestionDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     // int id = index.data(SearchSuggestionRoles::IdRole).toInt(); // ID може знадобитися для ToolTip або іншого
 
     // --- Малювання фону ---
-    if (option.state & QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.highlight());
-    } else {
-        // Малюємо стандартний фон або залишаємо прозорим
-        // painter->fillRect(option.rect, option.palette.base()); // Можна розкоментувати для непрозорого фону
-    }
+    // Прибираємо явне малювання фону. Стилі QListView::item подбають про фон та заокруглення.
+    // if (option.state & QStyle::State_Selected) {
+    //     painter->fillRect(option.rect, option.palette.highlight());
+    // } else {
+    //     // painter->fillRect(option.rect, option.palette.base());
+    // }
+    // Замість цього, можна викликати базовий метод для малювання фону та виділення,
+    // але це може перекрити наші кастомні елементи. Краще покластися на стилі.
+    // QStyledItemDelegate::paint(painter, option, QModelIndex()); // Не передаємо index, щоб не малювати стандартний вміст
 
     // --- Малювання зображення ---
     QRect imageRect(option.rect.left() + m_padding,
