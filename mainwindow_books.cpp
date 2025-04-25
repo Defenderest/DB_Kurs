@@ -405,8 +405,9 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
             qWarning() << "Cannot fetch similar books: Genre is empty or dbManager is null.";
         }
     } else {
-        qWarning() << "populateBookDetailsPage: similarBooksWidget or similarBooksLayout not found in UI definition! Cannot display similar books.";
-        // Можна опціонально сховати віджет, якщо він існує, але layout - ні
+        // Цей блок тепер менш ймовірний, але залишаємо попередження про всяк випадок
+        qWarning() << "populateBookDetailsPage: similarBooksWidget or similarBooksLayout pointers are null! Cannot display similar books.";
+        // Якщо сам віджет існує, але вказівник чомусь null, спробуємо його сховати
         if(ui->similarBooksWidget) ui->similarBooksWidget->setVisible(false);
     }
 
