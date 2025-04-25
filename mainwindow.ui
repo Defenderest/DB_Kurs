@@ -1252,7 +1252,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>QFrame::Shape::NoFrame</enum>
                 </property>
                 <property name="verticalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено вертикальну прокрутку -->
                 </property>
                 <property name="horizontalScrollBarPolicy">
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
@@ -1315,7 +1315,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>QFrame::Shape::NoFrame</enum>
                 </property>
                 <property name="verticalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено вертикальну прокрутку -->
                 </property>
                 <property name="horizontalScrollBarPolicy">
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
@@ -1378,7 +1378,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>QFrame::Shape::NoFrame</enum>
                 </property>
                 <property name="verticalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено вертикальну прокрутку -->
                 </property>
                 <property name="horizontalScrollBarPolicy">
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
