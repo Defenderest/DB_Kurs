@@ -1907,194 +1907,86 @@ border-bottom: 1px solid #eeeeee;</string>
             </property>
            </widget>
           </item>
+          <!-- Нова верхня секція з фото та ім'ям/email -->
           <item>
-           <layout class="QFormLayout" name="profileFormLayout">
-            <property name="horizontalSpacing">
+           <layout class="QHBoxLayout" name="profileTopSectionLayout">
+            <property name="spacing">
              <number>20</number>
             </property>
-            <property name="verticalSpacing">
-             <number>12</number>
+            <property name="bottomMargin">
+             <number>15</number> <!-- Відступ знизу -->
             </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_FirstName">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Ім'я:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="profileFirstNameLineEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="placeholderText">
-               <string>Введіть ім'я</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_LastName">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Прізвище:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="profileLastNameLineEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="placeholderText">
-               <string>Введіть прізвище</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_Email">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Email:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="profileEmailLabel">
-              <property name="text">
-               <string>(завантаження...)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_Phone">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Телефон:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="profilePhoneLineEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="placeholderText">
-               <string>Введіть номер телефону</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_Address">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Адреса:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLineEdit" name="profileAddressLineEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="placeholderText">
-               <string>Введіть адресу</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="label_JoinDate">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Дата реєстрації:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QLabel" name="profileJoinDateLabel">
-              <property name="text">
-               <string>(завантаження...)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QLabel" name="label_Loyalty">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Програма лояльності:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="QLabel" name="profileLoyaltyLabel">
-              <property name="text">
-               <string>(завантаження...)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
-             <widget class="QLabel" name="label_Points">
-              <property name="styleSheet">
-               <string notr="true">font-weight: 600; color: #495057;</string>
-              </property>
-              <property name="text">
-               <string>Бали лояльності:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1">
-             <widget class="QLabel" name="profilePointsLabel">
-              <property name="text">
-               <string>(завантаження...)</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="profileButtonLayout">
             <item>
-             <widget class="QPushButton" name="editProfileButton">
+             <widget class="QLabel" name="profilePictureLabel">
               <property name="minimumSize">
                <size>
-                <width>120</width>
-                <height>0</height>
+                <width>100</width>
+                <height>100</height>
                </size>
               </property>
-              <property name="text">
-               <string>Редагувати</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="saveProfileButton">
-              <property name="minimumSize">
+              <property name="maximumSize">
                <size>
-                <width>120</width>
-                <height>0</height>
+                <width>100</width>
+                <height>100</height>
                </size>
               </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+    background-color: #e9ecef; /* Світло-сірий фон */
+    border: 1px solid #dee2e6; /* Світла рамка */
+    border-radius: 50px; /* Робимо круглим */
+    color: #adb5bd; /* Колір іконки/тексту */
+    font-size: 40pt; /* Розмір іконки */
+    qproperty-alignment: AlignCenter;
+}</string>
+              </property>
               <property name="text">
-               <string>Зберегти зміни</string>
+               <string>👤</string> <!-- Іконка користувача -->
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="profileButtonSpacer">
+             <layout class="QVBoxLayout" name="profileNameEmailLayout">
+              <property name="spacing">
+               <number>4</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="profileFullNameLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 16pt; font-weight: 600; color: #212529;</string>
+                </property>
+                <property name="text">
+                 <string>(Ім'я Прізвище)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="profileEmailDisplayLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 11pt; color: #6c757d;</string>
+                </property>
+                <property name="text">
+                 <string>(email@example.com)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="profileNameEmailSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>10</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="profileTopSpacer">
               <property name="orientation">
                <enum>Qt::Orientation::Horizontal</enum>
               </property>
@@ -2106,8 +1998,283 @@ border-bottom: 1px solid #eeeeee;</string>
               </property>
              </spacer>
             </item>
+            <!-- Переміщуємо кнопки сюди -->
+            <item>
+             <layout class="QVBoxLayout" name="profileButtonsVerticalLayout">
+              <item>
+               <widget class="QPushButton" name="editProfileButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Редагувати</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="resourses.qrc">
+                  <normaloff>:/icons/icons/edit.png</normaloff>:/icons/icons/edit.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="saveProfileButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Зберегти</string> <!-- Скорочено -->
+                </property>
+                <property name="icon">
+                 <iconset resource="resourses.qrc">
+                  <normaloff>:/icons/icons/save.png</normaloff>:/icons/icons/save.png</iconset>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">/* Можна додати стиль для кнопки збереження, наприклад, зелений */
+QPushButton#saveProfileButton {
+    background-color: #198754; /* Зелений */
+    border-color: #198754;
+}
+QPushButton#saveProfileButton:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+QPushButton#saveProfileButton:pressed {
+    background-color: #146c43;
+    border-color: #13653f;
+}</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
            </layout>
           </item>
+          <!-- Розділювач -->
+          <item>
+           <widget class="Line" name="profileSeparator1">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <!-- Секція редагованих даних -->
+          <item>
+           <widget class="QWidget" name="profileDetailsWidget" native="true">
+            <layout class="QGridLayout" name="profileDetailsLayout">
+             <property name="horizontalSpacing">
+              <number>15</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>10</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_FirstName">
+               <property name="minimumSize">
+                <size>
+                 <width>120</width> <!-- Фіксована ширина мітки -->
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: #495057;</string> <!-- Звичайний колір -->
+               </property>
+               <property name="text">
+                <string>Ім'я:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="profileFirstNameLineEdit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>Введіть ім'я</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_LastName">
+               <property name="styleSheet">
+                <string notr="true">color: #495057;</string>
+               </property>
+               <property name="text">
+                <string>Прізвище:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="profileLastNameLineEdit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>Введіть прізвище</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_Phone">
+               <property name="styleSheet">
+                <string notr="true">color: #495057;</string>
+               </property>
+               <property name="text">
+                <string>Телефон:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="profilePhoneLineEdit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>Введіть номер телефону</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_Address">
+               <property name="styleSheet">
+                <string notr="true">color: #495057;</string>
+               </property>
+               <property name="text">
+                <string>Адреса:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="profileAddressLineEdit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="placeholderText">
+                <string>Введіть адресу</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <!-- Розділювач -->
+          <item>
+           <widget class="Line" name="profileSeparator2">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <!-- Секція інформації про акаунт -->
+          <item>
+           <widget class="QWidget" name="profileAccountWidget" native="true">
+            <layout class="QGridLayout" name="profileAccountLayout">
+             <property name="horizontalSpacing">
+              <number>15</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>10</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_JoinDate">
+               <property name="minimumSize">
+                <size>
+                 <width>120</width> <!-- Фіксована ширина мітки -->
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: #495057;</string>
+               </property>
+               <property name="text">
+                <string>Дата реєстрації:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="profileJoinDateDisplayLabel">
+               <property name="styleSheet">
+                <string notr="true">color: #212529; font-weight: 500;</string> <!-- Темніший текст -->
+               </property>
+               <property name="text">
+                <string>(завантаження...)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_Loyalty">
+               <property name="styleSheet">
+                <string notr="true">color: #495057;</string>
+               </property>
+               <property name="text">
+                <string>Програма лояльності:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="profileLoyaltyDisplayLabel">
+               <property name="styleSheet">
+                <string notr="true">color: #212529; font-weight: 500;</string>
+               </property>
+               <property name="text">
+                <string>(завантаження...)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_Points">
+               <property name="styleSheet">
+                <string notr="true">color: #495057;</string>
+               </property>
+               <property name="text">
+                <string>Бали лояльності:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLabel" name="profilePointsDisplayLabel">
+               <property name="styleSheet">
+                <string notr="true">color: #212529; font-weight: 500;</string>
+               </property>
+               <property name="text">
+                <string>(завантаження...)</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <!-- Видаляємо старий layout кнопок -->
+          <!-- <item>
+           <layout class="QHBoxLayout" name="profileButtonLayout">
+            </item> -->
+          <!-- </layout>
+          </item> -->
           <item>
            <spacer name="profileVerticalSpacer">
             <property name="orientation">

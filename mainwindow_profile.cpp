@@ -42,10 +42,11 @@ void MainWindow::on_editProfileButton_clicked()
 // Заповнення полів сторінки профілю даними
 void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
 {
-    // Перевіряємо, чи вказівники на віджети існують (використовуємо нові LineEdit)
-    if (!ui->profileFirstNameLineEdit || !ui->profileLastNameLineEdit || !ui->profileEmailLabel ||
-        !ui->profilePhoneLineEdit || !ui->profileAddressLineEdit || !ui->profileJoinDateLabel ||
-        !ui->profileLoyaltyLabel || !ui->profilePointsLabel)
+    // Перевіряємо вказівники на ключові віджети нового дизайну
+    if (!ui->profilePictureLabel || !ui->profileFullNameLabel || !ui->profileEmailDisplayLabel ||
+        !ui->profileFirstNameLineEdit || !ui->profileLastNameLineEdit ||
+        !ui->profilePhoneLineEdit || !ui->profileAddressLineEdit || !ui->profileJoinDateDisplayLabel ||
+        !ui->profileLoyaltyDisplayLabel || !ui->profilePointsDisplayLabel)
     {
         qWarning() << "populateProfilePanel: One or more profile widgets are null!";
         // Не показуємо QMessageBox тут, щоб не заважати користувачу
@@ -60,59 +61,79 @@ void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
         return;
     }
 
-     // Перевіряємо, чи дані взагалі були знайдені
+    // Встановлюємо іконку профілю (поки що стандартну)
+    // TODO: Додати логіку завантаження фото користувача, якщо воно є
+    ui->profilePictureLabel->setText("👤");
+    ui->profilePictureLabel->setAlignment(Qt::AlignCenter);
+
+    // Перевіряємо, чи дані взагалі були знайдені
     if (!profileInfo.found || profileInfo.customerId <= 0) {
-        // Заповнюємо поля текстом про помилку або відсутність даних (використовуємо нові LineEdit)
-        const QString errorText = tr("(Помилка завантаження або дані відсутні)");
+        const QString errorText = tr("(Помилка завантаження)");
+        const QString noDataText = tr("(Дані відсутні)");
+        // Верхня секція
+        ui->profileFullNameLabel->setText(errorText);
+        ui->profileEmailDisplayLabel->setText(errorText);
+        // Редаговані поля
         ui->profileFirstNameLineEdit->setText("");
-        ui->profileFirstNameLineEdit->setPlaceholderText(errorText);
+        ui->profileFirstNameLineEdit->setPlaceholderText(noDataText);
         ui->profileFirstNameLineEdit->setEnabled(false);
         ui->profileLastNameLineEdit->setText("");
-        ui->profileLastNameLineEdit->setPlaceholderText(errorText);
+        ui->profileLastNameLineEdit->setPlaceholderText(noDataText);
         ui->profileLastNameLineEdit->setEnabled(false);
-        ui->profileEmailLabel->setText(errorText);
         ui->profilePhoneLineEdit->setText("");
-        ui->profilePhoneLineEdit->setPlaceholderText(errorText);
+        ui->profilePhoneLineEdit->setPlaceholderText(noDataText);
         ui->profilePhoneLineEdit->setEnabled(false);
         ui->profileAddressLineEdit->setText("");
-        ui->profileAddressLineEdit->setPlaceholderText(errorText);
+        ui->profileAddressLineEdit->setPlaceholderText(noDataText);
         ui->profileAddressLineEdit->setEnabled(false);
-        ui->profileJoinDateLabel->setText(errorText);
-        ui->profileLoyaltyLabel->setText(errorText);
-        ui->profilePointsLabel->setText("-");
-        ui->saveProfileButton->setEnabled(false); // Блокуємо кнопку збереження
+        // Інформація про акаунт
+        ui->profileJoinDateDisplayLabel->setText(errorText);
+        ui->profileLoyaltyDisplayLabel->setText(errorText);
+        ui->profilePointsDisplayLabel->setText("-");
+        // Кнопки
+        ui->editProfileButton->setEnabled(false);
+        ui->saveProfileButton->setEnabled(false);
         return;
     }
 
-    // Заповнюємо поля, використовуючи імена віджетів з mainwindow.ui (використовуємо нові LineEdit)
+    // Заповнюємо поля даними
+    // Верхня секція (не редагується напряму)
+    ui->profileFullNameLabel->setText(profileInfo.firstName + " " + profileInfo.lastName);
+    ui->profileEmailDisplayLabel->setText(profileInfo.email);
+
+    // Редаговані поля (заповнюємо для перегляду/редагування)
     ui->profileFirstNameLineEdit->setText(profileInfo.firstName);
     ui->profileFirstNameLineEdit->setPlaceholderText(tr("Введіть ім'я"));
-    ui->profileFirstNameLineEdit->setEnabled(true);
+    ui->profileFirstNameLineEdit->setEnabled(true); // Дозволяємо редагування (керується setProfileEditingEnabled)
     ui->profileLastNameLineEdit->setText(profileInfo.lastName);
     ui->profileLastNameLineEdit->setPlaceholderText(tr("Введіть прізвище"));
     ui->profileLastNameLineEdit->setEnabled(true);
-    ui->profileEmailLabel->setText(profileInfo.email); // Email залишається QLabel
     ui->profilePhoneLineEdit->setText(profileInfo.phone);
     ui->profilePhoneLineEdit->setPlaceholderText(tr("Введіть номер телефону"));
     ui->profilePhoneLineEdit->setEnabled(true);
     ui->profileAddressLineEdit->setText(profileInfo.address);
     ui->profileAddressLineEdit->setPlaceholderText(tr("Введіть адресу"));
     ui->profileAddressLineEdit->setEnabled(true);
-    ui->profileJoinDateLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
-    ui->profileLoyaltyLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
-    ui->profilePointsLabel->setText(QString::number(profileInfo.loyaltyPoints));
 
-    // Розблоковуємо кнопку збереження
-    ui->saveProfileButton->setEnabled(true);
+    // Інформація про акаунт (не редагується)
+    ui->profileJoinDateDisplayLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
+    ui->profileLoyaltyDisplayLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
+    ui->profilePointsDisplayLabel->setText(QString::number(profileInfo.loyaltyPoints));
 
-    // Поля, які не редагуються (Email, Дата реєстрації, Лояльність), можна зробити візуально неактивними
-    ui->profileEmailLabel->setEnabled(false);
-    ui->profileJoinDateLabel->setEnabled(false);
-    ui->profileLoyaltyLabel->setEnabled(false);
-    ui->profilePointsLabel->setEnabled(false);
+    // Керування кнопками
+    ui->editProfileButton->setEnabled(true); // Дозволяємо почати редагування
+    ui->saveProfileButton->setEnabled(true); // Дозволяємо зберегти (стан видимості керується setProfileEditingEnabled)
 
-    // Встановлюємо початковий стан редагування (зазвичай false)
-    // setProfileEditingEnabled(false); // Перенесено в on_navProfileButton_clicked та конструктор
+    // Поля, які відображають інформацію, але не редагуються, робимо візуально неактивними
+    // (можна додати стиль в .ui або тут)
+    // ui->profileFullNameLabel->setEnabled(false); // Не потрібно, це просто текст
+    // ui->profileEmailDisplayLabel->setEnabled(false);
+    // ui->profileJoinDateDisplayLabel->setEnabled(false);
+    // ui->profileLoyaltyDisplayLabel->setEnabled(false);
+    // ui->profilePointsDisplayLabel->setEnabled(false);
+
+    // Початковий стан - не редагування
+    // setProfileEditingEnabled(false); // Викликається в on_navProfileButton_clicked
 }
 
 
@@ -127,24 +148,37 @@ void MainWindow::setProfileEditingEnabled(bool enabled)
         return;
     }
 
-    // Вмикаємо/вимикаємо редагування полів
+    // Вмикаємо/вимикаємо редагування полів LineEdit
     ui->profileFirstNameLineEdit->setReadOnly(!enabled);
     ui->profileLastNameLineEdit->setReadOnly(!enabled);
     ui->profilePhoneLineEdit->setReadOnly(!enabled);
     ui->profileAddressLineEdit->setReadOnly(!enabled);
 
-    // Показуємо/ховаємо кнопки
+    // Показуємо/ховаємо відповідні кнопки
     ui->editProfileButton->setVisible(!enabled);
     ui->saveProfileButton->setVisible(enabled);
 
-    // Змінюємо стиль полів для візуального розрізнення (опціонально)
-    QString lineEditStyle = enabled
-        ? "QLineEdit { background-color: white; border: 1px solid #86b7fe; }" // Стиль при редагуванні
-        : "QLineEdit { background-color: #f8f9fa; border: 1px solid #dee2e6; }"; // Стиль при читанні
-    ui->profileFirstNameLineEdit->setStyleSheet(lineEditStyle);
-    ui->profileLastNameLineEdit->setStyleSheet(lineEditStyle);
-    ui->profilePhoneLineEdit->setStyleSheet(lineEditStyle);
-    ui->profileAddressLineEdit->setStyleSheet(lineEditStyle);
+    // Змінюємо стиль редагованих полів для візуального розрізнення
+    // Використовуємо стандартні стилі Qt для стану readOnly
+    // Або можна додати спеціальні властивості/стилі в mainwindow.ui
+    QString lineEditStyleBase = "QLineEdit { padding: 8px 10px; border: 1px solid %1; border-radius: 4px; background-color: %2; color: #212529; min-height: 34px; font-size: 10pt; }";
+    QString focusStyle = "QLineEdit:focus { border-color: #adb5bd; }"; // Зберігаємо стиль фокусу
+
+    if (enabled) {
+        // Стиль для редагування (білий фон, синя рамка при фокусі - стандартно)
+        QString editStyle = lineEditStyleBase.arg("#ced4da", "#ffffff") + focusStyle;
+        ui->profileFirstNameLineEdit->setStyleSheet(editStyle);
+        ui->profileLastNameLineEdit->setStyleSheet(editStyle);
+        ui->profilePhoneLineEdit->setStyleSheet(editStyle);
+        ui->profileAddressLineEdit->setStyleSheet(editStyle);
+    } else {
+        // Стиль для читання (світло-сірий фон, стандартна рамка)
+        QString readOnlyStyle = lineEditStyleBase.arg("#dee2e6", "#f8f9fa"); // Не додаємо focusStyle для readOnly
+        ui->profileFirstNameLineEdit->setStyleSheet(readOnlyStyle);
+        ui->profileLastNameLineEdit->setStyleSheet(readOnlyStyle);
+        ui->profilePhoneLineEdit->setStyleSheet(readOnlyStyle);
+        ui->profileAddressLineEdit->setStyleSheet(readOnlyStyle);
+    }
 
     // Встановлюємо фокус на перше поле при ввімкненні редагування
     if (enabled) {
@@ -199,17 +233,26 @@ void MainWindow::on_saveProfileButton_clicked()
     if (nameSuccess && phoneSuccess && addressSuccess) {
         ui->statusBar->showMessage(tr("Дані профілю успішно оновлено!"), 5000);
         qInfo() << "Profile data updated successfully for customer ID:" << m_currentCustomerId;
-        setProfileEditingEnabled(false); // Вимикаємо режим редагування після успішного збереження
-        // Можна перезавантажити дані, щоб переконатися, що все відображається коректно
+
+        // Оновлюємо нередаговані поля (FullName) на основі збережених даних
+        ui->profileFullNameLabel->setText(newFirstName + " " + newLastName);
+
+        setProfileEditingEnabled(false); // Вимикаємо режим редагування
+
+        // Не потрібно явно викликати populateProfilePanel тут,
+        // оскільки ми вже оновили FullName і вимкнули редагування.
+        // Якщо інші нередаговані поля (наприклад, бали лояльності) могли змінитися
+        // в результаті інших дій, тоді перезавантаження було б доцільним.
         // CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
-        // populateProfilePanel(profile); // Це оновить поля, але знову вимкне редагування
+        // populateProfilePanel(profile);
     } else {
         QString errorMessage = tr("Не вдалося оновити дані профілю:\n");
-        if (!nameSuccess) errorMessage += tr("- Помилка оновлення імені/прізвища.\n");
-        if (!phoneSuccess) errorMessage += tr("- Помилка оновлення телефону.\n");
-        if (!addressSuccess) errorMessage += tr("- Помилка оновлення адреси.\n");
-        errorMessage += tr("\nПеревірте журнал помилок.");
+        if (!nameSuccess) errorMessage += tr("- Помилка оновлення імені/прізвища. (%1)\n").arg(m_dbManager->lastError().text());
+        if (!phoneSuccess) errorMessage += tr("- Помилка оновлення телефону. (%1)\n").arg(m_dbManager->lastError().text());
+        if (!addressSuccess) errorMessage += tr("- Помилка оновлення адреси. (%1)\n").arg(m_dbManager->lastError().text());
+        // errorMessage += tr("\nПеревірте журнал помилок."); // Помилки вже включені
         QMessageBox::critical(this, tr("Помилка збереження"), errorMessage);
-        qWarning() << "Failed to update profile data for customer ID:" << m_currentCustomerId << "Error:" << m_dbManager->lastError().text();
+        qWarning() << "Failed to update profile data for customer ID:" << m_currentCustomerId;
+        // Не вимикаємо режим редагування, щоб користувач міг виправити помилку
     }
 }

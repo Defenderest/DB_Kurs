@@ -31,10 +31,11 @@ class DatabaseManager;
 class QStandardItemModel; // Додано forward declaration
 // class QTableWidget; // Більше не використовується для кошика
 struct CustomerProfileInfo;
-struct BookDetailsInfo; // Додано forward declaration
+struct BookDetailsInfo;
 class QLabel;
 class QVBoxLayout;
 class QGridLayout;
+// Додамо forward declarations для нових віджетів профілю, якщо вони ще не включені
 class QPushButton;
 class QFrame;
 class QStackedWidget;
