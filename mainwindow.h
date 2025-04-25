@@ -80,9 +80,10 @@ private:
     // Допоміжні функції для відображення даних
     void displayComments(const QList<CommentDisplayInfo> &comments); // Відображення списку коментарів
     void refreshBookComments(); // Оновлення списку коментарів на сторінці деталей
-    void displayBooks(const QList<BookDisplayInfo> &books); // Метод для відображення книг
+    // Оновлено сигнатуру displayBooks
+    void displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *targetLayout, QWidget *parentWidgetContext);
     void displayAuthors(const QList<AuthorDisplayInfo> &authors);
-    void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
+    // displayBooksInHorizontalLayout видалено
     QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
     QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
     QWidget* createCommentWidget(const CommentDisplayInfo &commentInfo); // Додано оголошення
