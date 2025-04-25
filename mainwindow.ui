@@ -318,7 +318,10 @@ QWidget#discoverScrollContents, /* Повернено білий фон */
 QWidget#booksContainerWidget,
 QWidget#authorsContainerWidget, /* Додано контейнер авторів */
 QWidget#ordersContainerWidget, /* Додано контейнер замовлень */
-QWidget#cartItemsContainerWidget /* Додано контейнер кошика */ {
+QWidget#cartItemsContainerWidget, /* Додано контейнер кошика */
+QWidget#classicsRowWidget, /* Додано вміст горизонтальних секцій */
+QWidget#fantasyRowWidget,
+QWidget#nonFictionRowWidget {
      background-color: #ffffff; /* Білий фон для всіх контейнерів */
 }
 
@@ -1235,7 +1238,13 @@ border-bottom: 1px solid #eeeeee;</string>
               </item>
               <item>
                <widget class="QScrollArea" name="classicsScrollArea">
-                <!-- minimumSize та maximumSize для висоти видалено -->
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>340</height> <!-- Повернено мінімальну висоту -->
+                 </size>
+                </property>
+                <!-- maximumSize для висоти залишається видаленим -->
                 <property name="frameShape">
                  <enum>QFrame::Shape::NoFrame</enum>
                 </property>
@@ -1287,7 +1296,13 @@ border-bottom: 1px solid #eeeeee;</string>
               </item>
               <item>
                <widget class="QScrollArea" name="fantasyScrollArea">
-                <!-- minimumSize та maximumSize для висоти видалено -->
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>340</height> <!-- Повернено мінімальну висоту -->
+                 </size>
+                </property>
+                 <!-- maximumSize для висоти залишається видаленим -->
                 <property name="frameShape">
                  <enum>QFrame::Shape::NoFrame</enum>
                 </property>
@@ -1339,7 +1354,13 @@ border-bottom: 1px solid #eeeeee;</string>
               </item>
               <item>
                <widget class="QScrollArea" name="nonFictionScrollArea">
-                <!-- minimumSize та maximumSize для висоти видалено -->
+                 <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>340</height> <!-- Повернено мінімальну висоту -->
+                 </size>
+                </property>
+                 <!-- maximumSize для висоти залишається видаленим -->
                 <property name="frameShape">
                  <enum>QFrame::Shape::NoFrame</enum>
                 </property>
