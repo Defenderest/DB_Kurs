@@ -453,6 +453,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     // Викликаємо реалізацію базового класу
     QMainWindow::resizeEvent(event);
 
+    // Виводимо новий розмір вікна в консоль відладки
+    qDebug() << "Window resized to:" << event->size();
+
     // Оновлюємо зображення банерів відповідно до нового розміру
     updateBannerImages();
 }

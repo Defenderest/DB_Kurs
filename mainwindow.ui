@@ -401,23 +401,15 @@ QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
     border: none; /* Прибираємо можливу рамку */
 }
 
-/* Стиль для горизонтальних ScrollArea (Фентезі та Наукпоп) */
+/* Об'єднаний стиль для всіх горизонтальних ScrollArea на головній сторінці */
+QScrollArea#classicsScrollArea,
 QScrollArea#fantasyScrollArea,
 QScrollArea#nonFictionScrollArea {
-    background-color: #f8f9fa; /* Дуже світло-сірий фон */
+    background-color: #f0f0f0; /* Світло-сірий фон для всіх */
     border-radius: 8px;
-    /* padding: 10px; - Прибираємо padding тут, керуємо ним у внутрішньому layout */
-    border: 1px solid #f1f3f5; /* Дуже світла рамка для відділення */
+    padding: 10px; /* Додаємо внутрішній відступ для всіх */
+    border: 1px solid #e9ecef; /* Трохи темніша рамка для всіх */
 }
-
-/* Окремий стиль для classicsScrollArea */
-QScrollArea#classicsScrollArea {
-    background-color: #f0f0f0; /* Світло-сірий фон */
-    border-radius: 8px;
-    padding: 10px; /* Додаємо внутрішній відступ */
-    border: 1px solid #e9ecef; /* Трохи темніша рамка */
-}
-
 
 /* Стилі для індикаторів банера */
 QWidget#bannerIndicatorWidget { /* Контейнер для індикаторів */
@@ -1326,7 +1318,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                 </property>
                 <property name="horizontalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
@@ -1389,7 +1381,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                 </property>
                 <property name="horizontalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
