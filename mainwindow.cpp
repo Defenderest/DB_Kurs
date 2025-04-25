@@ -562,20 +562,31 @@ void MainWindow::populateAuthorDetailsPage(const AuthorDetailsInfo &details)
 
     // 3. Національність та роки життя
     QString nationalityAndYears = details.nationality;
-    QString birthYear = details.birthDate.isValid() ? QString::number(details.birthDate.year()) : "?";
-    QString deathYear = details.deathDate.isValid() ? QString::number(details.deathDate.year()) : (details.birthDate.isValid() ? "" : "?"); // Показуємо тільки якщо є дата народження
-    if (!birthYear.isEmpty() || !deathYear.isEmpty()) {
-        if (!nationalityAndYears.isEmpty()) {
-            nationalityAndYears += " (";
+    QString yearsString;
+    if (details.birthDate.isValid()) {
+        yearsString += QString::number(details.birthDate.year());
+        if (details.deathDate.isValid()) {
+            yearsString += " - " + QString::number(details.deathDate.year());
         } else {
-            nationalityAndYears += "(";
+            yearsString += " - " + tr("дотепер"); // Або просто рік народження, якщо автор живий
         }
-        nationalityAndYears += birthYear + " - " + deathYear + ")";
+    } else if (details.deathDate.isValid()) {
+        // Малоймовірно, але можливо: невідома дата народження, відома дата смерті
+        yearsString = "? - " + QString::number(details.deathDate.year());
     }
+
+    if (!nationalityAndYears.isEmpty() && !yearsString.isEmpty()) {
+        nationalityAndYears += " (" + yearsString + ")";
+    } else if (!yearsString.isEmpty()) {
+        nationalityAndYears = yearsString; // Якщо національність невідома, показуємо тільки роки
+    }
+    // Якщо і національність, і роки порожні, показуємо стандартне повідомлення
     ui->authorDetailNationalityLabel->setText(nationalityAndYears.isEmpty() ? tr("(Інформація відсутня)") : nationalityAndYears);
 
 
     // 4. Біографія
+    // Переконуємось, що wordWrap увімкнено для QLabel в UI або встановлюємо тут
+    ui->authorDetailBiographyLabel->setWordWrap(true);
     ui->authorDetailBiographyLabel->setText(details.biography.isEmpty() ? tr("(Біографія відсутня)") : details.biography);
 
     // 5. Книги автора
