@@ -400,6 +400,13 @@ QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
     border: none; /* Прибираємо можливу рамку */
 }
 
+/* Стиль для конкретної ScrollArea */
+QScrollArea#classicsScrollArea {
+    background-color: #f0f0f0; /* Світло-сірий фон */
+    border-radius: 8px; /* Додамо заокруглення, як у інших блоків */
+    padding: 10px; /* Додамо невеликий внутрішній відступ */
+}
+
 /* Стилі для індикаторів банера */
 QWidget#bannerIndicatorWidget { /* Контейнер для індикаторів */
     background-color: transparent; /* Прозорий фон */
