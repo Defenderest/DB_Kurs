@@ -54,6 +54,8 @@ set(PROJECT_SOURCES
     mainwindow_cart.cpp     # Додано файл для логіки кошика
     mainwindow_comments.cpp # Додано файл для логіки коментарів
     mainwindow_search.cpp   # Додано файл для логіки пошуку
+    searchsuggestiondelegate.cpp # Додано файл делегата пошуку
+    searchsuggestiondelegate.h
 )
 
 # --- Создание исполняемого файла ---
