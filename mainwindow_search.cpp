@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QListView>          // Додано для доступу до popup view
 #include "searchsuggestiondelegate.h" // Додано включення делегата
+#include <QMessageBox>        // Додано для QMessageBox
 
 // Налаштування автодоповнення для глобального пошуку
 void MainWindow::setupSearchCompleter()
