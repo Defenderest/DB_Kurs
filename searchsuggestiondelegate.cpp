@@ -53,11 +53,17 @@ void SearchSuggestionDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     textRect.setLeft(imageRect.right() + m_padding * 2); // Відступ від зображення
     textRect.setRight(textRect.right() - m_padding); // Відступ справа
 
-    // Встановлюємо колір тексту залежно від стану (вибраний чи ні)
-    QColor textColor = (option.state & QStyle::State_Selected) ?
-                           option.palette.highlightedText().color() :
-                           option.palette.text().color();
-    painter->setPen(textColor);
+    // --- Малювання тексту ---
+    // Спочатку встановлюємо колір пера за замовчуванням (для невибраного стану)
+    painter->setPen(option.palette.text().color());
+
+    // Якщо елемент вибрано, змінюємо колір пера на колір виділеного тексту
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(option.palette.highlightedText().color());
+    }
+    // Примітка: Стилі QListView::item:selected { color: ... } можуть конфліктувати.
+    // Якщо цей підхід не спрацює, можливо, доведеться прибрати color: #212529;
+    // зі стилю QListView::item:selected у mainwindow_search.cpp.
 
     // Використовуємо FontMetrics для обрізання тексту з "..." якщо він не влазить
     QFontMetrics fm(option.font);
