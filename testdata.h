@@ -25,6 +25,7 @@ struct AuthorData {
     QDate birthDate;
     QString nationality;
     QString imagePath;
+    QString biography; // Додано поле біографії
     int dbId = -1; // Для збереження ID після вставки
 };
 

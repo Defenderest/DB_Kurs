@@ -113,7 +113,7 @@ bool DatabaseManager::createSchemaTables()
 
     const QString createAuthorSQL = R"(
         CREATE TABLE author ( author_id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL,
-            birth_date DATE, nationality VARCHAR(100), image_path VARCHAR(512) ); )"; // Додано image_path
+            birth_date DATE, nationality VARCHAR(100), image_path VARCHAR(512), biography TEXT ); )"; // Додано image_path та biography
     if(success) success &= executeQuery(query, createAuthorSQL, "Создание author");
 
     const QString createBookSQL = R"(
