@@ -855,13 +855,13 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
            <number>0</number>
           </property>
           <property name="leftMargin">
-           <number>20</number> <!-- Додано лівий відступ -->
+           <number>0</number> <!-- Повернено початковий відступ -->
           </property>
           <property name="topMargin">
            <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>20</number> <!-- Додано правий відступ -->
+           <number>0</number> <!-- Повернено початковий відступ -->
           </property>
           <property name="bottomMargin">
            <number>0</number>
