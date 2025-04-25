@@ -104,8 +104,11 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Встановлюємо фільтр подій на sidebarFrame для відстеження наведення миші
     ui->sidebarFrame->installEventFilter(this);
-    // Переконуємось, що панель спочатку згорнута
-    toggleSidebar(false); // Згорнути без анімації при старті
+
+    // Явно встановлюємо початковий згорнутий стан БЕЗ анімації
+    m_isSidebarExpanded = true; // Потрібно для першого виклику toggleSidebar
+    ui->sidebarFrame->setMaximumWidth(m_collapsedWidth); // Встановлюємо ширину напряму
+    toggleSidebar(false); // Тепер цей виклик оновить стан кнопок і властивостей
 
     // --- Налаштування сторінки кошика ---
     // Переконуємось, що layout для елементів кошика існує
@@ -245,8 +248,8 @@ void MainWindow::on_navAuthorsButton_clicked()
 void MainWindow::setupSidebarAnimation()
 {
     m_sidebarAnimation = new QPropertyAnimation(ui->sidebarFrame, "maximumWidth", this);
-    m_sidebarAnimation->setDuration(350); // Збільшено тривалість анімації
-    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutCubic); // Змінено криву на більш плавну
+    m_sidebarAnimation->setDuration(400); // Трохи збільшено тривалість для плавності
+    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Змінено криву на більш плавну
 }
 
 // Функція для розгортання/згортання панелі
