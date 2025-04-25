@@ -66,24 +66,14 @@ void SearchSuggestionDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     }
 
     // --- Малювання основного тексту ---
-    QColor defaultTextColor = option.palette.text().color();
-    QColor selectedTextColor = option.palette.highlightedText().color();
     bool isSelected = option.state & QStyle::State_Selected;
 
-    qDebug() << "Painting item:" << displayText
-             << "Selected:" << isSelected
-             << "Default Text Color:" << defaultTextColor.name(QColor::HexRgb)
-             << "Selected Text Color:" << selectedTextColor.name(QColor::HexRgb);
-
-    // Спочатку встановлюємо колір пера за замовчуванням (для невибраного стану)
-    painter->setPen(defaultTextColor);
-
-    // Якщо елемент вибрано, змінюємо колір пера на колір виділеного тексту
+    // Жорстко встановлюємо кольори, ігноруючи палітру
     if (isSelected) {
-        painter->setPen(selectedTextColor);
+        painter->setPen(Qt::white); // Білий текст для вибраного елемента (фон світло-сірий)
+    } else {
+        painter->setPen(Qt::black); // Чорний текст для невибраного елемента
     }
-
-    qDebug() << "  -> Pen color set to:" << painter->pen().color().name(QColor::HexRgb);
 
     // Використовуємо FontMetrics для обрізання тексту з "..." якщо він не влазить
     QFontMetrics fm(option.font);
