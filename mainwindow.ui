@@ -255,13 +255,13 @@ QStackedWidget#bannerStackedWidget {
 
 QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel,
 QLabel#classicsHeaderLabel, QLabel#fantasyHeaderLabel, QLabel#nonFictionHeaderLabel {
-   font-size: 14pt;
-   font-weight: 600;
-   color: #343a40;
-   margin-top: 15px;
-   margin-bottom: 8px;
-   padding-bottom: 4px;
-   border-bottom: 1px solid #dee2e6;
+   font-size: 13pt; /* Зменшено розмір */
+   font-weight: 500; /* Зменшено жирність */
+   color: #495057; /* Світліший сірий */
+   margin-top: 20px; /* Збільшено верхній відступ */
+   margin-bottom: 10px; /* Збільшено нижній відступ */
+   padding-bottom: 0px; /* Прибрано відступ знизу */
+   border-bottom: none; /* Прибрано лінію */
 }
 QLabel#dateFilterLabel {
     color: #495057;
@@ -270,22 +270,23 @@ QLabel#dateFilterLabel {
 
 QWidget#categoriesWidget QPushButton {
     background-color: #ffffff;
-    color: #495057; /* Змінено на темно-сірий */
-    border: 1px solid #ced4da;
+    color: #495057;
+    border: 1px solid #e0e0e0; /* Світліша рамка */
     font-weight: 500;
     text-align: center;
-    padding: 12px;
-    min-height: 100px;
-    border-radius: 8px; /* Збільшено заокруглення */
+    padding: 10px; /* Зменшено padding */
+    min-height: 80px; /* Зменшено висоту */
+    border-radius: 6px; /* Трохи зменшено заокруглення */
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 QWidget#categoriesWidget QPushButton:hover {
-    background-color: #f8f9fa;
-    color: #343a40; /* Змінено на темніший сірий */
-    border-color: #adb5bd;
+    background-color: #f8f9fa; /* Світло-сірий фон при наведенні */
+    color: #343a40;
+    border-color: #dee2e6; /* Світліша рамка при наведенні */
 }
 QWidget#categoriesWidget QPushButton:pressed {
-    background-color: #e9ecef;
+    background-color: #e9ecef; /* Трохи темніший сірий при натисканні */
+    border-color: #ced4da;
 }
 
 QLineEdit#globalSearchLineEdit {
@@ -400,11 +401,14 @@ QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
     border: none; /* Прибираємо можливу рамку */
 }
 
-/* Стиль для конкретної ScrollArea */
-QScrollArea#classicsScrollArea {
-    background-color: #f0f0f0; /* Світло-сірий фон */
-    border-radius: 8px; /* Додамо заокруглення, як у інших блоків */
-    padding: 10px; /* Додамо невеликий внутрішній відступ */
+/* Стиль для горизонтальних ScrollArea на головній сторінці */
+QScrollArea#classicsScrollArea,
+QScrollArea#fantasyScrollArea,
+QScrollArea#nonFictionScrollArea {
+    background-color: #f8f9fa; /* Дуже світло-сірий фон */
+    border-radius: 8px;
+    /* padding: 10px; - Прибираємо padding тут, керуємо ним у внутрішньому layout */
+    border: 1px solid #f1f3f5; /* Дуже світла рамка для відділення */
 }
 
 /* Стилі для індикаторів банера */
@@ -877,13 +881,13 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                <number>20</number>
               </property>
               <property name="leftMargin">
-               <number>0</number> <!-- Прибираємо лівий відступ -->
+               <number>15</number> <!-- Додано лівий відступ -->
               </property>
               <property name="topMargin">
                <number>10</number>
               </property>
               <property name="rightMargin">
-               <number>0</number> <!-- Прибираємо правий відступ -->
+               <number>15</number> <!-- Додано правий відступ -->
               </property>
               <property name="bottomMargin">
                <number>20</number>
@@ -1235,13 +1239,13 @@ border-bottom: 1px solid #eeeeee;</string>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>380</height> <!-- Збільшено мінімальну висоту -->
+                  <height>340</height> <!-- Зменшено мінімальну висоту -->
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>400</height> <!-- Збільшено максимальну висоту -->
+                  <height>360</height> <!-- Зменшено максимальну висоту -->
                  </size>
                 </property>
                 <property name="frameShape">
@@ -1262,16 +1266,16 @@ border-bottom: 1px solid #eeeeee;</string>
                    <number>15</number>
                   </property>
                   <property name="leftMargin">
-                   <number>0</number>
+                   <number>10</number> <!-- Додано лівий відступ -->
                   </property>
                   <property name="topMargin">
-                   <number>5</number>
+                   <number>10</number> <!-- Збільшено верхній відступ -->
                   </property>
                   <property name="rightMargin">
-                   <number>0</number>
+                   <number>10</number> <!-- Додано правий відступ -->
                   </property>
                   <property name="bottomMargin">
-                   <number>5</number>
+                   <number>10</number> <!-- Збільшено нижній відступ -->
                   </property>
                  </layout>
                 </widget>
@@ -1298,13 +1302,13 @@ border-bottom: 1px solid #eeeeee;</string>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>380</height> <!-- Збільшено мінімальну висоту -->
+                  <height>340</height> <!-- Зменшено мінімальну висоту -->
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>400</height> <!-- Збільшено максимальну висоту -->
+                  <height>360</height> <!-- Зменшено максимальну висоту -->
                  </size>
                 </property>
                 <property name="frameShape">
@@ -1325,16 +1329,16 @@ border-bottom: 1px solid #eeeeee;</string>
                    <number>15</number>
                   </property>
                   <property name="leftMargin">
-                   <number>0</number>
+                   <number>10</number> <!-- Додано лівий відступ -->
                   </property>
                   <property name="topMargin">
-                   <number>5</number>
+                   <number>10</number> <!-- Збільшено верхній відступ -->
                   </property>
                   <property name="rightMargin">
-                   <number>0</number>
+                   <number>10</number> <!-- Додано правий відступ -->
                   </property>
                   <property name="bottomMargin">
-                   <number>5</number>
+                   <number>10</number> <!-- Збільшено нижній відступ -->
                   </property>
                  </layout>
                 </widget>
@@ -1361,13 +1365,13 @@ border-bottom: 1px solid #eeeeee;</string>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>380</height> <!-- Збільшено мінімальну висоту -->
+                  <height>340</height> <!-- Зменшено мінімальну висоту -->
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>400</height> <!-- Збільшено максимальну висоту -->
+                  <height>360</height> <!-- Зменшено максимальну висоту -->
                  </size>
                 </property>
                 <property name="frameShape">
@@ -1388,16 +1392,16 @@ border-bottom: 1px solid #eeeeee;</string>
                    <number>15</number>
                   </property>
                   <property name="leftMargin">
-                   <number>0</number>
+                   <number>10</number> <!-- Додано лівий відступ -->
                   </property>
                   <property name="topMargin">
-                   <number>5</number>
+                   <number>10</number> <!-- Збільшено верхній відступ -->
                   </property>
                   <property name="rightMargin">
-                   <number>0</number>
+                   <number>10</number> <!-- Додано правий відступ -->
                   </property>
                   <property name="bottomMargin">
-                   <number>5</number>
+                   <number>10</number> <!-- Збільшено нижній відступ -->
                   </property>
                  </layout>
                 </widget>
