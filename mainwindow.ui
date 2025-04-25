@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>700</height> <!-- Зменшено висоту -->
+    <width>973</width> <!-- Встановлено новий розмір -->
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -314,14 +314,11 @@ QWidget#bookDetailsPage /* Додано сторінку деталей книг
 }
 
 /* Стилі для вмісту сторінок (наприклад, ScrollArea) */
-QWidget#discoverScrollContents {
-     background-color: #f0f0f0; /* Світло-сірий фон для вмісту головної сторінки */
-}
+QWidget#discoverScrollContents, /* Повернено білий фон */
 QWidget#booksContainerWidget,
-QWidget#authorsContainerWidget,
 QWidget#ordersContainerWidget, /* Додано контейнер замовлень */
 QWidget#cartItemsContainerWidget /* Додано контейнер кошика */ {
-     background-color: #ffffff; /* Білий фон для інших контейнерів */
+     background-color: #ffffff; /* Білий фон для всіх контейнерів */
 }
 
 
