@@ -46,6 +46,9 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     , ui(new Ui::MainWindow)
     , m_dbManager(dbManager) // Ініціалізуємо вказівник переданим значенням
     , m_currentCustomerId(customerId) // Зберігаємо ID користувача
+    , m_similarBooksContainerWidget(nullptr) // Ініціалізуємо нові вказівники
+    , m_similarBooksTitleLabel(nullptr)
+    , m_similarBooksLayout(nullptr)
 {
     ui->setupUi(this);
 
