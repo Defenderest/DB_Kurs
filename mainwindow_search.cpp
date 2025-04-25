@@ -48,6 +48,13 @@ void MainWindow::setupSearchCompleter()
                 /* color: black; - Видалено, колір керується делегатом */
             }
         )");
+        // Логування стилю та палітри
+        qDebug() << "Popup stylesheet set to:" << m_searchCompleter->popup()->styleSheet();
+        QPalette popupPalette = m_searchCompleter->popup()->palette();
+        qDebug() << "Popup Palette - Base:" << popupPalette.color(QPalette::Base).name(QColor::HexRgb)
+                 << "Text:" << popupPalette.color(QPalette::Text).name(QColor::HexRgb)
+                 << "Highlight:" << popupPalette.color(QPalette::Highlight).name(QColor::HexRgb)
+                 << "HighlightedText:" << popupPalette.color(QPalette::HighlightedText).name(QColor::HexRgb);
     } else {
         qWarning() << "setupSearchCompleter: Completer popup is null! Cannot set delegate.";
     }
