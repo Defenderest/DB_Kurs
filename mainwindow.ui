@@ -314,13 +314,16 @@ QWidget#bookDetailsPage /* Додано сторінку деталей книг
 }
 
 /* Стилі для вмісту сторінок (наприклад, ScrollArea) */
-QWidget#discoverScrollContents,
+QWidget#discoverScrollContents {
+     background-color: #f0f0f0; /* Світло-сірий фон для вмісту головної сторінки */
+}
 QWidget#booksContainerWidget,
 QWidget#authorsContainerWidget,
 QWidget#ordersContainerWidget, /* Додано контейнер замовлень */
 QWidget#cartItemsContainerWidget /* Додано контейнер кошика */ {
-     background-color: #ffffff; /* Або transparent, якщо фон сторінки вже білий */
+     background-color: #ffffff; /* Білий фон для інших контейнерів */
 }
+
 
 /* === Стилі для сторінки "Мої замовлення" === */
 QLabel#ordersHeaderLabel {
@@ -405,10 +408,10 @@ QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
 QScrollArea#classicsScrollArea,
 QScrollArea#fantasyScrollArea,
 QScrollArea#nonFictionScrollArea {
-    background-color: #f0f0f0; /* Світло-сірий фон для всіх */
+    background-color: transparent; /* Робимо фон прозорим */
     border-radius: 8px;
-    padding: 10px; /* Додаємо внутрішній відступ для всіх */
-    border: 1px solid #e9ecef; /* Трохи темніша рамка для всіх */
+    padding: 10px; /* Залишаємо внутрішній відступ */
+    border: none; /* Прибираємо рамку, бо фон тепер інший */
 }
 
 /* Стилі для індикаторів банера */
@@ -1255,7 +1258,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено вертикальну прокрутку -->
                 </property>
                 <property name="horizontalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum> <!-- Повернено горизонтальну прокрутку -->
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
@@ -1318,7 +1321,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено вертикальну прокрутку -->
                 </property>
                 <property name="horizontalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum> <!-- Повернено горизонтальну прокрутку -->
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
@@ -1381,7 +1384,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено вертикальну прокрутку -->
                 </property>
                 <property name="horizontalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum> <!-- Повернено горизонтальну прокрутку -->
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
