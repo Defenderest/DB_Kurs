@@ -316,6 +316,7 @@ QWidget#bookDetailsPage /* Додано сторінку деталей книг
 /* Стилі для вмісту сторінок (наприклад, ScrollArea) */
 QWidget#discoverScrollContents, /* Повернено білий фон */
 QWidget#booksContainerWidget,
+QWidget#authorsContainerWidget, /* Додано контейнер авторів */
 QWidget#ordersContainerWidget, /* Додано контейнер замовлень */
 QWidget#cartItemsContainerWidget /* Додано контейнер кошика */ {
      background-color: #ffffff; /* Білий фон для всіх контейнерів */
