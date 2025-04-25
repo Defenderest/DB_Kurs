@@ -1455,13 +1455,13 @@ border-bottom: 1px solid #eeeeee;</string>
               <number>0</number>
              </property>
              <property name="bottomMargin">
-              <number>10</number> <!-- Збільшено нижній відступ -->
+              <number>5</number> <!-- Зменшено нижній відступ -->
              </property>
              <item>
               <widget class="QComboBox" name="categoryFilterComboBox">
                <property name="minimumSize">
                 <size>
-                 <width>180</width> <!-- Трохи зменшено ширину -->
+                 <width>220</width> <!-- Збільшено ширину -->
                  <height>0</height> <!-- Висота керується стилем -->
                 </size>
                </property>
@@ -1475,52 +1475,9 @@ border-bottom: 1px solid #eeeeee;</string>
                </item>
               </widget>
              </item>
+             <!-- Додаємо спейсер, щоб притиснути комбо-бокс до лівого краю -->
              <item>
-              <widget class="QPushButton" name="filterButton">
-               <property name="minimumSize">
-                <size>
-                 <width>52</width>
-                 <height>50</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>52</width>
-                 <height>50</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Фільтри</string>
-               </property>
-               <property name="text">
-                <string>Ф</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="sortButton">
-               <property name="minimumSize">
-                <size>
-                 <width>52</width>
-                 <height>50</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>52</width>
-                 <height>50</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Сортування</string>
-               </property>
-               <property name="text">
-                <string>↓</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_2">
+              <spacer name="booksFilterSpacer">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -1532,31 +1489,7 @@ border-bottom: 1px solid #eeeeee;</string>
                </property>
               </spacer>
              </item>
-             <item>
-              <widget class="QPushButton" name="viewModeButton">
-               <property name="minimumSize">
-                <size>
-                 <width>52</width>
-                 <height>50</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>52</width>
-                 <height>50</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Вигляд: Сітка/Список</string>
-               </property>
-               <property name="text">
-                <string>▦</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
+             <!-- Видалені кнопки filterButton, sortButton, viewModeButton та horizontalSpacer_2 -->
             </layout>
            </widget>
           </item>
