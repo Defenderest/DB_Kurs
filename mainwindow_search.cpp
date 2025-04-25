@@ -33,7 +33,7 @@ void MainWindow::setupSearchCompleter()
         // Налаштування вигляду popup (опціонально)
         m_searchCompleter->popup()->setStyleSheet(R"(
             QListView {
-                background-color: black;
+                background-color: white; /* Змінено фон на білий */
                 border: 1px solid #ced4da;
                 border-radius: 4px;
                 padding: 2px; /* Невеликий внутрішній відступ */
