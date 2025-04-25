@@ -43,10 +43,14 @@ void MainWindow::on_editProfileButton_clicked()
 void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
 {
     // Перевіряємо вказівники на ключові віджети нового дизайну
+    // Мітки дати, лояльності та балів тепер у верхній секції, тому їх окремо не перевіряємо тут
     if (!ui->profilePictureLabel || !ui->profileFullNameLabel || !ui->profileEmailDisplayLabel ||
         !ui->profileFirstNameLineEdit || !ui->profileLastNameLineEdit ||
-        !ui->profilePhoneLineEdit || !ui->profileAddressLineEdit || !ui->profileJoinDateDisplayLabel ||
-        !ui->profileLoyaltyDisplayLabel || !ui->profilePointsDisplayLabel)
+        !ui->profilePhoneLineEdit || !ui->profileAddressLineEdit ||
+        /* Видалено перевірку: !ui->profileJoinDateDisplayLabel || */
+        /* Видалено перевірку: !ui->profileLoyaltyDisplayLabel || */
+        /* Видалено перевірку: !ui->profilePointsDisplayLabel || */
+        !ui->editProfileButton || !ui->saveProfileButton) // Додамо перевірку кнопок для надійності
     {
         qWarning() << "populateProfilePanel: One or more profile widgets are null!";
         // Не показуємо QMessageBox тут, щоб не заважати користувачу
@@ -86,10 +90,11 @@ void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
         ui->profileAddressLineEdit->setText("");
         ui->profileAddressLineEdit->setPlaceholderText(noDataText);
         ui->profileAddressLineEdit->setEnabled(false);
-        // Інформація про акаунт
-        ui->profileJoinDateDisplayLabel->setText(errorText);
-        ui->profileLoyaltyDisplayLabel->setText(errorText);
-        ui->profilePointsDisplayLabel->setText("-");
+        // Інформація про акаунт (вже у верхній секції)
+        // Перевіряємо, чи існують мітки перед встановленням тексту помилки
+        if (ui->profileJoinDateDisplayLabel) ui->profileJoinDateDisplayLabel->setText(errorText);
+        if (ui->profileLoyaltyDisplayLabel) ui->profileLoyaltyDisplayLabel->setText(errorText);
+        if (ui->profilePointsDisplayLabel) ui->profilePointsDisplayLabel->setText("-");
         // Кнопки
         ui->editProfileButton->setEnabled(false);
         ui->saveProfileButton->setEnabled(false);
@@ -115,10 +120,17 @@ void MainWindow::populateProfilePanel(const CustomerProfileInfo &profileInfo)
     ui->profileAddressLineEdit->setPlaceholderText(tr("Введіть адресу"));
     ui->profileAddressLineEdit->setEnabled(true);
 
-    // Інформація про акаунт (не редагується)
-    ui->profileJoinDateDisplayLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
-    ui->profileLoyaltyDisplayLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
-    ui->profilePointsDisplayLabel->setText(QString::number(profileInfo.loyaltyPoints));
+    // Інформація про акаунт (не редагується, тепер у верхній секції)
+    // Перевіряємо існування міток перед встановленням тексту
+    if (ui->profileJoinDateDisplayLabel) {
+        ui->profileJoinDateDisplayLabel->setText(profileInfo.joinDate.isValid() ? profileInfo.joinDate.toString("dd.MM.yyyy") : tr("(невідомо)"));
+    }
+    if (ui->profileLoyaltyDisplayLabel) {
+        ui->profileLoyaltyDisplayLabel->setText(profileInfo.loyaltyProgram ? tr("Так") : tr("Ні"));
+    }
+    if (ui->profilePointsDisplayLabel) {
+        ui->profilePointsDisplayLabel->setText(QString::number(profileInfo.loyaltyPoints));
+    }
 
     // Керування кнопками
     ui->editProfileButton->setEnabled(true); // Дозволяємо почати редагування

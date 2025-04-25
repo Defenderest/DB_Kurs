@@ -1970,6 +1970,188 @@ border-bottom: 1px solid #eeeeee;</string>
                 </property>
                </widget>
               </item>
+              <!-- Додаємо інформацію про акаунт сюди -->
+              <item>
+               <spacer name="profileEmailAccountSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Policy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height> <!-- Невеликий відступ -->
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="profileJoinDateLayout">
+                <property name="spacing">
+                 <number>8</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_JoinDate">
+                  <property name="minimumSize">
+                   <size>
+                    <width>130</width> <!-- Ширина для вирівнювання -->
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>130</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6c757d; font-size: 9pt;</string> <!-- Менший шрифт, сірий -->
+                  </property>
+                  <property name="text">
+                   <string>Дата реєстрації:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="profileJoinDateDisplayLabel">
+                  <property name="styleSheet">
+                   <string notr="true">color: #495057; font-size: 10pt; font-weight: 500;</string> <!-- Темніший текст -->
+                  </property>
+                  <property name="text">
+                   <string>(завантаження...)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="joinDateSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="profileLoyaltyLayout">
+                <property name="spacing">
+                 <number>8</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_Loyalty">
+                  <property name="minimumSize">
+                   <size>
+                    <width>130</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>130</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6c757d; font-size: 9pt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Програма лояльності:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="profileLoyaltyDisplayLabel">
+                  <property name="styleSheet">
+                   <string notr="true">color: #495057; font-size: 10pt; font-weight: 500;</string>
+                  </property>
+                  <property name="text">
+                   <string>(завантаження...)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="loyaltySpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="profilePointsLayout">
+                <property name="spacing">
+                 <number>8</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_Points">
+                  <property name="minimumSize">
+                   <size>
+                    <width>130</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>130</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6c757d; font-size: 9pt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Бали лояльності:</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="profilePointsDisplayLabel">
+                  <property name="styleSheet">
+                   <string notr="true">color: #495057; font-size: 10pt; font-weight: 500;</string>
+                  </property>
+                  <property name="text">
+                   <string>(завантаження...)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="pointsSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
               <item>
                <spacer name="profileNameEmailSpacer">
                 <property name="orientation">
@@ -2167,102 +2349,6 @@ QPushButton#saveProfileButton:pressed {
                </property>
                <property name="placeholderText">
                 <string>Введіть адресу</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <!-- Розділювач -->
-          <item>
-           <widget class="Line" name="profileSeparator2">
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <!-- Секція інформації про акаунт -->
-          <item>
-           <widget class="QWidget" name="profileAccountWidget" native="true">
-            <layout class="QGridLayout" name="profileAccountLayout">
-             <property name="horizontalSpacing">
-              <number>15</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>10</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_JoinDate">
-               <property name="minimumSize">
-                <size>
-                 <width>120</width> <!-- Фіксована ширина мітки -->
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color: #495057;</string>
-               </property>
-               <property name="text">
-                <string>Дата реєстрації:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="profileJoinDateDisplayLabel">
-               <property name="styleSheet">
-                <string notr="true">color: #212529; font-weight: 500;</string> <!-- Темніший текст -->
-               </property>
-               <property name="text">
-                <string>(завантаження...)</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_Loyalty">
-               <property name="styleSheet">
-                <string notr="true">color: #495057;</string>
-               </property>
-               <property name="text">
-                <string>Програма лояльності:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="profileLoyaltyDisplayLabel">
-               <property name="styleSheet">
-                <string notr="true">color: #212529; font-weight: 500;</string>
-               </property>
-               <property name="text">
-                <string>(завантаження...)</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_Points">
-               <property name="styleSheet">
-                <string notr="true">color: #495057;</string>
-               </property>
-               <property name="text">
-                <string>Бали лояльності:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLabel" name="profilePointsDisplayLabel">
-               <property name="styleSheet">
-                <string notr="true">color: #212529; font-weight: 500;</string>
-               </property>
-               <property name="text">
-                <string>(завантаження...)</string>
                </property>
               </widget>
              </item>
