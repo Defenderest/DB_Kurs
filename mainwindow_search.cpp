@@ -103,8 +103,7 @@ void MainWindow::updateSearchSuggestions(const QString &text)
                          // Додаємо ціну до ToolTip, якщо це книга
                          .arg(suggestion.type == SearchSuggestionInfo::Book ? QString("\nЦіна: %1 грн").arg(suggestion.price, 0, 'f', 2) : QString())
                          );
-                         .arg(suggestion.type == SearchSuggestionInfo::Book ? tr("Книга") : tr("Автор"))
-                         .arg(suggestion.id));
+        // Видалено дубльовані рядки .arg(...)
 
         m_searchSuggestionModel->appendRow(item);
     }
