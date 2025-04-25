@@ -164,7 +164,8 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
          qCritical() << "booksContainerLayout is null!";
     } else {
         QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
-        displayBooks(books); // Заповнюємо сторінку "Книги"
+        // Викликаємо displayBooks з потрібними аргументами
+        displayBooks(books, ui->booksContainerLayout, ui->booksContainerWidget);
         if (!books.isEmpty()) {
              ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
         } else {

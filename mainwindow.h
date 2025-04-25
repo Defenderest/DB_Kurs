@@ -83,7 +83,8 @@ private:
     // Оновлено сигнатуру displayBooks
     void displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *targetLayout, QWidget *parentWidgetContext);
     void displayAuthors(const QList<AuthorDisplayInfo> &authors);
-    // displayBooksInHorizontalLayout видалено
+    // Допоміжна функція для відображення книг у горизонтальному layout
+    void displayBooksInHorizontalLayout(const QList<BookDisplayInfo> &books, QHBoxLayout* layout);
     QWidget* createBookCardWidget(const BookDisplayInfo &bookInfo);
     QWidget* createAuthorCardWidget(const AuthorDisplayInfo &authorInfo);
     QWidget* createCommentWidget(const CommentDisplayInfo &commentInfo); // Додано оголошення

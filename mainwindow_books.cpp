@@ -99,40 +99,47 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
 
 
 // Слот для відображення книг у сітці
-void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
+void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *targetLayout, QWidget *parentWidgetContext)
 {
-    const int maxColumns = 5; // Змінено кількість колонок у сітці на 5
+    const int maxColumns = 5; // Кількість колонок у сітці
 
-    // Очищаємо попередні віджети з booksContainerLayout (всередині pageBooks)
-    if (!ui->booksContainerLayout) {
-        qWarning() << "displayBooks: booksContainerLayout is null!";
-        // Можливо, показати повідомлення в statusBar або в самій області
-        QLabel *errorLabel = new QLabel(tr("Помилка: Не вдалося знайти область для відображення книг."), ui->booksContainerWidget);
-        errorLabel->setAlignment(Qt::AlignCenter);
-        ui->booksContainerWidget->setLayout(new QVBoxLayout()); // Потрібен layout для додавання мітки
-        ui->booksContainerWidget->layout()->addWidget(errorLabel);
+    // Перевіряємо валідність вказівників
+    if (!targetLayout) {
+        qWarning() << "displayBooks: targetLayout is null!";
         return;
     }
-    clearLayout(ui->booksContainerLayout);
+    if (!parentWidgetContext) {
+        qWarning() << "displayBooks: parentWidgetContext is null!";
+        // Можна спробувати отримати батьківський віджет з layout, але це менш надійно
+        parentWidgetContext = targetLayout->parentWidget();
+        if (!parentWidgetContext) {
+            qWarning() << "displayBooks: Could not determine parent widget context!";
+            return;
+        }
+    }
+
+    // Очищаємо попередні віджети з цільового layout
+    clearLayout(targetLayout);
 
     if (books.isEmpty()) {
-        QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних."), ui->booksContainerWidget);
+        QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних."), parentWidgetContext);
         noBooksLabel->setAlignment(Qt::AlignCenter);
         noBooksLabel->setWordWrap(true);
-        // Додаємо мітку безпосередньо в layout, якщо він існує
-        ui->booksContainerLayout->addWidget(noBooksLabel, 0, 0, 1, maxColumns); // Розтягнути на кілька колонок
+        // Додаємо мітку безпосередньо в layout
+        targetLayout->addWidget(noBooksLabel, 0, 0, 1, maxColumns); // Розтягнути на кілька колонок
+        // Додаємо спейсери, щоб мітка була по центру і не розтягувала все
+        targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), 1, 0); // Вертикальний
+        targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns); // Горизонтальний
         return; // Виходимо, якщо книг немає
     }
 
-
     int row = 0;
     int col = 0;
-    // const int maxColumns = 5; // Перенесено на початок функції
 
     for (const BookDisplayInfo &bookInfo : books) {
         QWidget *bookCard = createBookCardWidget(bookInfo);
         if (bookCard) {
-            ui->booksContainerLayout->addWidget(bookCard, row, col);
+            targetLayout->addWidget(bookCard, row, col);
             col++;
             if (col >= maxColumns) {
                 col = 0;
@@ -143,38 +150,40 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books)
 
     // Встановлюємо однакове розтягування для колонок з картками
     for (int c = 0; c < maxColumns; ++c) {
-        ui->booksContainerLayout->setColumnStretch(c, 1);
+        targetLayout->setColumnStretch(c, 1);
     }
     // Встановлюємо розтягування для колонки після карток (де горизонтальний спейсер)
-    // Це гарантує, що колонки з картками будуть однакової ширини, а зайвий простір піде в останню колонку.
-    ui->booksContainerLayout->setColumnStretch(maxColumns, 99); // Велике значення, щоб забрати весь зайвий простір
+    targetLayout->setColumnStretch(maxColumns, 99); // Велике значення, щоб забрати весь зайвий простір
 
     // Видаляємо попередні розширювачі, якщо вони були додані раніше (про всяк випадок)
+    // (Це може бути не потрібно, якщо clearLayout працює коректно, але залишаємо для надійності)
     QLayoutItem* item;
     // Видаляємо вертикальний розширювач знизу (якщо він є)
-    item = ui->booksContainerLayout->itemAtPosition(row + 1, 0);
+    item = targetLayout->itemAtPosition(row + 1, 0);
     if (item && item->spacerItem()) {
-        ui->booksContainerLayout->removeItem(item);
+        targetLayout->removeItem(item);
         delete item;
     }
      // Видаляємо горизонтальний розширювач справа (якщо він є)
-    item = ui->booksContainerLayout->itemAtPosition(0, maxColumns);
+    item = targetLayout->itemAtPosition(0, maxColumns);
      if (item && item->spacerItem()) {
-        ui->booksContainerLayout->removeItem(item);
+        targetLayout->removeItem(item);
         delete item;
     }
 
     // Додаємо горизонтальний розширювач в першому рядку після останньої колонки карток,
     // щоб притиснути картки вліво.
-    ui->booksContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns);
+    targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns);
     // Додаємо вертикальний розширювач під останнім рядком карток,
     // щоб притиснути картки вгору.
-    ui->booksContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
+    targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
 
 
     // Переконуємося, що контейнер оновився
-    ui->booksContainerWidget->updateGeometry();
-    // ui->booksScrollArea->updateGeometry(); // Зазвичай не потрібно викликати для ScrollArea
+    parentWidgetContext->updateGeometry();
+    // Якщо parentWidgetContext знаходиться всередині ScrollArea, можливо, знадобиться оновити і її
+    // QScrollArea *scrollArea = qobject_cast<QScrollArea*>(parentWidgetContext->parentWidget());
+    // if (scrollArea) scrollArea->updateGeometry();
 }
 
 
