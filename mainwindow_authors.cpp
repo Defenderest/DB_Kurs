@@ -80,6 +80,14 @@ QWidget* MainWindow::createAuthorCardWidget(const AuthorDisplayInfo &authorInfo)
     // connect(viewBooksButton, &QPushButton::clicked, this, [this, authorInfo](){ /* логіка перегляду книг автора */ });
     cardLayout->addWidget(viewBooksButton);
 
+    // --- Додавання обробки кліків ---
+    // Встановлюємо authorId як динамічну властивість для легкого доступу в eventFilter
+    cardFrame->setProperty("authorId", authorInfo.authorId);
+    // Встановлюємо фільтр подій на сам фрейм картки
+    cardFrame->installEventFilter(this);
+    // Змінюємо курсор при наведенні, щоб показати клікабельність
+    cardFrame->setCursor(Qt::PointingHandCursor);
+
 
     cardFrame->setLayout(cardLayout);
     return cardFrame;

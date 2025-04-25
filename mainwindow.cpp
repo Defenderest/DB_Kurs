@@ -320,6 +320,20 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             }
         }
     }
+    // --- Обробка кліків на картках авторів ---
+    // Перевіряємо, чи об'єкт є QFrame і чи має властивість authorId
+    else if (qobject_cast<QFrame*>(watched) && watched->property("authorId").isValid()) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                int authorId = watched->property("authorId").toInt();
+                qInfo() << "Author card clicked, authorId:" << authorId;
+                showAuthorDetails(authorId); // Викликаємо слот для показу деталей автора
+                return true; // Подія оброблена
+            }
+        }
+    }
+
 
     // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
@@ -472,6 +486,108 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 //  removeCartItem, on_placeOrderButton_clicked переміщено до mainwindow_cart.cpp]
 
 // --- Кінець логіки кошика ---
+
+// --- Логіка сторінки деталей автора ---
+
+// Слот для відображення сторінки з деталями автора
+void MainWindow::showAuthorDetails(int authorId)
+{
+    qInfo() << "Attempting to show details for author ID:" << authorId;
+    if (authorId <= 0) {
+        qWarning() << "Invalid author ID received:" << authorId;
+        QMessageBox::warning(this, tr("Помилка"), tr("Некоректний ідентифікатор автора."));
+        return;
+    }
+    if (!m_dbManager) {
+        QMessageBox::critical(this, tr("Помилка"), tr("Помилка доступу до бази даних."));
+        return;
+    }
+    if (!ui->authorDetailsPage) {
+         QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Сторінка деталей автора не знайдена."));
+         return;
+    }
+
+    // Отримуємо деталі автора з бази даних
+    AuthorDetailsInfo authorDetails = m_dbManager->getAuthorDetails(authorId);
+
+    if (!authorDetails.found) {
+        QMessageBox::warning(this, tr("Помилка"), tr("Не вдалося знайти інформацію для автора з ID %1.").arg(authorId));
+        return;
+    }
+
+    // Заповнюємо сторінку даними
+    populateAuthorDetailsPage(authorDetails);
+
+    // Зберігаємо ID поточного автора
+    m_currentAuthorDetailsId = authorId;
+
+    // Переключаємо StackedWidget на сторінку деталей автора
+    ui->contentStackedWidget->setCurrentWidget(ui->authorDetailsPage);
+}
+
+// Заповнення сторінки деталей автора даними
+void MainWindow::populateAuthorDetailsPage(const AuthorDetailsInfo &details)
+{
+    // Перевірка існування віджетів
+    if (!ui->authorDetailPhotoLabel || !ui->authorDetailNameLabel || !ui->authorDetailNationalityLabel ||
+        !ui->authorDetailBiographyLabel || !ui->authorBooksHeaderLabel || !ui->authorBooksLayout ||
+        !ui->authorBooksContainerWidget)
+    {
+        qWarning() << "populateAuthorDetailsPage: One or more author detail page widgets are null!";
+        // Можна показати повідомлення про помилку
+        return;
+    }
+
+    // 1. Фото
+    QPixmap photoPixmap(details.imagePath);
+    if (photoPixmap.isNull() || details.imagePath.isEmpty()) {
+        ui->authorDetailPhotoLabel->setText(tr("👤")); // Іконка
+        ui->authorDetailPhotoLabel->setStyleSheet("QLabel { background-color: #e0e0e0; color: #555; border-radius: 90px; font-size: 80pt; qproperty-alignment: AlignCenter; border: 1px solid #ccc; }");
+    } else {
+        // Масштабуємо та робимо круглим
+        QPixmap scaledPixmap = photoPixmap.scaled(ui->authorDetailPhotoLabel->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+        QBitmap mask(scaledPixmap.size());
+        mask.fill(Qt::color0);
+        QPainter painter(&mask);
+        painter.setBrush(Qt::color1);
+        painter.drawEllipse(0, 0, scaledPixmap.width(), scaledPixmap.height());
+        painter.end();
+        scaledPixmap.setMask(mask);
+        ui->authorDetailPhotoLabel->setPixmap(scaledPixmap);
+        ui->authorDetailPhotoLabel->setStyleSheet("QLabel { border-radius: 90px; border: 1px solid #ccc; }"); // Стиль для рамки
+    }
+
+    // 2. Ім'я
+    ui->authorDetailNameLabel->setText(details.firstName + " " + details.lastName);
+
+    // 3. Національність та роки життя
+    QString nationalityAndYears = details.nationality;
+    QString birthYear = details.birthDate.isValid() ? QString::number(details.birthDate.year()) : "?";
+    QString deathYear = details.deathDate.isValid() ? QString::number(details.deathDate.year()) : (details.birthDate.isValid() ? "" : "?"); // Показуємо тільки якщо є дата народження
+    if (!birthYear.isEmpty() || !deathYear.isEmpty()) {
+        if (!nationalityAndYears.isEmpty()) {
+            nationalityAndYears += " (";
+        } else {
+            nationalityAndYears += "(";
+        }
+        nationalityAndYears += birthYear + " - " + deathYear + ")";
+    }
+    ui->authorDetailNationalityLabel->setText(nationalityAndYears.isEmpty() ? tr("(Інформація відсутня)") : nationalityAndYears);
+
+
+    // 4. Біографія
+    ui->authorDetailBiographyLabel->setText(details.biography.isEmpty() ? tr("(Біографія відсутня)") : details.biography);
+
+    // 5. Книги автора
+    ui->authorBooksHeaderLabel->setText(tr("Книги автора (%1)").arg(details.books.size()));
+    // Використовуємо існуючу функцію displayBooks для відображення книг у сітці
+    // Передаємо відповідний layout та контекстний віджет
+    displayBooks(details.books, ui->authorBooksLayout, ui->authorBooksContainerWidget);
+
+    qInfo() << "Author details page populated for:" << details.firstName << details.lastName;
+}
+
+// --- Кінець логіки сторінки деталей автора ---
 
 
 // --- Кінець реалізації слотів та функцій ---

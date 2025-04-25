@@ -132,5 +132,19 @@ struct SearchSuggestionInfo {
     double price = 0.0;     // Ціна (актуально тільки для книг)
 };
 
+// Структура для передачі детальної інформації про автора в UI
+struct AuthorDetailsInfo {
+    int authorId = -1;
+    QString firstName;
+    QString lastName;
+    QString nationality;
+    QString imagePath;
+    QString biography;
+    QDate birthDate; // Додано дату народження
+    QDate deathDate; // Додано дату смерті (може бути недійсною)
+    QList<BookDisplayInfo> books; // Список книг цього автора
+    bool found = false; // Прапорець, чи знайдено автора
+};
+
 
 #endif // DATATYPES_H

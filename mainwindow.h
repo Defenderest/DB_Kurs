@@ -78,6 +78,7 @@ private slots:
     void showOrderDetailsPlaceholder(int orderId); // Тимчасовий слот для деталей замовлення
     void showNextBanner(); // Слот для перемикання банера
     void onSearchSuggestionActivated(const QModelIndex &index); // Слот для обробки вибору пропозиції
+    void showAuthorDetails(int authorId); // Слот/метод для показу деталей автора
 
 private:
     // Допоміжні функції для відображення даних
@@ -105,6 +106,8 @@ private:
     void setProfileEditingEnabled(bool enabled);
     // Заповнення сторінки деталей книги
     void populateBookDetailsPage(const BookDetailsInfo &details);
+    // Заповнення сторінки деталей автора
+    void populateAuthorDetailsPage(const AuthorDetailsInfo &details);
 
     // Керування кошиком
     void populateCartPage(); // Заповнення сторінки кошика
@@ -140,8 +143,9 @@ private:
     QMap<int, CartItem> m_cartItems; // Ключ - bookId (CartItem тепер з datatypes.h)
     QMap<int, QLabel*> m_cartSubtotalLabels; // Ключ - bookId, Значення - вказівник на мітку підсумку
 
-    // ID книги, що відображається на сторінці деталей
+    // ID книги та автора, що відображаються на сторінках деталей
     int m_currentBookDetailsId = -1;
+    int m_currentAuthorDetailsId = -1;
 
     // Члени для автоматичного банера
     QTimer *m_bannerTimer = nullptr;

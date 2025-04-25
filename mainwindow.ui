@@ -2937,6 +2937,232 @@ QLabel#emptyCartLabel {
       </item>
      </layout>
     </widget> <!-- Закриваємо cartPage -->
+    <!-- Нова сторінка для деталей автора -->
+    <widget class="QWidget" name="authorDetailsPage">
+     <layout class="QVBoxLayout" name="outerAuthorDetailsLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QScrollArea" name="authorDetailsScrollArea">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QScrollArea { border: none; background-color: #ffffff; }</string>
+        </property>
+        <widget class="QWidget" name="authorDetailsScrollContents">
+         <property name="styleSheet">
+          <string notr="true">QWidget#authorDetailsScrollContents { background-color: #ffffff; }</string>
+         </property>
+         <layout class="QVBoxLayout" name="authorDetailsPageLayout">
+          <property name="spacing">
+           <number>20</number>
+          </property>
+          <property name="leftMargin">
+           <number>30</number>
+          </property>
+          <property name="topMargin">
+           <number>25</number>
+          </property>
+          <property name="rightMargin">
+           <number>30</number>
+          </property>
+          <property name="bottomMargin">
+           <number>25</number>
+          </property>
+          <!-- Верхня секція: Фото та Ім'я -->
+          <item>
+           <layout class="QHBoxLayout" name="authorDetailsHeaderLayout">
+            <property name="spacing">
+             <number>30</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="authorDetailPhotoLabel">
+              <property name="minimumSize">
+               <size>
+                <width>180</width>
+                <height>180</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>180</width>
+                <height>180</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: #e0e0e0; border-radius: 90px; /* Кругле фото */ border: 1px solid #ccc;</string>
+              </property>
+              <property name="text">
+               <string>(Фото)</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="authorDetailsNameLayout">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="authorDetailNameLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 22pt; font-weight: 600; color: #1a1a1a;</string>
+                </property>
+                <property name="text">
+                 <string>(Ім'я Автора)</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="authorDetailNationalityLabel">
+                <property name="styleSheet">
+                 <string notr="true">font-size: 12pt; color: #6c757d;</string>
+                </property>
+                <property name="text">
+                 <string>(Національність, Роки життя)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="authorNameSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="authorHeaderSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <!-- Розділювач -->
+          <item>
+           <widget class="Line" name="authorSeparator1">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <!-- Секція Біографії -->
+          <item>
+           <widget class="QLabel" name="biographyHeaderLabel">
+            <property name="styleSheet">
+             <string notr="true">font-size: 14pt; font-weight: 600; color: #333; margin-bottom: 5px;</string>
+            </property>
+            <property name="text">
+             <string>Біографія</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="authorDetailBiographyLabel">
+            <property name="styleSheet">
+             <string notr="true">color: #212529; font-size: 11pt; line-height: 1.6;</string>
+            </property>
+            <property name="text">
+             <string>(Біографія завантажується...)</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <!-- Розділювач -->
+          <item>
+           <widget class="Line" name="authorSeparator2">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <!-- Секція Книг -->
+          <item>
+           <widget class="QLabel" name="authorBooksHeaderLabel">
+            <property name="styleSheet">
+             <string notr="true">font-size: 14pt; font-weight: 600; color: #333; margin-bottom: 10px;</string>
+            </property>
+            <property name="text">
+             <string>Книги автора</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <!-- Layout для відображення книг автора -->
+           <widget class="QWidget" name="authorBooksContainerWidget" native="true">
+            <property name="styleSheet">
+             <string notr="true">background-color: transparent;</string>
+            </property>
+            <layout class="QGridLayout" name="authorBooksLayout">
+             <property name="spacing">
+              <number>24</number>
+             </property>
+             <!-- Сюди будуть додаватися картки книг -->
+            </layout>
+           </widget>
+          </item>
+          <!-- Вертикальний спейсер в кінці -->
+          <item>
+           <spacer name="authorDetailsVerticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget> <!-- Закриваємо authorDetailsPage -->
    </widget> <!-- Закриваємо contentStackedWidget -->
   </item> <!-- Закриваємо item для StackedWidget -->
      </layout>

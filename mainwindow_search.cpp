@@ -142,9 +142,8 @@ void MainWindow::onSearchSuggestionActivated(const QModelIndex &index)
     if (type == SearchSuggestionInfo::Book) {
         showBookDetails(id); // Переходимо на сторінку деталей книги
     } else if (type == SearchSuggestionInfo::Author) {
-        // TODO: Реалізувати перехід на сторінку автора (якщо вона є)
-        qInfo() << "Navigating to author page for ID:" << id << "(Not implemented yet)";
-        QMessageBox::information(this, tr("Навігація"), tr("Перехід на сторінку автора '%1' (ID: %2) ще не реалізовано.").arg(displayText).arg(id));
+        // Переходимо на сторінку деталей автора
+        showAuthorDetails(id);
     }
 
     // Опціонально: очистити поле пошуку після вибору

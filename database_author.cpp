@@ -52,3 +52,101 @@ QList<AuthorDisplayInfo> DatabaseManager::getAllAuthorsForDisplay() const
 
     return authors;
 }
+
+// Реалізація нового методу для отримання детальної інформації про автора
+AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
+{
+    AuthorDetailsInfo details;
+    details.found = false;
+    if (!m_isConnected || !m_db.isOpen() || authorId <= 0) {
+        qWarning() << "Неможливо отримати деталі автора: немає з'єднання або невірний authorId.";
+        return details;
+    }
+
+    // --- Отримання основної інформації про автора ---
+    const QString authorSql = R"(
+        SELECT
+            author_id, first_name, last_name, nationality, image_path, biography, birth_date, death_date
+        FROM author
+        WHERE author_id = :authorId
+        LIMIT 1;
+    )";
+
+    QSqlQuery authorQuery(m_db);
+    authorQuery.prepare(authorSql);
+    authorQuery.bindValue(":authorId", authorId);
+
+    qInfo() << "Executing SQL to get author details for author ID:" << authorId;
+    if (!authorQuery.exec()) {
+        qCritical() << "Помилка при отриманні деталей автора для author ID '" << authorId << "':";
+        qCritical() << authorQuery.lastError().text();
+        qCritical() << "SQL запит:" << authorQuery.lastQuery();
+        return details;
+    }
+
+    if (authorQuery.next()) {
+        details.authorId = authorQuery.value("author_id").toInt();
+        details.firstName = authorQuery.value("first_name").toString();
+        details.lastName = authorQuery.value("last_name").toString();
+        details.nationality = authorQuery.value("nationality").toString();
+        details.imagePath = authorQuery.value("image_path").toString();
+        details.biography = authorQuery.value("biography").toString();
+        details.birthDate = authorQuery.value("birth_date").toDate();
+        details.deathDate = authorQuery.value("death_date").toDate(); // Може бути NULL -> invalid QDate
+        details.found = true;
+        qInfo() << "Author details found for author ID:" << authorId;
+    } else {
+        qInfo() << "Author details not found for author ID:" << authorId;
+        return details; // Якщо автора не знайдено, повертаємо одразу
+    }
+
+    // --- Отримання книг цього автора ---
+    // Використовуємо запит, схожий на getBookDisplayInfoById, але фільтруємо за author_id
+    const QString booksSql = R"(
+        SELECT
+            b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre,
+            STRING_AGG(DISTINCT a_other.first_name || ' ' || a_other.last_name, ', ') AS authors -- Збираємо ВСІХ авторів книги
+        FROM book b
+        INNER JOIN book_author ba ON b.book_id = ba.book_id
+        LEFT JOIN book_author ba_other ON b.book_id = ba_other.book_id -- Ще один join для збору всіх авторів
+        LEFT JOIN author a_other ON ba_other.author_id = a_other.author_id
+        WHERE ba.author_id = :authorId -- Фільтруємо за ID потрібного автора
+        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre
+        ORDER BY b.title;
+    )";
+
+    QSqlQuery booksQuery(m_db);
+    booksQuery.prepare(booksSql);
+    booksQuery.bindValue(":authorId", authorId);
+
+    qInfo() << "Executing SQL to get books for author ID:" << authorId;
+    if (!booksQuery.exec()) {
+        qCritical() << "Помилка при отриманні книг для автора ID '" << authorId << "':";
+        qCritical() << booksQuery.lastError().text();
+        qCritical() << "SQL запит:" << booksQuery.lastQuery();
+        // Не повертаємо помилку, просто список книг буде порожнім
+    } else {
+        qInfo() << "Successfully fetched books for author ID:" << authorId << ". Processing results...";
+        int count = 0;
+        while (booksQuery.next()) {
+            BookDisplayInfo bookInfo;
+            bookInfo.bookId = booksQuery.value("book_id").toInt();
+            bookInfo.title = booksQuery.value("title").toString();
+            bookInfo.price = booksQuery.value("price").toDouble();
+            bookInfo.coverImagePath = booksQuery.value("cover_image_path").toString();
+            bookInfo.stockQuantity = booksQuery.value("stock_quantity").toInt();
+            bookInfo.authors = booksQuery.value("authors").toString(); // Всі автори книги
+            bookInfo.genre = booksQuery.value("genre").toString();
+            bookInfo.found = true; // Книга знайдена
+
+            if (booksQuery.value("authors").isNull()) {
+                 bookInfo.authors = "";
+            }
+            details.books.append(bookInfo);
+            count++;
+        }
+         qInfo() << "Processed" << count << "books for author ID:" << authorId;
+    }
+
+    return details;
+}

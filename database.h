@@ -98,6 +98,9 @@ public:
     // Новий метод для отримання деталей одного замовлення за ID
     OrderDisplayInfo getOrderDetailsById(int orderId) const;
 
+    // Новий метод для отримання детальної інформації про автора за ID
+    AuthorDetailsInfo getAuthorDetails(int authorId) const;
+
     // Публічні методи доступу до стану та об'єкту БД
     bool isConnected() const;
     QSqlDatabase& database(); // Повертає посилання для можливості операцій (транзакції, запити)
