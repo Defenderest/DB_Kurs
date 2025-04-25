@@ -41,11 +41,11 @@ void MainWindow::setupSearchCompleter()
             QListView::item {
                 padding: 5px; /* Відступ для кожного елемента */
                 border-radius: 3px; /* Невелике заокруглення для елементів */
-                color: black; /* Явно встановлюємо темний колір тексту */
+                /* color: black; - Видалено, колір керується делегатом */
             }
             QListView::item:selected {
                 background-color: #e9ecef; /* Світло-сірий фон для вибраного */
-                color: black; /* Темний текст для вибраного */
+                /* color: black; - Видалено, колір керується делегатом */
             }
         )");
     } else {
