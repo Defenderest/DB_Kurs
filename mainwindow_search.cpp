@@ -33,7 +33,7 @@ void MainWindow::setupSearchCompleter()
         // Налаштування вигляду popup (опціонально)
         m_searchCompleter->popup()->setStyleSheet(R"(
             QListView {
-                background-color: white;
+                background-color: black;
                 border: 1px solid #ced4da;
                 border-radius: 4px;
                 padding: 2px; /* Невеликий внутрішній відступ */
@@ -41,11 +41,11 @@ void MainWindow::setupSearchCompleter()
             QListView::item {
                 padding: 5px; /* Відступ для кожного елемента */
                 border-radius: 3px; /* Невелике заокруглення для елементів */
-                color: #212529; /* Явно встановлюємо темний колір тексту */
+                color: black; /* Явно встановлюємо темний колір тексту */
             }
             QListView::item:selected {
                 background-color: #e9ecef; /* Світло-сірий фон для вибраного */
-                color: #212529; /* Темний текст для вибраного */
+                color: black; /* Темний текст для вибраного */
             }
         )");
     } else {
