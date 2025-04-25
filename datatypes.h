@@ -141,7 +141,7 @@ struct AuthorDetailsInfo {
     QString imagePath;
     QString biography;
     QDate birthDate; // Додано дату народження
-    QDate deathDate; // Додано дату смерті (може бути недійсною)
+    // QDate deathDate; // Видалено, оскільки стовпця немає в БД
     QList<BookDisplayInfo> books; // Список книг цього автора
     bool found = false; // Прапорець, чи знайдено автора
 };

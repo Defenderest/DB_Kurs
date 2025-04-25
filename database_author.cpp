@@ -64,36 +64,29 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
     }
 
     // --- Отримання основної інформації про автора ---
+    // Видалено death_date з запиту
     const QString authorSql = R"(
         SELECT
-            author_id, first_name, last_name, nationality, image_path, biography, birth_date, death_date
+            author_id, first_name, last_name, nationality, image_path, biography, birth_date
         FROM author
         WHERE author_id = :authorId
         LIMIT 1;
     )";
 
-    // --- Тимчасова зміна для діагностики помилки "EXECUTE (9)" ---
-    // !!! ПОПЕРЕДЖЕННЯ: Цей підхід вразливий до SQL ін'єкцій і використовується лише для тестування.
-    // !!! Поверніться до prepare/bindValue після діагностики.
-    QString directAuthorSql = QString(R"(
-        SELECT
-            author_id, first_name, last_name, nationality, image_path, biography, birth_date, death_date
-        FROM author
-        WHERE author_id = %1
-        LIMIT 1;
-    )").arg(authorId); // Пряма підстановка ID
-
+    // Повертаємо використання prepare/bindValue/exec
     QSqlQuery authorQuery(m_db);
-    qInfo() << "Executing DIRECT SQL to get author details for author ID:" << authorId;
-    qInfo() << "Direct SQL:" << directAuthorSql; // Логуємо прямий запит
+    authorQuery.prepare(authorSql);
+    authorQuery.bindValue(":authorId", authorId);
 
-    if (!authorQuery.exec(directAuthorSql)) { // Виконуємо прямий запит
-        qCritical() << "Помилка при отриманні деталей автора (прямий запит) для author ID '" << authorId << "':";
+    qInfo() << "Executing SQL to get author details for author ID:" << authorId;
+    if (!authorQuery.exec()) {
+        qCritical() << "Помилка при отриманні деталей автора для author ID '" << authorId << "':";
         qCritical() << authorQuery.lastError().text();
-        qCritical() << "SQL запит:" << directAuthorSql; // Логуємо прямий запит у разі помилки
+        qCritical() << "SQL запит:" << authorQuery.lastQuery(); // Логуємо запит, який виконав Qt
         return details;
     }
-    // --- Кінець тимчасової зміни ---
+    // --- Кінець повернення до prepare/bindValue/exec ---
+
 
     if (authorQuery.next()) {
         details.authorId = authorQuery.value("author_id").toInt();
@@ -103,7 +96,7 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
         details.imagePath = authorQuery.value("image_path").toString();
         details.biography = authorQuery.value("biography").toString();
         details.birthDate = authorQuery.value("birth_date").toDate();
-        details.deathDate = authorQuery.value("death_date").toDate(); // Може бути NULL -> invalid QDate
+        // details.deathDate = authorQuery.value("death_date").toDate(); // Видалено, оскільки стовпця немає
         details.found = true;
         qInfo() << "Author details found for author ID:" << authorId;
     } else {

@@ -565,18 +565,16 @@ void MainWindow::populateAuthorDetailsPage(const AuthorDetailsInfo &details)
     QString yearsString;
     if (details.birthDate.isValid()) {
         yearsString += QString::number(details.birthDate.year());
-        if (details.deathDate.isValid()) {
-            yearsString += " - " + QString::number(details.deathDate.year());
-        } else {
-            yearsString += " - " + tr("дотепер"); // Або просто рік народження, якщо автор живий
-        }
-    } else if (details.deathDate.isValid()) {
-        // Малоймовірно, але можливо: невідома дата народження, відома дата смерті
-        yearsString = "? - " + QString::number(details.deathDate.year());
+        // Оскільки deathDate видалено, просто показуємо рік народження або нічого
+        // Можна додати логіку, щоб показувати " - дотепер", якщо потрібно,
+        // але без дати смерті це може бути не завжди коректно.
+        // Залишимо поки тільки рік народження.
+        // yearsString += " - " + tr("дотепер"); // Закоментовано
     }
+    // Логіка для випадку, коли відома тільки дата смерті, видалена
 
     if (!nationalityAndYears.isEmpty() && !yearsString.isEmpty()) {
-        nationalityAndYears += " (" + yearsString + ")";
+        nationalityAndYears += " (" + yearsString + ")"; // Додаємо рік народження в дужках
     } else if (!yearsString.isEmpty()) {
         nationalityAndYears = yearsString; // Якщо національність невідома, показуємо тільки роки
     }
