@@ -101,6 +101,9 @@ public:
     // Новий метод для отримання детальної інформації про автора за ID
     AuthorDetailsInfo getAuthorDetails(int authorId) const;
 
+    // Новий метод для отримання схожих книг (за жанром)
+    QList<BookDisplayInfo> getSimilarBooks(int currentBookId, const QString &genre, int limit = 5) const;
+
     // Публічні методи доступу до стану та об'єкту БД
     bool isConnected() const;
     QSqlDatabase& database(); // Повертає посилання для можливості операцій (транзакції, запити)

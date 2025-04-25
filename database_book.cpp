@@ -340,3 +340,71 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
 
     return suggestions;
 }
+
+// Реалізація нового методу для отримання схожих книг (за жанром)
+QList<BookDisplayInfo> DatabaseManager::getSimilarBooks(int currentBookId, const QString &genre, int limit) const
+{
+    QList<BookDisplayInfo> books;
+    if (!m_isConnected || !m_db.isOpen() || genre.isEmpty() || currentBookId <= 0) {
+        qWarning() << "Неможливо отримати схожі книги: немає з'єднання, порожній жанр або невірний currentBookId.";
+        return books;
+    }
+
+    // Запит схожий на getBooksByGenre, але з WHERE b.genre = :genre AND b.book_id != :currentBookId
+    const QString sql = R"(
+        SELECT
+            b.book_id,
+            b.title,
+            b.price,
+            b.cover_image_path,
+            b.stock_quantity,
+            b.genre,
+            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
+        FROM book b
+        LEFT JOIN book_author ba ON b.book_id = ba.book_id
+        LEFT JOIN author a ON ba.author_id = a.author_id
+        WHERE b.genre = :genre AND b.book_id != :currentBookId -- Фільтрація за жанром та виключення поточної книги
+        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre
+        ORDER BY RANDOM() -- Випадкове сортування для різноманітності, або можна інше (напр. publication_date DESC)
+        LIMIT :limit; -- Обмеження кількості
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":genre", genre);
+    query.bindValue(":currentBookId", currentBookId);
+    query.bindValue(":limit", limit > 0 ? limit : 5); // За замовчуванням 5
+
+    qInfo() << "Executing SQL to get similar books for genre:" << genre << "excluding book ID:" << currentBookId << "with limit:" << query.boundValue(":limit").toInt();
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні списку схожих книг для жанру '" << genre << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return books;
+    }
+
+    qInfo() << "Successfully fetched similar books for genre" << genre << ". Processing results...";
+    int count = 0;
+    while (query.next()) {
+        BookDisplayInfo bookInfo;
+        bookInfo.bookId = query.value("book_id").toInt();
+        bookInfo.title = query.value("title").toString();
+        bookInfo.price = query.value("price").toDouble();
+        bookInfo.coverImagePath = query.value("cover_image_path").toString();
+        bookInfo.stockQuantity = query.value("stock_quantity").toInt();
+        bookInfo.authors = query.value("authors").toString();
+        bookInfo.genre = query.value("genre").toString();
+        bookInfo.found = true;
+
+        if (query.value("authors").isNull()) {
+             bookInfo.authors = "";
+        }
+
+        books.append(bookInfo);
+        count++;
+    }
+    qInfo() << "Processed" << count << "similar books for genre" << genre;
+
+    return books;
+}
