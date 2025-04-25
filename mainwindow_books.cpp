@@ -20,135 +20,69 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     // Основний віджет картки (використовуємо QFrame для рамки)
     QFrame *cardFrame = new QFrame();
     cardFrame->setFrameShape(QFrame::StyledPanel); // Додає рамку
-    cardFrame->setFrameShadow(QFrame::Plain);
+    cardFrame->setFrameShadow(QFrame::Raised);     // Додає тінь
     cardFrame->setLineWidth(1);
-    cardFrame->setMinimumSize(190, 350); // Збільшено висоту картки
-    // cardFrame->setMaximumSize(230, 370); // Можна встановити максимальний розмір
-    cardFrame->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    // Оновлений стиль картки: білий фон, світла рамка, більше заокруглення
-    cardFrame->setStyleSheet(
-        "QFrame {"
-        "  background-color: #ffffff;"
-        "  border: 1px solid #f0f0f0;" // Дуже світла рамка
-        "  border-radius: 10px;"       // Збільшено заокруглення
-        "}"
-        "QFrame:hover {"
-        "  border-color: #e0e0e0;" // Трохи темніша рамка при наведенні
-        "}");
+    cardFrame->setMinimumSize(200, 300); // Мінімальний розмір картки (повернено)
+    // cardFrame->setMaximumSize(250, 350); // Максимальний розмір можна прибрати або залишити
+    cardFrame->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred); // Дозволяємо розтягуватись в комірці
+    cardFrame->setStyleSheet("QFrame { background-color: white; border-radius: 8px; }"); // Повернено початковий стиль картки
 
     // Вертикальний layout для вмісту картки
     QVBoxLayout *cardLayout = new QVBoxLayout(cardFrame);
-    cardLayout->setSpacing(6); // Зменшено відстань між елементами
-    cardLayout->setContentsMargins(12, 12, 12, 12); // Змінено відступи
+    cardLayout->setSpacing(8); // Повернено початковий spacing
+    cardLayout->setContentsMargins(10, 10, 10, 10); // Повернено початкові margins
 
     // 1. Обкладинка книги (QLabel)
     QLabel *coverLabel = new QLabel();
     coverLabel->setAlignment(Qt::AlignCenter);
-    coverLabel->setMinimumHeight(200); // Збільшено мінімальну висоту для обкладинки
-    coverLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // Дозволяємо розтягуватись
+    coverLabel->setMinimumHeight(150); // Повернено початкову мінімальну висоту
+    coverLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // Розтягувати
     QPixmap coverPixmap(bookInfo.coverImagePath);
     if (coverPixmap.isNull() || bookInfo.coverImagePath.isEmpty()) {
-        coverLabel->setText(tr("Фото")); // Коротший плейсхолдер
-        coverLabel->setStyleSheet("QLabel { background-color: #f8f9fa; color: #adb5bd; border-radius: 6px; }"); // Світліший фон
+        // Якщо зображення не завантажилось, показуємо плейсхолдер
+        coverLabel->setText(tr("Немає\nобкладинки"));
+        coverLabel->setStyleSheet("QLabel { background-color: #e0e0e0; color: #555; border-radius: 4px; }"); // Повернено стиль плейсхолдера
     } else {
-        // Масштабуємо зображення, зберігаючи пропорції, до ширини картки (з відступами)
-        // Висота буде пропорційною
-        int availableWidth = cardFrame->minimumWidth() - cardLayout->contentsMargins().left() - cardLayout->contentsMargins().right();
-        coverLabel->setPixmap(coverPixmap.scaledToWidth(availableWidth, Qt::SmoothTransformation));
-        coverLabel->setStyleSheet("QLabel { border-radius: 6px; }"); // Додаємо заокруглення
+        // Масштабуємо зображення, зберігаючи пропорції (повернено початкове масштабування)
+        coverLabel->setPixmap(coverPixmap.scaled(180, 240, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        coverLabel->setStyleSheet(""); // Прибираємо зайвий стиль
     }
     cardLayout->addWidget(coverLabel);
 
     // 2. Назва книги (QLabel)
     QLabel *titleLabel = new QLabel(bookInfo.title);
-    titleLabel->setWordWrap(true);
-    titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop); // Вирівнювання по лівому краю
-    titleLabel->setMinimumHeight(35); // Мінімальна висота для 2 рядків
-    titleLabel->setStyleSheet("QLabel { font-weight: 500; font-size: 10pt; color: #343a40; }"); // Змінено стиль
+    titleLabel->setWordWrap(true); // Переносити текст
+    titleLabel->setAlignment(Qt::AlignCenter); // Повернено центрування
+    titleLabel->setStyleSheet("QLabel { font-weight: bold; font-size: 11pt; }"); // Повернено початковий стиль
     cardLayout->addWidget(titleLabel);
 
     // 3. Автор(и) (QLabel)
     QLabel *authorLabel = new QLabel(bookInfo.authors.isEmpty() ? tr("Невідомий автор") : bookInfo.authors);
     authorLabel->setWordWrap(true);
-    authorLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop); // Вирівнювання по лівому краю
-    authorLabel->setStyleSheet("QLabel { color: #6c757d; font-size: 9pt; }"); // Світліший сірий
+    authorLabel->setAlignment(Qt::AlignCenter); // Повернено центрування
+    authorLabel->setStyleSheet("QLabel { color: #555; font-size: 9pt; }"); // Повернено початковий стиль
     cardLayout->addWidget(authorLabel);
-
-    // Додаємо розтягувач перед ціною та кнопкою
-    cardLayout->addStretch(1);
-
-    // Горизонтальний layout для ціни та кнопки
-    QHBoxLayout *footerLayout = new QHBoxLayout();
-    footerLayout->setSpacing(8);
-    footerLayout->setContentsMargins(0, 5, 0, 0); // Додаємо відступ зверху
 
     // 4. Ціна (QLabel)
     QLabel *priceLabel = new QLabel(QString::number(bookInfo.price, 'f', 2) + tr(" грн"));
-    priceLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    priceLabel->setStyleSheet("QLabel { font-weight: 600; color: #212529; font-size: 11pt; }"); // Змінено стиль
-    footerLayout->addWidget(priceLabel);
+    priceLabel->setAlignment(Qt::AlignCenter); // Повернено центрування
+    priceLabel->setStyleSheet("QLabel { font-weight: bold; color: #007bff; font-size: 10pt; margin-top: 5px; }"); // Повернено початковий стиль
+    cardLayout->addWidget(priceLabel);
 
-    // Додаємо розтягувач між ціною та кнопками
-    footerLayout->addStretch(1);
+    // Додаємо розтягувач, щоб притиснути кнопку вниз
+    cardLayout->addStretch(1);
 
-    // 5. Кнопка "Додати в обране" (QPushButton)
-    QPushButton *wishlistButton = new QPushButton("❤️"); // Іконка серця
-    wishlistButton->setFixedSize(32, 32);
-    wishlistButton->setToolTip(tr("Додати '%1' до обраного").arg(bookInfo.title));
-    wishlistButton->setProperty("bookId", bookInfo.bookId);
-    // Стиль для кнопки "В обране" (аналогічно до кошика, але можна змінити колір при наведенні)
-    wishlistButton->setStyleSheet(
-        "QPushButton {"
-        "  background-color: #f8f9fa;"
-        "  color: #dc3545;"           // Червоний колір для серця
-        "  border: 1px solid #dee2e6;"
-        "  border-radius: 16px;"
-        "  font-size: 12pt;"
-        "}"
-        "QPushButton:hover {"
-        "  background-color: #f8d7da;" // Світло-червоний фон при наведенні
-        "  border-color: #f5c6cb;"
-        "}"
-        "QPushButton:pressed {"
-        "  background-color: #f1b0b7;"
-        "}");
-    // TODO: Підключити сигнал до слота додавання в обране
-    connect(wishlistButton, &QPushButton::clicked, this, [this, bookId = bookInfo.bookId]() {
-        qInfo() << "Wishlist button clicked for book ID:" << bookId;
-        // Тут буде виклик on_addToWishlistButtonClicked(bookId);
-        QMessageBox::information(this, tr("Обране"), tr("Функціонал додавання в обране ще не реалізовано."));
-    });
-    footerLayout->addWidget(wishlistButton); // Додаємо кнопку в горизонтальний layout
-
-    // 6. Кнопка "Додати в кошик" (QPushButton)
-    QPushButton *addToCartButton = new QPushButton("🛒"); // Іконка кошика
-    addToCartButton->setFixedSize(32, 32);
-    // Стиль для кнопки "В кошик"
-    addToCartButton->setStyleSheet(
-        "QPushButton {"
-        "  background-color: #f8f9fa;" // Світлий фон
-        "  color: #495057;"           // Колір іконки
-        "  border: 1px solid #dee2e6;" // Світла рамка
-        "  border-radius: 16px;"       // Кругла кнопка (половина розміру)
-        "  font-size: 12pt;"          // Розмір іконки
-        "}"
-        "QPushButton:hover {"
-        "  background-color: #e9ecef;" // Світліший сірий при наведенні
-        "  border-color: #ced4da;"
-        "}"
-        "QPushButton:pressed {"
-        "  background-color: #dee2e6;"
-        "}");
+    // 5. Кнопка "Додати в кошик" (QPushButton - повернено початковий вигляд)
+    QPushButton *addToCartButton = new QPushButton(tr("🛒 Додати")); // Повернено текст
+    addToCartButton->setStyleSheet("QPushButton { background-color: #28a745; color: white; border: none; border-radius: 8px; padding: 8px; font-size: 9pt; } QPushButton:hover { background-color: #218838; }"); // Повернено стиль
     addToCartButton->setToolTip(tr("Додати '%1' до кошика").arg(bookInfo.title));
+    // Зберігаємо bookId як властивість кнопки для легкого доступу в слоті
     addToCartButton->setProperty("bookId", bookInfo.bookId);
     // Підключаємо сигнал кнопки до слота on_addToCartButtonClicked
     connect(addToCartButton, &QPushButton::clicked, this, [this, bookId = bookInfo.bookId](){
         on_addToCartButtonClicked(bookId);
     });
-    footerLayout->addWidget(addToCartButton); // Додаємо кнопку в горизонтальний layout
-
-    // Додаємо footerLayout до основного cardLayout
-    cardLayout->addLayout(footerLayout);
+    cardLayout->addWidget(addToCartButton); // Додаємо кнопку напряму в cardLayout
 
     // --- Додавання обробки кліків ---
     // Встановлюємо bookId як динамічну властивість для легкого доступу в eventFilter
