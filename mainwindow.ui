@@ -401,8 +401,7 @@ QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
     border: none; /* Прибираємо можливу рамку */
 }
 
-/* Стиль для горизонтальних ScrollArea на головній сторінці */
-QScrollArea#classicsScrollArea,
+/* Стиль для горизонтальних ScrollArea (Фентезі та Наукпоп) */
 QScrollArea#fantasyScrollArea,
 QScrollArea#nonFictionScrollArea {
     background-color: #f8f9fa; /* Дуже світло-сірий фон */
@@ -410,6 +409,15 @@ QScrollArea#nonFictionScrollArea {
     /* padding: 10px; - Прибираємо padding тут, керуємо ним у внутрішньому layout */
     border: 1px solid #f1f3f5; /* Дуже світла рамка для відділення */
 }
+
+/* Окремий стиль для classicsScrollArea */
+QScrollArea#classicsScrollArea {
+    background-color: #f0f0f0; /* Світло-сірий фон */
+    border-radius: 8px;
+    padding: 10px; /* Додаємо внутрішній відступ */
+    border: 1px solid #e9ecef; /* Трохи темніша рамка */
+}
+
 
 /* Стилі для індикаторів банера */
 QWidget#bannerIndicatorWidget { /* Контейнер для індикаторів */
@@ -1255,7 +1263,7 @@ border-bottom: 1px solid #eeeeee;</string>
                  <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                 </property>
                 <property name="horizontalScrollBarPolicy">
-                 <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum> <!-- Вимкнено горизонтальну прокрутку -->
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
