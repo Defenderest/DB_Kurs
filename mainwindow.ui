@@ -2413,7 +2413,7 @@ line-height: 1.6; /* Збільшуємо міжрядковий інтерва�
              <string>(Опис книги завантажується...)</string> <!-- Використовуємо text замість placeholderText -->
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set> <!-- Вирівнювання тексту -->
+             <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignTop</set> <!-- Змінено на AlignJustify -->
             </property>
             <property name="wordWrap">
              <bool>true</bool> <!-- Увімкнути перенесення слів -->
@@ -3097,7 +3097,7 @@ QLabel#emptyCartLabel {
              <string>(Біографія завантажується...)</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+             <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignTop</set> <!-- Змінено на AlignJustify -->
             </property>
             <property name="wordWrap">
              <bool>true</bool>
