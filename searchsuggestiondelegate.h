@@ -16,6 +16,7 @@ namespace SearchSuggestionRoles {
     const int TypeRole = Qt::UserRole + 1;      // SearchSuggestionInfo::SuggestionType
     const int IdRole = Qt::UserRole + 2;        // int (bookId або authorId)
     const int ImagePathRole = Qt::UserRole + 3; // QString
+    const int PriceRole = Qt::UserRole + 4;     // double (ціна книги)
     const int DisplayTextRole = Qt::DisplayRole; // Використовуємо стандартну роль для тексту
 }
 

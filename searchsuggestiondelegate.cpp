@@ -12,7 +12,8 @@ void SearchSuggestionDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     // Отримуємо дані з моделі, використовуючи кастомні ролі
     QString displayText = index.data(SearchSuggestionRoles::DisplayTextRole).toString();
     QString imagePath = index.data(SearchSuggestionRoles::ImagePathRole).toString();
-    // SearchSuggestionInfo::SuggestionType type = static_cast<SearchSuggestionInfo::SuggestionType>(index.data(SearchSuggestionRoles::TypeRole).toInt());
+    SearchSuggestionInfo::SuggestionType type = static_cast<SearchSuggestionInfo::SuggestionType>(index.data(SearchSuggestionRoles::TypeRole).toInt());
+    double price = index.data(SearchSuggestionRoles::PriceRole).toDouble();
     // int id = index.data(SearchSuggestionRoles::IdRole).toInt(); // ID може знадобитися для ToolTip або іншого
 
     // --- Малювання фону ---
@@ -53,7 +54,18 @@ void SearchSuggestionDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     textRect.setLeft(imageRect.right() + m_padding * 2); // Відступ від зображення
     textRect.setRight(textRect.right() - m_padding); // Відступ справа
 
-    // --- Малювання тексту ---
+    // --- Визначення області для ціни (справа) ---
+    QRect priceRect = option.rect;
+    priceRect.setLeft(priceRect.right() - m_padding - 60); // Резервуємо ~60px для ціни + відступ
+    priceRect.setRight(priceRect.right() - m_padding); // Відступ справа
+
+    // --- Коригування області для основного тексту ---
+    // Зменшуємо ширину textRect, щоб не накладатися на ціну
+    if (type == SearchSuggestionInfo::Book && price > 0) {
+        textRect.setRight(priceRect.left() - m_padding); // Відступ між текстом та ціною
+    }
+
+    // --- Малювання основного тексту ---
     // Спочатку встановлюємо колір пера за замовчуванням (для невибраного стану)
     painter->setPen(option.palette.text().color());
 
@@ -69,8 +81,19 @@ void SearchSuggestionDelegate::paint(QPainter *painter, const QStyleOptionViewIt
     QFontMetrics fm(option.font);
     QString elidedText = fm.elidedText(displayText, Qt::ElideRight, textRect.width());
 
-    // Малюємо текст, вирівнюючи по вертикалі
+    // Малюємо основний текст, вирівнюючи по вертикалі
     painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, elidedText);
+
+    // --- Малювання ціни (тільки для книг) ---
+    if (type == SearchSuggestionInfo::Book && price > 0) {
+        QString priceText = QString::number(price, 'f', 2) + tr(" грн");
+        // Встановлюємо колір ціни (можна зробити іншим, наприклад, сірим)
+        // Використовуємо той самий колір, що й для основного тексту, щоб він змінювався при виділенні
+        // painter->setPen(QColor("#555")); // Приклад іншого кольору
+        // Малюємо ціну, вирівнюючи по правому краю та по вертикалі
+        painter->drawText(priceRect, Qt::AlignVCenter | Qt::AlignRight, priceText);
+    }
+
 
     painter->restore();
 }

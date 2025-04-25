@@ -129,6 +129,7 @@ struct SearchSuggestionInfo {
     SuggestionType type;    // Тип пропозиції (книга чи автор)
     int id;                 // ID книги або автора
     QString imagePath;      // Шлях до обкладинки книги або портрета автора
+    double price = 0.0;     // Ціна (актуально тільки для книг)
 };
 
 

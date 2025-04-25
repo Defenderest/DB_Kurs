@@ -94,9 +94,15 @@ void MainWindow::updateSearchSuggestions(const QString &text)
         item->setData(QVariant::fromValue(suggestion.type), SearchSuggestionRoles::TypeRole); // Тип (enum)
         item->setData(suggestion.id, SearchSuggestionRoles::IdRole); // ID
         item->setData(suggestion.imagePath, SearchSuggestionRoles::ImagePathRole); // Шлях до зображення
+        item->setData(suggestion.price, SearchSuggestionRoles::PriceRole); // Додаємо ціну
 
         // Додаємо ToolTip для додаткової інформації (опціонально)
-        item->setToolTip(QString("Тип: %1\nID: %2")
+        item->setToolTip(QString("Тип: %1\nID: %2%3")
+                         .arg(suggestion.type == SearchSuggestionInfo::Book ? tr("Книга") : tr("Автор"))
+                         .arg(suggestion.id)
+                         // Додаємо ціну до ToolTip, якщо це книга
+                         .arg(suggestion.type == SearchSuggestionInfo::Book ? QString("\nЦіна: %1 грн").arg(suggestion.price, 0, 'f', 2) : QString())
+                         );
                          .arg(suggestion.type == SearchSuggestionInfo::Book ? tr("Книга") : tr("Автор"))
                          .arg(suggestion.id));
 

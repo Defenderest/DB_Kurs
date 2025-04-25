@@ -287,13 +287,13 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
         return suggestions; // Повертаємо порожній список
     }
 
-    // Оновлений SQL-запит: отримуємо тип, ID та шлях до зображення
+    // Оновлений SQL-запит: отримуємо тип, ID, шлях до зображення та ціну (для книг)
     const QString sql = R"(
-        SELECT 'book' AS type, book_id AS id, title AS display_text, cover_image_path AS image_path
+        SELECT 'book' AS type, book_id AS id, title AS display_text, cover_image_path AS image_path, price
         FROM book
         WHERE LOWER(title) LIKE LOWER(:prefix) || '%'
         UNION ALL -- Використовуємо UNION ALL для швидкості, сортування буде в кінці
-        SELECT 'author' AS type, author_id AS id, first_name || ' ' || last_name AS display_text, image_path
+        SELECT 'author' AS type, author_id AS id, first_name || ' ' || last_name AS display_text, image_path, 0.0 AS price -- Ціна 0.0 для авторів
         FROM author
         WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER(:prefix) || '%'
         ORDER BY display_text -- Сортуємо за текстом пропозиції
@@ -322,6 +322,7 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
         suggestion.id = query.value("id").toInt();
         suggestion.displayText = query.value("display_text").toString();
         suggestion.imagePath = query.value("image_path").toString();
+        suggestion.price = query.value("price").toDouble(); // Отримуємо ціну
 
         if (typeStr == "book") {
             suggestion.type = SearchSuggestionInfo::Book;
