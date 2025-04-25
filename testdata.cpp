@@ -226,10 +226,10 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
     if (success) {
         qInfo() << "Populating table author with real data...";
         QString insertAuthorSQL = R"(
-             INSERT INTO author (first_name, last_name, birth_date, nationality, image_path)
-             VALUES (:first_name, :last_name, :birth_date, :nationality, :image_path)
+             INSERT INTO author (first_name, last_name, birth_date, nationality, image_path, biography)
+             VALUES (:first_name, :last_name, :birth_date, :nationality, :image_path, :biography)
              RETURNING author_id;
-         )"; // Додано image_path
+         )"; // Додано image_path та biography
         if (!query.prepare(insertAuthorSQL)) {
             qCritical() << "Error preparing query for author:" << query.lastError().text();
             success = false;
