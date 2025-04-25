@@ -121,5 +121,15 @@ struct CartItem {
     int quantity;
 };
 
+// Структура для передачі даних пропозиції пошуку
+struct SearchSuggestionInfo {
+    enum SuggestionType { Book, Author };
+
+    QString displayText;    // Текст, що відображається (назва книги або ім'я автора)
+    SuggestionType type;    // Тип пропозиції (книга чи автор)
+    int id;                 // ID книги або автора
+    QString imagePath;      // Шлях до обкладинки книги або портрета автора
+};
+
 
 #endif // DATATYPES_H

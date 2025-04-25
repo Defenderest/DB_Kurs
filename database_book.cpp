@@ -277,57 +277,65 @@ QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, in
     return books;
 }
 
-// Реалізація нового методу для отримання пропозицій пошуку
-QStringList DatabaseManager::getSearchSuggestions(const QString &prefix, int limit) const
+// Оновлена реалізація методу для отримання пропозицій пошуку
+QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString &prefix, int limit) const
 {
-    QStringList suggestions;
-    if (!m_isConnected || !m_db.isOpen() || prefix.length() < 2) { // Не шукаємо занадто короткі префікси
-        // qWarning() << "Неможливо отримати пропозиції: немає з'єднання або префікс занадто короткий.";
+    QList<SearchSuggestionInfo> suggestions;
+    // Змінено умову: тепер шукаємо з першої літери
+    if (!m_isConnected || !m_db.isOpen() || prefix.isEmpty()) {
+        // qWarning() << "Неможливо отримати пропозиції: немає з'єднання або префікс порожній.";
         return suggestions; // Повертаємо порожній список
     }
 
-    // Використовуємо UNION для об'єднання результатів з книг та авторів
-    // Додаємо '%' до префіксу для пошуку за допомогою LIKE
-    // Використовуємо LOWER() для пошуку без урахування регістру
+    // Оновлений SQL-запит: отримуємо тип, ID та шлях до зображення
     const QString sql = R"(
-        (SELECT title AS suggestion
-         FROM book
-         WHERE LOWER(title) LIKE LOWER(:prefix) || '%'
-         ORDER BY title
-         LIMIT :limit_per_source)
-        UNION
-        (SELECT first_name || ' ' || last_name AS suggestion
-         FROM author
-         WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER(:prefix) || '%'
-         ORDER BY suggestion
-         LIMIT :limit_per_source)
-        ORDER BY suggestion
+        SELECT 'book' AS type, book_id AS id, title AS display_text, cover_image_path AS image_path
+        FROM book
+        WHERE LOWER(title) LIKE LOWER(:prefix) || '%'
+        UNION ALL -- Використовуємо UNION ALL для швидкості, сортування буде в кінці
+        SELECT 'author' AS type, author_id AS id, first_name || ' ' || last_name AS display_text, image_path
+        FROM author
+        WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER(:prefix) || '%'
+        ORDER BY display_text -- Сортуємо за текстом пропозиції
         LIMIT :total_limit;
     )";
 
     QSqlQuery query(m_db);
     query.prepare(sql);
     query.bindValue(":prefix", prefix);
-    // Обмежуємо кількість результатів з кожного джерела та загальну кількість
-    query.bindValue(":limit_per_source", limit); // Обмеження для книг та авторів окремо
-    query.bindValue(":total_limit", limit);      // Загальне обмеження
+    query.bindValue(":total_limit", limit > 0 ? limit : 10); // Загальне обмеження
 
-    qInfo() << "Executing SQL to get search suggestions for prefix:" << prefix << "with limit:" << limit;
+    qInfo() << "Executing SQL to get rich search suggestions for prefix:" << prefix << "with limit:" << query.boundValue(":total_limit").toInt();
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні пропозицій пошуку для префікса '" << prefix << "':";
+        qCritical() << "Помилка при отриманні розширених пропозицій пошуку для префікса '" << prefix << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
         return suggestions; // Повертаємо порожній список у разі помилки
     }
 
-    qInfo() << "Successfully fetched suggestions. Processing results...";
+    qInfo() << "Successfully fetched rich suggestions. Processing results...";
     int count = 0;
     while (query.next()) {
-        suggestions.append(query.value("suggestion").toString());
+        SearchSuggestionInfo suggestion;
+        QString typeStr = query.value("type").toString();
+        suggestion.id = query.value("id").toInt();
+        suggestion.displayText = query.value("display_text").toString();
+        suggestion.imagePath = query.value("image_path").toString();
+
+        if (typeStr == "book") {
+            suggestion.type = SearchSuggestionInfo::Book;
+        } else if (typeStr == "author") {
+            suggestion.type = SearchSuggestionInfo::Author;
+        } else {
+            qWarning() << "Unknown suggestion type encountered:" << typeStr;
+            continue; // Пропускаємо невідомий тип
+        }
+
+        suggestions.append(suggestion);
         count++;
     }
-    qInfo() << "Processed" << count << "suggestions for prefix" << prefix;
+    qInfo() << "Processed" << count << "rich suggestions for prefix" << prefix;
 
     return suggestions;
 }

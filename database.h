@@ -74,8 +74,8 @@ public:
     // Новий метод для оновлення адреси користувача
     bool updateCustomerAddress(int customerId, const QString &newAddress);
 
-    // Новий метод для отримання пропозицій пошуку (автодоповнення)
-    QStringList getSearchSuggestions(const QString &prefix, int limit = 10) const;
+    // Оновлений метод для отримання пропозицій пошуку (повертає розширену інформацію)
+    QList<SearchSuggestionInfo> getSearchSuggestions(const QString &prefix, int limit = 10) const;
 
     // Новий метод для отримання детальної інформації про книгу за ID
     BookDetailsInfo getBookDetails(int bookId) const;
