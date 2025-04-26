@@ -469,6 +469,80 @@ void MainWindow::setupFilterPanel()
 
     // Ховаємо кнопку фільтра спочатку (покажемо при переході на сторінку книг)
     ui->filterButton->hide();
+
+    // --- Додавання стилів для оновлення дизайну ---
+    QString filterPanelStyle = R"(
+        QWidget#filterPanel { /* Використовуємо objectName */
+            background-color: #f8f9fa; /* Світлий фон */
+            border-left: 1px solid #dee2e6; /* Тонка ліва межа */
+        }
+        QLabel { /* Стиль для заголовків секцій (якщо вони є QLabel) */
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        QListWidget {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background-color: white;
+            padding: 5px;
+        }
+        QListWidget::item {
+            padding: 4px 0px; /* Відступи для елементів списку */
+        }
+        QListWidget::item:selected {
+            background-color: #e9ecef; /* Колір виділення (якщо використовується selectionMode) */
+            color: #000;
+        }
+        QListWidget::indicator:checked { /* Стиль для галочки */
+             image: url(:/icons/checkbox_checked.png); /* Замініть на шлях до вашої іконки */
+             /* Або використовуйте стандартні: */
+             /* background-color: #007bff; */
+             /* border: 1px solid #007bff; */
+        }
+        QListWidget::indicator:unchecked {
+             image: url(:/icons/checkbox_unchecked.png); /* Замініть на шлях до вашої іконки */
+        }
+        QDoubleSpinBox {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 5px;
+            background-color: white;
+        }
+        QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {
+            /* Можна приховати або стилізувати стрілки */
+            width: 0px; /* Приховуємо стрілки */
+            border: none;
+        }
+        QCheckBox {
+            spacing: 5px; /* Відстань між галочкою та текстом */
+            margin-top: 10px;
+        }
+        QCheckBox::indicator {
+            width: 16px;
+            height: 16px;
+        }
+        QPushButton#resetFiltersButton { /* Стилізуємо кнопку скидання за її objectName */
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        QPushButton#resetFiltersButton:hover {
+            background-color: #5a6268;
+        }
+        QPushButton#resetFiltersButton:pressed {
+            background-color: #545b62;
+        }
+    )";
+    ui->filterPanel->setStyleSheet(filterPanelStyle);
+
+    // Переконайтесь, що objectName для кнопки скидання встановлено в UI або тут:
+    if(resetButton) resetButton->setObjectName("resetFiltersButton");
+
 }
 
 #include <QDebug> // Додаємо для відладки
