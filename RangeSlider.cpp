@@ -1,6 +1,8 @@
 #include "RangeSlider.h"
 #include <QStyle>
 #include <QStylePainter> // Використовуємо QStylePainter
+#include <QStyleHints>   // Додано для globalStrut
+#include <QApplication>  // Додано для QApplication::styleHints()
 #include <QDebug>
 
 RangeSlider::RangeSlider(Qt::Orientation orientation, QWidget *parent)
@@ -41,7 +43,8 @@ QSize RangeSlider::minimumSizeHint() const
         w = qMax(handleSize.width(), grooveSize.width());
         h = handleSize.height() * 2 + 100;
     }
-    return style()->sizeFromContents(QStyle::CT_Slider, &opt, QSize(w, h), this).expandedTo(QApplication::globalStrut());
+    // Використовуємо QApplication::styleHints()->globalStrut() замість QApplication::globalStrut()
+    return style()->sizeFromContents(QStyle::CT_Slider, &opt, QSize(w, h), this).expandedTo(QApplication::styleHints()->globalStrut());
 }
 
 void RangeSlider::setMinimum(int min)
