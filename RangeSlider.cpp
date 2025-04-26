@@ -43,8 +43,8 @@ QSize RangeSlider::minimumSizeHint() const
         w = qMax(handleSize.width(), grooveSize.width());
         h = handleSize.height() * 2 + 100;
     }
-    // Використовуємо QApplication::styleHints()->globalStrut() замість QApplication::globalStrut()
-    return style()->sizeFromContents(QStyle::CT_Slider, &opt, QSize(w, h), this).expandedTo(QApplication::styleHints()->globalStrut());
+    // Видалено .expandedTo(QApplication::styleHints()->globalStrut()), оскільки globalStrut() відсутній у Qt 6
+    return style()->sizeFromContents(QStyle::CT_Slider, &opt, QSize(w, h), this);
 }
 
 void RangeSlider::setMinimum(int min)
