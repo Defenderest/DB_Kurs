@@ -400,6 +400,15 @@ void MainWindow::setupFilterPanel()
     m_filterPanelAnimation->setDuration(300);
     m_filterPanelAnimation->setEasingCurve(QEasingCurve::InOutQuad);
 
+    // Зберігаємо бажану ширину панелі перед тим, як її приховати
+    m_filterPanelWidth = ui->filterPanel->sizeHint().width(); // Або встановіть фіксоване значення, напр. 250
+    if (m_filterPanelWidth <= 0) { // Запасний варіант, якщо sizeHint() повертає 0
+        m_filterPanelWidth = 250;
+        qWarning() << "Filter panel sizeHint width is 0, using default:" << m_filterPanelWidth;
+    }
+    qDebug() << "Initialized m_filterPanelWidth to:" << m_filterPanelWidth;
+
+
     // Початковий стан - панель прихована
     ui->filterPanel->setMaximumWidth(0);
     m_isFilterPanelVisible = false;
