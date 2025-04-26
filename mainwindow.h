@@ -30,7 +30,9 @@
 // Forward declarations
 class DatabaseManager;
 class QListWidget;     // Для списків фільтрів
-class QDoubleSpinBox;  // Для фільтрів ціни
+// class QDoubleSpinBox;  // Замінено на QSlider та QLabel
+class QSlider;         // Додано для фільтрів ціни
+class QLabel;          // Додано для відображення значень ціни
 class QCheckBox;       // Для фільтра "в наявності"
 class QStandardItemModel; // Додано forward declaration
 struct CustomerProfileInfo;
@@ -88,6 +90,9 @@ private slots:
     void resetFilters(); // Слот для скидання фільтрів
     void onFilterCriteriaChanged(); // Новий слот для реагування на зміни
     void applyFiltersWithDelay(); // Новий слот для застосування із затримкою
+    // Нові слоти для слайдерів ціни
+    void onMinPriceSliderChanged(int value);
+    void onMaxPriceSliderChanged(int value);
 
 private:
     // Допоміжні функції для відображення даних
@@ -173,8 +178,12 @@ private:
     // Вказівники на віджети фільтрів (припускаємо, що вони є в UI)
     QListWidget *m_genreFilterListWidget = nullptr;
     QListWidget *m_languageFilterListWidget = nullptr;
-    QDoubleSpinBox *m_minPriceFilterSpinBox = nullptr;
-    QDoubleSpinBox *m_maxPriceFilterSpinBox = nullptr;
+    // QDoubleSpinBox *m_minPriceFilterSpinBox = nullptr; // Замінено
+    // QDoubleSpinBox *m_maxPriceFilterSpinBox = nullptr; // Замінено
+    QSlider *m_minPriceSlider = nullptr; // Новий слайдер для мін. ціни
+    QSlider *m_maxPriceSlider = nullptr; // Новий слайдер для макс. ціни
+    QLabel *m_minPriceValueLabel = nullptr; // Мітка для значення мін. ціни
+    QLabel *m_maxPriceValueLabel = nullptr; // Мітка для значення макс. ціни
     QCheckBox *m_inStockFilterCheckBox = nullptr;
 
     // Таймер для автоматичного застосування фільтрів
