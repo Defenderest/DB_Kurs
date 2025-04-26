@@ -170,11 +170,12 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     // відбудеться при першому виклику on_navBooksButton_clicked або якщо Головна - стартова.
     // Якщо Головна - стартова, то книги для неї завантажуються окремо вище.
     // Якщо Книги - стартова, то loadAndDisplayFilteredBooks() має бути викликаний після setupFilterPanel().
-    // Давайте викличемо його тут, якщо booksPage є поточною сторінкою.
-    if (ui->contentStackedWidget->currentWidget() == ui->booksPage) {
-         qInfo() << "Initial load for Books page...";
-         loadAndDisplayFilteredBooks();
-    }
+    // ВИДАЛЕНО: Не викликаємо loadAndDisplayFilteredBooks() тут, щоб уникнути завантаження при старті.
+    // Завантаження відбудеться при першому кліку на кнопку "Книги".
+    // if (ui->contentStackedWidget->currentWidget() == ui->booksPage) {
+    //      qInfo() << "Initial load for Books page...";
+    //      loadAndDisplayFilteredBooks();
+    // }
 
 
     // Завантаження авторів для сторінки "Автори" (ui->authorsPage)
@@ -458,11 +459,31 @@ void MainWindow::on_filterButton_clicked()
     qDebug() << "Toggling filter panel visibility to:" << m_isFilterPanelVisible;
     qDebug() << "Animation start width:" << startWidth << "end width:" << endWidth;
 
-    m_filterPanelAnimation->setStartValue(startWidth);
-    m_filterPanelAnimation->setEndValue(endWidth);
-    m_filterPanelAnimation->start();
+    // Створюємо паралельну групу анімацій
+    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
-    qDebug() << "Animation started.";
+    // Анімація для minimumWidth
+    QPropertyAnimation *minAnim = new QPropertyAnimation(ui->filterPanel, "minimumWidth", group);
+    minAnim->setDuration(300);
+    minAnim->setEasingCurve(QEasingCurve::InOutQuad);
+    minAnim->setStartValue(startWidth); // Використовуємо поточну ширину як стартову
+    minAnim->setEndValue(endWidth);
+
+    // Анімація для maximumWidth
+    QPropertyAnimation *maxAnim = new QPropertyAnimation(ui->filterPanel, "maximumWidth", group);
+    maxAnim->setDuration(300);
+    maxAnim->setEasingCurve(QEasingCurve::InOutQuad);
+    maxAnim->setStartValue(startWidth); // Використовуємо поточну ширину як стартову
+    maxAnim->setEndValue(endWidth);
+
+    // Додаємо анімації до групи
+    group->addAnimation(minAnim);
+    group->addAnimation(maxAnim);
+
+    // Запускаємо групу анімацій
+    group->start(QAbstractAnimation::DeleteWhenStopped); // Автоматично видалити групу після завершення
+
+    qDebug() << "Parallel animation started.";
 
     // Можна змінити іконку кнопки фільтра
     // ui->filterButton->setIcon(QIcon(m_isFilterPanelVisible ? ":/icons/close_filter.png" : ":/icons/filter.png"));
