@@ -16,35 +16,17 @@ RangeSlider::RangeSlider(Qt::Orientation orientation, QWidget *parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setFocusPolicy(Qt::StrongFocus); // Дозволяємо отримувати фокус
     setAttribute(Qt::WA_Hover); // Вмикаємо відстеження наведення миші
+    m_handleSize = 18; // Розмір повзунка (діаметр кола)
+    m_grooveHeight = 6; // Висота доріжки
 }
 
 QSize RangeSlider::minimumSizeHint() const
 {
-    // Повертаємо мінімальний розмір, що базується на стилі
-    ensurePolished(); // Переконуємось, що стиль застосовано
-    int w = 0, h = 0;
-    QStyleOptionSlider opt = getStyleOption();
-
-    // Отримуємо розмір ручки зі стилю
-    opt.subControls = QStyle::SC_SliderHandle;
-    QSize handleSize = style()->sizeFromContents(QStyle::CT_Slider, &opt, QSize(), this);
-
-    // Отримуємо розмір канавки
-    opt.subControls = QStyle::SC_SliderGroove;
-    QSize grooveSize = style()->sizeFromContents(QStyle::CT_Slider, &opt, QSize(), this);
-
-    if (m_orientation == Qt::Horizontal) {
-        w = handleSize.width() * 2 + 100; // Приблизна ширина: дві ручки + мінімальна довжина доріжки
-        h = qMax(handleSize.height(), grooveSize.height());
-        // m_handleWidth = handleSize.width(); // Видалено: Не можна змінювати члени в const методі
-        // m_grooveHeight = grooveSize.height(); // Видалено: Не можна змінювати члени в const методі
-    } else {
-        // Аналогічно для вертикальної орієнтації (не реалізовано повністю)
-        w = qMax(handleSize.width(), grooveSize.width());
-        h = handleSize.height() * 2 + 100;
-    }
-    // Видалено .expandedTo(QApplication::styleHints()->globalStrut()), оскільки globalStrut() відсутній у Qt 6
-    return style()->sizeFromContents(QStyle::CT_Slider, &opt, QSize(w, h), this);
+    // Повертаємо мінімальний розмір, що базується на новому дизайні
+    ensurePolished();
+    int w = m_handleSize * 2 + 100; // Дві ручки + мінімальна довжина доріжки
+    int h = m_handleSize + 4; // Висота ручки + невеликі відступи зверху/знизу
+    return QSize(w, h);
 }
 
 void RangeSlider::setMinimum(int min)
@@ -125,48 +107,55 @@ void RangeSlider::setRange(int min, int max)
 void RangeSlider::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QStylePainter painter(this); // Використовуємо QStylePainter для малювання зі стилем
-    QStyleOptionSlider opt;
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing); // Вмикаємо згладжування
+
+    // Кольори (можна винести в константи або члени класу)
+    const QColor grooveBgColor = QColor(230, 230, 230); // Світло-сірий фон доріжки
+    const QColor grooveFillColor = QColor(108, 117, 125); // Сірий для заповненої частини (#6c757d)
+    const QColor handleBorderColor = QColor(90, 98, 104); // Темніший сірий для рамки повзунка
+    const QColor handleFillColor = QColor(255, 255, 255); // Білий повзунок
+    const QColor handleHoverColor = QColor(240, 240, 240); // Світліший білий при наведенні
+    const QColor handlePressedColor = QColor(220, 220, 220); // Трохи темніший білий при натисканні
 
     // 1. Малюємо доріжку (groove)
-    opt = getStyleOption();
-    opt.subControls = QStyle::SC_SliderGroove;
-    painter.drawComplexControl(QStyle::CC_Slider, opt);
+    QRectF groove = grooveRect(); // Використовуємо QRectF для точності
+    qreal grooveRadius = m_grooveHeight / 2.0;
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(grooveBgColor);
+    painter.drawRoundedRect(groove, grooveRadius, grooveRadius);
 
     // 2. Малюємо заповнену частину доріжки (між ручками)
-    opt = getStyleOption();
-    opt.subControls = QStyle::SC_SliderGroove; // Базуємось на доріжці
-    QRect filledGroove = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
-    int lowerPos = valueToPosition(m_lowerValue);
-    int upperPos = valueToPosition(m_upperValue);
+    qreal lowerPos = valueToPosition(m_lowerValue);
+    qreal upperPos = valueToPosition(m_upperValue);
+    QRectF filledGroove = groove;
+    filledGroove.setLeft(lowerPos - m_handleSize / 2.0); // Починаємо від центру нижнього повзунка
+    filledGroove.setRight(upperPos + m_handleSize / 2.0); // Закінчуємо центром верхнього повзунка
+    // Обрізаємо заповнену частину по краях основної доріжки
+    filledGroove = filledGroove.intersected(groove);
 
-    if (m_orientation == Qt::Horizontal) {
-        filledGroove.setLeft(lowerPos);
-        filledGroove.setWidth(upperPos - lowerPos);
-    } else {
-        // Для вертикальної орієнтації (не реалізовано)
-    }
-    // Малюємо заповнену частину (можна використовувати інший стиль або колір)
-    // Наприклад, заповнюємо прямокутник певним кольором
-    painter.fillRect(filledGroove, palette().color(QPalette::Highlight)); // Використовуємо колір виділення
+    painter.setBrush(grooveFillColor);
+    painter.drawRoundedRect(filledGroove, grooveRadius, grooveRadius);
 
     // 3. Малюємо нижню ручку
-    opt = getStyleOption(LowerHandle);
-    opt.subControls = QStyle::SC_SliderHandle;
-    opt.rect = handleRect(LowerHandle);
-    if (m_hoverControl == LowerHandle || m_pressedControl == LowerHandle) {
-        opt.state |= QStyle::State_Sunken; // Стан "натиснуто" або "наведено"
-    }
-    painter.drawComplexControl(QStyle::CC_Slider, opt);
+    QRectF lowerHandleRect = handleRect(LowerHandle);
+    QColor lowerHandleCurrentFill = handleFillColor;
+    if (m_pressedControl == LowerHandle) lowerHandleCurrentFill = handlePressedColor;
+    else if (m_hoverControl == LowerHandle) lowerHandleCurrentFill = handleHoverColor;
+
+    painter.setPen(QPen(handleBorderColor, 1.5)); // Рамка повзунка
+    painter.setBrush(lowerHandleCurrentFill);
+    painter.drawEllipse(lowerHandleRect);
 
     // 4. Малюємо верхню ручку
-    opt = getStyleOption(UpperHandle);
-    opt.subControls = QStyle::SC_SliderHandle;
-    opt.rect = handleRect(UpperHandle);
-     if (m_hoverControl == UpperHandle || m_pressedControl == UpperHandle) {
-        opt.state |= QStyle::State_Sunken;
-    }
-    painter.drawComplexControl(QStyle::CC_Slider, opt);
+    QRectF upperHandleRect = handleRect(UpperHandle);
+    QColor upperHandleCurrentFill = handleFillColor;
+    if (m_pressedControl == UpperHandle) upperHandleCurrentFill = handlePressedColor;
+    else if (m_hoverControl == UpperHandle) upperHandleCurrentFill = handleHoverColor;
+
+    painter.setPen(QPen(handleBorderColor, 1.5));
+    painter.setBrush(upperHandleCurrentFill);
+    painter.drawEllipse(upperHandleRect);
 }
 
 // --- Обробка подій миші ---
@@ -278,89 +267,63 @@ void RangeSlider::changeEvent(QEvent* event)
 
 // --- Допоміжні функції ---
 
-QRect RangeSlider::grooveRect() const
+QRectF RangeSlider::grooveRect() const
 {
-    QStyleOptionSlider opt = getStyleOption();
-    return style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this);
+    // Розраховуємо прямокутник доріжки вручну
+    QRectF content = contentsRect().adjusted(m_handleSize / 2.0, 0, -m_handleSize / 2.0, 0); // Залишаємо місце для половини повзунка з боків
+    qreal grooveY = (height() - m_grooveHeight) / 2.0;
+    return QRectF(content.left(), grooveY, content.width(), m_grooveHeight);
 }
 
-QRect RangeSlider::handleRect(Handle handle) const
+QRectF RangeSlider::handleRect(Handle handle) const
 {
-    QStyleOptionSlider opt = getStyleOption(handle);
-    opt.sliderPosition = (handle == LowerHandle) ? valueToPosition(m_lowerValue) : valueToPosition(m_upperValue);
-    // Використовуємо SC_SliderHandle для отримання прямокутника ручки
-    return style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+    // Розраховуємо прямокутник повзунка вручну
+    qreal centerPos = valueToPosition( (handle == LowerHandle) ? m_lowerValue : m_upperValue );
+    qreal handleX = centerPos - m_handleSize / 2.0;
+    qreal handleY = (height() - m_handleSize) / 2.0; // Центруємо вертикально
+    return QRectF(handleX, handleY, m_handleSize, m_handleSize);
 }
 
 
 int RangeSlider::positionToValue(int pos) const
 {
-    QRect gr = grooveRect();
-    int grooveLen = gr.width();
+    QRectF gr = grooveRect();
+    qreal grooveLen = gr.width();
     if (grooveLen <= 0) return m_minimum;
 
-    // Використовуємо логіку QStyle для перетворення позиції в значення
-    return QStyle::sliderValueFromPosition(m_minimum, m_maximum, pos - gr.left(), grooveLen, false); // false = не інвертовано
+    // Перетворюємо позицію в значення лінійно
+    qreal relativePos = qBound(0.0, (qreal)pos - gr.left(), grooveLen);
+    int value = m_minimum + static_cast<int>( (relativePos / grooveLen) * (m_maximum - m_minimum) + 0.5 ); // +0.5 для округлення
+    return qBound(m_minimum, value, m_maximum);
 }
 
 int RangeSlider::valueToPosition(int val) const
 {
-    QRect gr = grooveRect();
-    int grooveLen = gr.width();
-    if (grooveLen <= 0) return gr.left();
+    QRectF gr = grooveRect();
+    qreal grooveLen = gr.width();
+    if (grooveLen <= 0 || m_maximum == m_minimum) return static_cast<int>(gr.left());
 
-    // Використовуємо логіку QStyle для перетворення значення в позицію
-    return QStyle::sliderPositionFromValue(m_minimum, m_maximum, val, grooveLen, false) + gr.left();
+    // Перетворюємо значення в позицію лінійно
+    qreal relativeValue = qBound(0.0, (qreal)(val - m_minimum) / (m_maximum - m_minimum), 1.0);
+    return static_cast<int>(gr.left() + relativeValue * grooveLen);
 }
 
 void RangeSlider::updateHoverControl(const QPoint& pos)
 {
     Handle oldHover = m_hoverControl;
     m_hoverControl = NoHandle; // Скидаємо
-    if (handleRect(UpperHandle).contains(pos)) {
+    // Використовуємо QRectF::contains
+    if (handleRect(UpperHandle).contains(QPointF(pos))) {
         m_hoverControl = UpperHandle;
-    } else if (handleRect(LowerHandle).contains(pos)) {
+    } else if (handleRect(LowerHandle).contains(QPointF(pos))) {
         m_hoverControl = LowerHandle;
     }
 
     if (m_hoverControl != oldHover) {
+        setCursor(m_hoverControl != NoHandle ? Qt::PointingHandCursor : Qt::ArrowCursor); // Змінюємо курсор
         update(); // Перемалювати, якщо стан наведення змінився
     }
 }
 
-// Створює QStyleOptionSlider для малювання
-QStyleOptionSlider RangeSlider::getStyleOption(Handle handle) const
-{
-    QStyleOptionSlider opt;
-    opt.initFrom(this); // Ініціалізуємо стандартними значеннями віджета
-    opt.orientation = m_orientation;
-    opt.minimum = m_minimum;
-    opt.maximum = m_maximum;
-    opt.sliderPosition = (handle == LowerHandle) ? m_lowerValue : m_upperValue; // Позиція для конкретної ручки
-    opt.sliderValue = opt.sliderPosition; // Значення = позиція (для простоти)
-    opt.singleStep = 1; // Крок
-    opt.pageStep = (m_maximum - m_minimum) / 10; // Крок сторінки
-    opt.tickPosition = QSlider::TicksBelow; // Позиція позначок (можна налаштувати)
-    opt.tickInterval = (m_maximum - m_minimum) / 10; // Інтервал позначок
-    if (m_orientation == Qt::Horizontal) {
-        opt.state |= QStyle::State_Horizontal;
-    }
-    // Додаємо стан фокусу, якщо віджет у фокусі
-    if (hasFocus()) {
-        opt.activeSubControls = QStyle::SC_SliderHandle; // Активна ручка при фокусі
-        opt.state |= QStyle::State_HasFocus;
-    } else {
-         opt.activeSubControls = QStyle::SC_None;
-    }
-    // Додаємо стан наведення
-    if (m_hoverControl != NoHandle && m_pressedControl == NoHandle) { // Тільки якщо не натиснуто
-        opt.state |= QStyle::State_MouseOver;
-        if (m_hoverControl == LowerHandle && handle == LowerHandle) {
-             opt.activeSubControls = QStyle::SC_SliderHandle;
-        } else if (m_hoverControl == UpperHandle && handle == UpperHandle) {
-             opt.activeSubControls = QStyle::SC_SliderHandle;
-        }
-    }
-
-    return opt;
-}
+// Видаляємо getStyleOption, оскільки більше не використовуємо QStyleOptionSlider для малювання
+// QStyleOptionSlider RangeSlider::getStyleOption(Handle handle) const { ... }
