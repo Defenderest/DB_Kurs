@@ -216,6 +216,13 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Налаштування панелі фільтрів
     setupFilterPanel();
+
+    // Ініціалізація таймера для автоматичного застосування фільтрів
+    m_filterApplyTimer = new QTimer(this);
+    m_filterApplyTimer->setSingleShot(true); // Таймер спрацьовує один раз
+    m_filterApplyTimer->setInterval(750); // Затримка 750 мс перед застосуванням
+    connect(m_filterApplyTimer, &QTimer::timeout, this, &MainWindow::applyFiltersWithDelay);
+
 }
 
 MainWindow::~MainWindow()
@@ -394,8 +401,35 @@ void MainWindow::setupFilterPanel()
 
     // Підключаємо сигнали
     connect(ui->filterButton, &QPushButton::clicked, this, &MainWindow::on_filterButton_clicked);
-    connect(applyButton, &QPushButton::clicked, this, &MainWindow::applyFilters);
+    // connect(applyButton, &QPushButton::clicked, this, &MainWindow::applyFilters); // Більше не потрібна кнопка "Застосувати"
     connect(resetButton, &QPushButton::clicked, this, &MainWindow::resetFilters);
+
+    // Приховуємо кнопку "Застосувати", оскільки фільтри застосовуються автоматично
+    if (applyButton) {
+        applyButton->hide();
+    }
+
+    // Підключаємо сигнали віджетів фільтрів до слоту onFilterCriteriaChanged
+    if (m_genreFilterListWidget) {
+        connect(m_genreFilterListWidget, &QListWidget::itemChanged, this, &MainWindow::onFilterCriteriaChanged);
+    }
+    if (m_languageFilterListWidget) {
+        connect(m_languageFilterListWidget, &QListWidget::itemChanged, this, &MainWindow::onFilterCriteriaChanged);
+    }
+    if (m_minPriceFilterSpinBox) {
+        // Використовуємо editingFinished для spinbox, щоб не спрацьовувало на кожну цифру
+        connect(m_minPriceFilterSpinBox, &QDoubleSpinBox::editingFinished, this, &MainWindow::onFilterCriteriaChanged);
+        // Або valueChanged, якщо хочемо миттєвої реакції:
+        // connect(m_minPriceFilterSpinBox, &QDoubleSpinBox::valueChanged, this, &MainWindow::onFilterCriteriaChanged);
+    }
+    if (m_maxPriceFilterSpinBox) {
+        connect(m_maxPriceFilterSpinBox, &QDoubleSpinBox::editingFinished, this, &MainWindow::onFilterCriteriaChanged);
+        // connect(m_maxPriceFilterSpinBox, &QDoubleSpinBox::valueChanged, this, &MainWindow::onFilterCriteriaChanged);
+    }
+    if (m_inStockFilterCheckBox) {
+        connect(m_inStockFilterCheckBox, &QCheckBox::stateChanged, this, &MainWindow::onFilterCriteriaChanged);
+    }
+
 
     // Завантажуємо дані для фільтрів
     if (m_dbManager) {
@@ -590,10 +624,10 @@ void MainWindow::applyFilters()
     // Завантажуємо та відображаємо відфільтровані книги
     loadAndDisplayFilteredBooks();
 
-    // Ховаємо панель фільтрів після застосування (опціонально)
-    if (m_isFilterPanelVisible) {
-        on_filterButton_clicked(); // Імітуємо клік для закриття
-    }
+    // Більше не ховаємо панель автоматично після застосування
+    // if (m_isFilterPanelVisible) {
+    //     on_filterButton_clicked(); // Імітуємо клік для закриття
+    // }
 }
 
 void MainWindow::resetFilters()
@@ -623,11 +657,17 @@ void MainWindow::resetFilters()
         m_inStockFilterCheckBox->setChecked(false);
     }
 
+    // Зупиняємо таймер, якщо він був запущений, щоб уникнути застосування старих значень
+    if (m_filterApplyTimer && m_filterApplyTimer->isActive()) {
+        m_filterApplyTimer->stop();
+        qDebug() << "Filter timer stopped due to reset.";
+    }
+
     // Скидаємо збережені критерії
     m_currentFilterCriteria = BookFilterCriteria();
     qInfo() << "Filters reset.";
 
-    // Завантажуємо та відображаємо всі книги (або згідно зі скинутими фільтрами)
+    // Завантажуємо та відображаємо всі книги (оскільки критерії тепер порожні)
     loadAndDisplayFilteredBooks();
 
     // Ховаємо панель фільтрів (опціонально)
@@ -668,6 +708,24 @@ void MainWindow::loadAndDisplayFilteredBooks()
          ui->statusBar->showMessage(tr("Книг за вашим запитом не знайдено."), 4000);
     }
 }
+
+// Новий слот: викликається при зміні будь-якого фільтра
+void MainWindow::onFilterCriteriaChanged()
+{
+    if (m_filterApplyTimer) {
+        // Перезапускаємо таймер при кожній зміні
+        m_filterApplyTimer->start();
+        qDebug() << "Filter criteria changed, timer (re)started.";
+    }
+}
+
+// Новий слот: викликається таймером для застосування фільтрів
+void MainWindow::applyFiltersWithDelay()
+{
+    qDebug() << "Timer timed out, applying filters...";
+    applyFilters(); // Викликаємо існуючу логіку застосування
+}
+
 
 // --- Кінець логіки панелі фільтрів ---
 
