@@ -376,8 +376,9 @@ void MainWindow::setupFilterPanel()
     m_genreFilterListWidget = ui->filterPanel->findChild<QListWidget*>("genreFilterListWidget");
     m_languageFilterListWidget = ui->filterPanel->findChild<QListWidget*>("languageFilterListWidget");
     // Замінюємо пошук двох QSlider та QLabel на один RangeSlider
-    // !!! УВАГА: Перевірте, чи objectName вашого RangeSlider у файлі .ui дійсно "priceRangeSlider" !!!
-    m_priceRangeSlider = ui->filterPanel->findChild<RangeSlider*>("priceRangeSlider");
+    // !!! УВАГА: Перевірте objectName вашого RangeSlider у файлі .ui (Qt Designer) !!!
+    // !!! Якщо ім'я відрізняється від "priceRangeSlider", замініть його нижче! !!!
+    m_priceRangeSlider = ui->filterPanel->findChild<RangeSlider*>("priceRangeSlider"); // <-- ПЕРЕВІРТЕ ТА ЗАМІНІТЬ ЦЕ ІМ'Я, ЯКЩО ПОТРІБНО
     // Видаляємо пошук окремих міток для min/max, RangeSlider може мати свої або мітки можуть бути окремо
     // m_minPriceValueLabel = ui->filterPanel->findChild<QLabel*>("minPriceValueLabel"); // Видалено/Закоментовано
     // m_maxPriceValueLabel = ui->filterPanel->findChild<QLabel*>("maxPriceValueLabel"); // Видалено/Закоментовано
@@ -389,8 +390,8 @@ void MainWindow::setupFilterPanel()
     qDebug() << "Checking filter widgets:";
     qDebug() << "  genreFilterListWidget:" << (m_genreFilterListWidget ? "Found" : "NOT FOUND!");
     qDebug() << "  languageFilterListWidget:" << (m_languageFilterListWidget ? "Found" : "NOT FOUND!");
-    // Оновлена діагностика
-    qDebug() << "  priceRangeSlider:" << (m_priceRangeSlider ? "Found" : "NOT FOUND!");
+    // Оновлена діагностика (використовуємо ім'я з коду для пошуку)
+    qDebug() << "  priceRangeSlider (Searching for 'priceRangeSlider'):" << (m_priceRangeSlider ? "Found" : "NOT FOUND! Check objectName in UI file!");
     // qDebug() << "  minPriceValueLabel:" << (m_minPriceValueLabel ? "Found" : "NOT FOUND!"); // Видалено
     // qDebug() << "  maxPriceValueLabel:" << (m_maxPriceValueLabel ? "Found" : "NOT FOUND!"); // Видалено
     qDebug() << "  inStockFilterCheckBox:" << (m_inStockFilterCheckBox ? "Found" : "NOT FOUND!");
