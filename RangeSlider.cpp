@@ -168,7 +168,6 @@ void RangeSlider::mousePressEvent(QMouseEvent *event)
     }
     event->accept();
 
-    QStyleOptionSlider opt = getStyleOption();
     QPoint pos = event->pos();
 
     // Перевіряємо, чи клік був на ручках
