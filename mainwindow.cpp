@@ -521,8 +521,8 @@ void MainWindow::setupFilterPanel()
         QListWidget::indicator:checked { /* Стиль для галочки */
              image: url(:/icons/checkbox_checked.png); /* Замініть на шлях до вашої іконки */
              /* Або використовуйте стандартні: */
-             /* background-color: #007bff; */
-             /* border: 1px solid #007bff; */
+             /* background-color: #000000; */
+             /* border: 1px solid #000000; */
         }
         QListWidget::indicator:unchecked {
              image: url(:/icons/checkbox_unchecked.png); /* Замініть на шлях до вашої іконки */
