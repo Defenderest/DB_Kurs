@@ -3626,6 +3626,10 @@ QListWidget::item:selected {
            <item>
             <!-- Віджет-заповнювач для RangeSlider -->
             <widget class="QWidget" name="priceRangeSliderWidget" native="true">
+             <!-- Додаємо objectName -->
+             <property name="objectName">
+              <string>priceRangeSlider</string>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
