@@ -577,6 +577,9 @@ void MainWindow::setupFilterPanel()
         QWidget#filterPanel { /* Використовуємо objectName */
             background-color: #f8f9fa; /* Світлий фон */
             border-left: 1px solid #dee2e6; /* Тонка ліва межа */
+            border-radius: 8px; /* Додано заокруглення кутів */
+            /* Можна також додати border-top-right-radius: 0px; border-bottom-right-radius: 0px;
+               якщо потрібно заокруглити лише ліві кути */
         }
         QLabel { /* Стиль для заголовків секцій (якщо вони є QLabel) */
             font-weight: bold;
