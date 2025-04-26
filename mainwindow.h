@@ -84,8 +84,10 @@ private slots:
     void onSearchSuggestionActivated(const QModelIndex &index); // Слот для обробки вибору пропозиції
     void showAuthorDetails(int authorId); // Слот/метод для показу деталей автора
     void on_filterButton_clicked(); // Слот для кнопки відкриття/закриття панелі фільтрів
-    void applyFilters(); // Слот для застосування фільтрів
+    void applyFilters(); // Слот для застосування фільтрів (буде змінено)
     void resetFilters(); // Слот для скидання фільтрів
+    void onFilterCriteriaChanged(); // Новий слот для реагування на зміни
+    void applyFiltersWithDelay(); // Новий слот для застосування із затримкою
 
 private:
     // Допоміжні функції для відображення даних
@@ -174,6 +176,9 @@ private:
     QDoubleSpinBox *m_minPriceFilterSpinBox = nullptr;
     QDoubleSpinBox *m_maxPriceFilterSpinBox = nullptr;
     QCheckBox *m_inStockFilterCheckBox = nullptr;
+
+    // Таймер для автоматичного застосування фільтрів
+    QTimer *m_filterApplyTimer = nullptr;
 
 
 protected:
