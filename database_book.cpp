@@ -73,6 +73,37 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
     return books;
 }
 
+// Реалізація нового методу для отримання максимальної ціни книги
+double DatabaseManager::getMaxBookPrice() const
+{
+    double maxPrice = 0.0;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо отримати максимальну ціну: немає активного з'єднання з БД.";
+        return maxPrice; // Повертаємо 0.0 у разі помилки
+    }
+
+    const QString sql = "SELECT MAX(price) FROM book;";
+    QSqlQuery query(m_db);
+
+    qInfo() << "Executing SQL to get max book price...";
+    if (!query.exec(sql)) {
+        qCritical() << "Помилка при отриманні максимальної ціни книги:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << sql;
+        return maxPrice; // Повертаємо 0.0 у разі помилки
+    }
+
+    if (query.next()) {
+        maxPrice = query.value(0).toDouble(); // Отримуємо значення
+        // Перевірка на NULL або невалідність, якщо потрібно
+        if (query.isNull(0)) {
+            maxPrice = 0.0; // Встановлюємо 0, якщо ціни немає або всі NULL
+        }
+    }
+    qInfo() << "Max book price found:" << maxPrice;
+    return maxPrice;
+}
+
 
 // Реалізація нового методу для отримання книг з урахуванням фільтрів
 QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFilterCriteria &criteria) const

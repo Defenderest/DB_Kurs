@@ -30,10 +30,11 @@
 // Forward declarations
 class DatabaseManager;
 class QListWidget;     // Для списків фільтрів
-class QDoubleSpinBox;  // Для фільтрів ціни
+// class QDoubleSpinBox; // Більше не використовується для фільтрів ціни
+class QSlider;         // Додано для ползунків ціни
+class QLabel;          // Додано для міток значень ціни
 class QCheckBox;       // Для фільтра "в наявності"
 class QStandardItemModel; // Додано forward declaration
-// class QTableWidget; // Більше не використовується для кошика
 struct CustomerProfileInfo;
 struct BookDetailsInfo;
 class QLabel;
@@ -87,6 +88,8 @@ private slots:
     void on_filterButton_clicked(); // Слот для кнопки відкриття/закриття панелі фільтрів
     void applyFilters(); // Слот для застосування фільтрів
     void resetFilters(); // Слот для скидання фільтрів
+    void onMinPriceSliderChanged(int value); // Слот для зміни мінімальної ціни
+    void onMaxPriceSliderChanged(int value); // Слот для зміни максимальної ціни
 
 private:
     // Допоміжні функції для відображення даних
@@ -169,12 +172,15 @@ private:
     int m_filterPanelWidth = 250; // Ширина панелі фільтрів
     BookFilterCriteria m_currentFilterCriteria; // Поточні критерії фільтрації
 
-    // Вказівники на віджети фільтрів (припускаємо, що вони є в UI)
+    // Вказівники на віджети фільтрів
     QListWidget *m_genreFilterListWidget = nullptr;
     QListWidget *m_languageFilterListWidget = nullptr;
-    QDoubleSpinBox *m_minPriceFilterSpinBox = nullptr;
-    QDoubleSpinBox *m_maxPriceFilterSpinBox = nullptr;
+    QSlider *m_minPriceSlider = nullptr;         // Замінено SpinBox на Slider
+    QSlider *m_maxPriceSlider = nullptr;         // Замінено SpinBox на Slider
+    QLabel *m_minPriceValueLabel = nullptr;      // Додано мітку для значення min ціни
+    QLabel *m_maxPriceValueLabel = nullptr;      // Додано мітку для значення max ціни
     QCheckBox *m_inStockFilterCheckBox = nullptr;
+    double m_maxPriceValue = 1000.0; // Максимальне значення ціни (буде оновлено з БД)
 
 
 protected:
