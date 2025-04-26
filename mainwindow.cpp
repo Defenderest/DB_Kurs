@@ -244,8 +244,8 @@ void MainWindow::on_navHomeButton_clicked()
 void MainWindow::on_navBooksButton_clicked()
 {
     ui->contentStackedWidget->setCurrentWidget(ui->booksPage); // Використовуємо ім'я сторінки з UI
-    // Завантажуємо книги з урахуванням поточних фільтрів
-    loadAndDisplayFilteredBooks();
+    // Завантаження книг тепер відбувається тільки при застосуванні/скиданні фільтрів
+    // loadAndDisplayFilteredBooks(); // Видалено автоматичне завантаження при кліку
     // Показуємо кнопку фільтра, якщо вона є
     if (ui->filterButton) {
         ui->filterButton->show();
