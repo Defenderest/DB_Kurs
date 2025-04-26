@@ -41,13 +41,10 @@
 #include <QScrollArea>      // Додано для нового кошика
 #include <QTimer>           // Додано для таймера банера
 #include <QListWidget>      // Додано для списку жанрів/мов у фільтрах
-// #include <QDoubleSpinBox> // Більше не використовується для фільтрів ціни
-#include <QSlider>          // Додано для ползунків ціни
-#include <QLabel>           // Додано для міток значень ціни (вже включено, але для ясності)
+#include <QDoubleSpinBox>   // Додано для фільтрів ціни
 #include <QCheckBox>        // Додано для фільтра "в наявності"
 #include <QListWidgetItem>  // Для роботи з елементами QListWidget
 #include <QParallelAnimationGroup> // Додано для анімації панелі фільтрів
-#include <cmath>            // Для std::ceil
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -369,35 +366,17 @@ void MainWindow::setupFilterPanel()
     // Знаходимо віджети фільтрів всередині панелі
     m_genreFilterListWidget = ui->filterPanel->findChild<QListWidget*>("genreFilterListWidget");
     m_languageFilterListWidget = ui->filterPanel->findChild<QListWidget*>("languageFilterListWidget");
-    m_minPriceSlider = ui->filterPanel->findChild<QSlider*>("minPriceSlider"); // Знаходимо слайдер
-    m_maxPriceSlider = ui->filterPanel->findChild<QSlider*>("maxPriceSlider"); // Знаходимо слайдер
-    m_minPriceValueLabel = ui->filterPanel->findChild<QLabel*>("minPriceValueLabel"); // Знаходимо мітку
-    m_maxPriceValueLabel = ui->filterPanel->findChild<QLabel*>("maxPriceValueLabel"); // Знаходимо мітку
+    m_minPriceFilterSpinBox = ui->filterPanel->findChild<QDoubleSpinBox*>("minPriceFilterSpinBox");
+    m_maxPriceFilterSpinBox = ui->filterPanel->findChild<QDoubleSpinBox*>("maxPriceFilterSpinBox");
     m_inStockFilterCheckBox = ui->filterPanel->findChild<QCheckBox*>("inStockFilterCheckBox");
     QPushButton *applyButton = ui->filterPanel->findChild<QPushButton*>("applyFiltersButton");
     QPushButton *resetButton = ui->filterPanel->findChild<QPushButton*>("resetFiltersButton");
 
-    // --- Додано відладку для перевірки знайдених віджетів ---
-    qDebug() << "Filter Widget Check:";
-    qDebug() << "  genreFilterListWidget:" << (m_genreFilterListWidget ? "Found" : "NOT FOUND");
-    qDebug() << "  languageFilterListWidget:" << (m_languageFilterListWidget ? "Found" : "NOT FOUND");
-    qDebug() << "  minPriceSlider:" << (m_minPriceSlider ? "Found" : "NOT FOUND");
-    qDebug() << "  maxPriceSlider:" << (m_maxPriceSlider ? "Found" : "NOT FOUND");
-    qDebug() << "  minPriceValueLabel:" << (m_minPriceValueLabel ? "Found" : "NOT FOUND");
-    qDebug() << "  maxPriceValueLabel:" << (m_maxPriceValueLabel ? "Found" : "NOT FOUND");
-    qDebug() << "  inStockFilterCheckBox:" << (m_inStockFilterCheckBox ? "Found" : "NOT FOUND");
-    qDebug() << "  applyButton:" << (applyButton ? "Found" : "NOT FOUND");
-    qDebug() << "  resetButton:" << (resetButton ? "Found" : "NOT FOUND");
-    // --- Кінець відладки ---
-
-
     // Перевіряємо, чи всі віджети знайдено
-    if (!m_genreFilterListWidget || !m_languageFilterListWidget || !m_minPriceSlider ||
-        !m_maxPriceSlider || !m_minPriceValueLabel || !m_maxPriceValueLabel ||
-        !m_inStockFilterCheckBox || !applyButton || !resetButton)
+    if (!m_genreFilterListWidget || !m_languageFilterListWidget || !m_minPriceFilterSpinBox ||
+        !m_maxPriceFilterSpinBox || !m_inStockFilterCheckBox || !applyButton || !resetButton)
     {
         qWarning() << "One or more filter widgets not found inside filterPanel. Filtering might be incomplete.";
-        qWarning() << "Disabling filter button due to missing widgets."; // Додано пояснення
         // Можна вимкнути кнопку фільтра або показати повідомлення
         ui->filterButton->setEnabled(false);
         ui->filterButton->setToolTip(tr("Помилка: віджети фільтрації не знайдено."));
@@ -417,10 +396,6 @@ void MainWindow::setupFilterPanel()
     connect(ui->filterButton, &QPushButton::clicked, this, &MainWindow::on_filterButton_clicked);
     connect(applyButton, &QPushButton::clicked, this, &MainWindow::applyFilters);
     connect(resetButton, &QPushButton::clicked, this, &MainWindow::resetFilters);
-    // Підключаємо сигнали зміни значення слайдерів
-    connect(m_minPriceSlider, &QSlider::valueChanged, this, &MainWindow::onMinPriceSliderChanged);
-    connect(m_maxPriceSlider, &QSlider::valueChanged, this, &MainWindow::onMaxPriceSliderChanged);
-
 
     // Завантажуємо дані для фільтрів
     if (m_dbManager) {
@@ -444,27 +419,13 @@ void MainWindow::setupFilterPanel()
         }
         m_languageFilterListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-        // Налаштування діапазонів цін для слайдерів
-        m_maxPriceValue = m_dbManager->getMaxBookPrice();
-        // Округлюємо максимальну ціну до найближчого цілого вгору для діапазону слайдера
-        int sliderMax = static_cast<int>(std::ceil(m_maxPriceValue));
-        if (sliderMax <= 0) {
-            sliderMax = 1000; // Запасне значення, якщо ціни немає або вона 0
-            qWarning() << "Max price is 0 or less, setting slider range to default 0-" << sliderMax;
-        } else {
-            qInfo() << "Setting price slider range to 0 -" << sliderMax;
-        }
-
-        m_minPriceSlider->setRange(0, sliderMax);
-        m_maxPriceSlider->setRange(0, sliderMax);
-
-        // Встановлюємо початкові значення
-        m_minPriceSlider->setValue(0);
-        m_maxPriceSlider->setValue(sliderMax);
-
-        // Оновлюємо мітки значень
-        onMinPriceSliderChanged(m_minPriceSlider->value()); // Викликаємо слот для оновлення мітки
-        onMaxPriceSliderChanged(m_maxPriceSlider->value()); // Викликаємо слот для оновлення мітки
+        // Налаштування діапазонів цін (можна отримати min/max з БД, але поки що встановимо вручну)
+        m_minPriceFilterSpinBox->setRange(0.0, 10000.0); // Приклад діапазону
+        m_minPriceFilterSpinBox->setValue(0.0);
+        m_minPriceFilterSpinBox->setSuffix(tr(" грн"));
+        m_maxPriceFilterSpinBox->setRange(0.0, 10000.0);
+        m_maxPriceFilterSpinBox->setValue(10000.0); // Початково максимальне значення
+        m_maxPriceFilterSpinBox->setSuffix(tr(" грн"));
 
     } else {
         qWarning() << "DatabaseManager is null, cannot populate filter options.";
@@ -570,35 +531,6 @@ void MainWindow::on_filterButton_clicked()
     qDebug() << "--- Filter button click handler complete ---";
 }
 
-// Слоти для оновлення міток при зміні слайдерів
-void MainWindow::onMinPriceSliderChanged(int value)
-{
-    if (!m_minPriceValueLabel || !m_maxPriceSlider) return; // Перевірка
-
-    // Оновлюємо мітку
-    m_minPriceValueLabel->setText(QString::number(value) + tr(" грн"));
-
-    // Переконуємось, що min <= max
-    if (value > m_maxPriceSlider->value()) {
-        m_maxPriceSlider->setValue(value); // Підтягуємо максимальний слайдер
-        // Мітка максимального значення оновиться через сигнал valueChanged від m_maxPriceSlider
-    }
-}
-
-void MainWindow::onMaxPriceSliderChanged(int value)
-{
-    if (!m_maxPriceValueLabel || !m_minPriceSlider) return; // Перевірка
-
-    // Оновлюємо мітку
-    m_maxPriceValueLabel->setText(QString::number(value) + tr(" грн"));
-
-    // Переконуємось, що max >= min
-    if (value < m_minPriceSlider->value()) {
-        m_minPriceSlider->setValue(value); // Підтягуємо мінімальний слайдер
-        // Мітка мінімального значення оновиться через сигнал valueChanged від m_minPriceSlider
-    }
-}
-
 
 void MainWindow::applyFilters()
 {
@@ -625,24 +557,23 @@ void MainWindow::applyFilters()
         }
     }
 
-    // Ціна (зчитуємо зі слайдерів)
-    int minPriceValue = m_minPriceSlider ? m_minPriceSlider->value() : 0;
-    int maxPriceValue = m_maxPriceSlider ? m_maxPriceSlider->value() : static_cast<int>(std::ceil(m_maxPriceValue));
-
-    // Встановлюємо критерії, тільки якщо значення не є граничними (0 та max)
-    if (minPriceValue > 0) {
-        m_currentFilterCriteria.minPrice = static_cast<double>(minPriceValue);
-    } else {
-        m_currentFilterCriteria.minPrice = -1.0; // Без обмеження знизу
+    // Ціна
+    if (m_minPriceFilterSpinBox && m_minPriceFilterSpinBox->value() > 0) { // Вважаємо 0 як "без обмеження знизу"
+        m_currentFilterCriteria.minPrice = m_minPriceFilterSpinBox->value();
+    }
+    if (m_maxPriceFilterSpinBox && m_maxPriceFilterSpinBox->value() < m_maxPriceFilterSpinBox->maximum()) { // Якщо не максимальне значення
+        m_currentFilterCriteria.maxPrice = m_maxPriceFilterSpinBox->value();
+    }
+    // Перевірка, щоб min не був більший за max
+    if (m_currentFilterCriteria.minPrice >= 0 && m_currentFilterCriteria.maxPrice >= 0 && m_currentFilterCriteria.minPrice > m_currentFilterCriteria.maxPrice) {
+        // Можна показати попередження або поміняти їх місцями
+        qWarning() << "Min price is greater than max price, swapping them.";
+        std::swap(m_currentFilterCriteria.minPrice, m_currentFilterCriteria.maxPrice);
+        // Оновити значення в spinbox'ах (опціонально)
+        // m_minPriceFilterSpinBox->setValue(m_currentFilterCriteria.minPrice);
+        // m_maxPriceFilterSpinBox->setValue(m_currentFilterCriteria.maxPrice);
     }
 
-    if (maxPriceValue < m_maxPriceSlider->maximum()) { // Порівнюємо з максимумом слайдера
-        m_currentFilterCriteria.maxPrice = static_cast<double>(maxPriceValue);
-    } else {
-        m_currentFilterCriteria.maxPrice = -1.0; // Без обмеження зверху
-    }
-
-    // Перевірка min <= max вже виконується при зміні слайдерів, тому тут не потрібна
 
     // В наявності
     if (m_inStockFilterCheckBox) {
@@ -682,14 +613,11 @@ void MainWindow::resetFilters()
             }
         }
     }
-    // Скидаємо слайдери цін
-    if (m_minPriceSlider) {
-        m_minPriceSlider->setValue(0); // Встановлюємо на мінімум
-        // Мітка оновиться через сигнал valueChanged -> onMinPriceSliderChanged
+    if (m_minPriceFilterSpinBox) {
+        m_minPriceFilterSpinBox->setValue(m_minPriceFilterSpinBox->minimum()); // Або 0.0
     }
-    if (m_maxPriceSlider) {
-        m_maxPriceSlider->setValue(m_maxPriceSlider->maximum()); // Встановлюємо на максимум
-        // Мітка оновиться через сигнал valueChanged -> onMaxPriceSliderChanged
+    if (m_maxPriceFilterSpinBox) {
+        m_maxPriceFilterSpinBox->setValue(m_maxPriceFilterSpinBox->maximum()); // Або високе значення
     }
     if (m_inStockFilterCheckBox) {
         m_inStockFilterCheckBox->setChecked(false);

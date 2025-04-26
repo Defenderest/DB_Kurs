@@ -110,7 +110,6 @@ public:
     // Нові методи для отримання унікальних значень для фільтрів
     QStringList getAllGenres() const;
     QStringList getAllLanguages() const;
-    double getMaxBookPrice() const; // Новий метод для отримання максимальної ціни
 
     // Публічні методи доступу до стану та об'єкту БД
     bool isConnected() const;

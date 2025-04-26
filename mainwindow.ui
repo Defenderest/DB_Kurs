@@ -3516,42 +3516,7 @@ QListWidget::item:selected {
     color: #000;
     border-radius: 3px;
 }
-
-/* Стилі для слайдерів ціни */
-QSlider::groove:horizontal {
-    border: 1px solid #bbb; /* Рамка канавки */
-    background: #e0e0e0; /* Фон канавки */
-    height: 6px; /* Висота канавки */
-    border-radius: 3px;
-    margin: 0px 5px; /* Відступи з боків */
-}
-
-QSlider::handle:horizontal {
-    background: #6c757d; /* Колір повзунка (сірий) */
-    border: 1px solid #5a6268;
-    width: 16px; /* Ширина повзунка */
-    height: 16px; /* Висота повзунка */
-    margin: -6px -1px; /* Позиціонування повзунка */
-    border-radius: 8px; /* Круглий повзунок */
-}
-QSlider::handle:horizontal:hover {
-    background: #5a6268; /* Темніший при наведенні */
-    border: 1px solid #4e555b;
-}
-QSlider::handle:horizontal:pressed {
-    background: #4e555b; /* Ще темніший при натисканні */
-    border: 1px solid #4e555b;
-}
-
-/* Стилі для міток значень ціни */
-QLabel#minPriceValueLabel, QLabel#maxPriceValueLabel {
-    font-weight: 500;
-    color: #343a40;
-    min-width: 50px; /* Мінімальна ширина */
-    qproperty-alignment: AlignRight | AlignVCenter; /* Вирівнювання */
-}
-
-/* Стилі для інших віджетів (QCheckBox, QPushButton) успадковуються */
+/* Стилі для інших віджетів (QDoubleSpinBox, QCheckBox, QPushButton) успадковуються */
 </string>
         </property>
         <property name="frameShape">
@@ -3628,6 +3593,8 @@ QLabel#minPriceValueLabel, QLabel#maxPriceValueLabel {
            <!-- Елементи будуть додані програмно -->
           </widget>
          </item>
+         <!-- Видалено QLabel та QHBoxLayout для слайдерів -->
+         <!-- Додаємо назад QHBoxLayout для QDoubleSpinBox -->
          <item>
           <widget class="QLabel" name="priceFilterLabel">
            <property name="text">
