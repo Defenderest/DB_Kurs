@@ -585,7 +585,7 @@ void MainWindow::setupFilterPanel()
             color: #000000; /* Змінено на чорний */
         }
         QListWidget {
-            border: 1px solid #ced4da;
+            border: 1px solid #000000;
             border-radius: 4px;
             background-color: white;
             padding: 5px;
