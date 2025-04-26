@@ -34,8 +34,8 @@ QSize RangeSlider::minimumSizeHint() const
     if (m_orientation == Qt::Horizontal) {
         w = handleSize.width() * 2 + 100; // Приблизна ширина: дві ручки + мінімальна довжина доріжки
         h = qMax(handleSize.height(), grooveSize.height());
-        m_handleWidth = handleSize.width(); // Оновлюємо ширину ручки зі стилю
-        m_grooveHeight = grooveSize.height(); // Оновлюємо висоту доріжки зі стилю
+        // m_handleWidth = handleSize.width(); // Видалено: Не можна змінювати члени в const методі
+        // m_grooveHeight = grooveSize.height(); // Видалено: Не можна змінювати члени в const методі
     } else {
         // Аналогічно для вертикальної орієнтації (не реалізовано повністю)
         w = qMax(handleSize.width(), grooveSize.width());
