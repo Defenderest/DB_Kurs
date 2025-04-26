@@ -382,20 +382,51 @@ void MainWindow::setupFilterPanel()
         // Створюємо новий RangeSlider
         RangeSlider *actualSlider = new RangeSlider(Qt::Horizontal, this); // 'this' як батько
         actualSlider->setObjectName("priceRangeSliderInstance"); // Можна дати нове ім'я для стилізації/відладки
+        actualSlider->setMinimumHeight(25); // Встановлюємо мінімальну висоту, як у placeholder
+        actualSlider->setVisible(true); // Явно робимо видимим
 
-        // Знаходимо layout, що містить віджет-заповнювач
-        QLayout *layout = ui->priceRangeSlider->parentWidget()->layout(); // Припускаємо, що батько має layout
-        if (layout) {
-            // Замінюємо віджет-заповнювач на реальний слайдер
-            layout->replaceWidget(ui->priceRangeSlider, actualSlider);
-            m_priceRangeSlider = actualSlider; // Зберігаємо вказівник на реальний слайдер
-            delete ui->priceRangeSlider; // Видаляємо віджет-заповнювач
-            qInfo() << "Successfully replaced placeholder with RangeSlider.";
+        QWidget* placeholderParent = ui->priceRangeSlider->parentWidget();
+        if (!placeholderParent) {
+             qWarning() << "Placeholder 'priceRangeSlider' has no parent widget!";
+             delete actualSlider; // Видаляємо створений слайдер, бо нема куди його додати
+             m_priceRangeSlider = nullptr;
         } else {
-            qWarning() << "Could not find layout containing priceRangeSlider placeholder!";
+            QLayout *layout = placeholderParent->layout(); // Знаходимо layout батька
+            if (layout) {
+                // Замінюємо віджет-заповнювач на реальний слайдер
+                int index = layout->indexOf(ui->priceRangeSlider); // Знаходимо індекс плейсхолдера
+                if (index != -1) {
+                    // Видаляємо плейсхолдер з layout ПЕРЕД видаленням самого об'єкта
+                    QLayoutItem *item = layout->takeAt(index);
+                    delete item; // Видаляємо layout item
+
+                    // Додаємо новий слайдер на те саме місце
+                    if (QHBoxLayout *hLayout = qobject_cast<QHBoxLayout*>(layout)) {
+                        // Якщо це QHBoxLayout, можна вставити з розтягуванням (якщо потрібно)
+                        hLayout->insertWidget(index, actualSlider, 1); // Додаємо з stretch = 1
+                    } else {
+                        // Для інших типів layout просто вставляємо
+                        layout->insertWidget(index, actualSlider);
+                    }
+
+                    m_priceRangeSlider = actualSlider; // Зберігаємо вказівник на реальний слайдер
+                    delete ui->priceRangeSlider; // Видаляємо сам віджет-заповнювач
+                    ui->priceRangeSlider = nullptr; // Обнуляємо вказівник в UI структурі
+                    qInfo() << "Successfully replaced placeholder with RangeSlider at index" << index;
+                } else {
+                    qWarning() << "Could not find placeholder 'priceRangeSlider' within its parent layout!";
+                    delete actualSlider;
+                    m_priceRangeSlider = nullptr;
+                }
+            } else {
+                qWarning() << "Could not find layout in the parent widget of 'priceRangeSlider'!";
+                delete actualSlider;
+                m_priceRangeSlider = nullptr;
+            }
         }
     } else {
         qWarning() << "Placeholder widget 'priceRangeSlider' not found in UI!";
+        m_priceRangeSlider = nullptr; // Переконуємось, що вказівник нульовий
     }
     // --- Кінець заміни ---
 
