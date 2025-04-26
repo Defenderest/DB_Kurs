@@ -3593,8 +3593,7 @@ QListWidget::item:selected {
            <!-- Елементи будуть додані програмно -->
           </widget>
          </item>
-         <!-- Видалено QLabel та QHBoxLayout для слайдерів -->
-         <!-- Додаємо назад QHBoxLayout для QDoubleSpinBox -->
+         <!-- Замінюємо QHBoxLayout для SpinBox на QVBoxLayout для слайдерів -->
          <item>
           <widget class="QLabel" name="priceFilterLabel">
            <property name="text">
@@ -3603,36 +3602,74 @@ QListWidget::item:selected {
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="priceFilterLayout">
+          <!-- Layout для мінімальної ціни -->
+          <layout class="QHBoxLayout" name="minPriceLayout">
+           <property name="spacing">
+            <number>8</number>
+           </property>
            <item>
-            <widget class="QDoubleSpinBox" name="minPriceFilterSpinBox">
-             <property name="toolTip">
-              <string>Мінімальна ціна</string>
+            <widget class="QLabel" name="minPriceValueLabel">
+             <property name="minimumSize">
+              <size>
+               <width>50</width> <!-- Ширина для відображення ціни -->
+               <height>0</height>
+              </size>
              </property>
-             <property name="prefix">
-              <string>Від </string>
+             <property name="text">
+              <string>0</string> <!-- Початкове значення -->
              </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="maximum">
-              <double>9999.990000000000</double>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="maxPriceFilterSpinBox">
-             <property name="toolTip">
-              <string>Максимальна ціна</string>
+            <widget class="QSlider" name="minPriceSlider">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
-             <property name="prefix">
-              <string>До </string>
+             <property name="tickPosition">
+              <enum>QSlider::TickPosition::TicksBelow</enum>
              </property>
-             <property name="decimals">
-              <number>2</number>
+             <property name="tickInterval">
+              <number>100</number> <!-- Інтервал позначок -->
              </property>
-             <property name="maximum">
-              <double>9999.990000000000</double>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <!-- Layout для максимальної ціни -->
+          <layout class="QHBoxLayout" name="maxPriceLayout">
+           <property name="spacing">
+            <number>8</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="maxPriceValueLabel">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>1000</string> <!-- Початкове значення -->
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="maxPriceSlider">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::TickPosition::TicksBelow</enum>
+             </property>
+             <property name="tickInterval">
+              <number>100</number>
              </property>
             </widget>
            </item>
