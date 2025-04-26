@@ -384,6 +384,20 @@ void MainWindow::setupFilterPanel()
     QPushButton *applyButton = ui->filterPanel->findChild<QPushButton*>("applyFiltersButton");
     QPushButton *resetButton = ui->filterPanel->findChild<QPushButton*>("resetFiltersButton");
 
+    // --- Початок діагностики ---
+    qDebug() << "Checking filter widgets:";
+    qDebug() << "  genreFilterListWidget:" << (m_genreFilterListWidget ? "Found" : "NOT FOUND!");
+    qDebug() << "  languageFilterListWidget:" << (m_languageFilterListWidget ? "Found" : "NOT FOUND!");
+    qDebug() << "  minPriceSlider:" << (m_minPriceSlider ? "Found" : "NOT FOUND!");
+    qDebug() << "  maxPriceSlider:" << (m_maxPriceSlider ? "Found" : "NOT FOUND!");
+    qDebug() << "  minPriceValueLabel:" << (m_minPriceValueLabel ? "Found" : "NOT FOUND!");
+    qDebug() << "  maxPriceValueLabel:" << (m_maxPriceValueLabel ? "Found" : "NOT FOUND!");
+    qDebug() << "  inStockFilterCheckBox:" << (m_inStockFilterCheckBox ? "Found" : "NOT FOUND!");
+    qDebug() << "  applyFiltersButton:" << (applyButton ? "Found" : "NOT FOUND!");
+    qDebug() << "  resetFiltersButton:" << (resetButton ? "Found" : "NOT FOUND!");
+    // --- Кінець діагностики ---
+
+
     // Перевіряємо, чи всі віджети знайдено (оновлено перевірку)
     if (!m_genreFilterListWidget || !m_languageFilterListWidget || !m_minPriceSlider || !m_maxPriceSlider ||
         !m_minPriceValueLabel || !m_maxPriceValueLabel || !m_inStockFilterCheckBox || !applyButton || !resetButton)
