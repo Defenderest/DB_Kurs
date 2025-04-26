@@ -37,13 +37,18 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
     coverLabel->setAlignment(Qt::AlignCenter);
     coverLabel->setMinimumHeight(150); // Повернено початкову мінімальну висоту
     coverLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // Розтягувати
-    QPixmap coverPixmap(bookInfo.coverImagePath);
-    if (coverPixmap.isNull() || bookInfo.coverImagePath.isEmpty()) {
+    QPixmap coverPixmap; // Створюємо Pixmap
+    // Завантажуємо, тільки якщо шлях не порожній
+    if (!bookInfo.coverImagePath.isEmpty()) {
+        coverPixmap.load(bookInfo.coverImagePath);
+    }
+
+    if (coverPixmap.isNull()) { // Перевіряємо, чи завантажилось (або шлях був порожній)
         // Якщо зображення не завантажилось, показуємо плейсхолдер
         coverLabel->setText(tr("Немає\nобкладинки"));
         coverLabel->setStyleSheet("QLabel { background-color: #e0e0e0; color: #555; border-radius: 4px; }"); // Повернено стиль плейсхолдера
     } else {
-        // Масштабуємо зображення, зберігаючи пропорції (повернено початкове масштабування)
+        // Масштабуємо завантажене зображення, зберігаючи пропорції
         coverLabel->setPixmap(coverPixmap.scaled(180, 240, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         coverLabel->setStyleSheet(""); // Прибираємо зайвий стиль
     }

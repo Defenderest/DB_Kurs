@@ -435,19 +435,34 @@ void MainWindow::setupFilterPanel()
     ui->filterButton->hide();
 }
 
+#include <QDebug> // Додаємо для відладки
+
 void MainWindow::on_filterButton_clicked()
 {
-    if (!ui->filterPanel || !m_filterPanelAnimation) return;
+    qDebug() << "Filter button clicked. Current visibility:" << m_isFilterPanelVisible;
+    if (!ui->filterPanel || !m_filterPanelAnimation) {
+        qWarning() << "Filter panel or animation is null!";
+        return;
+    }
 
     if (m_filterPanelAnimation->state() == QAbstractAnimation::Running) {
+        qDebug() << "Stopping running animation.";
         m_filterPanelAnimation->stop(); // Зупиняємо поточну анімацію
     }
 
-    m_isFilterPanelVisible = !m_isFilterPanelVisible;
+    m_isFilterPanelVisible = !m_isFilterPanelVisible; // Перемикаємо стан
 
-    m_filterPanelAnimation->setStartValue(ui->filterPanel->width());
-    m_filterPanelAnimation->setEndValue(m_isFilterPanelVisible ? m_filterPanelWidth : 0);
+    int startWidth = ui->filterPanel->width();
+    int endWidth = m_isFilterPanelVisible ? m_filterPanelWidth : 0;
+
+    qDebug() << "Toggling filter panel visibility to:" << m_isFilterPanelVisible;
+    qDebug() << "Animation start width:" << startWidth << "end width:" << endWidth;
+
+    m_filterPanelAnimation->setStartValue(startWidth);
+    m_filterPanelAnimation->setEndValue(endWidth);
     m_filterPanelAnimation->start();
+
+    qDebug() << "Animation started.";
 
     // Можна змінити іконку кнопки фільтра
     // ui->filterButton->setIcon(QIcon(m_isFilterPanelVisible ? ":/icons/close_filter.png" : ":/icons/filter.png"));
