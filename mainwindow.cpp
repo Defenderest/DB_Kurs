@@ -40,6 +40,10 @@
 #include <QMap>             // Додано для m_cartItems
 #include <QScrollArea>      // Додано для нового кошика
 #include <QTimer>           // Додано для таймера банера
+#include <QListWidget>      // Додано для списку жанрів/мов у фільтрах
+#include <QDoubleSpinBox>   // Додано для фільтрів ціни
+#include <QCheckBox>        // Додано для фільтра "в наявності"
+#include <QListWidgetItem>  // Для роботи з елементами QListWidget
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -161,20 +165,17 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     qInfo() << "Завершено завантаження даних для головної сторінки.";
 
     // --- Завантаження даних для інших сторінок (можна зробити ледачим завантаженням при першому відкритті) ---
-    // Завантаження книг для сторінки "Книги" (ui->booksPage)
-    if (!ui->booksContainerLayout) {
-         qCritical() << "booksContainerLayout is null!";
-    } else {
-        QList<BookDisplayInfo> books = m_dbManager->getAllBooksForDisplay();
-        // Викликаємо displayBooks з потрібними аргументами
-        displayBooks(books, ui->booksContainerLayout, ui->booksContainerWidget);
-        if (!books.isEmpty()) {
-             ui->statusBar->showMessage(tr("Книги успішно завантажено."), 4000);
-        } else {
-             qWarning() << "Не вдалося завантажити книги для сторінки 'Книги'.";
-             // Повідомлення вже обробляється в displayBooks
-        }
+    // Завантаження книг для сторінки "Книги" (ui->booksPage) - ТЕПЕР ВИКЛИКАЄТЬСЯ ЧЕРЕЗ loadAndDisplayFilteredBooks()
+    // Цей блок більше не потрібен тут, оскільки початкове завантаження
+    // відбудеться при першому виклику on_navBooksButton_clicked або якщо Головна - стартова.
+    // Якщо Головна - стартова, то книги для неї завантажуються окремо вище.
+    // Якщо Книги - стартова, то loadAndDisplayFilteredBooks() має бути викликаний після setupFilterPanel().
+    // Давайте викличемо його тут, якщо booksPage є поточною сторінкою.
+    if (ui->contentStackedWidget->currentWidget() == ui->booksPage) {
+         qInfo() << "Initial load for Books page...";
+         loadAndDisplayFilteredBooks();
     }
+
 
     // Завантаження авторів для сторінки "Автори" (ui->authorsPage)
     if (!ui->authorsContainerLayout) {
@@ -210,6 +211,9 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Підключаємо кнопку відправки коментаря
     connect(ui->sendCommentButton, &QPushButton::clicked, this, &MainWindow::on_sendCommentButton_clicked);
+
+    // Налаштування панелі фільтрів
+    setupFilterPanel();
 }
 
 MainWindow::~MainWindow()
@@ -238,7 +242,12 @@ void MainWindow::on_navHomeButton_clicked()
 void MainWindow::on_navBooksButton_clicked()
 {
     ui->contentStackedWidget->setCurrentWidget(ui->booksPage); // Використовуємо ім'я сторінки з UI
-    // Можна додати ледаче завантаження тут, якщо не зроблено в конструкторі
+    // Завантажуємо книги з урахуванням поточних фільтрів
+    loadAndDisplayFilteredBooks();
+    // Показуємо кнопку фільтра, якщо вона є
+    if (ui->filterButton) {
+        ui->filterButton->show();
+    }
 }
 
 void MainWindow::on_navAuthorsButton_clicked()
@@ -340,6 +349,248 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
 } // Closing brace for eventFilter
+
+
+// --- Логіка панелі фільтрів ---
+
+void MainWindow::setupFilterPanel()
+{
+    // Перевіряємо наявність панелі та кнопки в UI
+    if (!ui->filterPanel || !ui->filterButton) {
+        qWarning() << "Filter panel or filter button not found in UI. Filtering disabled.";
+        return;
+    }
+
+    // Знаходимо віджети фільтрів всередині панелі
+    m_genreFilterListWidget = ui->filterPanel->findChild<QListWidget*>("genreFilterListWidget");
+    m_languageFilterListWidget = ui->filterPanel->findChild<QListWidget*>("languageFilterListWidget");
+    m_minPriceFilterSpinBox = ui->filterPanel->findChild<QDoubleSpinBox*>("minPriceFilterSpinBox");
+    m_maxPriceFilterSpinBox = ui->filterPanel->findChild<QDoubleSpinBox*>("maxPriceFilterSpinBox");
+    m_inStockFilterCheckBox = ui->filterPanel->findChild<QCheckBox*>("inStockFilterCheckBox");
+    QPushButton *applyButton = ui->filterPanel->findChild<QPushButton*>("applyFiltersButton");
+    QPushButton *resetButton = ui->filterPanel->findChild<QPushButton*>("resetFiltersButton");
+
+    // Перевіряємо, чи всі віджети знайдено
+    if (!m_genreFilterListWidget || !m_languageFilterListWidget || !m_minPriceFilterSpinBox ||
+        !m_maxPriceFilterSpinBox || !m_inStockFilterCheckBox || !applyButton || !resetButton)
+    {
+        qWarning() << "One or more filter widgets not found inside filterPanel. Filtering might be incomplete.";
+        // Можна вимкнути кнопку фільтра або показати повідомлення
+        ui->filterButton->setEnabled(false);
+        ui->filterButton->setToolTip(tr("Помилка: віджети фільтрації не знайдено."));
+        return;
+    }
+
+    // Налаштовуємо анімацію
+    m_filterPanelAnimation = new QPropertyAnimation(ui->filterPanel, "maximumWidth", this);
+    m_filterPanelAnimation->setDuration(300);
+    m_filterPanelAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+
+    // Початковий стан - панель прихована
+    ui->filterPanel->setMaximumWidth(0);
+    m_isFilterPanelVisible = false;
+
+    // Підключаємо сигнали
+    connect(ui->filterButton, &QPushButton::clicked, this, &MainWindow::on_filterButton_clicked);
+    connect(applyButton, &QPushButton::clicked, this, &MainWindow::applyFilters);
+    connect(resetButton, &QPushButton::clicked, this, &MainWindow::resetFilters);
+
+    // Завантажуємо дані для фільтрів
+    if (m_dbManager) {
+        // Жанри
+        QStringList genres = m_dbManager->getAllGenres();
+        m_genreFilterListWidget->clear();
+        for (const QString &genre : genres) {
+            QListWidgetItem *item = new QListWidgetItem(genre, m_genreFilterListWidget);
+            item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // Дозволяємо вибір
+            item->setCheckState(Qt::Unchecked); // Початково не вибрано
+        }
+        m_genreFilterListWidget->setSelectionMode(QAbstractItemView::MultiSelection); // Дозволяємо вибір декількох
+
+        // Мови
+        QStringList languages = m_dbManager->getAllLanguages();
+        m_languageFilterListWidget->clear();
+        for (const QString &lang : languages) {
+             QListWidgetItem *item = new QListWidgetItem(lang, m_languageFilterListWidget);
+             item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+             item->setCheckState(Qt::Unchecked);
+        }
+        m_languageFilterListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
+
+        // Налаштування діапазонів цін (можна отримати min/max з БД, але поки що встановимо вручну)
+        m_minPriceFilterSpinBox->setRange(0.0, 10000.0); // Приклад діапазону
+        m_minPriceFilterSpinBox->setValue(0.0);
+        m_minPriceFilterSpinBox->setSuffix(tr(" грн"));
+        m_maxPriceFilterSpinBox->setRange(0.0, 10000.0);
+        m_maxPriceFilterSpinBox->setValue(10000.0); // Початково максимальне значення
+        m_maxPriceFilterSpinBox->setSuffix(tr(" грн"));
+
+    } else {
+        qWarning() << "DatabaseManager is null, cannot populate filter options.";
+        ui->filterButton->setEnabled(false);
+        ui->filterButton->setToolTip(tr("Помилка: Немає доступу до бази даних для завантаження фільтрів."));
+    }
+
+    // Ховаємо кнопку фільтра спочатку (покажемо при переході на сторінку книг)
+    ui->filterButton->hide();
+}
+
+void MainWindow::on_filterButton_clicked()
+{
+    if (!ui->filterPanel || !m_filterPanelAnimation) return;
+
+    if (m_filterPanelAnimation->state() == QAbstractAnimation::Running) {
+        m_filterPanelAnimation->stop(); // Зупиняємо поточну анімацію
+    }
+
+    m_isFilterPanelVisible = !m_isFilterPanelVisible;
+
+    m_filterPanelAnimation->setStartValue(ui->filterPanel->width());
+    m_filterPanelAnimation->setEndValue(m_isFilterPanelVisible ? m_filterPanelWidth : 0);
+    m_filterPanelAnimation->start();
+
+    // Можна змінити іконку кнопки фільтра
+    // ui->filterButton->setIcon(QIcon(m_isFilterPanelVisible ? ":/icons/close_filter.png" : ":/icons/filter.png"));
+}
+
+void MainWindow::applyFilters()
+{
+    // Збираємо вибрані критерії
+    m_currentFilterCriteria = BookFilterCriteria(); // Скидаємо попередні
+
+    // Жанри
+    if (m_genreFilterListWidget) {
+        for (int i = 0; i < m_genreFilterListWidget->count(); ++i) {
+            QListWidgetItem *item = m_genreFilterListWidget->item(i);
+            if (item && item->checkState() == Qt::Checked) {
+                m_currentFilterCriteria.genres << item->text();
+            }
+        }
+    }
+
+    // Мови
+    if (m_languageFilterListWidget) {
+        for (int i = 0; i < m_languageFilterListWidget->count(); ++i) {
+            QListWidgetItem *item = m_languageFilterListWidget->item(i);
+            if (item && item->checkState() == Qt::Checked) {
+                m_currentFilterCriteria.languages << item->text();
+            }
+        }
+    }
+
+    // Ціна
+    if (m_minPriceFilterSpinBox && m_minPriceFilterSpinBox->value() > 0) { // Вважаємо 0 як "без обмеження знизу"
+        m_currentFilterCriteria.minPrice = m_minPriceFilterSpinBox->value();
+    }
+    if (m_maxPriceFilterSpinBox && m_maxPriceFilterSpinBox->value() < m_maxPriceFilterSpinBox->maximum()) { // Якщо не максимальне значення
+        m_currentFilterCriteria.maxPrice = m_maxPriceFilterSpinBox->value();
+    }
+    // Перевірка, щоб min не був більший за max
+    if (m_currentFilterCriteria.minPrice >= 0 && m_currentFilterCriteria.maxPrice >= 0 && m_currentFilterCriteria.minPrice > m_currentFilterCriteria.maxPrice) {
+        // Можна показати попередження або поміняти їх місцями
+        qWarning() << "Min price is greater than max price, swapping them.";
+        std::swap(m_currentFilterCriteria.minPrice, m_currentFilterCriteria.maxPrice);
+        // Оновити значення в spinbox'ах (опціонально)
+        // m_minPriceFilterSpinBox->setValue(m_currentFilterCriteria.minPrice);
+        // m_maxPriceFilterSpinBox->setValue(m_currentFilterCriteria.maxPrice);
+    }
+
+
+    // В наявності
+    if (m_inStockFilterCheckBox) {
+        m_currentFilterCriteria.inStockOnly = m_inStockFilterCheckBox->isChecked();
+    }
+
+    qInfo() << "Applying filters:"
+            << "Genres:" << m_currentFilterCriteria.genres
+            << "Languages:" << m_currentFilterCriteria.languages
+            << "MinPrice:" << m_currentFilterCriteria.minPrice
+            << "MaxPrice:" << m_currentFilterCriteria.maxPrice
+            << "InStockOnly:" << m_currentFilterCriteria.inStockOnly;
+
+    // Завантажуємо та відображаємо відфільтровані книги
+    loadAndDisplayFilteredBooks();
+
+    // Ховаємо панель фільтрів після застосування (опціонально)
+    if (m_isFilterPanelVisible) {
+        on_filterButton_clicked(); // Імітуємо клік для закриття
+    }
+}
+
+void MainWindow::resetFilters()
+{
+    // Скидаємо значення у віджетах
+    if (m_genreFilterListWidget) {
+        for (int i = 0; i < m_genreFilterListWidget->count(); ++i) {
+            if (QListWidgetItem *item = m_genreFilterListWidget->item(i)) {
+                item->setCheckState(Qt::Unchecked);
+            }
+        }
+    }
+    if (m_languageFilterListWidget) {
+         for (int i = 0; i < m_languageFilterListWidget->count(); ++i) {
+            if (QListWidgetItem *item = m_languageFilterListWidget->item(i)) {
+                item->setCheckState(Qt::Unchecked);
+            }
+        }
+    }
+    if (m_minPriceFilterSpinBox) {
+        m_minPriceFilterSpinBox->setValue(m_minPriceFilterSpinBox->minimum()); // Або 0.0
+    }
+    if (m_maxPriceFilterSpinBox) {
+        m_maxPriceFilterSpinBox->setValue(m_maxPriceFilterSpinBox->maximum()); // Або високе значення
+    }
+    if (m_inStockFilterCheckBox) {
+        m_inStockFilterCheckBox->setChecked(false);
+    }
+
+    // Скидаємо збережені критерії
+    m_currentFilterCriteria = BookFilterCriteria();
+    qInfo() << "Filters reset.";
+
+    // Завантажуємо та відображаємо всі книги (або згідно зі скинутими фільтрами)
+    loadAndDisplayFilteredBooks();
+
+    // Ховаємо панель фільтрів (опціонально)
+     if (m_isFilterPanelVisible) {
+        on_filterButton_clicked();
+    }
+}
+
+void MainWindow::loadAndDisplayFilteredBooks()
+{
+    if (!m_dbManager) {
+        qWarning() << "Cannot load books: DatabaseManager is null.";
+        // Можна показати повідомлення про помилку в UI
+        if (ui->booksContainerLayout) {
+            clearLayout(ui->booksContainerLayout);
+            QLabel *errorLabel = new QLabel(tr("Помилка: Немає доступу до бази даних."), ui->booksContainerWidget);
+            ui->booksContainerLayout->addWidget(errorLabel);
+        }
+        return;
+    }
+    if (!ui->booksContainerLayout || !ui->booksContainerWidget) {
+        qCritical() << "Cannot display books: booksContainerLayout or booksContainerWidget is null!";
+        return;
+    }
+
+    qInfo() << "Loading books with current filters...";
+    // Використовуємо поточні критерії фільтрації
+    QList<BookDisplayInfo> books = m_dbManager->getFilteredBooksForDisplay(m_currentFilterCriteria);
+
+    // Відображаємо книги
+    displayBooks(books, ui->booksContainerLayout, ui->booksContainerWidget);
+
+    if (!books.isEmpty()) {
+         ui->statusBar->showMessage(tr("Книги успішно завантажено (%1 знайдено).").arg(books.size()), 4000);
+    } else {
+         qInfo() << "No books found matching the current filters.";
+         // Повідомлення про "не знайдено" вже обробляється в displayBooks
+         ui->statusBar->showMessage(tr("Книг за вашим запитом не знайдено."), 4000);
+    }
+}
+
+// --- Кінець логіки панелі фільтрів ---
 
 
 // --- Логіка автоматичного банера ---

@@ -24,10 +24,14 @@
 #include <QRadioButton> // Додано для індикаторів банера
 #include <QResizeEvent> // Додано для обробки зміни розміру
 #include "searchsuggestiondelegate.h" // Додано включення делегата
+#include "datatypes.h" // Додано для BookFilterCriteria
 
 
 // Forward declarations
 class DatabaseManager;
+class QListWidget;     // Для списків фільтрів
+class QDoubleSpinBox;  // Для фільтрів ціни
+class QCheckBox;       // Для фільтра "в наявності"
 class QStandardItemModel; // Додано forward declaration
 // class QTableWidget; // Більше не використовується для кошика
 struct CustomerProfileInfo;
@@ -80,6 +84,9 @@ private slots:
     void showNextBanner(); // Слот для перемикання банера
     void onSearchSuggestionActivated(const QModelIndex &index); // Слот для обробки вибору пропозиції
     void showAuthorDetails(int authorId); // Слот/метод для показу деталей автора
+    void on_filterButton_clicked(); // Слот для кнопки відкриття/закриття панелі фільтрів
+    void applyFilters(); // Слот для застосування фільтрів
+    void resetFilters(); // Слот для скидання фільтрів
 
 private:
     // Допоміжні функції для відображення даних
@@ -123,6 +130,8 @@ private:
     // void setupBannerImage(); // Видалено, замінено на setupAutoBanner
     void setupAutoBanner(); // Налаштування автоматичного банера
     void updateBannerImages(); // Оновлення зображень банера
+    void setupFilterPanel(); // Налаштування панелі фільтрів
+    void loadAndDisplayFilteredBooks(); // Завантаження та відображення книг з урахуванням фільтрів
 
     // Члени класу
     Ui::MainWindow *ui;
@@ -153,6 +162,19 @@ private:
     QStringList m_bannerImagePaths;
     int m_currentBannerIndex = 0;
     QList<QRadioButton*> m_bannerIndicators; // Список індикаторів
+
+    // Члени для панелі фільтрів
+    QPropertyAnimation *m_filterPanelAnimation = nullptr;
+    bool m_isFilterPanelVisible = false;
+    int m_filterPanelWidth = 250; // Ширина панелі фільтрів
+    BookFilterCriteria m_currentFilterCriteria; // Поточні критерії фільтрації
+
+    // Вказівники на віджети фільтрів (припускаємо, що вони є в UI)
+    QListWidget *m_genreFilterListWidget = nullptr;
+    QListWidget *m_languageFilterListWidget = nullptr;
+    QDoubleSpinBox *m_minPriceFilterSpinBox = nullptr;
+    QDoubleSpinBox *m_maxPriceFilterSpinBox = nullptr;
+    QCheckBox *m_inStockFilterCheckBox = nullptr;
 
 
 protected:
