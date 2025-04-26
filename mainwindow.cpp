@@ -477,8 +477,12 @@ void MainWindow::on_filterButton_clicked()
     m_filterPanelAnimation->setStartValue(startWidth);
     m_filterPanelAnimation->setEndValue(endWidth);
 
-    // Connect the finished signal handler using UniqueConnection
-    // This replaces any previous connection from the same sender/signal/receiver/slot combination
+    // Explicitly disconnect any previous connections for the finished signal from this animation to this receiver
+    // This is necessary because UniqueConnection cannot be used with lambdas + context object.
+    disconnect(m_filterPanelAnimation, &QPropertyAnimation::finished, this, nullptr);
+    qDebug() << "Disconnected previous finished signal connections.";
+
+    // Connect the finished signal handler (without UniqueConnection)
     connect(m_filterPanelAnimation, &QPropertyAnimation::finished, this, [this, targetVisibility]() {
         qDebug() << "--- Animation finished ---";
         qDebug() << "Target state was:" << targetVisibility;
@@ -505,7 +509,15 @@ void MainWindow::on_filterButton_clicked()
         }
 
         qDebug() << "--- Finished handler complete ---";
-    }, Qt::UniqueConnection); // Use UniqueConnection to prevent duplicates
+        // Disconnect the lambda connection after it runs once to avoid potential issues if the animation object is reused.
+        // Note: This disconnect might be too broad if other slots are connected to finished.
+        // A more robust approach might involve QMetaObject::Connection handle if needed.
+        // For now, let's keep it simple. Consider if this disconnect is truly necessary.
+        // It might be safer *not* to disconnect here automatically unless proven necessary.
+        // Let's comment it out for now.
+        // disconnect(sender(), &QPropertyAnimation::finished, this, nullptr);
+
+    } /* Removed Qt::UniqueConnection */);
 
     qDebug() << "Starting animation...";
     m_filterPanelAnimation->start();
