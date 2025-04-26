@@ -3601,9 +3601,9 @@ QListWidget::item:selected {
            </property>
           </widget>
          </item>
+         <!-- Замінюємо два слайдери та мітки на один віджет-заповнювач -->
          <item>
-          <!-- Layout для мінімальної ціни -->
-          <layout class="QHBoxLayout" name="minPriceLayout">
+          <layout class="QHBoxLayout" name="priceRangeLayout">
            <property name="spacing">
             <number>8</number>
            </property>
@@ -3611,12 +3611,12 @@ QListWidget::item:selected {
             <widget class="QLabel" name="minPriceValueLabel">
              <property name="minimumSize">
               <size>
-               <width>50</width> <!-- Ширина для відображення ціни -->
+               <width>40</width> <!-- Трохи менше місця для мітки -->
                <height>0</height>
               </size>
              </property>
              <property name="text">
-              <string>0</string> <!-- Початкове значення -->
+              <string>0</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -3624,52 +3624,35 @@ QListWidget::item:selected {
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="minPriceSlider">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
+            <!-- Віджет-заповнювач для RangeSlider -->
+            <widget class="QWidget" name="priceRangeSliderWidget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="tickPosition">
-              <enum>QSlider::TickPosition::TicksBelow</enum>
-             </property>
-             <property name="tickInterval">
-              <number>100</number> <!-- Інтервал позначок -->
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>25</height> <!-- Висота для слайдера -->
+              </size>
              </property>
             </widget>
            </item>
-          </layout>
-         </item>
-         <item>
-          <!-- Layout для максимальної ціни -->
-          <layout class="QHBoxLayout" name="maxPriceLayout">
-           <property name="spacing">
-            <number>8</number>
-           </property>
            <item>
             <widget class="QLabel" name="maxPriceValueLabel">
              <property name="minimumSize">
               <size>
-               <width>50</width>
+               <width>40</width>
                <height>0</height>
               </size>
              </property>
              <property name="text">
-              <string>1000</string> <!-- Початкове значення -->
+              <string>1000</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSlider" name="maxPriceSlider">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="tickPosition">
-              <enum>QSlider::TickPosition::TicksBelow</enum>
-             </property>
-             <property name="tickInterval">
-              <number>100</number>
              </property>
             </widget>
            </item>
