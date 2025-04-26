@@ -480,7 +480,7 @@ void MainWindow::setupFilterPanel()
             font-weight: bold;
             margin-top: 10px;
             margin-bottom: 5px;
-            color: #495057;
+            color: #000000; /* Змінено на чорний */
         }
         QListWidget {
             border: 1px solid #ced4da;
@@ -490,10 +490,11 @@ void MainWindow::setupFilterPanel()
         }
         QListWidget::item {
             padding: 4px 0px; /* Відступи для елементів списку */
+            color: #000000; /* Явно встановлюємо чорний колір для всіх елементів */
         }
         QListWidget::item:selected {
             background-color: #e9ecef; /* Колір виділення (якщо використовується selectionMode) */
-            color: #000;
+            color: #000000; /* Залишаємо чорний */
         }
         QListWidget::indicator:checked { /* Стиль для галочки */
              image: url(:/icons/checkbox_checked.png); /* Замініть на шлях до вашої іконки */
@@ -525,7 +526,7 @@ void MainWindow::setupFilterPanel()
         }
         QPushButton#resetFiltersButton { /* Стилізуємо кнопку скидання за її objectName */
             background-color: #6c757d;
-            color: white;
+            color: #000000; /* Змінено на чорний */
             border: none;
             padding: 8px 15px;
             border-radius: 4px;
