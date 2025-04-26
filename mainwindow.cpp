@@ -375,10 +375,30 @@ void MainWindow::setupFilterPanel()
     // Знаходимо віджети фільтрів всередині панелі
     m_genreFilterListWidget = ui->filterPanel->findChild<QListWidget*>("genreFilterListWidget");
     m_languageFilterListWidget = ui->filterPanel->findChild<QListWidget*>("languageFilterListWidget");
-    // Замінюємо пошук двох QSlider та QLabel на один RangeSlider
-    // !!! УВАГА: Перевірте objectName вашого RangeSlider у файлі .ui (Qt Designer) !!!
-    // !!! Якщо ім'я відрізняється від "priceRangeSlider", замініть його нижче! !!!
-    m_priceRangeSlider = ui->filterPanel->findChild<RangeSlider*>("priceRangeSlider"); // <-- ПЕРЕВІРТЕ ТА ЗАМІНІТЬ ЦЕ ІМ'Я, ЯКЩО ПОТРІБНО
+
+    // --- Заміна віджета-заповнювача на RangeSlider ---
+    m_priceRangeSlider = nullptr; // Ініціалізуємо нулем
+    if (ui->priceRangeSlider) { // Перевіряємо наявність віджета-заповнювача з UI
+        // Створюємо новий RangeSlider
+        RangeSlider *actualSlider = new RangeSlider(Qt::Horizontal, this); // 'this' як батько
+        actualSlider->setObjectName("priceRangeSliderInstance"); // Можна дати нове ім'я для стилізації/відладки
+
+        // Знаходимо layout, що містить віджет-заповнювач
+        QLayout *layout = ui->priceRangeSlider->parentWidget()->layout(); // Припускаємо, що батько має layout
+        if (layout) {
+            // Замінюємо віджет-заповнювач на реальний слайдер
+            layout->replaceWidget(ui->priceRangeSlider, actualSlider);
+            m_priceRangeSlider = actualSlider; // Зберігаємо вказівник на реальний слайдер
+            delete ui->priceRangeSlider; // Видаляємо віджет-заповнювач
+            qInfo() << "Successfully replaced placeholder with RangeSlider.";
+        } else {
+            qWarning() << "Could not find layout containing priceRangeSlider placeholder!";
+        }
+    } else {
+        qWarning() << "Placeholder widget 'priceRangeSlider' not found in UI!";
+    }
+    // --- Кінець заміни ---
+
     // Видаляємо пошук окремих міток для min/max, RangeSlider може мати свої або мітки можуть бути окремо
     // m_minPriceValueLabel = ui->filterPanel->findChild<QLabel*>("minPriceValueLabel"); // Видалено/Закоментовано
     // m_maxPriceValueLabel = ui->filterPanel->findChild<QLabel*>("maxPriceValueLabel"); // Видалено/Закоментовано
@@ -390,8 +410,8 @@ void MainWindow::setupFilterPanel()
     qDebug() << "Checking filter widgets:";
     qDebug() << "  genreFilterListWidget:" << (m_genreFilterListWidget ? "Found" : "NOT FOUND!");
     qDebug() << "  languageFilterListWidget:" << (m_languageFilterListWidget ? "Found" : "NOT FOUND!");
-    // Оновлена діагностика (використовуємо ім'я з коду для пошуку)
-    qDebug() << "  priceRangeSlider (Searching for 'priceRangeSlider'):" << (m_priceRangeSlider ? "Found" : "NOT FOUND! Check objectName in UI file!");
+    // Оновлена діагностика (перевіряємо, чи вдалося створити та замінити)
+    qDebug() << "  priceRangeSlider (Instance created):" << (m_priceRangeSlider ? "OK" : "FAILED! Check UI placeholder and replacement logic.");
     // qDebug() << "  minPriceValueLabel:" << (m_minPriceValueLabel ? "Found" : "NOT FOUND!"); // Видалено
     // qDebug() << "  maxPriceValueLabel:" << (m_maxPriceValueLabel ? "Found" : "NOT FOUND!"); // Видалено
     qDebug() << "  inStockFilterCheckBox:" << (m_inStockFilterCheckBox ? "Found" : "NOT FOUND!");
