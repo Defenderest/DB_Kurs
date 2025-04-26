@@ -73,6 +73,186 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
     return books;
 }
 
+
+// Реалізація нового методу для отримання книг з урахуванням фільтрів
+QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFilterCriteria &criteria) const
+{
+    QList<BookDisplayInfo> books;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо отримати відфільтровані книги: немає активного з'єднання з БД.";
+        return books;
+    }
+
+    // Базовий SQL-запит, схожий на getAllBooksForDisplay
+    QString sql = R"(
+        SELECT DISTINCT -- Використовуємо DISTINCT, оскільки JOIN з авторами може дублювати книги
+            b.book_id,
+            b.title,
+            b.price,
+            b.cover_image_path,
+            b.stock_quantity,
+            b.genre,
+            b.language, -- Додано мову
+            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
+            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
+        FROM book b
+        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
+        LEFT JOIN book_author ba ON b.book_id = ba.book_id
+        LEFT JOIN author a ON ba.author_id = a.author_id
+    )";
+
+    QStringList whereConditions;
+    QMap<QString, QVariant> bindValues;
+
+    // 1. Фільтр за жанрами
+    if (!criteria.genres.isEmpty()) {
+        QStringList genrePlaceholders;
+        for (int i = 0; i < criteria.genres.size(); ++i) {
+            QString placeholder = QString(":genre_%1").arg(i);
+            genrePlaceholders << placeholder;
+            bindValues[placeholder] = criteria.genres[i];
+        }
+        whereConditions << QString("b.genre IN (%1)").arg(genrePlaceholders.join(", "));
+    }
+
+    // 2. Фільтр за мовами
+    if (!criteria.languages.isEmpty()) {
+        QStringList langPlaceholders;
+        for (int i = 0; i < criteria.languages.size(); ++i) {
+            QString placeholder = QString(":lang_%1").arg(i);
+            langPlaceholders << placeholder;
+            bindValues[placeholder] = criteria.languages[i];
+        }
+        whereConditions << QString("b.language IN (%1)").arg(langPlaceholders.join(", "));
+    }
+
+    // 3. Фільтр за мінімальною ціною
+    if (criteria.minPrice >= 0.0) {
+        whereConditions << "b.price >= :minPrice";
+        bindValues[":minPrice"] = criteria.minPrice;
+    }
+
+    // 4. Фільтр за максимальною ціною
+    if (criteria.maxPrice >= 0.0) {
+        whereConditions << "b.price <= :maxPrice";
+        bindValues[":maxPrice"] = criteria.maxPrice;
+    }
+
+    // 5. Фільтр "тільки в наявності"
+    if (criteria.inStockOnly) {
+        whereConditions << "b.stock_quantity > 0";
+    }
+
+    // Додаємо умови WHERE до основного запиту, якщо вони є
+    if (!whereConditions.isEmpty()) {
+        sql += "\nWHERE " + whereConditions.join(" AND ");
+    }
+
+    // Додаємо GROUP BY та ORDER BY
+    sql += R"(
+        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre, b.language, p.name
+        ORDER BY b.title;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+
+    // Прив'язуємо значення
+    for (auto it = bindValues.constBegin(); it != bindValues.constEnd(); ++it) {
+        query.bindValue(it.key(), it.value());
+    }
+
+    qInfo() << "Executing SQL to get filtered books...";
+    qDebug() << "SQL:" << sql;
+    qDebug() << "Bind values:" << bindValues;
+
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні відфільтрованого списку книг:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery(); // Показуємо запит з підставленими значеннями
+        return books;
+    }
+
+    qInfo() << "Successfully fetched filtered books. Processing results...";
+    int count = 0;
+    while (query.next()) {
+        BookDisplayInfo bookInfo;
+        bookInfo.bookId = query.value("book_id").toInt();
+        bookInfo.title = query.value("title").toString();
+        bookInfo.price = query.value("price").toDouble();
+        bookInfo.coverImagePath = query.value("cover_image_path").toString();
+        bookInfo.stockQuantity = query.value("stock_quantity").toInt();
+        bookInfo.authors = query.value("authors").toString();
+        bookInfo.genre = query.value("genre").toString();
+        // bookInfo.language = query.value("language").toString(); // Поле language не існує в BookDisplayInfo, можливо, його треба додати?
+        bookInfo.found = true;
+
+        if (query.value("authors").isNull()) {
+             bookInfo.authors = "";
+        }
+
+        books.append(bookInfo);
+        count++;
+    }
+    qInfo() << "Processed" << count << "filtered books.";
+
+    return books;
+}
+
+// Реалізація методу для отримання всіх унікальних жанрів
+QStringList DatabaseManager::getAllGenres() const
+{
+    QStringList genres;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо отримати жанри: немає активного з'єднання з БД.";
+        return genres;
+    }
+
+    const QString sql = "SELECT DISTINCT genre FROM book WHERE genre IS NOT NULL AND genre != '' ORDER BY genre;";
+    QSqlQuery query(m_db);
+
+    qInfo() << "Executing SQL to get all distinct genres...";
+    if (!query.exec(sql)) {
+        qCritical() << "Помилка при отриманні списку жанрів:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << sql;
+        return genres;
+    }
+
+    while (query.next()) {
+        genres.append(query.value(0).toString());
+    }
+    qInfo() << "Fetched" << genres.size() << "distinct genres.";
+    return genres;
+}
+
+// Реалізація методу для отримання всіх унікальних мов
+QStringList DatabaseManager::getAllLanguages() const
+{
+    QStringList languages;
+    if (!m_isConnected || !m_db.isOpen()) {
+        qWarning() << "Неможливо отримати мови: немає активного з'єднання з БД.";
+        return languages;
+    }
+
+    const QString sql = "SELECT DISTINCT language FROM book WHERE language IS NOT NULL AND language != '' ORDER BY language;";
+    QSqlQuery query(m_db);
+
+    qInfo() << "Executing SQL to get all distinct languages...";
+    if (!query.exec(sql)) {
+        qCritical() << "Помилка при отриманні списку мов:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << sql;
+        return languages;
+    }
+
+    while (query.next()) {
+        languages.append(query.value(0).toString());
+    }
+    qInfo() << "Fetched" << languages.size() << "distinct languages.";
+    return languages;
+}
+
 // Реалізація нового методу для отримання детальної інформації про книгу
 BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
 {

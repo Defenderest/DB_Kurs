@@ -104,6 +104,13 @@ public:
     // Новий метод для отримання схожих книг (за жанром)
     QList<BookDisplayInfo> getSimilarBooks(int currentBookId, const QString &genre, int limit = 5) const;
 
+    // Новий метод для отримання книг з урахуванням фільтрів
+    QList<BookDisplayInfo> getFilteredBooksForDisplay(const BookFilterCriteria &criteria) const;
+
+    // Нові методи для отримання унікальних значень для фільтрів
+    QStringList getAllGenres() const;
+    QStringList getAllLanguages() const;
+
     // Публічні методи доступу до стану та об'єкту БД
     bool isConnected() const;
     QSqlDatabase& database(); // Повертає посилання для можливості операцій (транзакції, запити)
