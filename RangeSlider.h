@@ -51,12 +51,12 @@ private:
     enum Handle { NoHandle, LowerHandle, UpperHandle, BothHandles };
 
     // Геометрія та стан
-    QRect grooveRect() const; // Область доріжки
-    QRect handleRect(Handle handle) const; // Область ручки
+    QRectF grooveRect() const; // Область доріжки (змінено на QRectF)
+    QRectF handleRect(Handle handle) const; // Область ручки (змінено на QRectF)
     int positionToValue(int pos) const;
     int valueToPosition(int val) const;
     void updateHoverControl(const QPoint& pos); // Оновлення стану наведення
-    void triggerAction(QAbstractSlider::SliderAction action, bool fast); // Для обробки кліків на доріжці
+    // void triggerAction(QAbstractSlider::SliderAction action, bool fast); // Видалено, не використовується
 
     // Властивості
     int m_minimum = 0;
@@ -64,8 +64,9 @@ private:
     int m_lowerValue = 0;
     int m_upperValue = 1000;
     Qt::Orientation m_orientation;
-    int m_handleWidth = 16; // Ширина ручки (можна налаштувати)
-    int m_grooveHeight = 6; // Висота доріжки (зробимо тоншою)
+    // int m_handleWidth = 16; // Видалено, замінено на m_handleSize
+    qreal m_handleSize = 18.0; // Розмір повзунка (діаметр кола) - додано
+    qreal m_grooveHeight = 6.0; // Висота доріжки - додано
 
     // Стан взаємодії
     Handle m_pressedControl = NoHandle;
@@ -74,7 +75,7 @@ private:
     int m_lastPressedValue = 0; // Для визначення зміни значення при відпусканні
 
     // Стилізація
-    QStyleOptionSlider getStyleOption(Handle handle = NoHandle) const;
+    // QStyleOptionSlider getStyleOption(Handle handle = NoHandle) const; // Видалено, не використовується
 };
 
 #endif // RANGESLIDER_H
