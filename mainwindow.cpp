@@ -377,12 +377,27 @@ void MainWindow::setupFilterPanel()
     QPushButton *applyButton = ui->filterPanel->findChild<QPushButton*>("applyFiltersButton");
     QPushButton *resetButton = ui->filterPanel->findChild<QPushButton*>("resetFiltersButton");
 
+    // --- Додано відладку для перевірки знайдених віджетів ---
+    qDebug() << "Filter Widget Check:";
+    qDebug() << "  genreFilterListWidget:" << (m_genreFilterListWidget ? "Found" : "NOT FOUND");
+    qDebug() << "  languageFilterListWidget:" << (m_languageFilterListWidget ? "Found" : "NOT FOUND");
+    qDebug() << "  minPriceSlider:" << (m_minPriceSlider ? "Found" : "NOT FOUND");
+    qDebug() << "  maxPriceSlider:" << (m_maxPriceSlider ? "Found" : "NOT FOUND");
+    qDebug() << "  minPriceValueLabel:" << (m_minPriceValueLabel ? "Found" : "NOT FOUND");
+    qDebug() << "  maxPriceValueLabel:" << (m_maxPriceValueLabel ? "Found" : "NOT FOUND");
+    qDebug() << "  inStockFilterCheckBox:" << (m_inStockFilterCheckBox ? "Found" : "NOT FOUND");
+    qDebug() << "  applyButton:" << (applyButton ? "Found" : "NOT FOUND");
+    qDebug() << "  resetButton:" << (resetButton ? "Found" : "NOT FOUND");
+    // --- Кінець відладки ---
+
+
     // Перевіряємо, чи всі віджети знайдено
     if (!m_genreFilterListWidget || !m_languageFilterListWidget || !m_minPriceSlider ||
         !m_maxPriceSlider || !m_minPriceValueLabel || !m_maxPriceValueLabel ||
         !m_inStockFilterCheckBox || !applyButton || !resetButton)
     {
         qWarning() << "One or more filter widgets not found inside filterPanel. Filtering might be incomplete.";
+        qWarning() << "Disabling filter button due to missing widgets."; // Додано пояснення
         // Можна вимкнути кнопку фільтра або показати повідомлення
         ui->filterButton->setEnabled(false);
         ui->filterButton->setToolTip(tr("Помилка: віджети фільтрації не знайдено."));
