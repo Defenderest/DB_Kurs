@@ -44,6 +44,7 @@
 #include <QDoubleSpinBox>   // Додано для фільтрів ціни
 #include <QCheckBox>        // Додано для фільтра "в наявності"
 #include <QListWidgetItem>  // Для роботи з елементами QListWidget
+#include <QParallelAnimationGroup> // Додано для анімації панелі фільтрів
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
