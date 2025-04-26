@@ -113,7 +113,7 @@ QPushButton {
     font-weight: 500;
     min-height: 34px;
     font-size: 10pt;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    /* transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; */ /* transition is not a standard Qt property */
 }
 QPushButton:hover {
     background-color: #5a6268; /* Змінено на темніший сірий */
@@ -852,6 +852,12 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
       </item>
       <item>
        <widget class="QStackedWidget" name="contentStackedWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>1</horstretch> <!-- Встановлюємо stretch factor 1 -->
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="currentIndex">
          <number>0</number> <!-- Змінено на індекс Головної сторінки (discoverPage) -->
         </property>
@@ -3467,6 +3473,12 @@ QLabel#emptyCartLabel {
       <!-- Додаємо панель фільтрів справа від StackedWidget -->
       <item>
        <widget class="QFrame" name="filterPanel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred"> <!-- Змінюємо Horizontal Policy на Maximum -->
+          <horstretch>0</horstretch> <!-- Встановлюємо stretch factor 0 -->
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width> <!-- Початкова ширина 0 -->
