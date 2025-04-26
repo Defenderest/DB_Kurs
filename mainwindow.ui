@@ -1489,7 +1489,32 @@ border-bottom: 1px solid #eeeeee;</string>
                </property>
               </spacer>
              </item>
-             <!-- Видалені кнопки filterButton, sortButton, viewModeButton та horizontalSpacer_2 -->
+             <!-- Додаємо кнопку фільтра -->
+             <item>
+              <widget class="QPushButton" name="filterButton">
+               <property name="toolTip">
+                <string>Фільтри</string>
+               </property>
+               <property name="text">
+                <string>🧪</string> <!-- Іконка фільтра (пробірка) -->
+               </property>
+               <property name="icon">
+                <iconset resource="resourses.qrc">
+                 <normaloff>:/icons/icons/filter.png</normaloff>:/icons/icons/filter.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>18</width>
+                 <height>18</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool> <!-- Можна зробити checkable для зміни іконки -->
+               </property>
+               <!-- Стиль QPushButton#filterButton визначено вище -->
+              </widget>
+             </item>
+             <!-- Видалені кнопки sortButton, viewModeButton та horizontalSpacer_2 -->
             </layout>
            </widget>
           </item>
@@ -3439,6 +3464,231 @@ QLabel#emptyCartLabel {
     </widget> <!-- Закриваємо authorDetailsPage -->
    </widget> <!-- Закриваємо contentStackedWidget -->
   </item> <!-- Закриваємо item для StackedWidget -->
+      <!-- Додаємо панель фільтрів справа від StackedWidget -->
+      <item>
+       <widget class="QFrame" name="filterPanel">
+        <property name="minimumSize">
+         <size>
+          <width>0</width> <!-- Початкова ширина 0 -->
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>0</width> <!-- Початкова ширина 0 -->
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QFrame#filterPanel {
+    background-color: #f8f9fa; /* Світлий фон */
+    border-left: 1px solid #dee2e6; /* Лінія розділення */
+}
+QLabel { /* Стиль для заголовків фільтрів */
+    font-weight: 600;
+    color: #495057;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+QListWidget { /* Стиль для списків */
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #ffffff;
+    padding: 5px;
+}
+QListWidget::item {
+    padding: 4px 0px; /* Відступи для елементів списку */
+}
+QListWidget::item:selected {
+    background-color: #e9ecef; /* Колір виділеного елемента */
+    color: #000;
+    border-radius: 3px;
+}
+/* Стилі для інших віджетів (QDoubleSpinBox, QCheckBox, QPushButton) успадковуються */
+</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="filterPanelLayout">
+         <property name="spacing">
+          <number>10</number>
+         </property>
+         <property name="leftMargin">
+          <number>15</number>
+         </property>
+         <property name="topMargin">
+          <number>15</number>
+         </property>
+         <property name="rightMargin">
+          <number>15</number>
+         </property>
+         <property name="bottomMargin">
+          <number>15</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="filterHeaderLabel">
+           <property name="styleSheet">
+            <string notr="true">font-size: 14pt; font-weight: 600; color: #343a40; margin-bottom: 10px;</string>
+           </property>
+           <property name="text">
+            <string>Фільтри</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="genreFilterLabel">
+           <property name="text">
+            <string>Жанр:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="genreFilterListWidget">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>100</height> <!-- Мінімальна висота списку -->
+            </size>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum> <!-- Дозволити вибір декількох -->
+           </property>
+           <!-- Елементи будуть додані програмно -->
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="languageFilterLabel">
+           <property name="text">
+            <string>Мова:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="languageFilterListWidget">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>60</height> <!-- Мінімальна висота списку -->
+            </size>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum>
+           </property>
+           <!-- Елементи будуть додані програмно -->
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="priceFilterLabel">
+           <property name="text">
+            <string>Ціна (грн):</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="priceFilterLayout">
+           <item>
+            <widget class="QDoubleSpinBox" name="minPriceFilterSpinBox">
+             <property name="toolTip">
+              <string>Мінімальна ціна</string>
+             </property>
+             <property name="prefix">
+              <string>Від </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>9999.990000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="maxPriceFilterSpinBox">
+             <property name="toolTip">
+              <string>Максимальна ціна</string>
+             </property>
+             <property name="prefix">
+              <string>До </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>9999.990000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="inStockFilterCheckBox">
+           <property name="text">
+            <string>Тільки в наявності</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="filterVerticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="filterButtonsLayout">
+           <item>
+            <widget class="QPushButton" name="resetFiltersButton">
+             <property name="styleSheet">
+              <string notr="true">/* Можна додати стиль для кнопки скидання */
+QPushButton {
+    background-color: #f8f9fa; /* Світлий фон */
+    color: #6c757d; /* Сірий текст */
+    border: 1px solid #ced4da;
+}
+QPushButton:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}</string>
+             </property>
+             <property name="text">
+              <string>Скинути</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="applyFiltersButton">
+             <property name="styleSheet">
+              <string notr="true">/* Можна додати стиль для кнопки застосування */
+QPushButton {
+    background-color: #0d6efd; /* Синій */
+    border-color: #0d6efd;
+    color: white;
+}
+QPushButton:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}</string>
+             </property>
+             <property name="text">
+              <string>Застосувати</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
