@@ -244,9 +244,7 @@ void MainWindow::on_navHomeButton_clicked()
 void MainWindow::on_navBooksButton_clicked()
 {
     ui->contentStackedWidget->setCurrentWidget(ui->booksPage); // Використовуємо ім'я сторінки з UI
-    // Скидаємо критерії фільтрації та оновлюємо UI фільтрів
-    resetFilters(); // Скидає критерії та оновлює віджети фільтрів
-    // Завантажуємо всі книги (оскільки фільтри тепер скинуті)
+    // Завантажуємо книги з урахуванням поточних фільтрів
     loadAndDisplayFilteredBooks();
     // Показуємо кнопку фільтра, якщо вона є
     if (ui->filterButton) {
