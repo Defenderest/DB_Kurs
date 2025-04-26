@@ -441,61 +441,84 @@ void MainWindow::setupFilterPanel()
 
 void MainWindow::on_filterButton_clicked()
 {
-    qDebug() << "Filter button clicked. Current visibility:" << m_isFilterPanelVisible;
+    qDebug() << "--- Filter button clicked ---";
+    qDebug() << "Initial state: m_isFilterPanelVisible =" << m_isFilterPanelVisible << ", Panel visible =" << ui->filterPanel->isVisible() << ", Panel width =" << ui->filterPanel->width();
+
     if (!ui->filterPanel || !m_filterPanelAnimation) {
-        qWarning() << "Filter panel or animation is null!";
+        qWarning() << "Filter panel or animation is null! Aborting.";
         return;
     }
 
+    // Stop any currently running animation on this object/property
     if (m_filterPanelAnimation->state() == QAbstractAnimation::Running) {
-        qDebug() << "Stopping running animation.";
-        m_filterPanelAnimation->stop(); // Зупиняємо поточну анімацію
+        qDebug() << "Animation was running. Stopping it.";
+        m_filterPanelAnimation->stop();
+        qDebug() << "Panel state after stopping: Visible =" << ui->filterPanel->isVisible() << ", Width =" << ui->filterPanel->width();
     }
 
-    m_isFilterPanelVisible = !m_isFilterPanelVisible; // Перемикаємо стан
+    // Toggle the desired state
+    bool targetVisibility = !m_isFilterPanelVisible; // Determine the target state *before* changing the member variable
 
-    int startWidth = ui->filterPanel->width();
-    int endWidth = m_isFilterPanelVisible ? m_filterPanelWidth : 0;
+    int startWidth = ui->filterPanel->width(); // Capture width *after* stopping any previous animation
+    int endWidth = targetVisibility ? m_filterPanelWidth : 0;
 
-    qDebug() << "Toggling filter panel visibility to:" << m_isFilterPanelVisible;
-    qDebug() << "Toggling filter panel visibility to:" << m_isFilterPanelVisible;
-    qDebug() << "Animation start width:" << startWidth << "end width:" << endWidth;
+    qDebug() << "Target state: targetVisibility =" << targetVisibility;
+    qDebug() << "Animation details: StartWidth =" << startWidth << ", EndWidth =" << endWidth;
 
-    // Переконуємось, що мінімальна ширина завжди 0
-    ui->filterPanel->setMinimumWidth(0);
-
-    // Якщо показуємо панель, робимо її видимою перед анімацією
-    if (m_isFilterPanelVisible) {
+    // Set visibility *before* starting the show animation
+    if (targetVisibility) {
+        qDebug() << "Setting panel visible NOW (before show animation).";
         ui->filterPanel->setVisible(true);
     }
+    // Ensure minimum width is 0
+    ui->filterPanel->setMinimumWidth(0);
 
-    // Використовуємо існуючу анімацію m_filterPanelAnimation
-    m_filterPanelAnimation->setTargetObject(ui->filterPanel); // Переконуємось, що ціль правильна
-    m_filterPanelAnimation->setPropertyName("maximumWidth");
+    // Configure the animation
     m_filterPanelAnimation->setStartValue(startWidth);
     m_filterPanelAnimation->setEndValue(endWidth);
 
-    // Від'єднуємо попередні з'єднання finished, щоб уникнути дублікатів
-    disconnect(m_filterPanelAnimation, &QPropertyAnimation::finished, nullptr, nullptr);
+    // Connect the finished signal handler using UniqueConnection
+    // This replaces any previous connection from the same sender/signal/receiver/slot combination
+    connect(m_filterPanelAnimation, &QPropertyAnimation::finished, this, [this, targetVisibility]() {
+        qDebug() << "--- Animation finished ---";
+        qDebug() << "Target state was:" << targetVisibility;
+        qDebug() << "Current panel state: Visible =" << ui->filterPanel->isVisible() << ", Width =" << ui->filterPanel->width();
+        qDebug() << "Current state variable: m_isFilterPanelVisible =" << m_isFilterPanelVisible; // Check the state variable
 
-    // Якщо ховаємо панель, робимо її невидимою ПІСЛЯ завершення анімації
-    if (!m_isFilterPanelVisible) {
-        connect(m_filterPanelAnimation, &QPropertyAnimation::finished, this, [this]() {
-            if (!m_isFilterPanelVisible) { // Перевіряємо ще раз на випадок швидких кліків
-                 qDebug() << "Hide animation finished. Setting panel invisible.";
-                 ui->filterPanel->setVisible(false);
-            }
-             // Від'єднуємо сигнал після виконання
-             disconnect(m_filterPanelAnimation, &QPropertyAnimation::finished, this, nullptr);
-        });
-    }
+        // Hide the panel *after* the hide animation finishes
+        // Check against the captured target state
+        if (!targetVisibility) {
+             qDebug() << "Setting panel invisible NOW (after hide animation).";
+             ui->filterPanel->setVisible(false);
+             qDebug() << "Panel state after setting invisible: Visible =" << ui->filterPanel->isVisible() << ", Width =" << ui->filterPanel->width();
+        } else {
+             qDebug() << "Show animation finished. Panel should remain visible.";
+        }
 
+        // Update the state variable *after* the animation is complete and visibility is set
+        // This ensures the variable reflects the actual final state.
+        if (m_isFilterPanelVisible != targetVisibility) {
+             qDebug() << "Updating m_isFilterPanelVisible from" << m_isFilterPanelVisible << "to" << targetVisibility;
+             m_isFilterPanelVisible = targetVisibility;
+        } else {
+             qDebug() << "m_isFilterPanelVisible already matches targetVisibility (" << targetVisibility << ")";
+        }
+
+        qDebug() << "--- Finished handler complete ---";
+    }, Qt::UniqueConnection); // Use UniqueConnection to prevent duplicates
+
+    qDebug() << "Starting animation...";
     m_filterPanelAnimation->start();
-    qDebug() << "Animation started (maximumWidth only).";
+    qDebug() << "Animation state after start:" << m_filterPanelAnimation->state();
+
+    // Update the state variable immediately? No, let the finished handler do it.
+    // m_isFilterPanelVisible = targetVisibility; // Moved to finished lambda
 
     // Можна змінити іконку кнопки фільтра
-    // ui->filterButton->setIcon(QIcon(m_isFilterPanelVisible ? ":/icons/close_filter.png" : ":/icons/filter.png"));
+    // ui->filterButton->setIcon(QIcon(targetVisibility ? ":/icons/close_filter.png" : ":/icons/filter.png"));
+    qDebug() << "--- Filter button click handler complete ---";
 }
+
 
 void MainWindow::applyFilters()
 {
