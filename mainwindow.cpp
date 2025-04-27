@@ -280,9 +280,6 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         qWarning() << "MainWindow Constructor: orderDetailsPanel not found in UI!";
     }
 
-    // Завантажуємо кошик з бази даних
-    loadCartFromDatabase();
-
 }
 
 MainWindow::~MainWindow()
@@ -1295,67 +1292,6 @@ void MainWindow::populateAuthorDetailsPage(const AuthorDetailsInfo &details)
 }
 
 // --- Кінець логіки сторінки деталей автора ---
-
-// --- Завантаження кошика з БД ---
-void MainWindow::loadCartFromDatabase()
-{
-    qInfo() << "Loading cart from database for customer ID:" << m_currentCustomerId;
-    if (!m_dbManager || m_currentCustomerId <= 0) {
-        qWarning() << "Cannot load cart: DB manager is null or customer ID is invalid.";
-        return;
-    }
-
-    m_cartItems.clear(); // Очищаємо поточний кошик в пам'яті
-
-    QMap<int, int> dbCart = m_dbManager->getCartItems(m_currentCustomerId);
-
-    if (dbCart.isEmpty()) {
-        qInfo() << "Database cart is empty for customer" << m_currentCustomerId;
-        updateCartIcon(); // Оновлюємо іконку (покаже 0)
-        return;
-    }
-
-    qInfo() << "Found" << dbCart.size() << "items in database cart. Fetching book details...";
-    int loadedCount = 0;
-    int removedCount = 0;
-
-    for (auto it = dbCart.constBegin(); it != dbCart.constEnd(); ++it) {
-        int bookId = it.key();
-        int quantity = it.value();
-
-        BookDisplayInfo bookInfo = m_dbManager->getBookDisplayInfoById(bookId);
-
-        if (bookInfo.found) {
-            // Перевіряємо наявність на складі
-            if (bookInfo.stockQuantity > 0) {
-                CartItem newItem;
-                newItem.book = bookInfo;
-                // Коригуємо кількість, якщо в кошику більше, ніж на складі
-                newItem.quantity = qMin(quantity, bookInfo.stockQuantity);
-                m_cartItems.insert(bookId, newItem);
-                loadedCount++;
-                // Якщо кількість була скоригована, оновлюємо БД
-                if (newItem.quantity != quantity) {
-                    qWarning() << "Adjusted quantity for book ID" << bookId << "from" << quantity << "to" << newItem.quantity << "due to stock limit.";
-                    m_dbManager->addOrUpdateCartItem(m_currentCustomerId, bookId, newItem.quantity);
-                }
-            } else {
-                qWarning() << "Book ID" << bookId << "from cart is out of stock. Removing from DB cart.";
-                m_dbManager->removeCartItemFromDb(m_currentCustomerId, bookId); // Видаляємо з БД
-                removedCount++;
-            }
-        } else {
-            qWarning() << "Book ID" << bookId << "from cart not found in database. Removing from DB cart.";
-            m_dbManager->removeCartItemFromDb(m_currentCustomerId, bookId); // Видаляємо з БД
-            removedCount++;
-        }
-    }
-
-    qInfo() << "Finished loading cart: Loaded" << loadedCount << "items, removed" << removedCount << "unavailable items.";
-    updateCartIcon(); // Оновлюємо іконку з актуальною кількістю
-    // Не потрібно оновлювати сторінку кошика тут, вона оновиться при відкритті
-}
-// --- Кінець завантаження кошика ---
 
 
 // --- Кінець реалізації слотів та функцій ---

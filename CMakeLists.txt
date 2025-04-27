@@ -31,14 +31,13 @@ set(PROJECT_SOURCES
     starratingwidget.h
     mainwindow.cpp
     mainwindow.h
-    # database.cpp # Більше не потрібен або порожній
+    database.cpp # Повертаємо цей файл, він був потрібен до реалізації кошика в БД
     database_connection.cpp # Новий файл
     database_customer.cpp   # Новий файл
     database_book.cpp       # Новий файл
     database_author.cpp     # Новий файл
     database_order.cpp      # Новий файл
     database_comment.cpp    # Новий файл
-    database_cart.cpp       # Новий файл для логіки кошика
     database.h
     logindialog.cpp
     logindialog.h

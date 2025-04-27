@@ -87,10 +87,9 @@ bool DatabaseManager::createSchemaTables()
     const QString dropPublisherSQL = R"(DROP TABLE IF EXISTS publisher CASCADE;)";
     const QString dropCustomerSQL = R"(DROP TABLE IF EXISTS customer CASCADE;)";
     const QString dropCommentSQL = R"(DROP TABLE IF EXISTS comment CASCADE;)"; // Додано видалення comment
-    const QString dropShoppingCartSQL = R"(DROP TABLE IF EXISTS shopping_cart CASCADE;)"; // Додано видалення shopping_cart
 
-    success &= executeQuery(query, dropShoppingCartSQL,"Удаление shopping_cart"); // Додано видалення shopping_cart
-    if(success) success &= executeQuery(query, dropOrderStatusSQL, "Удаление order_status");
+
+    success &= executeQuery(query, dropOrderStatusSQL, "Удаление order_status");
     if(success) success &= executeQuery(query, dropOrderItemSQL,   "Удаление order_item");
     if(success) success &= executeQuery(query, dropCommentSQL,     "Удаление comment"); // Додано видалення comment
     if(success) success &= executeQuery(query, dropBookAuthorSQL,  "Удаление book_author");
@@ -170,23 +169,6 @@ bool DatabaseManager::createSchemaTables()
         );
     )";
     if(success) success &= executeQuery(query, createCommentSQL, "Создание comment");
-
-    // Створення таблиці shopping_cart
-    const QString createShoppingCartSQL = R"(
-        CREATE TABLE shopping_cart (
-            cart_item_id SERIAL PRIMARY KEY,
-            customer_id INTEGER NOT NULL,
-            book_id INTEGER NOT NULL,
-            quantity INTEGER NOT NULL CHECK(quantity > 0),
-            added_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-            FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
-            FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
-
-            UNIQUE (customer_id, book_id) -- Гарантує унікальність пари користувач-книга
-        );
-    )";
-    if(success) success &= executeQuery(query, createShoppingCartSQL, "Создание shopping_cart");
 
 
     // 3. Добавление комментариев и индексов (опционально)
@@ -305,7 +287,7 @@ bool DatabaseManager::printAllData() const
         // Список таблиц в порядке, удобном для просмотра (или любом другом)
         // Важно: не забываем кавычки для "order"
         const QStringList tables = {"customer", "publisher", "author", "book", "\"order\"",
-                                    "book_author", "order_item", "order_status", "comment", "shopping_cart"}; // Додано comment та shopping_cart
+                                    "book_author", "order_item", "order_status", "comment"}; // Додано comment
 
         bool overallSuccess = true;
 
