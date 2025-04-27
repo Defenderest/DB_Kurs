@@ -444,7 +444,7 @@ QRadioButton {
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
-     <number>15</number>
+     <number>25</number> <!-- Збільшено відстань між хедером та контентом -->
     </property>
     <property name="leftMargin">
      <number>20</number>
