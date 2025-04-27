@@ -2416,16 +2416,16 @@ box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
               <item>
                <widget class="QLabel" name="bookDetailTitleLabel">
                 <property name="styleSheet">
-                 <string notr="true">font-size: 24pt; /* Ще збільшено шрифт */
+                 <string notr="true">font-size: 24pt;
 font-weight: 600;
-color: #1a1a1a; /* Дуже темний колір */
-margin-bottom: 4px; /* Зменшено відступ знизу */</string>
+color: #1a1a1a;
+margin-bottom: 4px;</string>
                 </property>
                 <property name="text">
                  <string>(Назва книги)</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignTop</set> <!-- Спрощене вирівнювання -->
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignTop</set>
                 </property>
                </widget>
               </item>
