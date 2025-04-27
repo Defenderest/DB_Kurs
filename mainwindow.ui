@@ -518,7 +518,7 @@ QRadioButton {
          <property name="minimumSize">
           <size>
            <width>350</width>
-           <height>20</height> <!-- Змінено висоту -->
+           <height>0</height> <!-- Висота керується стилем/лейаутом -->
           </size>
          </property>
          <property name="sizePolicy">
@@ -530,7 +530,7 @@ QRadioButton {
          <property name="maximumSize">
           <size>
            <width>500</width>
-           <height>40</height> <!-- Повертаємо максимальну висоту -->
+           <height>16777215</height> <!-- Знято обмеження максимальної висоти -->
           </size>
          </property>
          <property name="placeholderText">
