@@ -21,6 +21,7 @@
 #include <QMap>             // Для QMap
 #include <QDateTime>        // Для форматування дати/часу замовлення
 #include <QLocale>          // Для форматування чисел та дат
+#include <QComboBox>        // Додано для QComboBox
 // #include <QGroupBox>        // Більше не потрібен для замовлень
 // #include <QTableWidget>     // Більше не потрібен для замовлень
 // #include <QHeaderView>      // Більше не потрібен для замовлень

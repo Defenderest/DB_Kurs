@@ -185,7 +185,7 @@ void MainWindow::populateCartPage()
 {
     qInfo() << "Populating cart page (new design)...";
     // Перевіряємо існування ключових віджетів нового дизайну
-    if (!ui->cartScrollArea || !ui->cartItemsContainerWidget || !ui->cartItemsLayout || !ui->cartTotalLabel || !ui->placeOrderButton || !ui->cartTotalsWidget) {
+    if (!ui->cartScrollArea || !ui->cartItemsContainerWidget || !ui->cartItemsLayout || !ui->cartTotalTextLabel || !ui->placeOrderButton || !ui->cartTotalsWidget) {
         qWarning() << "populateCartPage: One or more new cart page widgets are null!";
         // Можна показати повідомлення про помилку
         if(ui->cartPage && ui->cartPage->layout()) {
@@ -222,7 +222,7 @@ void MainWindow::populateCartPage()
         ui->cartItemsLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
         ui->placeOrderButton->setEnabled(false); // Вимкнути кнопку замовлення
-        ui->cartTotalLabel->setText(tr("Загальна сума: 0.00 грн")); // Скинути суму
+        ui->cartTotalTextLabel->setText(tr("Загальна сума: 0.00 грн")); // Скинути суму
         ui->cartTotalsWidget->setVisible(false); // Ховаємо блок з підсумками
         return;
     }
@@ -253,7 +253,7 @@ void MainWindow::populateCartPage()
 // Оновлення загальної суми кошика (Новий дизайн)
 void MainWindow::updateCartTotal()
 {
-    if (!ui->cartTotalLabel) return; // Перевірка
+    if (!ui->cartTotalTextLabel) return; // Перевірка
 
     double total = 0.0;
     // Рахуємо суму безпосередньо з m_cartItems
@@ -261,7 +261,7 @@ void MainWindow::updateCartTotal()
         total += item.book.price * item.quantity;
     }
 
-    ui->cartTotalLabel->setText(tr("Загальна сума: %1 грн").arg(QString::number(total, 'f', 2)));
+    ui->cartTotalTextLabel->setText(tr("Загальна сума: %1 грн").arg(QString::number(total, 'f', 2)));
     qInfo() << "Cart total updated:" << total;
 }
 
