@@ -2427,9 +2427,6 @@ margin-bottom: 4px; /* Зменшено відступ знизу */</string>
                 <property name="alignment">
                  <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set> <!-- Вирівнювання по лівому краю -->
                 </property>
-                <property name="wordWrap">
-                 <bool>false</bool> <!-- Вимкнути перенесення слів -->
-                </property>
                </widget>
               </item>
               <item>
