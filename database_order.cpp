@@ -49,13 +49,17 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
-        // --- Відладка дати ---
-        qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
-                 << "Raw order_date value:" << rawDateValue
-                 << "Parsed QDateTime:" << orderInfo.orderDate
-                 << "Is Valid:" << orderInfo.orderDate.isValid();
-        // --- Кінець відладки ---
-        orderInfo.found = true; // <<< Set the found flag here!
+       // --- Відладка дати ---
+       qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
+                << "Raw order_date value:" << rawDateValue.typeName() << rawDateValue // Show type and value
+                << "Attempting to parse string:" << dateString; // Show the string being parsed
+       qDebug() << "[DEBUG] Parsed QDateTime (after ISODate attempts):" << orderInfo.orderDate
+                << "Is Valid:" << orderInfo.orderDate.isValid();
+       if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
+            qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs.";
+       }
+       // --- Кінець відладки ---
+       orderInfo.found = true; // <<< Set the found flag here!
         qInfo() << "Order header found for ID:" << orderId;
     } else {
         qWarning() << "Order not found for ID:" << orderId;
@@ -385,13 +389,16 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
-        // --- Відладка дати ---
-        qDebug() << "[DEBUG] Customer Order ID:" << orderInfo.orderId
-                 << "Raw order_date value:" << rawDateValue
-                 << "Parsed QDateTime:" << orderInfo.orderDate
-                 << "Is Valid:" << orderInfo.orderDate.isValid();
-        // --- Кінець відладки ---
-
+       // --- Відладка дати ---
+       qDebug() << "[DEBUG] Customer Order ID:" << orderInfo.orderId
+                << "Raw order_date value:" << rawDateValue.typeName() << rawDateValue // Show type and value
+                << "Attempting to parse string:" << dateString; // Show the string being parsed
+       qDebug() << "[DEBUG] Parsed QDateTime (after ISODate attempts):" << orderInfo.orderDate
+                << "Is Valid:" << orderInfo.orderDate.isValid();
+       if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
+            qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs.";
+       }
+       // --- Кінець відладки ---
 
         // 3. Отримуємо позиції для поточного замовлення
         itemQuery.bindValue(":orderId", orderInfo.orderId);
