@@ -18,9 +18,9 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
         return orderInfo;
     }
 
-    // 1. Отримуємо основну інформацію про замовлення
+    // 1. Отримуємо основну інформацію про замовлення (з явним кастом дати до тексту)
     const QString orderSql = R"(
-        SELECT order_id, order_date, total_amount, shipping_address, payment_method
+        SELECT order_id, order_date::text, total_amount, shipping_address, payment_method
         FROM "order"
         WHERE order_id = :orderId;
     )";
@@ -58,13 +58,13 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
-      // --- Оновлена Відладка дати ---
-      qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
-               << "Raw order_date value (as string from query):" << dateString; // Показуємо рядок, отриманий з запиту
-      qDebug() << "[DEBUG] Parsed QDateTime (after string parse attempts):" << orderInfo.orderDate
-               << "Is Valid:" << orderInfo.orderDate.isValid();
-      if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
-           qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs formats.";
+     // --- Оновлена Відладка дати ---
+     qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
+              << "Raw order_date value (CAST to TEXT in SQL):" << dateString; // Показуємо рядок, отриманий з запиту
+     qDebug() << "[DEBUG] Parsed QDateTime (after string parse attempts):" << orderInfo.orderDate
+              << "Is Valid:" << orderInfo.orderDate.isValid();
+     if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
+          qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs formats.";
        }
        // --- Кінець відладки ---
        orderInfo.found = true; // <<< Set the found flag here!
@@ -335,9 +335,9 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
         return orders;
     }
 
-    // 1. Отримуємо основну інформацію про замовлення користувача
+    // 1. Отримуємо основну інформацію про замовлення користувача (з явним кастом дати до тексту)
     const QString ordersSql = R"(
-        SELECT order_id, order_date, total_amount, shipping_address, payment_method
+        SELECT order_id, order_date::text, total_amount, shipping_address, payment_method
         FROM "order"
         WHERE customer_id = :customerId
         ORDER BY order_date DESC; -- Показуємо новіші замовлення першими
@@ -405,7 +405,7 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
        // --- Оновлена Відладка дати ---
        qDebug() << "[DEBUG] Customer Order ID:" << orderInfo.orderId
-                << "Raw order_date value (as string from query):" << dateString; // Показуємо рядок, отриманий з запиту
+                << "Raw order_date value (CAST to TEXT in SQL):" << dateString; // Показуємо рядок, отриманий з запиту
        qDebug() << "[DEBUG] Parsed QDateTime (after string parse attempts):" << orderInfo.orderDate
                 << "Is Valid:" << orderInfo.orderDate.isValid();
        if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
