@@ -241,43 +241,45 @@ void MainWindow::showOrderDetails(int orderId)
 {
     qInfo() << "Attempting to show details panel for order ID:" << orderId;
     // Перевіряємо наявність панелі та анімації (вони ініціалізуються в конструкторі MainWindow)
-    if (!m_orderDetailsPanel || !m_orderDetailsAnimation || !m_dbManager) {
+    // Додаємо this-> для явного доступу до членів класу
+    if (!this->m_orderDetailsPanel || !this->m_orderDetailsAnimation || !this->m_dbManager) {
         qWarning() << "Order details panel, animation, or DB manager is null. Cannot show details.";
         QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося ініціалізувати панель деталей замовлення."));
         return;
     }
 
-    // Отримуємо дані замовлення
-    OrderDisplayInfo orderInfo = m_dbManager->getOrderDetailsById(orderId);
+    // Отримуємо дані замовлення // Додаємо this->
+    OrderDisplayInfo orderInfo = this->m_dbManager->getOrderDetailsById(orderId);
     if (!orderInfo.found) {
         qWarning() << "Order details not found for ID:" << orderId;
         QMessageBox::warning(this, tr("Помилка"), tr("Не вдалося знайти деталі для замовлення #%1.").arg(orderId));
         return;
     }
 
-    // Заповнюємо панель даними
-    populateOrderDetailsPanel(orderInfo);
+    // Заповнюємо панель даними // Додаємо this->
+    this->populateOrderDetailsPanel(orderInfo);
 
-    // Запускаємо анімацію показу, якщо панель ще не видима
-    if (!m_isOrderDetailsPanelVisible) {
-        if (m_orderDetailsAnimation->state() == QAbstractAnimation::Running) {
-            m_orderDetailsAnimation->stop();
+    // Запускаємо анімацію показу, якщо панель ще не видима // Додаємо this->
+    if (!this->m_isOrderDetailsPanelVisible) {
+        if (this->m_orderDetailsAnimation->state() == QAbstractAnimation::Running) { // Додаємо this->
+            this->m_orderDetailsAnimation->stop(); // Додаємо this->
         }
 
-        m_orderDetailsPanel->setVisible(true); // Робимо видимою перед анімацією
-        m_orderDetailsAnimation->setStartValue(m_orderDetailsPanel->width());
-        m_orderDetailsAnimation->setEndValue(m_orderDetailsPanelWidth); // Бажана ширина
+        this->m_orderDetailsPanel->setVisible(true); // Додаємо this->
+        this->m_orderDetailsAnimation->setStartValue(this->m_orderDetailsPanel->width()); // Додаємо this->
+        this->m_orderDetailsAnimation->setEndValue(this->m_orderDetailsPanelWidth); // Додаємо this->
 
-        // Оновлюємо стан ПІСЛЯ завершення анімації
-        disconnect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, nullptr); // Видаляємо старі з'єднання
-        connect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, [this]() {
-            if (!m_isOrderDetailsPanelVisible) { // Перевірка, щоб уникнути подвійного встановлення
-                 m_isOrderDetailsPanelVisible = true;
+        // Оновлюємо стан ПІСЛЯ завершення анімації // Додаємо this->
+        disconnect(this->m_orderDetailsAnimation, &QPropertyAnimation::finished, this, nullptr); // Видаляємо старі з'єднання
+        connect(this->m_orderDetailsAnimation, &QPropertyAnimation::finished, this, [this]() { // Додаємо this->
+            // Використовуємо this-> всередині лямбди
+            if (!this->m_isOrderDetailsPanelVisible) { // Перевірка, щоб уникнути подвійного встановлення
+                 this->m_isOrderDetailsPanelVisible = true;
                  qDebug() << "Order details panel animation finished (show). State set to visible.";
             }
         });
 
-        m_orderDetailsAnimation->start();
+        this->m_orderDetailsAnimation->start(); // Додаємо this->
         qDebug() << "Starting order details panel show animation.";
     } else {
          qDebug() << "Order details panel already visible. Content updated.";
@@ -287,29 +289,30 @@ void MainWindow::showOrderDetails(int orderId)
 void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
 {
     // Перевіряємо наявність віджетів панелі (вони ініціалізуються в конструкторі MainWindow)
-    if (!m_orderDetailsIdLabel || !m_orderDetailsDateLabel || !m_orderDetailsTotalLabel ||
-        !m_orderDetailsShippingLabel || !m_orderDetailsPaymentLabel || !m_orderDetailsItemsLayout ||
-        !m_orderDetailsStatusLayout)
+    // Додаємо this->
+    if (!this->m_orderDetailsIdLabel || !this->m_orderDetailsDateLabel || !this->m_orderDetailsTotalLabel ||
+        !this->m_orderDetailsShippingLabel || !this->m_orderDetailsPaymentLabel || !this->m_orderDetailsItemsLayout ||
+        !this->m_orderDetailsStatusLayout)
     {
         qWarning() << "Cannot populate order details panel: one or more widgets are null.";
         QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти елементи панелі деталей замовлення."));
         return;
     }
 
-    // Встановлюємо основні дані
-    m_orderDetailsIdLabel->setText(tr("<b>Замовлення №:</b> %1").arg(orderInfo.orderId));
-    m_orderDetailsDateLabel->setText(tr("<b>Дата:</b> %1").arg(QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat))); // Форматуємо дату
-    m_orderDetailsTotalLabel->setText(tr("<b>Сума:</b> %1 грн").arg(QString::number(orderInfo.totalAmount, 'f', 2)));
-    m_orderDetailsShippingLabel->setText(tr("<b>Адреса доставки:</b><br>%1").arg(orderInfo.shippingAddress.isEmpty() ? tr("(не вказано)") : orderInfo.shippingAddress));
-    m_orderDetailsPaymentLabel->setText(tr("<b>Оплата:</b> %1").arg(orderInfo.paymentMethod.isEmpty() ? tr("(не вказано)") : orderInfo.paymentMethod));
+    // Встановлюємо основні дані // Додаємо this->
+    this->m_orderDetailsIdLabel->setText(tr("<b>Замовлення №:</b> %1").arg(orderInfo.orderId));
+    this->m_orderDetailsDateLabel->setText(tr("<b>Дата:</b> %1").arg(QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat))); // Форматуємо дату
+    this->m_orderDetailsTotalLabel->setText(tr("<b>Сума:</b> %1 грн").arg(QString::number(orderInfo.totalAmount, 'f', 2)));
+    this->m_orderDetailsShippingLabel->setText(tr("<b>Адреса доставки:</b><br>%1").arg(orderInfo.shippingAddress.isEmpty() ? tr("(не вказано)") : orderInfo.shippingAddress));
+    this->m_orderDetailsPaymentLabel->setText(tr("<b>Оплата:</b> %1").arg(orderInfo.paymentMethod.isEmpty() ? tr("(не вказано)") : orderInfo.paymentMethod));
 
-    // Очищаємо списки товарів та статусів
-    clearLayout(m_orderDetailsItemsLayout);
-    clearLayout(m_orderDetailsStatusLayout);
+    // Очищаємо списки товарів та статусів // Додаємо this->
+    this->clearLayout(this->m_orderDetailsItemsLayout); // Використовуємо this-> для виклику методу
+    this->clearLayout(this->m_orderDetailsStatusLayout); // Використовуємо this-> для виклику методу
 
-    // Додаємо товари
+    // Додаємо товари // Додаємо this->
     if (orderInfo.items.isEmpty()) {
-        m_orderDetailsItemsLayout->addWidget(new QLabel(tr("(Немає товарів у замовленні)")));
+        this->m_orderDetailsItemsLayout->addWidget(new QLabel(tr("(Немає товарів у замовленні)")));
     } else {
         for (const auto &item : orderInfo.items) {
             QString itemText = tr("%1 (%2 шт.) - %3 грн/шт.")
@@ -319,13 +322,13 @@ void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
             QLabel *itemLabel = new QLabel(itemText);
             itemLabel->setWordWrap(true);
             itemLabel->setProperty("class", "orderItemLabel"); // Для стилізації
-            m_orderDetailsItemsLayout->addWidget(itemLabel);
+            this->m_orderDetailsItemsLayout->addWidget(itemLabel); // Додаємо this->
         }
     }
 
-    // Додаємо історію статусів
+    // Додаємо історію статусів // Додаємо this->
     if (orderInfo.statuses.isEmpty()) {
-        m_orderDetailsStatusLayout->addWidget(new QLabel(tr("(Історія статусів відсутня)")));
+        this->m_orderDetailsStatusLayout->addWidget(new QLabel(tr("(Історія статусів відсутня)")));
     } else {
         for (const auto &status : orderInfo.statuses) {
             QString statusText = tr("%1 - %2")
@@ -337,12 +340,12 @@ void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
             QLabel *statusLabel = new QLabel(statusText);
             statusLabel->setWordWrap(true);
             statusLabel->setProperty("class", "orderStatusHistoryLabel"); // Для стилізації
-            m_orderDetailsStatusLayout->addWidget(statusLabel);
+            this->m_orderDetailsStatusLayout->addWidget(statusLabel); // Додаємо this->
         }
     }
-     // Додаємо розтягувач в кінці layout'ів, щоб притиснути вміст вгору
-    m_orderDetailsItemsLayout->addStretch(1);
-    m_orderDetailsStatusLayout->addStretch(1);
+     // Додаємо розтягувач в кінці layout'ів, щоб притиснути вміст вгору // Додаємо this->
+    this->m_orderDetailsItemsLayout->addStretch(1);
+    this->m_orderDetailsStatusLayout->addStretch(1);
 
     qInfo() << "Order details panel populated for order ID:" << orderInfo.orderId;
 }
@@ -351,34 +354,40 @@ void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
 void MainWindow::hideOrderDetailsPanel()
 {
     qDebug() << "Attempting to hide order details panel.";
-    if (!m_orderDetailsPanel || !m_orderDetailsAnimation) {
+    // Додаємо this->
+    if (!this->m_orderDetailsPanel || !this->m_orderDetailsAnimation) {
         qWarning() << "Order details panel or animation is null. Cannot hide.";
         return;
     }
 
-    if (!m_isOrderDetailsPanelVisible) {
+    // Додаємо this->
+    if (!this->m_isOrderDetailsPanelVisible) {
         qDebug() << "Order details panel already hidden.";
         return; // Вже приховано
     }
 
-    if (m_orderDetailsAnimation->state() == QAbstractAnimation::Running) {
-        m_orderDetailsAnimation->stop();
+    // Додаємо this->
+    if (this->m_orderDetailsAnimation->state() == QAbstractAnimation::Running) {
+        this->m_orderDetailsAnimation->stop();
     }
 
-    m_orderDetailsAnimation->setStartValue(m_orderDetailsPanel->width());
-    m_orderDetailsAnimation->setEndValue(0); // Цільова ширина 0
+    // Додаємо this->
+    this->m_orderDetailsAnimation->setStartValue(this->m_orderDetailsPanel->width());
+    this->m_orderDetailsAnimation->setEndValue(0); // Цільова ширина 0
 
-    // Оновлюємо стан та ховаємо віджет ПІСЛЯ завершення анімації
-    disconnect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, nullptr); // Видаляємо старі з'єднання
-    connect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, [this]() {
-        if (m_isOrderDetailsPanelVisible) { // Перевірка, щоб уникнути подвійного встановлення
-            m_orderDetailsPanel->setVisible(false); // Ховаємо віджет
-            m_isOrderDetailsPanelVisible = false;
+    // Оновлюємо стан та ховаємо віджет ПІСЛЯ завершення анімації // Додаємо this->
+    disconnect(this->m_orderDetailsAnimation, &QPropertyAnimation::finished, this, nullptr); // Видаляємо старі з'єднання
+    connect(this->m_orderDetailsAnimation, &QPropertyAnimation::finished, this, [this]() { // Додаємо this->
+        // Використовуємо this-> всередині лямбди
+        if (this->m_isOrderDetailsPanelVisible) { // Перевірка, щоб уникнути подвійного встановлення
+            this->m_orderDetailsPanel->setVisible(false); // Ховаємо віджет
+            this->m_isOrderDetailsPanelVisible = false;
             qDebug() << "Order details panel animation finished (hide). State set to hidden.";
         }
     });
 
-    m_orderDetailsAnimation->start();
+    // Додаємо this->
+    this->m_orderDetailsAnimation->start();
     qDebug() << "Starting order details panel hide animation.";
 }
 
