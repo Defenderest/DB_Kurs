@@ -60,7 +60,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Явно встановлюємо іконку кошика після setupUi
     if (ui->cartButton) {
-        ui->cartButton->setIcon(QIcon(":/icons/cart.png"));
+        ui->cartButton->setIcon(QIcon("D:/projects/DB_Kurs/QtAPP/untitled/icons/cart.png"));
         // Переконуємось, що текст порожній (хоча це вже робить updateCartIcon)
         ui->cartButton->setText("");
         qInfo() << "Cart button icon explicitly set in constructor.";
@@ -613,13 +613,13 @@ void MainWindow::setupFilterPanel()
             color: #000000; /* Залишаємо чорний */
         }
         QListWidget::indicator:checked { /* Стиль для галочки */
-             image: url(:/icons/checkbox_checked.png); /* Замініть на шлях до вашої іконки */
+             image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons//checkbox_checked.png); /* Замініть на шлях до вашої іконки */
              /* Або використовуйте стандартні: */
              /* background-color: #000000; */
              /* border: 1px solid #000000; */
         }
         QListWidget::indicator:unchecked {
-             image: url(:/icons/checkbox_unchecked.png); /* Замініть на шлях до вашої іконки */
+             image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons//checkbox_unchecked.png); /* Замініть на шлях до вашої іконки */
         }
         /* Видаляємо стилі для QDoubleSpinBox */
         /* QDoubleSpinBox { ... } */
