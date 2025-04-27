@@ -83,6 +83,7 @@ bool DatabaseManager::createSchemaTables()
     const QString dropBookSQL = R"(DROP TABLE IF EXISTS book CASCADE;)";
     const QString dropAuthorSQL = R"(DROP TABLE IF EXISTS author CASCADE;)";
     const QString dropPublisherSQL = R"(DROP TABLE IF EXISTS publisher CASCADE;)";
+    const QString dropCartItemSQL = R"(DROP TABLE IF EXISTS cart_item CASCADE;)"; // Додано видалення cart_item
     const QString dropCustomerSQL = R"(DROP TABLE IF EXISTS customer CASCADE;)";
 
 
@@ -91,6 +92,7 @@ bool DatabaseManager::createSchemaTables()
     if(success) success &= executeQuery(query, dropCommentSQL,     "Удаление comment");
     if(success) success &= executeQuery(query, dropBookAuthorSQL,  "Удаление book_author");
     if(success) success &= executeQuery(query, dropOrderSQL,       "Удаление \"order\"");
+    if(success) success &= executeQuery(query, dropCartItemSQL,    "Удаление cart_item"); // Додано видалення cart_item
     if(success) success &= executeQuery(query, dropBookSQL,        "Удаление book");
     if(success) success &= executeQuery(query, dropAuthorSQL,      "Удаление author");
     if(success) success &= executeQuery(query, dropPublisherSQL,   "Удаление publisher");
@@ -166,6 +168,19 @@ bool DatabaseManager::createSchemaTables()
         );
     )";
     if(success) success &= executeQuery(query, createCommentSQL, "Создание comment");
+
+    const QString createCartItemSQL = R"(
+        CREATE TABLE cart_item (
+            customer_id INTEGER NOT NULL,
+            book_id INTEGER NOT NULL,
+            quantity INTEGER NOT NULL CHECK (quantity > 0),
+            added_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (customer_id, book_id), -- Комбінований первинний ключ
+            CONSTRAINT fk_customer_cart FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
+            CONSTRAINT fk_book_cart FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
+        );
+    )";
+    if(success) success &= executeQuery(query, createCartItemSQL, "Создание cart_item");
 
 
     // 3. Добавление комментариев и индексов (опционально)
@@ -297,7 +312,7 @@ bool DatabaseManager::printAllData() const
     // Список таблиц в порядке, удобном для просмотра (или любом другом)
     // Важно: не забываем кавычки для "order"
     const QStringList tables = {"customer", "publisher", "author", "book", "\"order\"",
-                                "book_author", "order_item", "order_status", "comment"}; // Додано comment
+                                "book_author", "order_item", "order_status", "comment", "cart_item"}; // Додано cart_item
 
     bool overallSuccess = true;
 

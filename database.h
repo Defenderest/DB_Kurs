@@ -111,6 +111,12 @@ public:
     QStringList getAllGenres() const;
     QStringList getAllLanguages() const;
 
+    // --- Методи для роботи з корзиною ---
+    QMap<int, int> getCartItems(int customerId) const; // Повертає bookId -> quantity
+    bool addOrUpdateCartItem(int customerId, int bookId, int quantity);
+    bool removeCartItem(int customerId, int bookId);
+    bool clearCart(int customerId);
+
     // Публічні методи доступу до стану та об'єкту БД
     bool isConnected() const;
     QSqlDatabase& database(); // Повертає посилання для можливості операцій (транзакції, запити)
