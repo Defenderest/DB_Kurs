@@ -13,6 +13,7 @@
 #include <QComboBox> // Для loadAndDisplayOrders
 #include <QDateEdit> // Для loadAndDisplayOrders
 #include <QStatusBar> // Для loadAndDisplayOrders
+#include <QPropertyAnimation> // Для анімації панелі деталей
 
 // Слот для кнопки навігації "Замовлення"
 void MainWindow::on_navOrdersButton_clicked()
@@ -232,3 +233,153 @@ void MainWindow::loadAndDisplayOrders()
 }
 
 // Видалено старий слот showOrderDetailsPlaceholder
+
+
+// --- Логіка панелі деталей замовлення ---
+
+void MainWindow::showOrderDetails(int orderId)
+{
+    qInfo() << "Attempting to show details panel for order ID:" << orderId;
+    // Перевіряємо наявність панелі та анімації (вони ініціалізуються в конструкторі MainWindow)
+    if (!m_orderDetailsPanel || !m_orderDetailsAnimation || !m_dbManager) {
+        qWarning() << "Order details panel, animation, or DB manager is null. Cannot show details.";
+        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося ініціалізувати панель деталей замовлення."));
+        return;
+    }
+
+    // Отримуємо дані замовлення
+    OrderDisplayInfo orderInfo = m_dbManager->getOrderDetailsById(orderId);
+    if (!orderInfo.found) {
+        qWarning() << "Order details not found for ID:" << orderId;
+        QMessageBox::warning(this, tr("Помилка"), tr("Не вдалося знайти деталі для замовлення #%1.").arg(orderId));
+        return;
+    }
+
+    // Заповнюємо панель даними
+    populateOrderDetailsPanel(orderInfo);
+
+    // Запускаємо анімацію показу, якщо панель ще не видима
+    if (!m_isOrderDetailsPanelVisible) {
+        if (m_orderDetailsAnimation->state() == QAbstractAnimation::Running) {
+            m_orderDetailsAnimation->stop();
+        }
+
+        m_orderDetailsPanel->setVisible(true); // Робимо видимою перед анімацією
+        m_orderDetailsAnimation->setStartValue(m_orderDetailsPanel->width());
+        m_orderDetailsAnimation->setEndValue(m_orderDetailsPanelWidth); // Бажана ширина
+
+        // Оновлюємо стан ПІСЛЯ завершення анімації
+        disconnect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, nullptr); // Видаляємо старі з'єднання
+        connect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, [this]() {
+            if (!m_isOrderDetailsPanelVisible) { // Перевірка, щоб уникнути подвійного встановлення
+                 m_isOrderDetailsPanelVisible = true;
+                 qDebug() << "Order details panel animation finished (show). State set to visible.";
+            }
+        });
+
+        m_orderDetailsAnimation->start();
+        qDebug() << "Starting order details panel show animation.";
+    } else {
+         qDebug() << "Order details panel already visible. Content updated.";
+    }
+}
+
+void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
+{
+    // Перевіряємо наявність віджетів панелі (вони ініціалізуються в конструкторі MainWindow)
+    if (!m_orderDetailsIdLabel || !m_orderDetailsDateLabel || !m_orderDetailsTotalLabel ||
+        !m_orderDetailsShippingLabel || !m_orderDetailsPaymentLabel || !m_orderDetailsItemsLayout ||
+        !m_orderDetailsStatusLayout)
+    {
+        qWarning() << "Cannot populate order details panel: one or more widgets are null.";
+        QMessageBox::critical(this, tr("Помилка інтерфейсу"), tr("Не вдалося знайти елементи панелі деталей замовлення."));
+        return;
+    }
+
+    // Встановлюємо основні дані
+    m_orderDetailsIdLabel->setText(tr("<b>Замовлення №:</b> %1").arg(orderInfo.orderId));
+    m_orderDetailsDateLabel->setText(tr("<b>Дата:</b> %1").arg(QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat))); // Форматуємо дату
+    m_orderDetailsTotalLabel->setText(tr("<b>Сума:</b> %1 грн").arg(QString::number(orderInfo.totalAmount, 'f', 2)));
+    m_orderDetailsShippingLabel->setText(tr("<b>Адреса доставки:</b><br>%1").arg(orderInfo.shippingAddress.isEmpty() ? tr("(не вказано)") : orderInfo.shippingAddress));
+    m_orderDetailsPaymentLabel->setText(tr("<b>Оплата:</b> %1").arg(orderInfo.paymentMethod.isEmpty() ? tr("(не вказано)") : orderInfo.paymentMethod));
+
+    // Очищаємо списки товарів та статусів
+    clearLayout(m_orderDetailsItemsLayout);
+    clearLayout(m_orderDetailsStatusLayout);
+
+    // Додаємо товари
+    if (orderInfo.items.isEmpty()) {
+        m_orderDetailsItemsLayout->addWidget(new QLabel(tr("(Немає товарів у замовленні)")));
+    } else {
+        for (const auto &item : orderInfo.items) {
+            QString itemText = tr("%1 (%2 шт.) - %3 грн/шт.")
+                                   .arg(item.bookTitle)
+                                   .arg(item.quantity)
+                                   .arg(QString::number(item.pricePerUnit, 'f', 2));
+            QLabel *itemLabel = new QLabel(itemText);
+            itemLabel->setWordWrap(true);
+            itemLabel->setProperty("class", "orderItemLabel"); // Для стилізації
+            m_orderDetailsItemsLayout->addWidget(itemLabel);
+        }
+    }
+
+    // Додаємо історію статусів
+    if (orderInfo.statuses.isEmpty()) {
+        m_orderDetailsStatusLayout->addWidget(new QLabel(tr("(Історія статусів відсутня)")));
+    } else {
+        for (const auto &status : orderInfo.statuses) {
+            QString statusText = tr("%1 - %2")
+                                     .arg(QLocale::system().toString(status.statusDate, QLocale::ShortFormat)) // Форматуємо дату
+                                     .arg(status.status);
+            if (!status.trackingNumber.isEmpty()) {
+                statusText += tr(" (Трек: %1)").arg(status.trackingNumber);
+            }
+            QLabel *statusLabel = new QLabel(statusText);
+            statusLabel->setWordWrap(true);
+            statusLabel->setProperty("class", "orderStatusHistoryLabel"); // Для стилізації
+            m_orderDetailsStatusLayout->addWidget(statusLabel);
+        }
+    }
+     // Додаємо розтягувач в кінці layout'ів, щоб притиснути вміст вгору
+    m_orderDetailsItemsLayout->addStretch(1);
+    m_orderDetailsStatusLayout->addStretch(1);
+
+    qInfo() << "Order details panel populated for order ID:" << orderInfo.orderId;
+}
+
+
+void MainWindow::hideOrderDetailsPanel()
+{
+    qDebug() << "Attempting to hide order details panel.";
+    if (!m_orderDetailsPanel || !m_orderDetailsAnimation) {
+        qWarning() << "Order details panel or animation is null. Cannot hide.";
+        return;
+    }
+
+    if (!m_isOrderDetailsPanelVisible) {
+        qDebug() << "Order details panel already hidden.";
+        return; // Вже приховано
+    }
+
+    if (m_orderDetailsAnimation->state() == QAbstractAnimation::Running) {
+        m_orderDetailsAnimation->stop();
+    }
+
+    m_orderDetailsAnimation->setStartValue(m_orderDetailsPanel->width());
+    m_orderDetailsAnimation->setEndValue(0); // Цільова ширина 0
+
+    // Оновлюємо стан та ховаємо віджет ПІСЛЯ завершення анімації
+    disconnect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, nullptr); // Видаляємо старі з'єднання
+    connect(m_orderDetailsAnimation, &QPropertyAnimation::finished, this, [this]() {
+        if (m_isOrderDetailsPanelVisible) { // Перевірка, щоб уникнути подвійного встановлення
+            m_orderDetailsPanel->setVisible(false); // Ховаємо віджет
+            m_isOrderDetailsPanelVisible = false;
+            qDebug() << "Order details panel animation finished (hide). State set to hidden.";
+        }
+    });
+
+    m_orderDetailsAnimation->start();
+    qDebug() << "Starting order details panel hide animation.";
+}
+
+// --- Кінець логіки панелі деталей замовлення ---
