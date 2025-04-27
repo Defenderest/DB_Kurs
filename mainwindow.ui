@@ -463,7 +463,7 @@ QRadioButton {
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>45</height> <!-- Повертаємо висоту 45 -->
+        <height>55</height> <!-- Збільшено висоту хедера -->
        </size>
       </property>
       <layout class="QHBoxLayout" name="headerLayout">
