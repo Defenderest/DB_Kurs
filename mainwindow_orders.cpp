@@ -42,8 +42,9 @@ QWidget* MainWindow::createOrderWidget(const OrderDisplayInfo &orderInfo)
     QLabel *idLabel = new QLabel(tr("Замовлення №%1").arg(orderInfo.orderId));
     idLabel->setObjectName("orderIdLabel"); // Ім'я для стилів
 
+    // Використовуємо QLocale::ShortFormat і перевірку isValid()
     QString dateString = orderInfo.orderDate.isValid()
-                         ? QLocale::system().toString(orderInfo.orderDate, "dd.MM.yyyy") // Тільки дата
+                         ? QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat) // Дата і час відповідно до локалі
                          : tr("(невідома дата)");
     QLabel *dateLabel = new QLabel(dateString);
     dateLabel->setObjectName("orderDateLabel"); // Ім'я для стилів
@@ -301,7 +302,11 @@ void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
 
     // Встановлюємо основні дані // Додаємо this->
     this->m_orderDetailsIdLabel->setText(tr("<b>Замовлення №:</b> %1").arg(orderInfo.orderId));
-    this->m_orderDetailsDateLabel->setText(tr("<b>Дата:</b> %1").arg(QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat))); // Форматуємо дату
+    // Додаємо перевірку isValid() і використовуємо QLocale::ShortFormat
+    QString dateText = orderInfo.orderDate.isValid()
+                       ? QLocale::system().toString(orderInfo.orderDate, QLocale::ShortFormat)
+                       : tr("(невідома дата)");
+    this->m_orderDetailsDateLabel->setText(tr("<b>Дата:</b> %1").arg(dateText));
     this->m_orderDetailsTotalLabel->setText(tr("<b>Сума:</b> %1 грн").arg(QString::number(orderInfo.totalAmount, 'f', 2)));
     this->m_orderDetailsShippingLabel->setText(tr("<b>Адреса доставки:</b><br>%1").arg(orderInfo.shippingAddress.isEmpty() ? tr("(не вказано)") : orderInfo.shippingAddress));
     this->m_orderDetailsPaymentLabel->setText(tr("<b>Оплата:</b> %1").arg(orderInfo.paymentMethod.isEmpty() ? tr("(не вказано)") : orderInfo.paymentMethod));
@@ -322,7 +327,15 @@ void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
             QLabel *itemLabel = new QLabel(itemText);
             itemLabel->setWordWrap(true);
             itemLabel->setProperty("class", "orderItemLabel"); // Для стилізації
-            this->m_orderDetailsItemsLayout->addWidget(itemLabel); // Додаємо this->
+            this->m_orderDetailsItemsLayout->addWidget(itemLabel);
+        }
+    }
+    // Видаляємо старий розтягувач, якщо він є, перед додаванням нового
+    if (QLayoutItem *item = this->m_orderDetailsItemsLayout->takeAt(this->m_orderDetailsItemsLayout->count() - 1)) {
+        if (!item->spacerItem()) { // Якщо це не спейсер, повертаємо назад
+            this->m_orderDetailsItemsLayout->addItem(item);
+        } else {
+            delete item; // Видаляємо спейсер
         }
     }
 
@@ -340,10 +353,19 @@ void MainWindow::populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo)
             QLabel *statusLabel = new QLabel(statusText);
             statusLabel->setWordWrap(true);
             statusLabel->setProperty("class", "orderStatusHistoryLabel"); // Для стилізації
-            this->m_orderDetailsStatusLayout->addWidget(statusLabel); // Додаємо this->
+            this->m_orderDetailsStatusLayout->addWidget(statusLabel);
         }
     }
-     // Додаємо розтягувач в кінці layout'ів, щоб притиснути вміст вгору // Додаємо this->
+    // Видаляємо старий розтягувач, якщо він є, перед додаванням нового
+    if (QLayoutItem *item = this->m_orderDetailsStatusLayout->takeAt(this->m_orderDetailsStatusLayout->count() - 1)) {
+        if (!item->spacerItem()) { // Якщо це не спейсер, повертаємо назад
+            this->m_orderDetailsStatusLayout->addItem(item);
+        } else {
+            delete item; // Видаляємо спейсер
+        }
+    }
+
+    // Додаємо розтягувач в кінці layout'ів, щоб притиснути вміст вгору
     this->m_orderDetailsItemsLayout->addStretch(1);
     this->m_orderDetailsStatusLayout->addStretch(1);
 

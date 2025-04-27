@@ -38,11 +38,18 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
     }
 
     if (orderQuery.next()) {
+        QVariant rawDateValue = orderQuery.value("order_date"); // Отримуємо сире значення
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        orderInfo.orderDate = orderQuery.value("order_date").toDateTime();
+        orderInfo.orderDate = rawDateValue.toDateTime(); // Парсимо
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
+        // --- Відладка дати ---
+        qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
+                 << "Raw order_date value:" << rawDateValue
+                 << "Parsed QDateTime:" << orderInfo.orderDate
+                 << "Is Valid:" << orderInfo.orderDate.isValid();
+        // --- Кінець відладки ---
         orderInfo.found = true; // <<< Set the found flag here!
         qInfo() << "Order header found for ID:" << orderId;
     } else {
@@ -362,11 +369,19 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
     int orderCount = 0;
     while (orderQuery.next()) {
         OrderDisplayInfo orderInfo;
+        QVariant rawDateValue = orderQuery.value("order_date"); // Отримуємо сире значення
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        orderInfo.orderDate = orderQuery.value("order_date").toDateTime();
+        orderInfo.orderDate = rawDateValue.toDateTime(); // Парсимо
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
+        // --- Відладка дати ---
+        qDebug() << "[DEBUG] Customer Order ID:" << orderInfo.orderId
+                 << "Raw order_date value:" << rawDateValue
+                 << "Parsed QDateTime:" << orderInfo.orderDate
+                 << "Is Valid:" << orderInfo.orderDate.isValid();
+        // --- Кінець відладки ---
+
 
         // 3. Отримуємо позиції для поточного замовлення
         itemQuery.bindValue(":orderId", orderInfo.orderId);
