@@ -56,6 +56,8 @@ set(PROJECT_SOURCES
     mainwindow_search.cpp   # Додано файл для логіки пошуку
     searchsuggestiondelegate.cpp # Додано файл делегата пошуку
     searchsuggestiondelegate.h
+    RangeSlider.cpp
+    RangeSlider.h
 )
 
 # --- Создание исполняемого файла ---
