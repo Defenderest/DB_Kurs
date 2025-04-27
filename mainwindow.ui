@@ -2415,12 +2415,6 @@ box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
               </property>
               <item>
                <widget class="QLabel" name="bookDetailTitleLabel">
-                <property name="styleSheet">
-                 <string notr="true">font-size: 24pt;
-font-weight: 600;
-color: #1a1a1a;
-margin-bottom: 4px;</string>
-                </property>
                 <property name="text">
                  <string>(Назва книги)</string>
                 </property>
