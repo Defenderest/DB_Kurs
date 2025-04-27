@@ -530,11 +530,11 @@ QRadioButton {
          <property name="maximumSize">
           <size>
            <width>500</width>
-           <height>40</height> <!-- Повертаємо максимальну висоту -->
+           <height>40</height>
           </size>
          </property>
          <property name="placeholderText">
-          <string>Пошук книг, авторів...</string> <!-- Трохи скорочено -->
+          <string>Пошук книг, авторів...</string>
          </property>
         </widget>
        </item>
