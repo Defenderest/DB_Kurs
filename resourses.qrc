@@ -7,6 +7,12 @@
         <file>icons/user.png</file>
         <file>icons/down-arrow.png</file> <!-- Додано іконку стрілки вниз -->
         <file>icons/up-arrow.png</file>   <!-- Додано іконку стрілки вгору -->
+        <file>icons/cart.png</file>       <!-- Додано іконку кошика -->
+        <file>icons/filter.png</file>     <!-- Додано іконку фільтра -->
+        <file>icons/add-to-cart.png</file><!-- Додано іконку додавання в кошик -->
+        <file>icons/trash.png</file>      <!-- Додано іконку видалення -->
+        <file>icons/edit.png</file>       <!-- Додано іконку редагування -->
+        <file>icons/save.png</file>       <!-- Додано іконку збереження -->
     </qresource>
     <qresource prefix="/images">
         <!-- Виправлено шляхи до банерів - тепер вони відносні до файлу .qrc -->

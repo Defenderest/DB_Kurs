@@ -557,7 +557,17 @@ QRadioButton {
           <string>Кошик</string>
          </property>
          <property name="text">
-          <string>🛒</string>
+          <string/> <!-- Текст видалено -->
+         </property>
+         <property name="icon">
+          <iconset resource="resourses.qrc">
+           <normaloff>:/icons/cart.png</normaloff>:/icons/cart.png</iconset> <!-- Додано іконку -->
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>20</width> <!-- Встановлено розмір іконки -->
+           <height>20</height>
+          </size>
          </property>
          <property name="flat">
           <bool>false</bool>
@@ -1489,7 +1499,7 @@ border-bottom: 1px solid #eeeeee;</string>
                 <string>Фільтри</string>
                </property>
                <property name="text">
-                <string>🧪</string> <!-- Іконка фільтра (пробірка) -->
+                <string/> <!-- Текст видалено -->
                </property>
                <property name="icon">
                 <iconset resource="resourses.qrc">
@@ -2566,7 +2576,17 @@ border-radius: 8px; /* Збільшено заокруглення */
 </string>
                 </property>
                 <property name="text">
-                 <string>🛒 Додати в кошик</string>
+                 <string>Додати в кошик</string> <!-- Смайлик видалено -->
+                </property>
+                <property name="icon">
+                 <iconset resource="resourses.qrc">
+                  <normaloff>:/icons/add-to-cart.png</normaloff>:/icons/add-to-cart.png</iconset> <!-- Додано іконку -->
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>18</width> <!-- Розмір іконки -->
+                  <height>18</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -3051,7 +3071,11 @@ QPushButton#cartRemoveButton {
     min-height: 30px;
     max-height: 30px;
     padding: 0; /* Забираємо внутрішні відступи */
-    qproperty-text: "🗑️"; /* Іконка кошика */
+    /* qproperty-text видалено, використовуємо icon */
+}
+QPushButton#cartRemoveButton { /* Додано окремий стиль для іконки */
+    icon: url(:/icons/trash.png);
+    icon-size: 18px 18px; /* Розмір іконки */
 }
 QPushButton#cartRemoveButton:hover {
     color: #a02030; /* Темніший червоний при наведенні */
