@@ -262,6 +262,17 @@ void MainWindow::on_navHomeButton_clicked()
     ui->contentStackedWidget->setCurrentWidget(ui->discoverPage); // Використовуємо ім'я сторінки з UI
 }
 
+// Тимчасовий слот для кнопки деталей замовлення - ВИДАЛЕНО
+/*
+void MainWindow::showOrderDetailsPlaceholder(int orderId)
+{
+    qInfo() << "View details clicked for order ID:" << orderId;
+    QMessageBox::information(this, tr("Деталі замовлення"), tr("Функціонал перегляду деталей замовлення #%1 ще не реалізовано.").arg(orderId));
+    // Тут буде логіка для відображення деталей замовлення
+    // Наприклад, отримання даних з БД та показ у новому вікні або панелі
+}
+*/
+
 void MainWindow::on_navBooksButton_clicked()
 {
     ui->contentStackedWidget->setCurrentWidget(ui->booksPage); // Використовуємо ім'я сторінки з UI

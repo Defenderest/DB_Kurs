@@ -82,7 +82,9 @@ private slots:
     void removeCartItem(int bookId); // Слот для видалення товару
     void on_placeOrderButton_clicked(); // Слот для кнопки "Оформити замовлення"
     void on_sendCommentButton_clicked(); // Слот для кнопки відправки коментаря
-    void showOrderDetailsPlaceholder(int orderId); // Тимчасовий слот для деталей замовлення
+    // void showOrderDetailsPlaceholder(int orderId); // Видалено старий слот
+    void showOrderDetails(int orderId); // Новий слот для показу панелі деталей
+    void hideOrderDetailsPanel(); // Слот для закриття панелі деталей
     void showNextBanner(); // Слот для перемикання банера
     void onSearchSuggestionActivated(const QModelIndex &index); // Слот для обробки вибору пропозиції
     void showAuthorDetails(int authorId); // Слот/метод для показу деталей автора
