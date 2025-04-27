@@ -1055,9 +1055,6 @@ QPushButton#navProfileButton[collapsed="true"]:checked {
                       <property name="checked">
                        <bool>true</bool> <!-- Перший активний -->
                       </property>
-                      <property name="autoExclusive">
-                       <bool>false</bool> <!-- Керуємо вибором програмно -->
-                      </property>
                      </widget>
                     </item>
                     <item>
