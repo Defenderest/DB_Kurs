@@ -154,6 +154,13 @@ void MainWindow::on_addToCartButtonClicked(int bookId)
         qInfo() << "Added new book ID" << bookId << "to cart.";
     }
 
+    // Оновлюємо запис в базі даних
+    if (m_dbManager) {
+        m_dbManager->addOrUpdateCartItem(m_currentCustomerId, bookId, m_cartItems[bookId].quantity);
+    } else {
+        qWarning() << "DB Manager is null, cannot update database cart.";
+    }
+
     // Оновлюємо іконку кошика
     updateCartIcon();
 
@@ -329,6 +336,13 @@ void MainWindow::updateCartItemQuantity(int bookId, int quantity)
         updateCartTotal();
         updateCartIcon();
 
+        // Оновлюємо запис в базі даних
+        if (m_dbManager) {
+            m_dbManager->addOrUpdateCartItem(m_currentCustomerId, bookId, quantity);
+        } else {
+            qWarning() << "DB Manager is null, cannot update database cart.";
+        }
+
     } else {
         qWarning() << "Attempted to update quantity for non-existent book ID in cart:" << bookId;
     }
@@ -337,10 +351,23 @@ void MainWindow::updateCartItemQuantity(int bookId, int quantity)
 // Слот для видалення товару з кошика (Новий дизайн)
 void MainWindow::removeCartItem(int bookId)
 {
+     // Спочатку видаляємо з БД
+     if (m_dbManager) {
+         if (!m_dbManager->removeCartItemFromDb(m_currentCustomerId, bookId)) {
+             qWarning() << "Failed to remove item from DB cart for book ID:" << bookId;
+             // Можливо, показати помилку користувачу
+             // return; // Вирішити, чи продовжувати видалення з пам'яті
+         }
+     } else {
+         qWarning() << "DB Manager is null, cannot remove item from database cart.";
+         // return; // Вирішити, чи продовжувати
+     }
+
+     // Потім видаляємо з пам'яті
      if (m_cartItems.contains(bookId)) {
          QString bookTitle = m_cartItems[bookId].book.title; // Зберігаємо назву для повідомлення
          m_cartItems.remove(bookId);
-         qInfo() << "Removed book ID" << bookId << "from cart.";
+         qInfo() << "Removed book ID" << bookId << "from memory cart.";
          ui->statusBar->showMessage(tr("Книгу '%1' видалено з кошика.").arg(bookTitle), 3000);
 
          // Перезаповнюємо сторінку кошика, щоб видалити віджет
@@ -405,7 +432,19 @@ void MainWindow::on_placeOrderButton_clicked()
 
     if (success && newOrderId > 0) {
         QMessageBox::information(this, tr("Замовлення оформлено"), tr("Ваше замовлення №%1 успішно оформлено!").arg(newOrderId));
-        m_cartItems.clear(); // Очищаємо кошик
+
+        // Очищаємо кошик в БД
+        if (m_dbManager) {
+            if (!m_dbManager->clearCart(m_currentCustomerId)) {
+                qWarning() << "Failed to clear database cart for customer ID:" << m_currentCustomerId;
+                // Повідомити користувача?
+            }
+        } else {
+             qWarning() << "DB Manager is null, cannot clear database cart.";
+        }
+
+        // Очищаємо кошик в пам'яті
+        m_cartItems.clear();
         updateCartIcon(); // Оновлюємо іконку
         populateCartPage(); // Оновлюємо сторінку кошика (стане порожньою)
         // Можна перейти на сторінку замовлень

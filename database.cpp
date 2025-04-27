@@ -87,8 +87,10 @@ bool DatabaseManager::createSchemaTables()
     const QString dropPublisherSQL = R"(DROP TABLE IF EXISTS publisher CASCADE;)";
     const QString dropCustomerSQL = R"(DROP TABLE IF EXISTS customer CASCADE;)";
     const QString dropCommentSQL = R"(DROP TABLE IF EXISTS comment CASCADE;)"; // Додано видалення comment
+    const QString dropShoppingCartSQL = R"(DROP TABLE IF EXISTS shopping_cart CASCADE;)"; // Додано видалення shopping_cart
 
-    success &= executeQuery(query, dropOrderStatusSQL, "Удаление order_status");
+    success &= executeQuery(query, dropShoppingCartSQL,"Удаление shopping_cart"); // Додано видалення shopping_cart
+    if(success) success &= executeQuery(query, dropOrderStatusSQL, "Удаление order_status");
     if(success) success &= executeQuery(query, dropOrderItemSQL,   "Удаление order_item");
     if(success) success &= executeQuery(query, dropCommentSQL,     "Удаление comment"); // Додано видалення comment
     if(success) success &= executeQuery(query, dropBookAuthorSQL,  "Удаление book_author");
@@ -168,6 +170,23 @@ bool DatabaseManager::createSchemaTables()
         );
     )";
     if(success) success &= executeQuery(query, createCommentSQL, "Создание comment");
+
+    // Створення таблиці shopping_cart
+    const QString createShoppingCartSQL = R"(
+        CREATE TABLE shopping_cart (
+            cart_item_id SERIAL PRIMARY KEY,
+            customer_id INTEGER NOT NULL,
+            book_id INTEGER NOT NULL,
+            quantity INTEGER NOT NULL CHECK(quantity > 0),
+            added_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
+            FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
+
+            UNIQUE (customer_id, book_id) -- Гарантує унікальність пари користувач-книга
+        );
+    )";
+    if(success) success &= executeQuery(query, createShoppingCartSQL, "Создание shopping_cart");
 
 
     // 3. Добавление комментариев и индексов (опционально)
@@ -286,7 +305,7 @@ bool DatabaseManager::printAllData() const
         // Список таблиц в порядке, удобном для просмотра (или любом другом)
         // Важно: не забываем кавычки для "order"
         const QStringList tables = {"customer", "publisher", "author", "book", "\"order\"",
-                                    "book_author", "order_item", "order_status"};
+                                    "book_author", "order_item", "order_status", "comment", "shopping_cart"}; // Додано comment та shopping_cart
 
         bool overallSuccess = true;
 
@@ -419,6 +438,153 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 
     return books;
 }
+
+
+// --- Реалізація методів для роботи з кошиком в БД ---
+
+// Отримання товарів з кошика користувача
+QMap<int, int> DatabaseManager::getCartItems(int customerId) const
+{
+    QMap<int, int> cartItems;
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0) {
+        qWarning() << "Неможливо отримати кошик: немає з'єднання або невірний customerId.";
+        return cartItems;
+    }
+
+    const QString sql = R"(
+        SELECT book_id, quantity
+        FROM shopping_cart
+        WHERE customer_id = :customerId;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to get cart items for customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при отриманні кошика для customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return cartItems;
+    }
+
+    int count = 0;
+    while (query.next()) {
+        int bookId = query.value("book_id").toInt();
+        int quantity = query.value("quantity").toInt();
+        if (bookId > 0 && quantity > 0) {
+            cartItems.insert(bookId, quantity);
+            count++;
+        } else {
+            qWarning() << "Invalid bookId or quantity found in cart for customer" << customerId << ": bookId=" << bookId << ", quantity=" << quantity;
+        }
+    }
+    qInfo() << "Fetched" << count << "cart items for customer ID:" << customerId;
+    return cartItems;
+}
+
+// Додавання або оновлення товару в кошику
+bool DatabaseManager::addOrUpdateCartItem(int customerId, int bookId, int quantity)
+{
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0 || bookId <= 0 || quantity <= 0) {
+        qWarning() << "Неможливо додати/оновити товар в кошику: невірні параметри.";
+        return false;
+    }
+
+    // Використовуємо INSERT ... ON CONFLICT (PostgreSQL specific)
+    const QString sql = R"(
+        INSERT INTO shopping_cart (customer_id, book_id, quantity, added_at)
+        VALUES (:customer_id, :book_id, :quantity, CURRENT_TIMESTAMP)
+        ON CONFLICT (customer_id, book_id) DO UPDATE SET
+            quantity = EXCLUDED.quantity,
+            added_at = CURRENT_TIMESTAMP;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":customer_id", customerId);
+    query.bindValue(":book_id", bookId);
+    query.bindValue(":quantity", quantity);
+
+    qInfo() << "Executing SQL to add/update cart item for customer ID:" << customerId << ", book ID:" << bookId << ", quantity:" << quantity;
+    if (!query.exec()) {
+        qCritical() << "Помилка при додаванні/оновленні товару в кошику:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return false;
+    }
+
+    qInfo() << "Cart item added/updated successfully.";
+    return true;
+}
+
+// Видалення товару з кошика
+bool DatabaseManager::removeCartItemFromDb(int customerId, int bookId)
+{
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0 || bookId <= 0) {
+        qWarning() << "Неможливо видалити товар з кошика: невірні параметри.";
+        return false;
+    }
+
+    const QString sql = R"(
+        DELETE FROM shopping_cart
+        WHERE customer_id = :customer_id AND book_id = :book_id;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":customer_id", customerId);
+    query.bindValue(":book_id", bookId);
+
+    qInfo() << "Executing SQL to remove cart item for customer ID:" << customerId << ", book ID:" << bookId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при видаленні товару з кошика:";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return false;
+    }
+
+    if (query.numRowsAffected() > 0) {
+        qInfo() << "Cart item removed successfully.";
+    } else {
+        qWarning() << "Cart item remove query executed, but no rows were affected (item might not have existed).";
+    }
+    return true; // Повертаємо true, навіть якщо нічого не було видалено (запит виконався)
+}
+
+// Очищення кошика користувача
+bool DatabaseManager::clearCart(int customerId)
+{
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0) {
+        qWarning() << "Неможливо очистити кошик: невірний customerId.";
+        return false;
+    }
+
+    const QString sql = R"(
+        DELETE FROM shopping_cart
+        WHERE customer_id = :customer_id;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":customer_id", customerId);
+
+    qInfo() << "Executing SQL to clear cart for customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при очищенні кошика для customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        return false;
+    }
+
+    qInfo() << "Cart cleared successfully for customer ID:" << customerId << ". Rows affected:" << query.numRowsAffected();
+    return true;
+}
+
+// --- Кінець реалізації методів для кошика ---
 
 
 // Реалізація нового методу для отримання деталей одного замовлення за ID

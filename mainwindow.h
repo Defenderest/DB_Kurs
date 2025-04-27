@@ -144,6 +144,7 @@ private:
     void updateBannerImages(); // Оновлення зображень банера
     void setupFilterPanel(); // Налаштування панелі фільтрів
     void loadAndDisplayFilteredBooks(); // Завантаження та відображення книг з урахуванням фільтрів
+    void loadCartFromDatabase(); // Завантаження кошика з БД при старті
 
     // Члени класу
     Ui::MainWindow *ui;
