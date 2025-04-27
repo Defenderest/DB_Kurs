@@ -43,6 +43,7 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
+        orderInfo.found = true; // <<< Set the found flag here!
         qInfo() << "Order header found for ID:" << orderId;
     } else {
         qWarning() << "Order not found for ID:" << orderId;
