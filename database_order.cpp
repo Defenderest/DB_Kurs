@@ -38,25 +38,33 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
     }
 
     if (orderQuery.next()) {
-        QVariant rawDateValue = orderQuery.value("order_date"); // Отримуємо сире значення
-        QString dateString = rawDateValue.toString(); // Отримуємо як рядок
+        // --- Зміна: Отримуємо дату одразу як рядок ---
+        QString dateString = orderQuery.value("order_date").toString();
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
-        orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
-        if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
-            orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
+        orderInfo.orderDate = QDateTime(); // Ініціалізуємо невалідною датою
+
+        if (!dateString.isEmpty()) {
+            // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
+            orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
+            if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
+                orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
+            }
+            // Можна додати інші формати, якщо ISO не спрацює, наприклад:
+            // if (!orderInfo.orderDate.isValid()) {
+            //     orderInfo.orderDate = QDateTime::fromString(dateString, "yyyy-MM-dd HH:mm:ss");
+            // }
         }
+        // --- Кінець зміни ---
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
-       // --- Відладка дати ---
-       qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
-                << "Raw order_date value:" << rawDateValue.typeName() << rawDateValue // Show type and value
-                << "Attempting to parse string:" << dateString; // Show the string being parsed
-       qDebug() << "[DEBUG] Parsed QDateTime (after ISODate attempts):" << orderInfo.orderDate
-                << "Is Valid:" << orderInfo.orderDate.isValid();
-       if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
-            qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs.";
+      // --- Оновлена Відладка дати ---
+      qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
+               << "Raw order_date value (as string from query):" << dateString; // Показуємо рядок, отриманий з запиту
+      qDebug() << "[DEBUG] Parsed QDateTime (after string parse attempts):" << orderInfo.orderDate
+               << "Is Valid:" << orderInfo.orderDate.isValid();
+      if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
+           qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs formats.";
        }
        // --- Кінець відладки ---
        orderInfo.found = true; // <<< Set the found flag here!
@@ -378,25 +386,30 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
     int orderCount = 0;
     while (orderQuery.next()) {
         OrderDisplayInfo orderInfo;
-        QVariant rawDateValue = orderQuery.value("order_date"); // Отримуємо сире значення
-        QString dateString = rawDateValue.toString(); // Отримуємо як рядок
+        // --- Зміна: Отримуємо дату одразу як рядок ---
+        QString dateString = orderQuery.value("order_date").toString();
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
-        orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
-        if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
-            orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
+        orderInfo.orderDate = QDateTime(); // Ініціалізуємо невалідною датою
+
+        if (!dateString.isEmpty()) {
+            // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
+            orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
+            if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
+                orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
+            }
+            // Можна додати інші формати, якщо ISO не спрацює
         }
+        // --- Кінець зміни ---
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
-       // --- Відладка дати ---
+       // --- Оновлена Відладка дати ---
        qDebug() << "[DEBUG] Customer Order ID:" << orderInfo.orderId
-                << "Raw order_date value:" << rawDateValue.typeName() << rawDateValue // Show type and value
-                << "Attempting to parse string:" << dateString; // Show the string being parsed
-       qDebug() << "[DEBUG] Parsed QDateTime (after ISODate attempts):" << orderInfo.orderDate
+                << "Raw order_date value (as string from query):" << dateString; // Показуємо рядок, отриманий з запиту
+       qDebug() << "[DEBUG] Parsed QDateTime (after string parse attempts):" << orderInfo.orderDate
                 << "Is Valid:" << orderInfo.orderDate.isValid();
        if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
-            qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs.";
+            qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs formats.";
        }
        // --- Кінець відладки ---
 
