@@ -39,8 +39,13 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
 
     if (orderQuery.next()) {
         QVariant rawDateValue = orderQuery.value("order_date"); // Отримуємо сире значення
+        QString dateString = rawDateValue.toString(); // Отримуємо як рядок
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        orderInfo.orderDate = rawDateValue.toDateTime(); // Парсимо
+        // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
+        orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
+        if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
+            orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
+        }
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
@@ -370,8 +375,13 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
     while (orderQuery.next()) {
         OrderDisplayInfo orderInfo;
         QVariant rawDateValue = orderQuery.value("order_date"); // Отримуємо сире значення
+        QString dateString = rawDateValue.toString(); // Отримуємо як рядок
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        orderInfo.orderDate = rawDateValue.toDateTime(); // Парсимо
+        // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
+        orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
+        if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
+            orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
+        }
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
