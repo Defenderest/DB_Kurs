@@ -96,7 +96,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     connect(ui->navProfileButton, &QPushButton::clicked, this, &MainWindow::on_navProfileButton_clicked); // Додано з'єднання для кнопки профілю
 
     // Підключаємо зміну комбо-боксу статусу замовлень до перезавантаження списку
-    connect(ui->orderStatusComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::loadAndDisplayOrders);
+    //connect(ui->orderStatusComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::loadAndDisplayOrders);
 
     // Підключаємо кнопки редагування та збереження профілю
     connect(ui->editProfileButton, &QPushButton::clicked, this, &MainWindow::on_editProfileButton_clicked);
@@ -968,7 +968,7 @@ void MainWindow::applyFiltersWithDelay()
 // Нова функція для оновлення зображень банера
 void MainWindow::updateBannerImages()
 {
-    QList<QLabel*> bannerLabels = {ui->bannerLabel1, ui->bannerLabel2, ui->bannerLabel3};
+    QList<QLabel*> bannerLabels = {ui->bannerImageLabel_1, ui->bannerImageLabel_2, ui->bannerImageLabel_3};
 
     // Перевіряємо, чи шляхи до зображень вже завантажені
     if (m_bannerImagePaths.isEmpty()) {
