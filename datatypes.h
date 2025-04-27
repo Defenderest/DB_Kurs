@@ -98,6 +98,7 @@ struct OrderDisplayInfo {
     QString paymentMethod;
     QList<OrderItemDisplayInfo> items;
     QList<OrderStatusDisplayInfo> statuses;
+    bool found = false; // Прапорець, чи знайдено замовлення (особливо для getOrderDetailsById)
 };
 
 
