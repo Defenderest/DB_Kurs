@@ -580,7 +580,7 @@ QRadioButton {
       </layout>
      </widget>
     </item>
-    <item> <!-- Додаємо stretch="1" сюди -->
+    <item>
      <property name="stretch">
       <number>1</number>
      </property>
