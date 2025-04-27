@@ -38,6 +38,7 @@ set(PROJECT_SOURCES
     database_author.cpp     # Новий файл
     database_order.cpp      # Новий файл
     database_comment.cpp    # Новий файл
+    database_cart.cpp       # Новий файл для логіки кошика
     database.h
     logindialog.cpp
     logindialog.h
