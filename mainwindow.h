@@ -126,6 +126,8 @@ private:
     void populateBookDetailsPage(const BookDetailsInfo &details);
     // Заповнення сторінки деталей автора
     void populateAuthorDetailsPage(const AuthorDetailsInfo &details);
+    // Заповнення панелі деталей замовлення
+    void populateOrderDetailsPanel(const OrderDisplayInfo &orderInfo);
 
     // Керування кошиком
     void populateCartPage(); // Заповнення сторінки кошика

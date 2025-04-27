@@ -3398,6 +3398,313 @@ QLabel#emptyCartLabel {
        </widget>
       </item>
       <item>
+       <widget class="QFrame" name="orderDetailsPanel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>0</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QFrame#orderDetailsPanel {
+    background-color: #fdfdff; /* Slightly different background */
+    border-left: 1px solid #dee2e6;
+}
+QLabel {
+    margin-bottom: 2px; /* Small spacing below labels */
+}
+QLabel#orderDetailsTitleLabel {
+    font-size: 13pt;
+    font-weight: 600;
+    color: #343a40;
+}
+QPushButton#closeOrderDetailsButton {
+    min-width: 24px; max-width: 24px;
+    min-height: 24px; max-height: 24px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: #6c757d;
+    font-size: 14pt;
+    font-weight: bold;
+    qproperty-text: &quot;✕&quot;; /* Close symbol */
+}
+QPushButton#closeOrderDetailsButton:hover {
+    color: #dc3545; /* Red on hover */
+    background-color: #f8d7da;
+    border-radius: 4px;
+}
+QScrollArea#orderDetailsScrollArea {
+    border: none;
+    background-color: transparent;
+}
+QWidget#orderDetailsScrollContents {
+    background-color: transparent;
+}
+QLabel.headerLabel { /* Style for Items/Status headers */
+    font-size: 11pt;
+    font-weight: 500;
+    color: #495057;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 3px;
+}
+QLabel.orderItemLabel, QLabel.orderStatusHistoryLabel {
+    font-size: 10pt;
+    color: #212529;
+    margin-bottom: 4px;
+}
+</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="orderDetailsPanelLayout">
+         <property name="spacing">
+          <number>8</number>
+         </property>
+         <property name="leftMargin">
+          <number>10</number>
+         </property>
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="rightMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="orderDetailsHeaderLayout">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="orderDetailsTitleLabel">
+             <property name="text">
+              <string>Деталі замовлення</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="orderDetailsHeaderSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="closeOrderDetailsButton">
+             <property name="toolTip">
+              <string>Закрити панель</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QScrollArea" name="orderDetailsScrollArea">
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="orderDetailsScrollContents">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>100</width>
+              <height>100</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="orderDetailsContentsLayout">
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <property name="leftMargin">
+              <number>5</number>
+             </property>
+             <property name="topMargin">
+              <number>5</number>
+             </property>
+             <property name="rightMargin">
+              <number>5</number>
+             </property>
+             <property name="bottomMargin">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="orderDetailsIdLabel">
+               <property name="text">
+                <string>ID: (завантаження...)</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="orderDetailsDateLabel">
+               <property name="text">
+                <string>Дата: (завантаження...)</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="orderDetailsTotalLabel">
+               <property name="text">
+                <string>Сума: (завантаження...)</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="orderDetailsShippingLabel">
+               <property name="text">
+                <string>Доставка: (завантаження...)</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="orderDetailsPaymentLabel">
+               <property name="text">
+                <string>Оплата: (завантаження...)</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="itemsHeaderLabel">
+               <property name="text">
+                <string>Товари</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>headerLabel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="itemsContainerWidget" native="true">
+               <layout class="QVBoxLayout" name="orderDetailsItemsLayout">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_3">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="statusHeaderLabel">
+               <property name="text">
+                <string>Історія статусів</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>headerLabel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="statusContainerWidget" native="true">
+               <layout class="QVBoxLayout" name="orderDetailsStatusLayout">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="orderDetailsVerticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <widget class="QFrame" name="filterPanel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
