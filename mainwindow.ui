@@ -522,7 +522,7 @@ QRadioButton {
           </size>
          </property>
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <!-- Встановлюємо фіксовану вертикальну політику -->
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <!-- Змінено вертикальну політику на Preferred -->
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
