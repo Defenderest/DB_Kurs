@@ -48,6 +48,8 @@
 #include <QParallelAnimationGroup> // Додано для анімації панелі фільтрів
 // #include <QSlider>          // Більше не потрібен, використовуємо RangeSlider
 #include "RangeSlider.h"     // Додано для RangeSlider
+#include <QFrame>           // Додано для QFrame (панель деталей замовлення)
+#include <QVBoxLayout>      // Додано для QVBoxLayout (в панелі деталей)
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -236,6 +238,47 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     m_filterApplyTimer->setSingleShot(true); // Таймер спрацьовує один раз
     m_filterApplyTimer->setInterval(750); // Затримка 750 мс перед застосуванням
     connect(m_filterApplyTimer, &QTimer::timeout, this, &MainWindow::applyFiltersWithDelay);
+
+
+    // --- Налаштування панелі деталей замовлення ---
+    m_orderDetailsPanel = ui->orderDetailsPanel; // Знаходимо панель з UI
+    if (m_orderDetailsPanel) {
+        // Знаходимо віджети всередині панелі
+        m_orderDetailsIdLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsIdLabel");
+        m_orderDetailsDateLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsDateLabel");
+        m_orderDetailsTotalLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsTotalLabel");
+        m_orderDetailsShippingLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsShippingLabel");
+        m_orderDetailsPaymentLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsPaymentLabel");
+        m_orderDetailsItemsLayout = m_orderDetailsPanel->findChild<QVBoxLayout*>("orderDetailsItemsLayout");
+        m_orderDetailsStatusLayout = m_orderDetailsPanel->findChild<QVBoxLayout*>("orderDetailsStatusLayout");
+        m_closeOrderDetailsButton = m_orderDetailsPanel->findChild<QPushButton*>("closeOrderDetailsButton");
+
+        // Перевірка, чи всі віджети знайдено
+        if (!m_orderDetailsIdLabel || !m_orderDetailsDateLabel || !m_orderDetailsTotalLabel ||
+            !m_orderDetailsShippingLabel || !m_orderDetailsPaymentLabel || !m_orderDetailsItemsLayout ||
+            !m_orderDetailsStatusLayout || !m_closeOrderDetailsButton)
+        {
+            qWarning() << "MainWindow Constructor: One or more widgets inside orderDetailsPanel not found!";
+            // Можна вимкнути функціонал або показати помилку
+            m_orderDetailsPanel->setEnabled(false); // Наприклад, вимикаємо панель
+        } else {
+             // Налаштовуємо анімацію
+             m_orderDetailsAnimation = new QPropertyAnimation(m_orderDetailsPanel, "maximumWidth", this);
+             m_orderDetailsAnimation->setDuration(300); // Тривалість анімації
+             m_orderDetailsAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+
+             // Встановлюємо початковий стан (приховано)
+             m_orderDetailsPanel->setMaximumWidth(0);
+             m_orderDetailsPanel->setVisible(false); // Явно ховаємо
+             m_isOrderDetailsPanelVisible = false;
+
+             // Підключаємо кнопку закриття
+             connect(m_closeOrderDetailsButton, &QPushButton::clicked, this, &MainWindow::hideOrderDetailsPanel);
+             qInfo() << "Order details panel initialized successfully.";
+        }
+    } else {
+        qWarning() << "MainWindow Constructor: orderDetailsPanel not found in UI!";
+    }
 
 }
 

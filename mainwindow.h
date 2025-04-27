@@ -43,10 +43,11 @@ class QVBoxLayout;
 class QGridLayout;
 // Додамо forward declarations для нових віджетів профілю, якщо вони ще не включені
 class QPushButton;
-class QFrame;
+class QFrame;          // Вже є
 class QStackedWidget;
-class QPropertyAnimation;
-class QLabel; // Додано forward declaration для QLabel у m_cartSubtotalLabels
+class QPropertyAnimation; // Вже є
+class QLabel;          // Вже є
+class QVBoxLayout;     // Вже є
 
 // Структура CartItem тепер визначена в datatypes.h
 
@@ -189,6 +190,21 @@ private:
 
     // Таймер для автоматичного застосування фільтрів
     QTimer *m_filterApplyTimer = nullptr;
+
+    // Члени для панелі деталей замовлення
+    QFrame *m_orderDetailsPanel = nullptr; // Панель деталей
+    QPropertyAnimation *m_orderDetailsAnimation = nullptr; // Анімація панелі
+    bool m_isOrderDetailsPanelVisible = false; // Стан видимості панелі
+    int m_orderDetailsPanelWidth = 350; // Бажана ширина панелі
+    // Вказівники на віджети всередині панелі деталей
+    QLabel *m_orderDetailsIdLabel = nullptr;
+    QLabel *m_orderDetailsDateLabel = nullptr;
+    QLabel *m_orderDetailsTotalLabel = nullptr;
+    QLabel *m_orderDetailsShippingLabel = nullptr;
+    QLabel *m_orderDetailsPaymentLabel = nullptr;
+    QVBoxLayout *m_orderDetailsItemsLayout = nullptr; // Layout для списку товарів
+    QVBoxLayout *m_orderDetailsStatusLayout = nullptr; // Layout для історії статусів
+    QPushButton *m_closeOrderDetailsButton = nullptr; // Кнопка закриття панелі
 
 
 protected:
