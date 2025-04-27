@@ -91,9 +91,9 @@ private slots:
     void resetFilters(); // Слот для скидання фільтрів
     void onFilterCriteriaChanged(); // Новий слот для реагування на зміни
     void applyFiltersWithDelay(); // Новий слот для застосування із затримкою
-    // Видалено слоти для окремих QSlider
-    // void onMinPriceSliderChanged(int value);
-    // void onMaxPriceSliderChanged(int value);
+    // Слоти для оновлення міток ціни
+    void updateLowerPriceLabel(int value);
+    void updateUpperPriceLabel(int value);
 
 private:
     // Допоміжні функції для відображення даних
@@ -181,8 +181,8 @@ private:
     QListWidget *m_languageFilterListWidget = nullptr;
     // Замінено QSlider та QLabel на RangeSlider
     RangeSlider *m_priceRangeSlider = nullptr; // Один слайдер для діапазону цін
-    // QLabel *m_minPriceValueLabel = nullptr; // Видалено (або буде використовуватися інакше)
-    // QLabel *m_maxPriceValueLabel = nullptr; // Видалено (або буде використовуватися інакше)
+    QLabel *m_minPriceValueLabel = nullptr; // Мітка для мінімальної ціни
+    QLabel *m_maxPriceValueLabel = nullptr; // Мітка для максимальної ціни
     QCheckBox *m_inStockFilterCheckBox = nullptr;
 
     // Таймер для автоматичного застосування фільтрів
