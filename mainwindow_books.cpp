@@ -307,7 +307,12 @@ void MainWindow::populateBookDetailsPage(const BookDetailsInfo &details)
     // 3. Кнопка "Додати в кошик" (можна додати логіку або сховати, якщо немає в наявності)
     ui->bookDetailAddToCartButton->setEnabled(details.stockQuantity > 0);
     ui->bookDetailAddToCartButton->setToolTip(details.stockQuantity > 0 ? tr("Додати '%1' до кошика").arg(details.title) : tr("Немає в наявності"));
-    // TODO: Підключити сигнал кнопки до слота додавання в кошик
+    // Підключаємо сигнал кнопки до слота додавання в кошик
+    // Спочатку від'єднуємо попередні з'єднання, щоб уникнути дублікатів
+    disconnect(ui->bookDetailAddToCartButton, &QPushButton::clicked, nullptr, nullptr);
+    connect(ui->bookDetailAddToCartButton, &QPushButton::clicked, this, [this, bookId = details.bookId](){
+        on_addToCartButtonClicked(bookId);
+    });
 
     // 4. Рейтинг (поки що просто текст)
     // 4. Рейтинг (використовуємо StarRatingWidget)
