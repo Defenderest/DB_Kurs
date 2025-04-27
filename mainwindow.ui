@@ -2425,7 +2425,7 @@ margin-bottom: 4px; /* Зменшено відступ знизу */</string>
                  <string>(Назва книги)</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set> <!-- Вирівнювання по лівому краю -->
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignTop</set> <!-- Спрощене вирівнювання -->
                 </property>
                </widget>
               </item>
