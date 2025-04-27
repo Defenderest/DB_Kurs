@@ -58,6 +58,17 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 {
     ui->setupUi(this);
 
+    // Явно встановлюємо іконку кошика після setupUi
+    if (ui->cartButton) {
+        ui->cartButton->setIcon(QIcon(":/icons/cart.png"));
+        // Переконуємось, що текст порожній (хоча це вже робить updateCartIcon)
+        ui->cartButton->setText("");
+        qInfo() << "Cart button icon explicitly set in constructor.";
+    } else {
+        qWarning() << "Constructor: cartButton is null, cannot set icon.";
+    }
+
+
     // Перевіряємо, чи передано менеджер БД
     if (!m_dbManager) {
         qCritical() << "MainWindow: DatabaseManager is null! Cannot function properly.";
