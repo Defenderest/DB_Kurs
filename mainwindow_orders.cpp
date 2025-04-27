@@ -173,11 +173,16 @@ void MainWindow::loadAndDisplayOrders()
     QList<OrderDisplayInfo> allOrders = m_dbManager->getCustomerOrdersForDisplay(m_currentCustomerId);
     qInfo() << "Завантажено" << allOrders.size() << "замовлень.";
 
-    // Отримуємо вибраний статус та дату для фільтрації
-    QString statusFilter = ui->orderStatusComboBox->currentText();
-    QDate dateFilter = ui->orderDateEdit->date(); // Отримуємо дату з QDateEdit
-    QList<OrderDisplayInfo> filteredOrders;
+    // // Отримуємо вибраний статус та дату для фільтрації - ВІДЖЕТИ ВИДАЛЕНО З UI
+    // QString statusFilter = ui->orderStatusComboBox->currentText();
+    // QDate dateFilter = ui->orderDateEdit->date(); // Отримуємо дату з QDateEdit
+    QList<OrderDisplayInfo> filteredOrders; // Список для відфільтрованих замовлень (зараз не використовується)
 
+    // Наразі фільтрація не застосовується, оскільки віджети видалено.
+    // Просто копіюємо всі замовлення до списку для відображення.
+    filteredOrders = allOrders;
+
+    /* // Старий код фільтрації (закоментовано)
     for (const OrderDisplayInfo &order : allOrders) {
         bool statusMatch = false;
         bool dateMatch = false;
@@ -210,10 +215,11 @@ void MainWindow::loadAndDisplayOrders()
             filteredOrders.append(order);
         }
     }
-    qInfo() << "Відфільтровано" << filteredOrders.size() << "замовлень за статусом:" << statusFilter << "та датою від:" << dateFilter.toString(Qt::ISODate);
+    */
+    // qInfo() << "Відфільтровано" << filteredOrders.size() << "замовлень за статусом:" << statusFilter << "та датою від:" << dateFilter.toString(Qt::ISODate); // Закоментовано, бо фільтри не використовуються
 
 
-    displayOrders(filteredOrders); // Відображаємо відфільтровані замовлення
+    displayOrders(filteredOrders); // Відображаємо замовлення (наразі всі)
 
     if (m_dbManager->lastError().isValid()) {
          ui->statusBar->showMessage(tr("Помилка при завантаженні замовлень: %1").arg(m_dbManager->lastError().text()), 5000);
