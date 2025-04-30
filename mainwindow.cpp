@@ -1380,47 +1380,66 @@ void MainWindow::loadCartFromDatabase()
     }
 
     qInfo() << "Завантаження корзини з БД для customerId:" << m_currentCustomerId;
-//     QMap<int, int> dbCartItems = m_dbManager->getCartItems(m_currentCustomerId);
+    QMap<int, int> dbCartItems = m_dbManager->getCartItems(m_currentCustomerId);
 
-//     m_cartItems.clear(); // Очищаємо поточну корзину в пам'яті
+    m_cartItems.clear(); // Очищаємо поточну корзину в пам'яті
 
-//     if (dbCartItems.isEmpty()) {
-//         qInfo() << "Корзина в БД порожня.";
-//         updateCartIcon(); // Оновлюємо іконку (має показати 0)
-//         // populateCartPage(); // Можна викликати, щоб показати порожню сторінку кошика, якщо вона активна
-//         return;
-//     }
+    if (dbCartItems.isEmpty()) {
+        qInfo() << "Корзина в БД порожня.";
+        updateCartIcon(); // Оновлюємо іконку (має показати 0)
+        // populateCartPage(); // Не викликаємо тут, щоб не перемикати сторінку
+        return;
+    }
 
-//     // Заповнюємо m_cartItems (QMap<int, CartItem>) даними з БД
-//     for (auto it = dbCartItems.constBegin(); it != dbCartItems.constEnd(); ++it) {
-//         int bookId = it.key();
-//         int quantity = it.value();
+    // Заповнюємо m_cartItems (QMap<int, CartItem>) даними з БД
+    int itemsLoaded = 0;
+    int itemsSkipped = 0;
+    for (auto it = dbCartItems.constBegin(); it != dbCartItems.constEnd(); ++it) {
+        int bookId = it.key();
+        int quantity = it.value();
 
-//         // Отримуємо інформацію про книгу для відображення
-//         BookDisplayInfo bookInfo = m_dbManager->getBookDisplayInfoById(bookId);
-//         if (bookInfo.found) {
-//             CartItem newItem;
-//             newItem.book = bookInfo;
-//             newItem.quantity = quantity;
-//             m_cartItems.insert(bookId, newItem);
-//         } else {
-//             qWarning() << "loadCartFromDatabase: Не вдалося знайти інформацію для книги з ID" << bookId << ", яка є в корзині БД. Пропускаємо.";
-//             // Можливо, варто видалити цей елемент з корзини БД?
-//             // m_dbManager->removeCartItem(m_currentCustomerId, bookId);
-//         }
-//     }
+        // Отримуємо інформацію про книгу для відображення
+        BookDisplayInfo bookInfo = m_dbManager->getBookDisplayInfoById(bookId);
+        if (bookInfo.found) {
+            // Перевіряємо, чи достатньо товару на складі
+            if (quantity > bookInfo.stockQuantity) {
+                qWarning() << "loadCartFromDatabase: Кількість товару (ID:" << bookId << ") в корзині (" << quantity
+                           << ") перевищує наявну на складі (" << bookInfo.stockQuantity << "). Встановлюємо кількість на" << bookInfo.stockQuantity;
+                quantity = bookInfo.stockQuantity;
+                // Оновлюємо кількість в БД, якщо вона змінилася і більше 0
+                if (quantity > 0) {
+                    m_dbManager->addOrUpdateCartItem(m_currentCustomerId, bookId, quantity);
+                } else {
+                    // Якщо на складі 0, видаляємо з БД
+                    m_dbManager->removeCartItem(m_currentCustomerId, bookId);
+                    itemsSkipped++;
+                    continue; // Пропускаємо додавання до m_cartItems
+                }
+            }
 
-//     qInfo() << "Корзину завантажено з БД. Кількість унікальних товарів:" << m_cartItems.size();
+            CartItem newItem;
+            newItem.book = bookInfo;
+            newItem.quantity = quantity;
+            m_cartItems.insert(bookId, newItem);
+            itemsLoaded++;
+        } else {
+            qWarning() << "loadCartFromDatabase: Не вдалося знайти інформацію для книги з ID" << bookId << ", яка є в корзині БД. Видаляємо з корзини БД.";
+            // Видаляємо неіснуючий товар з корзини БД
+            m_dbManager->removeCartItem(m_currentCustomerId, bookId);
+            itemsSkipped++;
+        }
+    }
 
-//     // Оновлюємо UI
-//     updateCartIcon();
-//     // Якщо сторінка кошика зараз активна, оновлюємо її
-//     if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
-//         populateCartPage();
-//     }
-// }
+    qInfo() << "Корзину завантажено з БД. Завантажено:" << itemsLoaded << ", Пропущено/Видалено:" << itemsSkipped;
+
+    // Оновлюємо UI
+    updateCartIcon();
+    // Якщо сторінка кошика зараз активна, оновлюємо її
+    if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
+        populateCartPage();
+    }
+}
 // --- Кінець методу завантаження корзини ---
 
 
 // --- Кінець реалізації слотів та функцій ---
- }
