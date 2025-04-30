@@ -121,6 +121,34 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *
         }
     }
 
+    // --- Розрахунок кількості колонок ---
+    int availableWidth = 0;
+    QScrollArea* scrollArea = parentWidgetContext->parentWidget() ? qobject_cast<QScrollArea*>(parentWidgetContext->parentWidget()) : nullptr;
+    if (scrollArea && scrollArea->viewport()) {
+        availableWidth = scrollArea->viewport()->width();
+        qDebug() << "displayBooks: Using viewport width:" << availableWidth;
+    } else {
+        availableWidth = parentWidgetContext->width(); // Fallback
+        qWarning() << "displayBooks: Could not get scroll area viewport width, using parentWidgetContext width:" << availableWidth;
+    }
+    // Віднімаємо відступи самого layout
+    availableWidth -= (targetLayout->contentsMargins().left() + targetLayout->contentsMargins().right());
+
+    const int cardMinWidth = 200; // Мінімальна ширина картки (з createBookCardWidget)
+    int hSpacing = targetLayout->horizontalSpacing();
+    if (hSpacing < 0) hSpacing = 10; // Значення за замовчуванням, якщо не встановлено
+
+    // Розрахунок: Ширина = N * cardMinWidth + (N-1) * hSpacing
+    // N = floor((Ширина + hSpacing) / (cardMinWidth + hSpacing))
+    int effectiveCardWidth = cardMinWidth + hSpacing;
+    int numColumns = 1; // Мінімум одна колонка
+    if (effectiveCardWidth > 0 && availableWidth >= cardMinWidth) {
+        numColumns = (availableWidth + hSpacing) / effectiveCardWidth;
+    }
+    numColumns = qMax(1, numColumns); // Переконуємося, що хоча б одна колонка
+    qDebug() << "displayBooks: Calculated columns:" << numColumns << "(spacing:" << hSpacing << ", cardMinWidth:" << cardMinWidth << ")";
+    // --- Кінець розрахунку колонок ---
+
     // Очищаємо попередні віджети з цільового layout
     clearLayout(targetLayout);
 
@@ -128,11 +156,10 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *
         QLabel *noBooksLabel = new QLabel(tr("Не вдалося завантажити книги або їх немає в базі даних."), parentWidgetContext);
         noBooksLabel->setAlignment(Qt::AlignCenter);
         noBooksLabel->setWordWrap(true);
-        // Додаємо мітку безпосередньо в layout
-        targetLayout->addWidget(noBooksLabel, 0, 0, 1, maxColumns); // Розтягнути на кілька колонок
-        // Додаємо спейсери, щоб мітка була по центру і не розтягувала все
-        targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), 1, 0); // Вертикальний
-        targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns); // Горизонтальний
+        // Додаємо мітку в layout, розтягуючи на всі розраховані колонки
+        targetLayout->addWidget(noBooksLabel, 0, 0, 1, numColumns);
+        // Додаємо вертикальний спейсер, щоб притиснути мітку вгору
+        targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), 1, 0);
         return; // Виходимо, якщо книг немає
     }
 
@@ -144,43 +171,40 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *
         if (bookCard) {
             targetLayout->addWidget(bookCard, row, col);
             col++;
-            if (col >= maxColumns) {
+            if (col >= numColumns) { // Використовуємо розраховану кількість колонок
                 col = 0;
                 row++;
             }
         }
     }
 
-    // Встановлюємо однакове розтягування для колонок з картками
-    for (int c = 0; c < maxColumns; ++c) {
-        targetLayout->setColumnStretch(c, 1);
-    }
-    // Встановлюємо розтягування для колонки після карток (де горизонтальний спейсер)
-    targetLayout->setColumnStretch(maxColumns, 99); // Велике значення, щоб забрати весь зайвий простір
-
-    // Видаляємо попередні розширювачі, якщо вони були додані раніше (про всяк випадок)
-    // (Це може бути не потрібно, якщо clearLayout працює коректно, але залишаємо для надійності)
+    // Видаляємо попередні розширювачі (про всяк випадок)
     QLayoutItem* item;
     // Видаляємо вертикальний розширювач знизу (якщо він є)
-    item = targetLayout->itemAtPosition(row + 1, 0);
+    // Шукаємо в першій колонці після останнього рядка з картками
+    item = targetLayout->itemAtPosition(row + (col == 0 ? 0 : 1), 0); // Якщо останній рядок заповнений, шукаємо row+1, інакше row
     if (item && item->spacerItem()) {
         targetLayout->removeItem(item);
         delete item;
     }
-     // Видаляємо горизонтальний розширювач справа (якщо він є)
-    item = targetLayout->itemAtPosition(0, maxColumns);
+    // Видаляємо горизонтальний розширювач (більше не потрібен)
+    // Шукаємо в першому рядку після останньої колонки
+    item = targetLayout->itemAtPosition(0, numColumns);
      if (item && item->spacerItem()) {
         targetLayout->removeItem(item);
         delete item;
     }
 
-    // Додаємо горизонтальний розширювач в першому рядку після останньої колонки карток,
-    // щоб притиснути картки вліво.
-    targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns);
     // Додаємо вертикальний розширювач під останнім рядком карток,
     // щоб притиснути картки вгору.
-    targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
+    // Додаємо його в першу колонку наступного рядка (після останньої картки)
+    targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + (col == 0 ? 0 : 1), 0);
 
+    // Горизонтальний розширювач більше не потрібен, QGridLayout сам розподілить простір.
+    // targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, numColumns); // ВИДАЛЕНО
+
+    // Встановлювати columnStretch не потрібно, QGridLayout зробить це автоматично.
+    // for (int c = 0; c < numColumns; ++c) { targetLayout->setColumnStretch(c, 1); } // ВИДАЛЕНО
 
     // Переконуємося, що контейнер оновився
     parentWidgetContext->updateGeometry();
