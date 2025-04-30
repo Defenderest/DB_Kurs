@@ -314,6 +314,16 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     // --- Завантаження корзини з бази даних ---
     loadCartFromDatabase(); // Викликаємо завантаження корзини
 
+    // --- Налаштування ScrollArea для сторінки книг ---
+    QScrollArea* booksScrollArea = ui->booksPage->findChild<QScrollArea*>(); // Знаходимо ScrollArea на сторінці книг
+    if (booksScrollArea) {
+        booksScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Вимикаємо горизонтальну прокрутку
+        booksScrollArea->setWidgetResizable(true); // Дозволяємо віджету всередині змінювати розмір
+        qInfo() << "Books page ScrollArea horizontal scrollbar disabled.";
+    } else {
+        qWarning() << "Could not find QScrollArea on the books page!";
+    }
+
     // --- Налаштування панелі деталей замовлення ---
     m_orderDetailsPanel = ui->orderDetailsPanel; // Знаходимо панель з UI
     if (m_orderDetailsPanel) {
@@ -1242,6 +1252,14 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     // Оновлюємо зображення банерів відповідно до нового розміру
     updateBannerImages();
+
+    // Якщо поточна сторінка - "Книги", оновлюємо відображення книг
+    if (ui->contentStackedWidget && ui->contentStackedWidget->currentWidget() == ui->booksPage) {
+        qDebug() << "Books page is active, triggering layout update via loadAndDisplayFilteredBooks().";
+        // Виклик loadAndDisplayFilteredBooks призведе до виклику displayBooks,
+        // який тепер буде використовувати нову ширину для розрахунку колонок.
+        loadAndDisplayFilteredBooks();
+    }
 }
 // --- Кінець обробки зміни розміру вікна ---
 

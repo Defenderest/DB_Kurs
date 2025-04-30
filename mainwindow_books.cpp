@@ -106,8 +106,6 @@ QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
 // Слот для відображення книг у сітці
 void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *targetLayout, QWidget *parentWidgetContext)
 {
-    const int maxColumns = 5; // Кількість колонок у сітці
-
     // Перевіряємо валідність вказівників
     if (!targetLayout) {
         qWarning() << "displayBooks: targetLayout is null!";
