@@ -74,51 +74,19 @@ QWidget* MainWindow::createCartItemWidget(const CartItem &item, int bookId)
     priceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mainLayout->addWidget(priceLabel, 1); // Менше місця для ціни
 
-    // 4. Кількість (SpinBox з кнопками +/-)
-    QWidget *quantityControlWidget = new QWidget(); // Контейнер для кнопок і SpinBox
-    QHBoxLayout *quantityLayout = new QHBoxLayout(quantityControlWidget);
-    quantityLayout->setContentsMargins(0, 0, 0, 0);
-    quantityLayout->setSpacing(2); // Невеликий простір між кнопками та SpinBox
-
-    QPushButton *decreaseButton = new QPushButton("-");
-    decreaseButton->setObjectName("quantityDecreaseButton");
-    decreaseButton->setFixedSize(20, 20); // Маленькі кнопки
-    decreaseButton->setToolTip(tr("Зменшити кількість"));
-
+    // 4. Кількість (SpinBox)
     QSpinBox *quantitySpinBox = new QSpinBox();
     quantitySpinBox->setObjectName("cartQuantitySpinBox");
     quantitySpinBox->setMinimum(1);
     quantitySpinBox->setMaximum(item.book.stockQuantity); // Обмеження по складу
     quantitySpinBox->setValue(item.quantity);
     quantitySpinBox->setAlignment(Qt::AlignCenter);
-    quantitySpinBox->setButtonSymbols(QAbstractSpinBox::NoButtons); // Ховаємо стандартні стрілки
-    quantitySpinBox->setFrame(false); // Можна прибрати рамку для кращого вигляду
-    quantitySpinBox->setFixedWidth(40); // Фіксована ширина для поля вводу
+    // quantitySpinBox->setButtonSymbols(QAbstractSpinBox::UpDownArrows); // Повертаємо стандартні стрілки (це значення за замовчуванням)
     quantitySpinBox->setProperty("bookId", bookId); // Зберігаємо ID для слота
-
-    QPushButton *increaseButton = new QPushButton("+");
-    increaseButton->setObjectName("quantityIncreaseButton");
-    increaseButton->setFixedSize(20, 20); // Маленькі кнопки
-    increaseButton->setToolTip(tr("Збільшити кількість"));
-
-    // Додаємо елементи до quantityLayout
-    quantityLayout->addWidget(decreaseButton);
-    quantityLayout->addWidget(quantitySpinBox);
-    quantityLayout->addWidget(increaseButton);
-    quantityLayout->addStretch(1); // Додаємо розтягування, щоб притиснути до ліва (якщо потрібно)
-
-    // Підключаємо сигнали кнопок +/-
-    connect(decreaseButton, &QPushButton::clicked, quantitySpinBox, &QSpinBox::stepDown);
-    connect(increaseButton, &QPushButton::clicked, quantitySpinBox, &QSpinBox::stepUp);
-
-    // Підключаємо сигнал зміни значення SpinBox (як і раніше)
     connect(quantitySpinBox, &QSpinBox::valueChanged, this, [this, bookId](int newValue){
         updateCartItemQuantity(bookId, newValue);
     });
-
-    // Додаємо контейнер з кнопками та SpinBox до основного layout
-    mainLayout->addWidget(quantityControlWidget);
-
+    mainLayout->addWidget(quantitySpinBox);
 
     // 5. Сума за позицію
     QLabel *subtotalLabel = new QLabel(QString::number(item.book.price * item.quantity, 'f', 2) + tr(" грн"));
