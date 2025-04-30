@@ -1137,11 +1137,29 @@ QPushButton#navProfileButton[collapsed=&quot;true&quot;]:checked {
                     </size>
                    </property>
                    <property name="styleSheet">
-                    <string/>
+                    <string>/* Override parent style for background image */
+QPushButton#fictionCategoryButton {
+    background-image: url(:/icons/fiction_category.png); /* ЗАМЕНИТЕ НА ВАШ ПУТЬ К ИЗОБРАЖЕНИЮ */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-origin: border; /* Image clipped by border */
+    padding: 0px; /* Remove padding to fill the button */
+    border: 1px solid #e0e0e0; /* Keep original border or adjust */
+    /* border-radius is inherited from QWidget#categoriesWidget QPushButton */
+}
+/* Optional: Adjust hover/pressed effects if the default overlay isn't desired */
+QPushButton#fictionCategoryButton:hover {
+    /* Example: slightly darken image using an overlay */
+    background-color: rgba(0, 0, 0, 0.1); /* Semi-transparent black overlay */
+    border-color: #dee2e6; /* Keep hover border color */
+}
+QPushButton#fictionCategoryButton:pressed {
+    background-color: rgba(0, 0, 0, 0.2); /* Darker overlay */
+    border-color: #ced4da; /* Keep pressed border color */
+}</string>
                    </property>
                    <property name="text">
-                    <string>Художня
- література</string>
+                    <string/>
                    </property>
                   </widget>
                  </item>
