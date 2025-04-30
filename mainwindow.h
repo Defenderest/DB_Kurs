@@ -48,6 +48,7 @@ class QStackedWidget;
 class QPropertyAnimation; // Вже є
 class QLabel;          // Вже є
 class QVBoxLayout;     // Вже є
+class QLabel;          // Додано для значка кошика
 
 // Структура CartItem тепер визначена в datatypes.h
 
@@ -208,6 +209,9 @@ private:
     QVBoxLayout *m_orderDetailsItemsLayout = nullptr; // Layout для списку товарів
     QVBoxLayout *m_orderDetailsStatusLayout = nullptr; // Layout для історії статусів
     QPushButton *m_closeOrderDetailsButton = nullptr; // Кнопка закриття панелі
+
+    // Значок для кількості товарів у кошику
+    QLabel *m_cartBadgeLabel = nullptr;
 
 
 protected:

@@ -267,87 +267,56 @@ void MainWindow::updateCartTotal()
     qInfo() << "Cart total updated:" << total;
 }
 
-// Оновлення іконки кошика (кількість товарів зі значком)
+// Оновлення іконки кошика та значка кількості
 void MainWindow::updateCartIcon()
 {
-    if (!ui->cartButton) return; // Перевірка
+    // Перевіряємо наявність кнопки та значка
+    if (!ui->cartButton || !m_cartBadgeLabel) {
+        qWarning() << "updateCartIcon: cartButton or m_cartBadgeLabel is null!";
+        return;
+    }
 
     int totalItems = 0;
     for (const auto &item : m_cartItems) {
         totalItems += item.quantity;
     }
 
-    // Шлях до базової іконки (той самий, що встановлюється в конструкторі)
+    // 1. Встановлюємо базову іконку на кнопку
     const QString baseIconPath = "D:/projects/DB_Kurs/QtAPP/untitled/icons/cart.png";
-    QIcon currentIcon;
-
-    if (totalItems > 0) {
-        // Завантажуємо базову іконку
-        QIcon baseIcon(baseIconPath);
-        // Визначаємо розмір для малювання (беремо з кнопки або стандартний)
-        QSize iconSize = ui->cartButton->iconSize();
-        if (!iconSize.isValid() || iconSize.width() <= 0 || iconSize.height() <= 0) {
-            // Якщо розмір не встановлено або некоректний, використовуємо стандартний
-            iconSize = QSize(32, 32); // Або інший розмір за замовчуванням
-            qWarning() << "Cart button icon size is invalid, using default:" << iconSize;
+    QIcon baseIcon(baseIconPath);
+    if (!baseIcon.isNull()) {
+        ui->cartButton->setIcon(baseIcon);
+        // Переконуємось, що розмір іконки встановлено (можна зробити в конструкторі або тут)
+        if (ui->cartButton->iconSize().isEmpty()) {
+             ui->cartButton->setIconSize(QSize(24, 24)); // Встановлюємо розмір за замовчуванням
         }
-
-        // Отримуємо Pixmap потрібного розміру
-        QPixmap basePixmap = baseIcon.pixmap(iconSize);
-        if (basePixmap.isNull()) {
-            qWarning() << "Failed to load base cart icon pixmap:" << baseIconPath;
-            // Встановлюємо текст як запасний варіант
-            ui->cartButton->setText(QString::number(totalItems));
-            ui->cartButton->setIcon(QIcon()); // Скидаємо іконку
-            return;
-        }
-
-
-        // Створюємо QPainter для малювання на Pixmap
-        QPainter painter(&basePixmap);
-        painter.setRenderHint(QPainter::Antialiasing); // Вмикаємо згладжування
-
-        // Розрахунок розміру та позиції значка (кружка)
-        int diameter = qMax(12, qMin(iconSize.width(), iconSize.height()) / 2); // Діаметр залежить від розміру іконки, мінімум 12px
-        int radius = diameter / 2;
-        int badgeX = basePixmap.width() - diameter; // Позиція X (правий верхній кут)
-        int badgeY = 0;                             // Позиція Y (правий верхній кут)
-        QRectF badgeRect(badgeX, badgeY, diameter, diameter);
-
-        // Малюємо червоний кружок
-        painter.setBrush(Qt::red);
-        painter.setPen(Qt::NoPen); // Без контуру
-        painter.drawEllipse(badgeRect);
-
-        // Налаштовуємо шрифт для тексту кількості
-        QFont font = painter.font();
-        // Робимо шрифт трохи меншим за радіус, мінімум 6pt
-        font.setPointSize(qMax(6, int(radius * 0.9)));
-        font.setWeight(QFont::Bold); // Жирний шрифт
-        painter.setFont(font);
-
-        // Малюємо текст кількості (білий колір)
-        painter.setPen(Qt::white);
-        painter.drawText(badgeRect, Qt::AlignCenter, QString::number(totalItems));
-
-        // Завершуємо малювання
-        painter.end();
-
-        // Створюємо нову іконку з намальованим значком
-        currentIcon = QIcon(basePixmap);
-        ui->cartButton->setToolTip(tr("Кошик (%1 товар(ів))").arg(totalItems));
-
     } else {
-        // Якщо кошик порожній, встановлюємо оригінальну іконку
-        currentIcon = QIcon(baseIconPath);
-        ui->cartButton->setToolTip(tr("Кошик"));
+        qWarning() << "Failed to load base cart icon:" << baseIconPath;
+        ui->cartButton->setText("?"); // Показати щось замість іконки
     }
+    ui->cartButton->setText(""); // Текст кнопки завжди порожній
 
-    // Встановлюємо фінальну іконку та прибираємо текст кнопки
-    ui->cartButton->setIcon(currentIcon);
-    ui->cartButton->setText(""); // Завжди прибираємо текст, бо кількість тепер на іконці
-
-    qInfo() << "Cart icon updated with badge. Total items:" << totalItems;
+    // 2. Оновлюємо значок (badge)
+    if (totalItems > 0) {
+        m_cartBadgeLabel->setText(QString::number(totalItems));
+        // Можна додати логіку для зміни розміру шрифта, якщо число велике
+        // if (totalItems > 99) {
+        //     QFont font = m_cartBadgeLabel->font();
+        //     font.setPointSize(7); // Менший шрифт для 3+ цифр
+        //     m_cartBadgeLabel->setFont(font);
+        // } else {
+        //     QFont font = m_cartBadgeLabel->font();
+        //     font.setPointSize(9); // Стандартний шрифт
+        //     m_cartBadgeLabel->setFont(font);
+        // }
+        m_cartBadgeLabel->show(); // Показуємо значок
+        ui->cartButton->setToolTip(tr("Кошик (%1 товар(ів))").arg(totalItems));
+        qInfo() << "Cart badge updated. Total items:" << totalItems;
+    } else {
+        m_cartBadgeLabel->hide(); // Ховаємо значок, якщо кошик порожній
+        ui->cartButton->setToolTip(tr("Кошик"));
+        qInfo() << "Cart is empty, badge hidden.";
+    }
 }
 
 // Слот для зміни кількості товару в кошику (Новий дизайн - виправлено виліт)

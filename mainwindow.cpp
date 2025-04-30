@@ -50,6 +50,7 @@
 #include "RangeSlider.h"     // Додано для RangeSlider
 #include <QFrame>           // Додано для QFrame (панель деталей замовлення)
 #include <QVBoxLayout>      // Додано для QVBoxLayout (в панелі деталей)
+#include <QGridLayout>      // Додано для розміщення кнопки кошика та значка
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
@@ -104,8 +105,62 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     connect(ui->editProfileButton, &QPushButton::clicked, this, &MainWindow::on_editProfileButton_clicked);
     connect(ui->saveProfileButton, &QPushButton::clicked, this, &MainWindow::on_saveProfileButton_clicked);
 
-    // Підключаємо кнопку кошика в хедері
+    // Підключаємо кнопку кошика в хедері (з'єднання залишається, але кнопка тепер у контейнері)
     connect(ui->cartButton, &QPushButton::clicked, this, &MainWindow::on_cartButton_clicked);
+
+    // --- Налаштування контейнера для кнопки кошика та значка ---
+    if (ui->cartButton && ui->horizontalLayout_2) { // Припускаємо, що кнопка в horizontalLayout_2
+        // 1. Створюємо контейнер та layout
+        QWidget* cartButtonContainer = new QWidget();
+        QGridLayout* cartLayout = new QGridLayout(cartButtonContainer);
+        cartLayout->setContentsMargins(0, 0, 0, 0);
+        cartLayout->setSpacing(0);
+
+        // 2. Створюємо значок (badge label)
+        m_cartBadgeLabel = new QLabel(cartButtonContainer); // Батько - контейнер
+        m_cartBadgeLabel->setObjectName("cartBadgeLabel");
+        m_cartBadgeLabel->setFixedSize(16, 16); // Розмір значка
+        m_cartBadgeLabel->setStyleSheet(
+            "QLabel#cartBadgeLabel {"
+            "  background-color: red;"
+            "  color: white;"
+            "  border-radius: 8px;" // Половина розміру для круглої форми
+            "  font-weight: bold;"
+            "  font-size: 9pt;"     // Розмір шрифту
+            "  padding: 0px;"
+            "  qproperty-alignment: 'AlignCenter';"
+            "}"
+        );
+        m_cartBadgeLabel->setText("0"); // Початковий текст
+        m_cartBadgeLabel->hide(); // Сховати спочатку
+
+        // 3. Додаємо кнопку та значок до grid layout
+        cartLayout->addWidget(ui->cartButton, 0, 0, 1, 1); // Кнопка займає комірку
+        // Додаємо значок до тієї ж комірки, вирівнюючи по верхньому правому куту
+        cartLayout->addWidget(m_cartBadgeLabel, 0, 0, 1, 1, Qt::AlignTop | Qt::AlignRight);
+        // Невеликий зсув значка вгору та вправо для кращого вигляду
+        m_cartBadgeLabel->setContentsMargins(0, -4, -4, 0); // Від'ємні відступи для зсуву
+
+        // 4. Замінюємо оригінальну кнопку контейнером у батьківському layout (horizontalLayout_2)
+        QHBoxLayout *headerLayout = ui->horizontalLayout_2; // Припускаємо, що це правильний layout
+        int buttonIndex = headerLayout->indexOf(ui->cartButton);
+        if (buttonIndex != -1) {
+            // Видаляємо оригінальний віджет кнопки з layout
+            QLayoutItem *item = headerLayout->takeAt(buttonIndex);
+            // delete item; // Не видаляємо сам item, віджет кнопки ще потрібен
+
+            // Вставляємо контейнер на те саме місце
+            headerLayout->insertWidget(buttonIndex, cartButtonContainer);
+            qInfo() << "Replaced cartButton with cartButtonContainer in header layout.";
+        } else {
+            qWarning() << "Could not find cartButton in horizontalLayout_2 to replace it. Adding container to the end.";
+            headerLayout->addWidget(cartButtonContainer); // Додаємо в кінець як запасний варіант
+        }
+    } else {
+         qWarning() << "cartButton or horizontalLayout_2 not found in UI. Cannot create badge container.";
+    }
+    // --- Кінець налаштування контейнера кошика ---
+
 
     // Підключаємо кнопку "Оформити замовлення" на сторінці кошика (якщо вона вже існує в UI)
     // Переконайтесь, що віджет cartPage та placeOrderButton існують у вашому .ui файлі
