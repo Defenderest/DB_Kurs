@@ -177,6 +177,30 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     }
     // --- Кінець налаштування контейнера кошика ---
 
+    // --- Налаштування кнопки категорії "Художня література" ---
+    if (ui->fictionCategoryButton) {
+        // ЗАМІНІТЬ ЦЕЙ ШЛЯХ на актуальний шлях до вашого зображення
+        // Рекомендується використовувати систему ресурсів Qt (шлях буде виглядати як ":/icons/your_icon.png")
+        QString fictionIconPath = ":/icons/fiction_icon.png"; // Placeholder path
+        QIcon fictionIcon(fictionIconPath);
+        if (!fictionIcon.isNull()) {
+            ui->fictionCategoryButton->setIcon(fictionIcon);
+            // Встановіть бажаний розмір іконки (наприклад, 48x48). Налаштуйте за потреби.
+            ui->fictionCategoryButton->setIconSize(QSize(48, 48));
+            // Очищаємо текст кнопки, щоб іконка була по центру
+            ui->fictionCategoryButton->setText("");
+            // Можна додати підказку (tooltip), якщо текст видалено
+            ui->fictionCategoryButton->setToolTip(tr("Художня література"));
+            qInfo() << "Set icon for fictionCategoryButton from" << fictionIconPath;
+        } else {
+            qWarning() << "Failed to load icon for fictionCategoryButton from path:" << fictionIconPath;
+            // Можна встановити текст за замовчуванням, якщо іконка не завантажилась
+            // ui->fictionCategoryButton->setText(tr("Художня"));
+        }
+    } else {
+        qWarning() << "fictionCategoryButton not found in UI.";
+    }
+    // --- Кінець налаштування кнопки категорії ---
 
     // Підключаємо кнопку "Оформити замовлення" на сторінці кошика (якщо вона вже існує в UI)
     // Переконайтесь, що віджет cartPage та placeOrderButton існують у вашому .ui файлі
