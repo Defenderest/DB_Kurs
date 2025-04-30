@@ -2955,7 +2955,7 @@ QSpinBox#cartQuantitySpinBox::up-button:hover {
     background-color: #e9ecef; /* Світліший фон при наведенні */
 }
 QSpinBox#cartQuantitySpinBox::up-arrow {
-    image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons/-arrow.png); /* Потрібно додати іконку */
+    image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons/up-arrow.png); /* Потрібно додати іконку */
     width: 8px;
     height: 8px;
 }
@@ -3084,8 +3084,8 @@ QLabel#emptyCartLabel {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>811</width>
-               <height>338</height>
+               <width>54</width>
+               <height>16</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -3197,8 +3197,8 @@ QLabel#emptyCartLabel {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>851</width>
-               <height>570</height>
+               <width>513</width>
+               <height>523</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -3522,7 +3522,7 @@ QLabel.orderItemLabel, QLabel.orderStatusHistoryLabel {
               <string>Закрити панель</string>
              </property>
              <property name="text">
-              <string/>
+              <string>✕</string>
              </property>
             </widget>
            </item>
@@ -3538,8 +3538,8 @@ QLabel.orderItemLabel, QLabel.orderStatusHistoryLabel {
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>100</height>
+              <width>121</width>
+              <height>508</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="orderDetailsContentsLayout">
