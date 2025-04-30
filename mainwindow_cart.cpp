@@ -277,7 +277,7 @@ void MainWindow::updateCartIcon()
 
     if (totalItems > 0) {
         // Показуємо кількість поруч з іконкою
-        ui->cartButton->setText(QString("(%1)").arg(totalItems)); // Встановлюємо тільки текст кількості
+        ui->cartButton->setText(QString("%1").arg(totalItems)); // Встановлюємо тільки текст кількості
         ui->cartButton->setToolTip(tr("Кошик (%1 товар(ів))").arg(totalItems));
     } else {
         // Повертаємо стандартний вигляд (тільки іконка)
