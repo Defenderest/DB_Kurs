@@ -109,7 +109,12 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     connect(ui->cartButton, &QPushButton::clicked, this, &MainWindow::on_cartButton_clicked);
 
     // --- Налаштування контейнера для кнопки кошика та значка ---
-    if (ui->cartButton && ui->horizontalLayout_2) { // Припускаємо, що кнопка в horizontalLayout_2
+    // Знаходимо батьківський layout кнопки кошика динамічно
+    QWidget* cartButtonParent = ui->cartButton ? ui->cartButton->parentWidget() : nullptr;
+    QLayout* parentLayout = cartButtonParent ? cartButtonParent->layout() : nullptr;
+
+    if (ui->cartButton && parentLayout) {
+        qInfo() << "Found parent layout for cartButton:" << parentLayout->metaObject()->className();
         // 1. Створюємо контейнер та layout
         QWidget* cartButtonContainer = new QWidget();
         QGridLayout* cartLayout = new QGridLayout(cartButtonContainer);
@@ -141,23 +146,34 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         // Невеликий зсув значка вгору та вправо для кращого вигляду
         m_cartBadgeLabel->setContentsMargins(0, -4, -4, 0); // Від'ємні відступи для зсуву
 
-        // 4. Замінюємо оригінальну кнопку контейнером у батьківському layout (horizontalLayout_2)
-        QHBoxLayout *headerLayout = ui->horizontalLayout_2; // Припускаємо, що це правильний layout
-        int buttonIndex = headerLayout->indexOf(ui->cartButton);
+        // 4. Замінюємо оригінальну кнопку контейнером у батьківському layout
+        int buttonIndex = parentLayout->indexOf(ui->cartButton);
         if (buttonIndex != -1) {
             // Видаляємо оригінальний віджет кнопки з layout
-            QLayoutItem *item = headerLayout->takeAt(buttonIndex);
+            QLayoutItem *item = parentLayout->takeAt(buttonIndex);
             // delete item; // Не видаляємо сам item, віджет кнопки ще потрібен
 
             // Вставляємо контейнер на те саме місце
-            headerLayout->insertWidget(buttonIndex, cartButtonContainer);
-            qInfo() << "Replaced cartButton with cartButtonContainer in header layout.";
+            // Перевіряємо тип layout перед вставкою (можна додати більше типів за потреби)
+            if (qobject_cast<QBoxLayout*>(parentLayout)) {
+                 qobject_cast<QBoxLayout*>(parentLayout)->insertWidget(buttonIndex, cartButtonContainer);
+                 qInfo() << "Replaced cartButton with cartButtonContainer in parent layout (QBoxLayout).";
+            } else if (qobject_cast<QGridLayout*>(parentLayout)) {
+                 // Для GridLayout потрібно вказати рядок і стовпець, що складніше визначити динамічно.
+                 // Поки що просто додамо в кінець, якщо це GridLayout.
+                 qWarning() << "Parent layout is QGridLayout. Adding container to the end instead of replacing.";
+                 parentLayout->addWidget(cartButtonContainer);
+            } else {
+                 // Для інших типів layout (або якщо не вдалося визначити) додаємо в кінець
+                 qWarning() << "Parent layout type (" << parentLayout->metaObject()->className() << ") not explicitly handled for replacement. Adding container to the end.";
+                 parentLayout->addWidget(cartButtonContainer);
+            }
         } else {
-            qWarning() << "Could not find cartButton in horizontalLayout_2 to replace it. Adding container to the end.";
-            headerLayout->addWidget(cartButtonContainer); // Додаємо в кінець як запасний варіант
+            qWarning() << "Could not find cartButton in its parent layout to replace it. Adding container to the end.";
+            parentLayout->addWidget(cartButtonContainer); // Додаємо в кінець як запасний варіант
         }
     } else {
-         qWarning() << "cartButton or horizontalLayout_2 not found in UI. Cannot create badge container.";
+         qWarning() << "cartButton or its parent layout not found. Cannot create badge container.";
     }
     // --- Кінець налаштування контейнера кошика ---
 
