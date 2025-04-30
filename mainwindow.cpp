@@ -324,6 +324,16 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         qWarning() << "Could not find QScrollArea on the books page!";
     }
 
+    // --- Налаштування ScrollArea для сторінки авторів ---
+    QScrollArea* authorsScrollArea = ui->authorsPage->findChild<QScrollArea*>(); // Знаходимо ScrollArea на сторінці авторів
+    if (authorsScrollArea) {
+        authorsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Вимикаємо горизонтальну прокрутку
+        authorsScrollArea->setWidgetResizable(true); // Дозволяємо віджету всередині змінювати розмір
+        qInfo() << "Authors page ScrollArea horizontal scrollbar disabled.";
+    } else {
+        qWarning() << "Could not find QScrollArea on the authors page!";
+    }
+
     // --- Налаштування панелі деталей замовлення ---
     m_orderDetailsPanel = ui->orderDetailsPanel; // Знаходимо панель з UI
     if (m_orderDetailsPanel) {
@@ -414,7 +424,12 @@ void MainWindow::on_navBooksButton_clicked()
 void MainWindow::on_navAuthorsButton_clicked()
 {
     ui->contentStackedWidget->setCurrentWidget(ui->authorsPage); // Використовуємо ім'я сторінки з UI
-    // Можна додати ледаче завантаження тут
+    // Завантажуємо та відображаємо авторів при переході на сторінку
+    loadAndDisplayAuthors();
+    // Ховаємо кнопку фільтра, якщо вона видима
+    if (ui->filterButton) {
+        ui->filterButton->hide();
+    }
 }
 
 // Налаштування анімації бокової панелі
@@ -1259,6 +1274,11 @@ void MainWindow::resizeEvent(QResizeEvent *event)
         // Виклик loadAndDisplayFilteredBooks призведе до виклику displayBooks,
         // який тепер буде використовувати нову ширину для розрахунку колонок.
         loadAndDisplayFilteredBooks();
+    }
+    // Якщо поточна сторінка - "Автори", оновлюємо відображення авторів
+    else if (ui->contentStackedWidget && ui->contentStackedWidget->currentWidget() == ui->authorsPage) {
+        qDebug() << "Authors page is active, triggering layout update via loadAndDisplayAuthors().";
+        loadAndDisplayAuthors();
     }
 }
 // --- Кінець обробки зміни розміру вікна ---
