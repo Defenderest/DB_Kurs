@@ -179,13 +179,14 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // --- Налаштування кнопки категорії "Художня література" ---
     if (ui->fictionCategoryButton) {
-        // ЗАМІНІТЬ ЦЕЙ ШЛЯХ на актуальний шлях до вашого зображення
-        // Рекомендується використовувати систему ресурсів Qt (шлях буде виглядати як ":/icons/your_icon.png")
-        QString fictionIconPath = ":/icons/fiction_icon.png"; // Placeholder path
+        // Використовуємо шлях до ресурсу Qt (перевірено з resourses.qrc)
+        QString fictionIconPath = ":/icons/icons/fiction_category.png";
+        qInfo() << "Attempting to load icon from resource path:" << fictionIconPath;
         QIcon fictionIcon(fictionIconPath);
         if (!fictionIcon.isNull()) {
             ui->fictionCategoryButton->setIcon(fictionIcon);
-            // Розмір іконки тепер буде керуватися розміром кнопки та її стилем/відступами
+            // Явно встановлюємо розмір іконки
+            ui->fictionCategoryButton->setIconSize(QSize(64, 64)); // Спробуйте цей розмір, можна змінити
             // Очищаємо текст кнопки, щоб іконка була по центру
             ui->fictionCategoryButton->setText("");
             // Можна додати підказку (tooltip), якщо текст видалено

@@ -13,6 +13,7 @@
         <file>icons/trash.png</file>      <!-- Додано іконку видалення -->
         <file>icons/edit.png</file>       <!-- Додано іконку редагування -->
         <file>icons/save.png</file>       <!-- Додано іконку збереження -->
+        <file>icons/fiction_category.png</file> <!-- Додано іконку категорії -->
     </qresource>
     <qresource prefix="/images">
         <!-- Виправлено шляхи до банерів - тепер вони відносні до файлу .qrc -->
