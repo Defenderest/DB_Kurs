@@ -268,26 +268,26 @@ QLabel#dateFilterLabel {
     font-size: 9pt;
 }
 
-/* Стиль для кнопок категорій - більш легкий */
+/* Оновлений стиль для кнопок категорій у сітці 2x2 */
 QWidget#categoriesWidget QPushButton {
-    background-color: #f8f9fa; /* Світло-сірий фон */
-    color: #343a40; /* Темніший текст */
-    border: 1px solid #dee2e6; /* Світла рамка */
+    background-color: #ffffff; /* Білий фон */
+    color: #495057; /* Темно-сірий текст */
+    border: 1px solid #e0e0e0; /* Світла рамка */
     font-weight: 500;
     text-align: center;
-    padding: 8px; /* Ще зменшено padding */
-    min-height: 70px; /* Ще зменшено висоту */
-    border-radius: 8px; /* Збільшено заокруглення */
-    /* transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out; */
+    padding: 15px; /* Збільшено padding для більших кнопок */
+    min-height: 80px; /* Відновлено висоту */
+    border-radius: 8px; /* Заокруглення */
+    /* transition не підтримується */
 }
 QWidget#categoriesWidget QPushButton:hover {
-    background-color: #e9ecef; /* Трохи темніший фон при наведенні */
-    color: #212529;
-    border-color: #ced4da; /* Трохи темніша рамка при наведенні */
+    background-color: #f8f9fa; /* Дуже світлий сірий при наведенні */
+    color: #343a40;
+    border-color: #dee2e6; /* Трохи темніша рамка */
 }
 QWidget#categoriesWidget QPushButton:pressed {
-    background-color: #e0e0e0; /* Ще темніший сірий при натисканні */
-    border-color: #c0c0c0;
+    background-color: #e9ecef; /* Світло-сірий при натисканні */
+    border-color: #ced4da;
 }
 
 /* Видалено стилі для QScrollArea#categoriesScrollArea QPushButton */
