@@ -13,6 +13,127 @@
   <property name="windowTitle">
    <string>Вхід до системи</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* Загальний стиль для діалогу */
+QDialog#LoginDialog {
+    background-color: #f0f0f0; /* Світло-сірий фон */
+}
+
+/* Стиль для всіх міток */
+QLabel {
+    color: #555555; /* Темно-сірий текст */
+    font-size: 10pt;
+}
+
+/* Стиль для заголовка */
+QLabel#titleLabel {
+    color: #333333; /* Ще темніший сірий */
+    font-size: 16pt;
+    font-weight: bold;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+/* Стиль для мітки помилки */
+QLabel#errorLabel {
+    color: #d9534f; /* Червонуватий колір для помилок */
+    font-weight: bold;
+    min-height: 20px; /* Резервуємо місце */
+}
+
+/* Стиль для полів вводу */
+QLineEdit {
+    background-color: #ffffff; /* Білий фон */
+    border: 1px solid #cccccc; /* Світло-сіра рамка */
+    padding: 8px;
+    border-radius: 12px; /* Округлі кути */
+    color: #333333; /* Темний текст вводу */
+    font-size: 10pt;
+}
+
+QLineEdit:focus {
+    border-color: #66afe9; /* Блакитна рамка при фокусі */
+}
+
+/* Загальний стиль для кнопок */
+QPushButton {
+    border: 1px solid transparent; /* Прозора рамка за замовчуванням */
+    padding: 8px 18px;
+    border-radius: 12px; /* Округлі кути */
+    font-size: 10pt;
+    font-weight: bold;
+    min-width: 80px;
+}
+
+/* Стиль для основної кнопки (Увійти/Зареєструватися) */
+QPushButton#okButton {
+    background-color: #5cb85c; /* Зелений */
+    color: white;
+    border-color: #4cae4c;
+}
+
+QPushButton#okButton:hover {
+    background-color: #4cae4c; /* Темніший зелений */
+    border-color: #4cae4c;
+}
+
+QPushButton#okButton:pressed {
+    background-color: #398439; /* Ще темніший зелений */
+    border-color: #2d672d;
+}
+
+QPushButton#okButton:disabled {
+    background-color: #aaaaaa; /* Сірий, коли вимкнено */
+    border-color: #999999;
+    color: #dddddd;
+}
+
+/* Стиль для кнопки Скасувати */
+QPushButton#cancelButton {
+    background-color: #f0f0f0; /* Фон як у діалогу */
+    color: #555555; /* Темно-сірий текст */
+    border: 1px solid #cccccc; /* Сіра рамка */
+}
+
+QPushButton#cancelButton:hover {
+    background-color: #e0e0e0; /* Трохи темніший фон */
+    border-color: #bbbbbb;
+}
+
+QPushButton#cancelButton:pressed {
+    background-color: #d0d0d0; /* Ще темніший фон */
+    border-color: #aaaaaa;
+}
+
+/* Стиль для кнопок перемикання режимів (як посилання) */
+QPushButton#switchToRegisterButton, QPushButton#switchToLoginButton {
+    background-color: transparent;
+    border: none;
+    color: #007bff; /* Синій колір посилання */
+    text-decoration: underline;
+    padding: 2px;
+    min-width: 0; /* Скидання мін. ширини */
+    font-size: 9pt;
+    font-weight: normal; /* Звичайний шрифт */
+    border-radius: 0; /* Не заокруглювати */
+}
+
+QPushButton#switchToRegisterButton:hover, QPushButton#switchToLoginButton:hover {
+    color: #0056b3; /* Темніший синій при наведенні */
+}
+
+QPushButton#switchToRegisterButton:pressed, QPushButton#switchToLoginButton:pressed {
+    color: #004085; /* Ще темніший синій при натисканні */
+}
+
+/* Налаштування відступів у формі */
+QFormLayout {
+    vertical-spacing: 12px; /* Відстань між рядками */
+    horizontal-spacing: 10px; /* Відстань між міткою та полем */
+    margin-top: 15px;
+}
+</string>
+  </property>
   <property name="modal">
    <bool>true</bool>
   </property>
