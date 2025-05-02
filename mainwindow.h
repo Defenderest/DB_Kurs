@@ -145,6 +145,7 @@ private:
     void updateBannerImages(); // Оновлення зображень банера
     void setupFilterPanel(); // Налаштування панелі фільтрів
     void loadAndDisplayFilteredBooks(); // Завантаження та відображення книг з урахуванням фільтрів
+    void loadAndDisplayAuthors(); // Завантаження та відображення авторів
     void loadCartFromDatabase(); // Завантаження корзини з БД при старті
 
     // Члени класу
