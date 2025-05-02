@@ -933,7 +933,7 @@ QPushButton#navProfileButton[collapsed=&quot;true&quot;]:checked {
           <item>
            <widget class="QScrollArea" name="discoverScrollArea">
             <property name="widgetResizable">
-             <bool>false</bool> <!-- Змінено на false -->
+             <bool>true</bool>
             </property>
             <widget class="QWidget" name="discoverScrollContents">
              <property name="geometry">
@@ -1574,7 +1574,7 @@ border-bottom: 1px solid #eeeeee;</string>
           <item>
            <widget class="QScrollArea" name="booksScrollArea">
             <property name="widgetResizable">
-             <bool>false</bool> <!-- Змінено на false -->
+             <bool>true</bool>
             </property>
             <widget class="QWidget" name="booksContainerWidget">
              <property name="geometry">
@@ -1667,7 +1667,7 @@ border-bottom: 1px solid #eeeeee;</string>
           <item>
            <widget class="QScrollArea" name="authorsScrollArea">
             <property name="widgetResizable">
-             <bool>false</bool> <!-- Змінено на false -->
+             <bool>true</bool>
             </property>
             <widget class="QWidget" name="authorsContainerWidget">
              <property name="geometry">
@@ -1798,7 +1798,7 @@ border-bottom: 1px solid #eeeeee;</string>
              <string notr="true">QScrollArea { border: none; background-color: transparent; } /* Прибираємо рамку */</string>
             </property>
             <property name="widgetResizable">
-             <bool>false</bool> <!-- Змінено на false -->
+             <bool>true</bool>
             </property>
             <widget class="QWidget" name="ordersContainerWidget">
              <property name="geometry">
@@ -3135,7 +3135,7 @@ QLabel#emptyCartLabel {
              <string notr="true">QScrollArea { border: none; background-color: transparent; } /* Прибираємо рамку */</string>
             </property>
             <property name="widgetResizable">
-             <bool>false</bool> <!-- Змінено на false -->
+             <bool>true</bool>
             </property>
             <widget class="QWidget" name="cartItemsContainerWidget">
              <property name="geometry">
