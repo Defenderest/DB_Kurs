@@ -21,11 +21,11 @@ public:
     int getLoggedInCustomerId() const;
 
 private slots:
-    // Слот для обробки натискання кнопки OK/Зареєструватися
-    void on_buttonBox_accepted();
     // Слоти для кнопок перемикання режимів
     void on_switchToRegisterButton_clicked();
     void on_switchToLoginButton_clicked();
+    // Слот для обробки натискання кнопки Увійти/Зареєструватися
+    void on_okButton_clicked();
 
 private:
     // Режими діалогу

@@ -11,9 +11,6 @@ LoginDialog::LoginDialog(DatabaseManager *dbManager, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Перейменовуємо стандартну кнопку OK на "Увійти"
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Увійти"));
-
     // Початкове очищення мітки помилки
     ui->errorLabel->clear();
 
@@ -24,7 +21,7 @@ LoginDialog::LoginDialog(DatabaseManager *dbManager, QWidget *parent) :
     if (!m_dbManager) {
         qCritical() << "LoginDialog: DatabaseManager is null!";
         ui->errorLabel->setText(tr("Помилка ініціалізації. Неможливо перевірити дані."));
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+        ui->okButton->setEnabled(false); // Вимикаємо нашу кнопку OK
     }
 
     // Налаштовуємо початковий режим (Вхід)
@@ -33,6 +30,9 @@ LoginDialog::LoginDialog(DatabaseManager *dbManager, QWidget *parent) :
     // З'єднуємо кнопки перемикання режимів зі слотами (якщо не використовується авто-з'єднання за іменем)
     // connect(ui->switchToRegisterButton, &QPushButton::clicked, this, &LoginDialog::on_switchToRegisterButton_clicked);
     // connect(ui->switchToLoginButton, &QPushButton::clicked, this, &LoginDialog::on_switchToLoginButton_clicked);
+
+    // З'єднуємо нашу кнопку OK зі слотом
+    connect(ui->okButton, &QPushButton::clicked, this, &LoginDialog::on_okButton_clicked);
 }
 
 LoginDialog::~LoginDialog()
@@ -67,7 +67,7 @@ void LoginDialog::setMode(Mode mode)
     if (mode == Login) {
         // --- Режим Входу ---
         ui->titleLabel->setText(tr("Вхід до Книгарні"));
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Увійти"));
+        ui->okButton->setText(tr("Увійти")); // Змінюємо текст нашої кнопки
         // Показуємо кнопку переходу до реєстрації, ховаємо кнопку переходу до входу
         ui->switchToRegisterButton->setVisible(true);
         ui->switchToLoginButton->setVisible(false);
@@ -90,7 +90,7 @@ void LoginDialog::setMode(Mode mode)
     } else {
         // --- Режим Реєстрації ---
         ui->titleLabel->setText(tr("Реєстрація нового користувача"));
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Зареєструватися"));
+        ui->okButton->setText(tr("Зареєструватися")); // Змінюємо текст нашої кнопки
         // Ховаємо кнопку переходу до реєстрації, показуємо кнопку переходу до входу
         ui->switchToRegisterButton->setVisible(false);
         ui->switchToLoginButton->setVisible(true);
@@ -112,8 +112,8 @@ void LoginDialog::setMode(Mode mode)
 }
 
 
-// Обробник натискання головної кнопки ("Увійти" або "Зареєструватися")
-void LoginDialog::on_buttonBox_accepted()
+// Обробник натискання кнопки "Увійти" або "Зареєструватися"
+void LoginDialog::on_okButton_clicked()
 {
     ui->errorLabel->clear(); // Очищаємо попередні помилки
 
