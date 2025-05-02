@@ -25,7 +25,7 @@ LoginDialog::LoginDialog(DatabaseManager *dbManager, QWidget *parent) :
     }
 
     // Налаштовуємо початковий режим (Вхід)
-    setMode(Login);
+    setMode(Login); // Це також очистить m_loginAttempts
 
     // З'єднуємо кнопки перемикання режимів зі слотами (якщо не використовується авто-з'єднання за іменем)
     // connect(ui->switchToRegisterButton, &QPushButton::clicked, this, &LoginDialog::on_switchToRegisterButton_clicked);
@@ -63,6 +63,10 @@ void LoginDialog::setMode(Mode mode)
 {
     m_currentMode = mode;
     ui->errorLabel->clear(); // Очищаємо помилки при зміні режиму
+    m_loginAttempts.clear(); // Скидаємо лічильники спроб при зміні режиму
+    ui->okButton->setEnabled(true); // Завжди вмикаємо кнопку при зміні режиму
+    ui->emailLineEdit->setEnabled(true); // Переконуємось, що поля ввімкнені
+    ui->passwordLineEdit->setEnabled(true);
 
     if (mode == Login) {
         // --- Режим Входу ---
@@ -129,11 +133,23 @@ void LoginDialog::on_okButton_clicked()
 
         if (checkCredentials(email, password)) {
             qInfo() << "Login successful for user ID:" << m_loggedInCustomerId;
+            m_loginAttempts.remove(email); // Скидаємо лічильник при успішному вході
             accept(); // Закриваємо діалог з результатом Accepted
         } else {
-            // Помилка вже виведена в checkCredentials або тут
-            if (ui->errorLabel->text().isEmpty()) { // Якщо checkCredentials не встановив помилку
-                 ui->errorLabel->setText(tr("Невірний email або пароль."));
+            // Невдала спроба входу
+            int attempts = m_loginAttempts.value(email, 0) + 1; // Отримуємо поточну спробу + 1
+            m_loginAttempts[email] = attempts; // Зберігаємо нову кількість спроб
+
+            if (attempts >= MAX_LOGIN_ATTEMPTS) {
+                ui->errorLabel->setText(tr("Забагато невдалих спроб. Спробуйте пізніше або скиньте пароль."));
+                ui->okButton->setEnabled(false); // Блокуємо кнопку
+                ui->emailLineEdit->setEnabled(false); // Блокуємо поля
+                ui->passwordLineEdit->setEnabled(false);
+            } else {
+                int remaining = MAX_LOGIN_ATTEMPTS - attempts;
+                ui->errorLabel->setText(tr("Невірний email або пароль. Залишилось спроб: %1").arg(remaining));
+                ui->passwordLineEdit->clear(); // Очищаємо поле пароля
+                ui->passwordLineEdit->setFocus();
             }
         }
     } else {

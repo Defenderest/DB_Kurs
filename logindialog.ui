@@ -123,7 +123,7 @@
 font-size: 9pt;</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Error message placeholder</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -153,9 +153,10 @@ font-size: 9pt;</string>
        <property name="text">
         <string>Немає акаунту? Зареєструватися</string>
        </property>
-       <property name="flat">
+       <!-- Атрибут flat більше не потрібен, керуємо стилем через QSS -->
+       <!-- <property name="flat">
         <bool>true</bool>
-       </property>
+       </property> -->
       </widget>
      </item>
      <item>
@@ -163,9 +164,10 @@ font-size: 9pt;</string>
        <property name="text">
         <string>Вже є акаунт? Увійти</string>
        </property>
-       <property name="flat">
+       <!-- Атрибут flat більше не потрібен -->
+       <!-- <property name="flat">
         <bool>true</bool>
-       </property>
+       </property> -->
       </widget>
      </item>
      <item>
