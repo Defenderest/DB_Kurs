@@ -185,8 +185,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         QIcon fictionIcon(fictionIconPath);
         if (!fictionIcon.isNull()) {
             ui->fictionCategoryButton->setIcon(fictionIcon);
-            // Встановіть бажаний розмір іконки (наприклад, 48x48). Налаштуйте за потреби.
-            ui->fictionCategoryButton->setIconSize(QSize(48, 48));
+            // Розмір іконки тепер буде керуватися розміром кнопки та її стилем/відступами
             // Очищаємо текст кнопки, щоб іконка була по центру
             ui->fictionCategoryButton->setText("");
             // Можна додати підказку (tooltip), якщо текст видалено
