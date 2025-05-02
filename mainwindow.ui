@@ -421,6 +421,34 @@ QRadioButton {
     background: transparent;
 }
 
+/* === Стилі для кнопок категорій === */
+QWidget#categoriesWidget QPushButton { /* Націлюємось на кнопки всередині categoriesWidget */
+    background-color: #f0f2f5; /* Світліший сіро-блакитний фон */
+    color: #343a40; /* Темно-сірий текст */
+    border: 1px solid #dee2e6; /* Світла сіра рамка */
+    border-radius: 8px; /* Заокруглені кути */
+    padding: 12px 18px; /* Збільшені відступи */
+    font-size: 11pt; /* Трохи більший шрифт */
+    font-weight: 500; /* Середня жирність */
+    min-height: 60px; /* Мінімальна висота для кращого вигляду */
+    text-align: center; /* Вирівнювання тексту */
+    /* transition: all 0.2s ease-in-out; */ /* Плавний перехід (не підтримується стандартно) */
+}
+QWidget#categoriesWidget QPushButton:hover {
+    background-color: #e9ecef; /* Світліший фон при наведенні */
+    border-color: #ced4da;
+    /* transform: translateY(-2px); */ /* Невеликий підйом (не підтримується стандартно) */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */ /* Тінь (не підтримується стандартно) */
+}
+QWidget#categoriesWidget QPushButton:pressed {
+    background-color: #dee2e6; /* Ще світліший фон при натисканні */
+    border-color: #adb5bd;
+    /* transform: translateY(0px); */
+    /* box-shadow: none; */
+}
+/* Можна додати :checked стиль, якщо кнопки checkable */
+/* QWidget#categoriesWidget QPushButton:checked { ... } */
+
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
