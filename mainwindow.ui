@@ -380,6 +380,51 @@ QLabel#emptyOrdersLabel {
     qproperty-alignment: AlignCenter;
 }
 
+/* === Стилі для бейджа статусу замовлення === */
+#orderStatusBadgeLabel {
+    background-color: #e0e0e0; /* Сірий фон за замовчуванням */
+    color: #333;             /* Темний текст */
+    border-radius: 8px;      /* Заокруглені кути */
+    padding: 4px 10px;       /* Внутрішні відступи (зверху/знизу, зліва/справа) */
+    min-width: 60px;         /* Мінімальна ширина */
+    font-weight: bold;       /* Жирний шрифт */
+    text-align: center;      /* Вирівнювання тексту по центру (дублює setAlignment) */
+    border: 1px solid #c0c0c0; /* Тонка рамка (опціонально) */
+}
+
+/* Стилі для різних статусів (використовуємо властивість 'status') */
+#orderStatusBadgeLabel[status=&quot;new&quot;] {
+    background-color: #bbdefb; /* Світло-блакитний */
+    color: #1e88e5;
+    border-color: #90caf9;
+}
+#orderStatusBadgeLabel[status=&quot;processing&quot;] {
+    background-color: #fff9c4; /* Світло-жовтий */
+    color: #fbc02d;
+    border-color: #fff59d;
+}
+#orderStatusBadgeLabel[status=&quot;shipped&quot;] {
+    background-color: #c8e6c9; /* Світло-зелений */
+    color: #388e3c;
+    border-color: #a5d6a7;
+}
+#orderStatusBadgeLabel[status=&quot;delivered&quot;] {
+    background-color: #d1c4e9; /* Світло-фіолетовий */
+    color: #5e35b1;
+    border-color: #b39ddb;
+}
+#orderStatusBadgeLabel[status=&quot;cancelled&quot;] {
+    background-color: #ffcdd2; /* Світло-червоний */
+    color: #d32f2f;
+    border-color: #ef9a9a;
+}
+#orderStatusBadgeLabel[status=&quot;unknown&quot;] {
+    background-color: #e0e0e0;
+    color: #757575;
+    border-color: #c0c0c0;
+}
+/* === Кінець стилів для бейджа статусу замовлення === */
+
 /* Явно встановлюємо білий фон для області прокрутки деталей книги та її вмісту */
 QScrollArea#bookDetailsScrollArea, QWidget#bookDetailsScrollContents {
     background-color: #ffffff;
