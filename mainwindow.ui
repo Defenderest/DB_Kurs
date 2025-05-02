@@ -255,38 +255,39 @@ QStackedWidget#bannerStackedWidget {
 
 QLabel#categoryHeaderLabel, QLabel#bestsellerHeaderLabel, QLabel#newReleaseHeaderLabel,
 QLabel#classicsHeaderLabel, QLabel#fantasyHeaderLabel, QLabel#nonFictionHeaderLabel {
-   font-size: 13pt; /* Зменшено розмір */
-   font-weight: 500; /* Зменшено жирність */
-   color: #495057; /* Світліший сірий */
-   margin-top: 20px; /* Збільшено верхній відступ */
-   margin-bottom: 10px; /* Збільшено нижній відступ */
-   padding-bottom: 0px; /* Прибрано відступ знизу */
-   border-bottom: none; /* Прибрано лінію */
+   font-size: 14pt; /* Трохи збільшено для акценту */
+   font-weight: 600; /* Зроблено жирнішим */
+   color: #212529; /* Темніший колір */
+   margin-top: 25px; /* Збільшено верхній відступ */
+   margin-bottom: 15px; /* Збільшено нижній відступ */
+   padding-bottom: 3px;
+   border-bottom: none; /* Лінія прибрана */
 }
 QLabel#dateFilterLabel {
     color: #495057;
     font-size: 9pt;
 }
 
+/* Стиль для кнопок категорій - більш легкий */
 QWidget#categoriesWidget QPushButton {
-    background-color: #ffffff;
-    color: #495057;
-    border: 1px solid #e0e0e0; /* Світліша рамка */
+    background-color: #f8f9fa; /* Світло-сірий фон */
+    color: #343a40; /* Темніший текст */
+    border: 1px solid #dee2e6; /* Світла рамка */
     font-weight: 500;
     text-align: center;
-    padding: 10px; /* Зменшено padding */
-    min-height: 80px; /* Зменшено висоту */
-    border-radius: 6px; /* Трохи зменшено заокруглення */
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+    padding: 8px; /* Ще зменшено padding */
+    min-height: 70px; /* Ще зменшено висоту */
+    border-radius: 8px; /* Збільшено заокруглення */
+    /* transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out; */
 }
 QWidget#categoriesWidget QPushButton:hover {
-    background-color: #f8f9fa; /* Світло-сірий фон при наведенні */
-    color: #343a40;
-    border-color: #dee2e6; /* Світліша рамка при наведенні */
+    background-color: #e9ecef; /* Трохи темніший фон при наведенні */
+    color: #212529;
+    border-color: #ced4da; /* Трохи темніша рамка при наведенні */
 }
 QWidget#categoriesWidget QPushButton:pressed {
-    background-color: #e9ecef; /* Трохи темніший сірий при натисканні */
-    border-color: #ced4da;
+    background-color: #dee2e6; /* Ще темніший сірий при натисканні */
+    border-color: #adb5bd;
 }
 
 QLineEdit#globalSearchLineEdit {
@@ -421,16 +422,17 @@ QWidget#bannerIndicatorWidget { /* Контейнер для індикатор�
 }
 
 QRadioButton::indicator {
-    width: 10px; /* Розмір індикатора */
-    height: 10px;
-    border-radius: 5px; /* Робимо його круглим */
-    background-color: #adb5bd; /* Колір неактивного індикатора (сірий) */
-    margin: 0 3px; /* Відступи між індикаторами */
+    width: 8px; /* Зменшено розмір */
+    height: 8px;
+    border-radius: 4px; /* Робимо його круглим */
+    background-color: rgba(255, 255, 255, 0.5); /* Напівпрозорий білий для неактивного */
+    border: 1px solid rgba(0, 0, 0, 0.2); /* Ледь помітна рамка */
+    margin: 0 4px; /* Трохи збільшено відступи */
 }
 
 QRadioButton::indicator:checked {
     background-color: #ffffff; /* Колір активного індикатора (білий) */
-    border: 1px solid #adb5bd; /* Додаємо рамку активному */
+    border: 1px solid rgba(0, 0, 0, 0.4); /* Чіткіша рамка для активного */
 }
 
 /* Прибираємо текст радіокнопки */
@@ -891,7 +893,7 @@ QPushButton#navProfileButton[collapsed=&quot;true&quot;]:checked {
              </property>
              <layout class="QVBoxLayout" name="discoverContentLayout">
               <property name="spacing">
-               <number>20</number>
+               <number>25</number> <!-- Збільшено загальний вертикальний відступ -->
               </property>
               <property name="leftMargin">
                <number>15</number>
