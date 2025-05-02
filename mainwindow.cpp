@@ -378,6 +378,44 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         qWarning() << "MainWindow Constructor: orderDetailsPanel not found in UI!";
     }
 
+    // --- Підключення кнопок категорій ---
+    // Переконуємось, що віджет категорій існує
+    QWidget* categoriesWidget = this->findChild<QWidget*>("categoriesWidget");
+    if (categoriesWidget) {
+        QPushButton* fictionButton = categoriesWidget->findChild<QPushButton*>("fictionCategoryButton");
+        QPushButton* nonFictionButton = categoriesWidget->findChild<QPushButton*>("nonFictionCategoryButton");
+        QPushButton* childrenButton = categoriesWidget->findChild<QPushButton*>("childrenCategoryButton");
+        QPushButton* educationButton = categoriesWidget->findChild<QPushButton*>("educationCategoryButton");
+
+        if (fictionButton) {
+            // Використовуємо точну назву жанру, як вона буде в списку фільтрів
+            connect(fictionButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Художня література"); });
+        } else {
+            qWarning() << "fictionCategoryButton not found inside categoriesWidget.";
+        }
+        if (nonFictionButton) {
+            // Уточніть точну назву жанру для "Бізнес та наука" (як вона в БД/фільтрах)
+            // Припустимо, що це "Науково-популярне" або "Бізнес"
+            connect(nonFictionButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Науково-популярне"); }); // Або "Бізнес"
+        } else {
+            qWarning() << "nonFictionCategoryButton not found inside categoriesWidget.";
+        }
+        if (childrenButton) {
+            connect(childrenButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Дитяча література"); }); // Уточніть назву жанру
+        } else {
+            qWarning() << "childrenCategoryButton not found inside categoriesWidget.";
+        }
+        if (educationButton) {
+            connect(educationButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Освіта"); }); // Уточніть назву жанру
+        } else {
+            qWarning() << "educationCategoryButton not found inside categoriesWidget.";
+        }
+        qInfo() << "Category button signals connected.";
+    } else {
+         qWarning() << "categoriesWidget not found. Cannot connect category button signals.";
+    }
+    // --- Кінець підключення кнопок категорій ---
+
 }
 
 MainWindow::~MainWindow()
@@ -1482,6 +1520,62 @@ void MainWindow::loadCartFromDatabase()
     }
 }
 // --- Кінець методу завантаження корзини ---
+
+// --- Реалізація слоту для кнопок категорій ---
+void MainWindow::applyGenreFilter(const QString &genreName)
+{
+    qInfo() << "Applying filter for genre:" << genreName;
+
+    // 1. Перемкнути на сторінку книг
+    ui->contentStackedWidget->setCurrentWidget(ui->booksPage);
+
+    // 2. Скинути всі фільтри (це також викличе loadAndDisplayFilteredBooks з порожніми критеріями)
+    resetFilters(); // Важливо: resetFilters вже викликає loadAndDisplayFilteredBooks
+
+    // 3. Знайти та встановити прапорець для потрібного жанру
+    if (m_genreFilterListWidget) {
+        bool genreFound = false;
+        for (int i = 0; i < m_genreFilterListWidget->count(); ++i) {
+            QListWidgetItem *item = m_genreFilterListWidget->item(i);
+            if (item && item->text() == genreName) {
+                // Блокуємо сигнали, щоб уникнути запуску таймера applyFiltersWithDelay
+                m_genreFilterListWidget->blockSignals(true);
+                item->setCheckState(Qt::Checked);
+                m_genreFilterListWidget->blockSignals(false);
+                genreFound = true;
+                qInfo() << "Genre item found and checked:" << genreName;
+                break; // Знайшли потрібний жанр, виходимо з циклу
+            }
+        }
+        if (!genreFound) {
+            qWarning() << "Genre item not found in filter list:" << genreName;
+            // Можна показати повідомлення користувачу
+            QMessageBox::warning(this, tr("Помилка фільтрації"), tr("Жанр '%1' не знайдено у списку фільтрів.").arg(genreName));
+            // Залишаємо сторінку книг з усіма книгами (після resetFilters)
+            return;
+        }
+    } else {
+        qWarning() << "applyGenreFilter: m_genreFilterListWidget is null!";
+        return; // Не можемо застосувати фільтр
+    }
+
+    // 4. Застосувати фільтри (тепер тільки з вибраним жанром)
+    // Не викликаємо applyFilters() або applyFiltersWithDelay() тут напряму,
+    // оскільки зміна стану checkState вище *не* випромінює сигнал itemChanged,
+    // бо ми його заблокували. Потрібно викликати applyFilters() явно.
+    applyFilters(); // Ця функція збере критерії (тільки вибраний жанр) і викличе loadAndDisplayFilteredBooks
+
+    // 5. Переконатися, що кнопка фільтра видима
+    if (ui->filterButton) {
+        ui->filterButton->show();
+    }
+
+    // 6. Переконатися, що панель фільтрів прихована
+    if (m_isFilterPanelVisible) {
+        on_filterButton_clicked(); // Імітуємо клік, щоб закрити панель
+    }
+}
+// --- Кінець реалізації слоту для кнопок категорій ---
 
 
 // --- Кінець реалізації слотів та функцій ---

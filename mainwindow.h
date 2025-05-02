@@ -98,6 +98,8 @@ private slots:
     // Слоти для оновлення міток ціни
     void updateLowerPriceLabel(int value);
     void updateUpperPriceLabel(int value);
+    // Слот для обробки кліку на кнопку категорії (використовується в лямбдах)
+    void applyGenreFilter(const QString &genreName);
 
 private:
     // Допоміжні функції для відображення даних
