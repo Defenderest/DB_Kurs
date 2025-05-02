@@ -6,125 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>450</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Вхід до системи</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">QDialog#LoginDialog {
-    background-color: #f8f9fa; /* Світло-сірий фон */
-}
-
-QLabel {
-    color: #212529; /* Темний текст */
-    font-size: 10pt;
-}
-
-QLabel#titleLabel {
-    font-size: 16pt;
-    font-weight: bold;
-    color: #007bff; /* Синій заголовок */
-    margin-bottom: 15px;
-	margin-top: 10px;
-}
-
-QLabel#errorLabel {
-    color: #dc3545; /* Червоний для помилок */
-    font-size: 9pt;
-    font-weight: bold;
-	min-height: 20px; /* Резервуємо місце */
-}
-
-QLineEdit {
-    padding: 8px;
-    border: 1px solid #ced4da; /* Світло-сіра рамка */
-    border-radius: 4px;
-    background-color: #ffffff; /* Білий фон */
-    font-size: 10pt;
-}
-
-QLineEdit:focus {
-    border-color: #80bdff; /* Синя рамка при фокусі */
-    /* Додатково можна додати тінь, якщо бажаєте */
-    /* box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); */
-}
-
-QPushButton {
-    padding: 8px 15px;
-    border: 1px solid #007bff; /* Синя рамка */
-    border-radius: 4px;
-    background-color: #007bff; /* Синій фон */
-    color: white; /* Білий текст */
-    font-size: 10pt;
-	font-weight: bold;
-    min-width: 90px; /* Мінімальна ширина */
-}
-
-QPushButton:hover {
-    background-color: #0056b3; /* Темніший синій при наведенні */
-    border-color: #0056b3;
-}
-
-QPushButton:pressed {
-    background-color: #004085; /* Ще темніший синій при натисканні */
-    border-color: #00376e;
-}
-
-QPushButton:disabled {
-    background-color: #6c757d; /* Сірий, коли вимкнено */
-    border-color: #6c757d;
-    color: #e9ecef;
-}
-
-QPushButton#cancelButton {
-    background-color: #6c757d; /* Сіра кнопка скасування */
-    border-color: #6c757d;
-}
-
-QPushButton#cancelButton:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
-}
-
-QPushButton#cancelButton:pressed {
-    background-color: #545b62;
-    border-color: #4e555b;
-}
-
-/* Кнопки перемикання режимів (стиль як посилання) */
-QPushButton#switchToRegisterButton, QPushButton#switchToLoginButton {
-    background-color: transparent;
-    border: none;
-    color: #007bff; /* Синій текст */
-    text-decoration: underline;
-    padding: 2px;
-    min-width: 0; /* Скидання мін. ширини */
-	font-size: 9pt;
-	font-weight: normal; /* Звичайний шрифт */
-}
-
-QPushButton#switchToRegisterButton:hover, QPushButton#switchToLoginButton:hover {
-    color: #0056b3;
-}
-
-QPushButton#switchToRegisterButton:pressed, QPushButton#switchToLoginButton:pressed {
-    color: #004085;
-}
-
-/* Забираємо стиль flat, бо він може конфліктувати */
-QPushButton[flat=&quot;true&quot;] {
-   /* Стилі вже визначені вище */
-}
-
-QFormLayout {
-    vertical-spacing: 12px; /* Відстань між рядками форми */
-	horizontal-spacing: 10px; /* Відстань між міткою та полем */
-	margin-top: 15px;
-}
-</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -231,12 +118,8 @@ QFormLayout {
    </item>
    <item>
     <widget class="QLabel" name="errorLabel">
-     <property name="styleSheet">
-      <string notr="true">color: #dc3545; /* Червоний для помилок */
-font-size: 9pt;</string>
-     </property>
      <property name="text">
-      <string>Error message placeholder</string>
+      <string/>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
