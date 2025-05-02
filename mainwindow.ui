@@ -1138,14 +1138,14 @@ QPushButton#navProfileButton[collapsed=&quot;true&quot;]:checked {
                    </property>
                    <property name="styleSheet">
                     <string>/* Override parent style for background image */
-QPushButton#fictionCategoryButton {
-    background-image: url(:/icons/fiction_category.png); /* ЗАМЕНИТЕ НА ВАШ ПУТЬ К ИЗОБРАЖЕНИЮ */
-    background-repeat: no-repeat;
-    background-position: center;
-    background-origin: border; /* Image clipped by border */
-    padding: 0px; /* Remove padding to fill the button */
-    border: 1px solid #e0e0e0; /* Keep original border or adjust */
-    /* border-radius is inherited from QWidget#categoriesWidget QPushButton */
+                    QPushButton#fictionCategoryButton {
+                        background-image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons/fiction_category.png); /* ЗАМЕНИТЕ НА ВАШ ПУТЬ К ИЗОБРАЖЕНИЮ */
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain; /* Scale image to fit within the button */
+                        background-origin: border; /* Image clipped by border */
+                        padding: 0px; /* Remove padding to fill the button */
+                        border: 1px solid #e0e0e0; /* Keep original border or adjust */
 }
 /* Optional: Adjust hover/pressed effects if the default overlay isn't desired */
 QPushButton#fictionCategoryButton:hover {
