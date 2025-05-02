@@ -86,7 +86,7 @@ void LoginDialog::setMode(Mode mode)
         ui->emailLineEdit->setFocus();
         // Змінюємо розмір вікна (опціонально, може потребувати налаштування)
         // resize(width(), minimumHeight()); // Або фіксований розмір
-        adjustSize(); // Спробувати автоматично підлаштувати розмір
+        // adjustSize(); // Прибираємо автоматичне підлаштування розміру
     } else {
         // --- Режим Реєстрації ---
         ui->titleLabel->setText(tr("Реєстрація нового користувача"));
@@ -107,7 +107,7 @@ void LoginDialog::setMode(Mode mode)
         ui->firstNameLineEdit->setFocus();
         // Змінюємо розмір вікна (опціонально)
         // resize(width(), preferredHeight()); // Або фіксований розмір
-        adjustSize(); // Спробувати автоматично підлаштувати розмір
+        // adjustSize(); // Прибираємо автоматичне підлаштування розміру
     }
 }
 
