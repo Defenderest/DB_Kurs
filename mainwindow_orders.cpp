@@ -144,9 +144,10 @@ void MainWindow::displayOrders(const QList<OrderDisplayInfo> &orders)
                 ui->ordersContentLayout->addWidget(orderCard);
             }
         }
-        // Спейсер в кінці більше не потрібен, відступи керуються стилями карток
+        // Додаємо розтягувач, щоб притиснути картки вгору, якщо їх мало
+        ui->ordersContentLayout->addStretch(1);
     }
-
+ 
     // Оновлюємо геометрію контейнера, щоб ScrollArea знала розмір
     ui->ordersContainerWidget->adjustSize();
     // Переконуємось, що ScrollArea оновилась, якщо вміст змінився
