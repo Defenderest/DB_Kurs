@@ -290,6 +290,35 @@ QWidget#categoriesWidget QPushButton:pressed {
     border-color: #adb5bd;
 }
 
+/* Новий стиль для кнопок категорій в горизонтальному скролі */
+QScrollArea#categoriesScrollArea QPushButton {
+    background-color: #e9ecef; /* Світліший сірий фон */
+    color: #343a40;
+    border: 1px solid #dee2e6; /* Світла рамка */
+    font-weight: 500;
+    text-align: center;
+    padding: 8px 18px; /* Горизонтальний padding більший */
+    min-height: 38px; /* Зменшена фіксована висота */
+    max-height: 38px;
+    min-width: 100px; /* Мінімальна ширина */
+    border-radius: 19px; /* Округлі краї (половина висоти) */
+    margin-right: 10px; /* Відступ між кнопками */
+}
+QScrollArea#categoriesScrollArea QPushButton:hover {
+    background-color: #dee2e6;
+    color: #212529;
+    border-color: #ced4da;
+}
+QScrollArea#categoriesScrollArea QPushButton:pressed {
+    background-color: #ced4da;
+    border-color: #adb5bd;
+}
+/* Спеціальний стиль для кнопки з іконкою (якщо потрібно) */
+QScrollArea#categoriesScrollArea QPushButton#fictionCategoryButton {
+    padding-left: 15px; /* Трохи менший лівий padding для іконки */
+    /* Qt автоматично розмістить іконку ліворуч від тексту */
+}
+
 QLineEdit#globalSearchLineEdit {
     min-height: 30px; /* Ще зменшено висоту */
     background-color: #f1f3f5; /* Світліший фон */
@@ -1108,12 +1137,18 @@ QPushButton#navProfileButton[collapsed=&quot;true&quot;]:checked {
               </item>
               <item>
                <widget class="QWidget" name="categoriesWidget" native="true">
-                <layout class="QGridLayout" name="categoriesLayout">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>60</height> <!-- Зменшуємо мінімальну висоту віджета -->
+                 </size>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_2"> <!-- Замінюємо GridLayout на QVBoxLayout -->
                  <property name="leftMargin">
                   <number>0</number>
                  </property>
                  <property name="topMargin">
-                  <number>5</number>
+                  <number>0</number> <!-- Забираємо верхній відступ -->
                  </property>
                  <property name="rightMargin">
                   <number>0</number>
@@ -1121,99 +1156,164 @@ QPushButton#navProfileButton[collapsed=&quot;true&quot;]:checked {
                  <property name="bottomMargin">
                   <number>0</number>
                  </property>
-                 <property name="spacing">
-                  <number>20</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QPushButton" name="fictionCategoryButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
+                 <item>
+                  <widget class="QScrollArea" name="categoriesScrollArea">
                    <property name="minimumSize">
                     <size>
-                     <width>150</width>
-                     <height>102</height>
+                     <width>0</width>
+                     <height>55</height> <!-- Висота області прокрутки -->
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>55</height>
                     </size>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">/* Стилі для цієї кнопки тепер успадковуються або встановлюються в коді */
-/* Видалено стилі background-image */
-</string>
+                    <string notr="true">QScrollArea { border: none; background-color: transparent; }
+QWidget#categoriesScrollContents { background-color: transparent; }</string>
                    </property>
-                   <property name="text">
-                    <string/>
+                   <property name="frameShape">
+                    <enum>QFrame::Shape::NoFrame</enum>
                    </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QPushButton" name="nonFictionCategoryButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                   <property name="verticalScrollBarPolicy">
+                    <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                    </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>150</width>
-                     <height>102</height>
-                    </size>
+                   <property name="horizontalScrollBarPolicy">
+                    <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum> <!-- Або ScrollBarAlwaysOff -->
                    </property>
-                   <property name="styleSheet">
-                    <string/>
+                   <property name="widgetResizable">
+                    <bool>true</bool>
                    </property>
-                   <property name="text">
-                    <string>Бізнес
- та наука</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QPushButton" name="childrenCategoryButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>150</width>
-                     <height>102</height>
-                    </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Дитячі
- книги</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="3">
-                  <widget class="QPushButton" name="educationCategoryButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>150</width>
-                     <height>102</height>
-                    </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Освіта</string>
-                   </property>
+                   <widget class="QWidget" name="categoriesScrollContents">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>0</y>
+                      <width>600</width> <!-- Приблизна ширина, буде змінено -->
+                      <height>55</height>
+                     </rect>
+                    </property>
+                    <layout class="QHBoxLayout" name="categoriesHorizontalLayout">
+                     <property name="spacing">
+                      <number>0</number> <!-- Відступи керуються стилем кнопок (margin-right) -->
+                     </property>
+                     <property name="leftMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>5</number>
+                     </property>
+                     <item>
+                      <widget class="QPushButton" name="fictionCategoryButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed"> <!-- Фіксована висота -->
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>38</height> <!-- Висота кнопки -->
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">/* Стилі тепер визначаються в QScrollArea#categoriesScrollArea QPushButton */</string>
+                       </property>
+                       <property name="text">
+                        <string>Художня</string> <!-- Повертаємо текст -->
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="nonFictionCategoryButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>38</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true"/>
+                       </property>
+                       <property name="text">
+                        <string>Бізнес та наука</string> <!-- Забираємо перенос рядка -->
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="childrenCategoryButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>38</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true"/>
+                       </property>
+                       <property name="text">
+                        <string>Дитячі книги</string> <!-- Забираємо перенос рядка -->
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="educationCategoryButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>38</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true"/>
+                       </property>
+                       <property name="text">
+                        <string>Освіта</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="categoriesHorizontalSpacer"> <!-- Додаємо спейсер в кінець -->
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </widget>
                   </widget>
                  </item>
                 </layout>

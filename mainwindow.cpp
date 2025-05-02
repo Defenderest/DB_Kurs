@@ -185,15 +185,14 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         QIcon fictionIcon(fictionIconPath);
         if (!fictionIcon.isNull()) {
             ui->fictionCategoryButton->setIcon(fictionIcon);
-            // Явно встановлюємо розмір іконки
-            ui->fictionCategoryButton->setIconSize(QSize(64, 64)); // Спробуйте цей розмір, можна змінити
-            // Очищаємо текст кнопки, щоб іконка була по центру
-            ui->fictionCategoryButton->setText("");
-            // Можна додати підказку (tooltip), якщо текст видалено
-            ui->fictionCategoryButton->setToolTip(tr("Художня література"));
+            // Встановлюємо менший розмір іконки для горизонтального списку
+            ui->fictionCategoryButton->setIconSize(QSize(20, 20)); // Зменшено розмір іконки
+            // Текст кнопки тепер залишається (видалено setText(""))
+            // Підказка більше не потрібна (видалено setToolTip)
             qInfo() << "Set icon for fictionCategoryButton from" << fictionIconPath;
         } else {
             qWarning() << "Failed to load icon for fictionCategoryButton from path:" << fictionIconPath;
+            // Текст кнопки встановлено в UI, тому тут нічого не робимо
             // Можна встановити текст за замовчуванням, якщо іконка не завантажилась
             // ui->fictionCategoryButton->setText(tr("Художня"));
         }
