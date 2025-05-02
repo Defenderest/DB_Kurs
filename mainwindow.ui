@@ -268,26 +268,26 @@ QLabel#dateFilterLabel {
     font-size: 9pt;
 }
 
-/* Оновлений стиль для кнопок категорій у сітці 2x2 (менш "пусті") */
+/* Оновлений стиль для кнопок категорій у сітці 2x2 (з градієнтом) */
 QWidget#categoriesWidget QPushButton {
-    background-color: #f1f3f5; /* Дуже світло-сірий фон */
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f8f9fa, stop:1 #e9ecef); /* Світло-сірий градієнт */
     color: #343a40; /* Темніший текст */
-    border: 1px solid #ced4da; /* Трохи темніша рамка */
-    font-weight: 600; /* Збільшено жирність */
+    border: 1px solid #adb5bd; /* Темніша рамка */
+    font-weight: 600;
     text-align: center;
     padding: 15px;
     min-height: 80px;
     border-radius: 8px;
-    /* transition не підтримується */
 }
 QWidget#categoriesWidget QPushButton:hover {
-    background-color: #e9ecef; /* Світло-сірий при наведенні */
-    color: #212529; /* Ще темніший текст */
-    border-color: #adb5bd; /* Ще темніша рамка */
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #e9ecef, stop:1 #dee2e6); /* Трохи темніший градієнт */
+    color: #212529;
+    border-color: #adb5bd; /* Рамка та сама */
 }
 QWidget#categoriesWidget QPushButton:pressed {
-    background-color: #dee2e6; /* Темніший сірий при натисканні */
-    border-color: #adb5bd; /* Залишаємо ту ж рамку, що й при hover */
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #dee2e6, stop:1 #ced4da); /* Ще темніший градієнт */
+    border-color: #adb5bd; /* Рамка та сама */
+    color: #212529;
 }
 
 /* Видалено стилі для QScrollArea#categoriesScrollArea QPushButton */
