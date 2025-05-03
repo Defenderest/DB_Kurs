@@ -50,7 +50,7 @@ QLineEdit, QComboBox {
     border: 1px solid #ced4da;
     border-radius: 8px; /* Збільшено заокруглення */
     background-color: #ffffff;
-    color: #495057;
+    color: #000000; /* Змінено колір тексту на чорний */
     min-height: 20px;
 }
 
