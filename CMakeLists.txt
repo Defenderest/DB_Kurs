@@ -24,28 +24,28 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Sql Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Sql Widgets)
 
 # --- Список исходных файлов ---
-# Перечисляем ТОЛЬКО .cpp файлы. Заголовки (.h) будут найдены автоматически.
-# .ui и .qrc будут добавлены ниже в qt_add_executable.
+# Перечисляем .cpp и .h файлы. .ui и .qrc будут добавлены ниже.
 set(PROJECT_SOURCES
     main.cpp
     starratingwidget.cpp
-    # starratingwidget.h # Removed
+    starratingwidget.h
     mainwindow.cpp
-    # mainwindow.h # Removed
+    mainwindow.h
+    database.cpp # Повертаємо цей файл, він був потрібен до реалізації кошика в БД
     database_connection.cpp # Новий файл
     database_customer.cpp   # Новий файл
     database_book.cpp       # Новий файл
     database_author.cpp     # Новий файл
     database_order.cpp      # Новий файл
     database_comment.cpp    # Новий файл
-    # database.h # Removed
+    database.h
     logindialog.cpp
-    # logindialog.h # Removed
+    logindialog.h
     profiledialog.cpp # Додано новий файл діалогу профілю
-    # profiledialog.h # Removed
-    # datatypes.h # Removed (Header only)
+    profiledialog.h
+    datatypes.h       # Додано файл зі структурами даних
     testdata.cpp      # Додано файл генерації тестових даних
-    # testdata.h # Removed
+    testdata.h
     mainwindow_utils.cpp    # Додано файл з утилітами
     mainwindow_books.cpp    # Додано файл для логіки книг
     mainwindow_authors.cpp  # Додано файл для логіки авторів
@@ -55,12 +55,9 @@ set(PROJECT_SOURCES
     mainwindow_comments.cpp # Додано файл для логіки коментарів
     mainwindow_search.cpp   # Додано файл для логіки пошуку
     searchsuggestiondelegate.cpp # Додано файл делегата пошуку
-    # searchsuggestiondelegate.h # Removed
+    searchsuggestiondelegate.h
     RangeSlider.cpp
-    database_cart.cpp
-    # RangeSlider.h # Removed
-    checkoutdialog.cpp # Додано файл реалізації діалогу оформлення
-    # checkoutdialog.h # Removed
+    RangeSlider.h
 )
 
 # --- Создание исполняемого файла ---
@@ -69,15 +66,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     # qt_add_executable (рекомендуется для Qt 6)
     # Передаем .ui и .qrc файлы напрямую
     qt_add_executable(untitled
-        #MANUAL_FINALIZATION # Нужно, если используем qt_finalize_executable позже
+        MANUAL_FINALIZATION # Нужно, если используем qt_finalize_executable позже
         ${PROJECT_SOURCES}
         mainwindow.ui
         logindialog.ui # Додано UI файл діалогу входу
-        profiledialog.ui # Додано UI файл діалогу профілю
-        checkoutdialog.ui # Додано UI файл діалогу оформлення
+        profiledialog.ui
+        checkoutdialog.ui# Додано UI файл діалогу профілю
         resourses.qrc
         # starratingwidget.h/cpp removed here, already in PROJECT_SOURCES
-    ) # <-- Added the missing closing parenthesis here
+    )
 else()
     # add_executable (стандартный CMake, используется для Qt 5)
     # CMAKE_AUTOUIC и CMAKE_AUTORCC должны автоматически обработать
