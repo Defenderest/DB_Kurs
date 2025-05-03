@@ -58,6 +58,8 @@ set(PROJECT_SOURCES
     RangeSlider.cpp
     database_cart.cpp
     RangeSlider.h
+    checkoutdialog.cpp # Додано файл реалізації діалогу оформлення
+    checkoutdialog.h   # Додано файл заголовку діалогу оформлення
 )
 
 # --- Создание исполняемого файла ---
@@ -71,6 +73,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         mainwindow.ui
         logindialog.ui # Додано UI файл діалогу входу
         profiledialog.ui # Додано UI файл діалогу профілю
+        checkoutdialog.ui # Додано UI файл діалогу оформлення
         resourses.qrc
         # starratingwidget.h/cpp removed here, already in PROJECT_SOURCES
     )
