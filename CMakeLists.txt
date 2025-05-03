@@ -31,7 +31,6 @@ set(PROJECT_SOURCES
     starratingwidget.h
     mainwindow.cpp
     mainwindow.h
-    database.cpp # Повертаємо цей файл, він був потрібен до реалізації кошика в БД
     database_connection.cpp # Новий файл
     database_customer.cpp   # Новий файл
     database_book.cpp       # Новий файл
@@ -57,6 +56,7 @@ set(PROJECT_SOURCES
     searchsuggestiondelegate.cpp # Додано файл делегата пошуку
     searchsuggestiondelegate.h
     RangeSlider.cpp
+    database_cart.cpp
     RangeSlider.h
 )
 
