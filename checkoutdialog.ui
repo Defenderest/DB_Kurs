@@ -6,20 +6,170 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>350</height>
+    <width>480</width> <!-- Трохи ширше -->
+    <height>400</height> <!-- Трохи вище -->
    </rect>
   </property>
   <property name="windowTitle">
    <string>Оформлення замовлення</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <property name="styleSheet">
+   <string notr="true">/* Базовий світлий стиль для діалогу */
+QDialog#CheckoutDialog {
+    background-color: #f8f9fa; /* Дуже світло-сірий фон */
+}
+
+QGroupBox {
+    border: none; /* Прибираємо рамку */
+    margin-top: 10px; /* Відступ зверху для заголовка */
+    padding-top: 15px; /* Відступ всередині для вмісту */
+    background-color: #ffffff; /* Білий фон для груп */
+    border-radius: 8px; /* Закруглені кути */
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left; /* Позиція заголовка */
+    padding: 5px 10px;
+    color: #495057; /* Темно-сірий текст заголовка */
+    font-weight: bold;
+    /* background-color: #e9ecef; */ /* Можна додати фон для заголовка */
+    /* border-top-left-radius: 8px; */
+    /* border-top-right-radius: 8px; */
+}
+
+QLabel {
+    color: #343a40; /* Основний колір тексту */
+    padding: 2px; /* Невеликий відступ */
+}
+
+QLabel#nameLabel, QLabel#emailLabel {
+    font-weight: normal; /* Звичайний шрифт для значень */
+    color: #212529; /* Трохи темніший текст */
+}
+
+QLineEdit, QComboBox {
+    padding: 8px 10px;
+    border: 1px solid #ced4da; /* Світло-сіра рамка */
+    border-radius: 4px;
+    background-color: #ffffff; /* Білий фон */
+    color: #495057;
+    min-height: 20px; /* Мінімальна висота */
+}
+
+QLineEdit:focus, QComboBox:focus {
+    border-color: #80bdff; /* Синій колір рамки при фокусі */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Тінь при фокусі (не завжди працює) */
+}
+
+QComboBox::drop-down {
+    border: none; /* Прибираємо рамку стрілки */
+}
+
+QComboBox::down-arrow {
+    /* Можна додати свою іконку стрілки */
+    /* image: url(:/icons/down_arrow.png); */
+    width: 12px;
+    height: 12px;
+}
+
+QLabel#totalAmountLabel {
+    font-size: 14pt; /* Більший розмір шрифту для суми */
+    font-weight: bold;
+    color: #007bff; /* Синій колір для акценту */
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+QDialogButtonBox QPushButton {
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    min-width: 80px;
+}
+
+/* Стилізація кнопки OK (Confirm) */
+QDialogButtonBox QPushButton[text="OK"],
+QDialogButtonBox QPushButton[text="&OK"] {
+    background-color: #007bff; /* Синій фон */
+    color: white;
+    border: 1px solid #007bff;
+}
+QDialogButtonBox QPushButton[text="OK"]:hover,
+QDialogButtonBox QPushButton[text="&OK"]:hover {
+    background-color: #0056b3; /* Темніший синій при наведенні */
+    border-color: #0056b3;
+}
+QDialogButtonBox QPushButton[text="OK"]:pressed,
+QDialogButtonBox QPushButton[text="&OK"]:pressed {
+    background-color: #004085; /* Ще темніший при натисканні */
+    border-color: #004085;
+}
+
+/* Стилізація кнопки Cancel */
+QDialogButtonBox QPushButton[text="Cancel"],
+QDialogButtonBox QPushButton[text="&Cancel"] {
+    background-color: #f8f9fa; /* Світлий фон */
+    color: #6c757d; /* Сірий текст */
+    border: 1px solid #ced4da;
+}
+QDialogButtonBox QPushButton[text="Cancel"]:hover,
+QDialogButtonBox QPushButton[text="&Cancel"]:hover {
+    background-color: #e2e6ea; /* Трохи темніший фон при наведенні */
+    border-color: #dae0e5;
+}
+QDialogButtonBox QPushButton[text="Cancel"]:pressed,
+QDialogButtonBox QPushButton[text="&Cancel"]:pressed {
+    background-color: #d6dbe0; /* Ще темніший при натисканні */
+    border-color: #cfd5db;
+}
+
+Line {
+ background-color: #dee2e6; /* Колір лінії */
+ height: 1px;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,0,0,0">
+   <property name="spacing">
+    <number>15</number> <!-- Збільшений відступ між елементами -->
+   </property>
+   <property name="leftMargin">
+    <number>20</number> <!-- Збільшені відступи зліва/справа -->
+   </property>
+   <property name="topMargin">
+    <number>20</number> <!-- Збільшені відступи зверху/знизу -->
+   </property>
+   <property name="rightMargin">
+    <number>20</number>
+   </property>
+   <property name="bottomMargin">
+    <number>20</number>
+   </property>
    <item>
     <widget class="QGroupBox" name="customerInfoGroupBox">
      <property name="title">
       <string>Інформація про покупця</string>
      </property>
      <layout class="QFormLayout" name="formLayout">
+      <property name="horizontalSpacing">
+       <number>15</number> <!-- Збільшений горизонтальний відступ -->
+      </property>
+      <property name="verticalSpacing">
+       <number>10</number> <!-- Збільшений вертикальний відступ -->
+      </property>
+      <property name="leftMargin">
+       <number>15</number>
+      </property>
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>15</number>
+      </property>
+      <property name="bottomMargin">
+       <number>15</number>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -31,12 +181,6 @@
        <widget class="QLabel" name="nameLabel">
         <property name="text">
          <string>[Ім'я Прізвище]</string>
-        </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
         </property>
        </widget>
       </item>
@@ -63,6 +207,24 @@
       <string>Доставка та оплата</string>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
+      <property name="horizontalSpacing">
+       <number>15</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>15</number>
+      </property>
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>15</number>
+      </property>
+      <property name="bottomMargin">
+       <number>15</number>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
@@ -98,7 +260,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>40</height>
+       <height>20</height> <!-- Зменшений спейсер -->
       </size>
      </property>
     </spacer>
@@ -112,17 +274,13 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>10</number>
+     </property>
      <item>
       <widget class="QLabel" name="totalAmountLabel">
        <property name="text">
         <string>Загальна сума: 0.00 грн</string>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
