@@ -425,7 +425,7 @@ void MainWindow::on_placeOrderButton_clicked()
 {
     qInfo() << "Place order button clicked. Opening checkout dialog...";
     if (m_cartItems.isEmpty()) {
-        QMessageBox::information(this, tr("Порожній кошик"), tr("Ваш кошик порожній. Додайте товари перед оформленням замовлення."));
+        // QMessageBox::information(this, tr("Порожній кошик"), tr("Ваш кошик порожній. Додайте товари перед оформленням замовлення.")); // Повідомлення видалено
         return;
     }
     if (!m_dbManager) {
@@ -490,7 +490,8 @@ void MainWindow::finalizeOrder(const QString &shippingAddress, const QString &pa
      double orderTotal = m_dbManager->createOrder(m_currentCustomerId, itemsMap, shippingAddress, paymentMethod, newOrderId);
 
      if (orderTotal >= 0 && newOrderId > 0) { // Перевіряємо, чи не повернулася помилка (-1.0)
-         QMessageBox::information(this, tr("Замовлення оформлено"), tr("Ваше замовлення №%1 на суму %2 грн успішно оформлено!").arg(newOrderId).arg(QString::number(orderTotal, 'f', 2)));
+         // QMessageBox::information(this, tr("Замовлення оформлено"), tr("Ваше замовлення №%1 на суму %2 грн успішно оформлено!").arg(newOrderId).arg(QString::number(orderTotal, 'f', 2))); // Повідомлення видалено
+         qInfo() << "Order" << newOrderId << "placed successfully for total" << orderTotal; // Логуємо успішне оформлення
 
          // --- Нарахування бонусних балів ---
          // Приклад: 1 бал за кожні 10 грн
