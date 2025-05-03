@@ -81,7 +81,7 @@ QWidget* MainWindow::createCartItemWidget(const CartItem &item, int bookId)
     quantitySpinBox->setMaximum(item.book.stockQuantity); // Обмеження по складу
     quantitySpinBox->setValue(item.quantity);
     quantitySpinBox->setAlignment(Qt::AlignCenter);
-    // quantitySpinBox->setButtonSymbols(QAbstractSpinBox::UpDownArrows); // Повертаємо стандартні стрілки (це значення за замовчуванням)
+    quantitySpinBox->setButtonSymbols(QAbstractSpinBox::UpDownArrows); // Повертаємо стандартні стрілки (це значення за замовчуванням)
     quantitySpinBox->setProperty("bookId", bookId); // Зберігаємо ID для слота
     connect(quantitySpinBox, &QSpinBox::valueChanged, this, [this, bookId](int newValue){
         updateCartItemQuantity(bookId, newValue);
