@@ -253,6 +253,55 @@ bool DatabaseManager::updateCustomerAddress(int customerId, const QString &newAd
     }
 }
 
+// Реалізація нового методу для додавання бонусних балів
+bool DatabaseManager::addLoyaltyPoints(int customerId, int pointsToAdd)
+{
+    if (!m_isConnected || !m_db.isOpen() || customerId <= 0 || pointsToAdd <= 0) {
+        qWarning() << "Неможливо додати бонусні бали: немає з'єднання, невірний customerId або кількість балів <= 0.";
+        return false;
+    }
+
+    // Оновлюємо бали та вмикаємо програму лояльності, якщо вона ще не активна
+    const QString sql = R"(
+        UPDATE customer
+        SET loyalty_points = loyalty_points + :pointsToAdd,
+            loyalty_program = TRUE -- Вмикаємо програму лояльності при нарахуванні балів
+        WHERE customer_id = :customerId;
+    )";
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":pointsToAdd", pointsToAdd);
+    query.bindValue(":customerId", customerId);
+
+    qInfo() << "Executing SQL to add" << pointsToAdd << "loyalty points for customer ID:" << customerId;
+    if (!query.exec()) {
+        qCritical() << "Помилка при додаванні бонусних балів для customer ID '" << customerId << "':";
+        qCritical() << query.lastError().text();
+        qCritical() << "SQL запит:" << query.lastQuery();
+        qCritical() << "Bound values:" << query.boundValues();
+        return false;
+    }
+
+    if (query.numRowsAffected() > 0) {
+        qInfo() << "Loyalty points added successfully for customer ID:" << customerId;
+        return true;
+    } else {
+        // Перевіряємо, чи існує користувач
+        QSqlQuery checkQuery(m_db);
+        checkQuery.prepare("SELECT 1 FROM customer WHERE customer_id = :customerId");
+        checkQuery.bindValue(":customerId", customerId);
+        if (checkQuery.exec() && checkQuery.next()) {
+            qWarning() << "Loyalty points update query executed, but no rows were affected for customer ID:" << customerId << "(Should not happen unless pointsToAdd was 0)";
+            // Можливо, варто повернути true, якщо користувач існує, але це дивно
+            return false;
+        } else {
+            qWarning() << "Loyalty points update query executed, but no rows were affected for customer ID:" << customerId << "(Customer might not exist)";
+            return false; // Користувача не знайдено
+        }
+    }
+}
+
 
 // Реалізація нового методу для оновлення телефону користувача
 bool DatabaseManager::updateCustomerPhone(int customerId, const QString &newPhone)

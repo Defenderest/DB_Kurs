@@ -25,6 +25,7 @@
 #include <QResizeEvent> // Додано для обробки зміни розміру
 #include "searchsuggestiondelegate.h" // Додано включення делегата
 #include "datatypes.h" // Додано для BookFilterCriteria
+#include "checkoutdialog.h" // Додано включення діалогу оформлення
 
 
 // Forward declarations
