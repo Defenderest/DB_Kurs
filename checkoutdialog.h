@@ -20,6 +20,9 @@ public:
     QString getShippingAddress() const;
     QString getPaymentMethod() const;
 
+public slots: // Змінено на public slots, оскільки accept() є публічним слотом QDialog
+    void accept() override; // Додано оголошення для перевизначеного слота
+
 private slots:
     // Слоти для стандартних кнопок Ok/Cancel (підключаються автоматично або через connect)
     // void on_confirmButton_clicked(); // Не потрібен, якщо використовуємо accept()
