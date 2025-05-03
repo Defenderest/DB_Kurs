@@ -31,9 +31,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(PROJECT_SOURCES
     main.cpp
     starratingwidget.cpp
-    starratingwidget.h
+    # starratingwidget.h # Removed
     mainwindow.cpp
-    mainwindow.h
+    # mainwindow.h # Removed
     database.cpp # Повертаємо цей файл, він був потрібен до реалізації кошика в БД
     database_connection.cpp # Новий файл
     database_customer.cpp   # Новий файл
@@ -41,14 +41,14 @@ set(PROJECT_SOURCES
     database_author.cpp     # Новий файл
     database_order.cpp      # Новий файл
     database_comment.cpp    # Новий файл
-    database.h
+    # database.h # Removed
     logindialog.cpp
-    logindialog.h
+    # logindialog.h # Removed
     profiledialog.cpp # Додано новий файл діалогу профілю
-    profiledialog.h
-    datatypes.h       # Додано файл зі структурами даних
+    # profiledialog.h # Removed
+    # datatypes.h # Removed (Header only)
     testdata.cpp      # Додано файл генерації тестових даних
-    testdata.h
+    # testdata.h # Removed
     mainwindow_utils.cpp    # Додано файл з утилітами
     mainwindow_books.cpp    # Додано файл для логіки книг
     mainwindow_authors.cpp  # Додано файл для логіки авторів
@@ -58,10 +58,12 @@ set(PROJECT_SOURCES
     mainwindow_comments.cpp # Додано файл для логіки коментарів
     mainwindow_search.cpp   # Додано файл для логіки пошуку
     searchsuggestiondelegate.cpp # Додано файл делегата пошуку
-    searchsuggestiondelegate.h
+    # searchsuggestiondelegate.h # Removed
     RangeSlider.cpp
     database_cart.cpp # Додано файл реалізації кошика
-    RangeSlider.h
+    # RangeSlider.h # Removed
+    # checkoutdialog.cpp and .h were missing from the SEARCH block, assuming they are not in the list yet or added elsewhere.
+    # If checkoutdialog.cpp needs to be in this list, add it here without the .h file.
 )
 
 # --- Создание исполняемого файла ---
