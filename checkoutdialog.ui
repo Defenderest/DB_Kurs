@@ -24,7 +24,7 @@ QGroupBox {
     margin-top: 10px;
     padding-top: 15px;
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 12px; /* Збільшено заокруглення */
 }
 
 QGroupBox::title {
@@ -48,16 +48,16 @@ QLabel#nameLabel, QLabel#emailLabel {
 QLineEdit, QComboBox {
     padding: 8px 10px;
     border: 1px solid #ced4da;
-    border-radius: 4px;
+    border-radius: 8px; /* Збільшено заокруглення */
     background-color: #ffffff;
     color: #495057;
     min-height: 20px;
 }
 
 QLineEdit:focus, QComboBox:focus {
-    border-color: #80bdff;
+    border-color: #adb5bd; /* Сірий колір рамки при фокусі */
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(173, 181, 189, 0.25); /* Сіра тінь при фокусі */
 }
 
 QComboBox::drop-down {
@@ -72,30 +72,30 @@ QComboBox::down-arrow {
 QLabel#totalAmountLabel {
     font-size: 14pt;
     font-weight: bold;
-    color: #007bff;
+    color: #343a40; /* Темно-сірий колір замість синього */
     padding-top: 10px;
     padding-bottom: 5px;
 }
 
 QDialogButtonBox QPushButton {
     padding: 8px 20px;
-    border-radius: 4px;
+    border-radius: 8px; /* Збільшено заокруглення */
     font-weight: bold;
     min-width: 80px;
 }
 
 QDialogButtonBox QPushButton[text="OK"] {
-    background-color: #007bff;
+    background-color: #6c757d; /* Сірий фон */
     color: white;
-    border: 1px solid #007bff;
+    border: 1px solid #6c757d;
 }
 QDialogButtonBox QPushButton[text="OK"]:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    background-color: #5a6268; /* Темніший сірий при наведенні */
+    border-color: #545b62;
 }
 QDialogButtonBox QPushButton[text="OK"]:pressed {
-    background-color: #004085;
-    border-color: #004085;
+    background-color: #495057; /* Ще темніший при натисканні */
+    border-color: #454a4e;
 }
 
 QDialogButtonBox QPushButton[text="Cancel"] {
