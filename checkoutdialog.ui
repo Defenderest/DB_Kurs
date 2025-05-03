@@ -14,70 +14,65 @@
    <string>Оформлення замовлення</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/* Базовий світлий стиль для діалогу */
+   <string notr="true">
 QDialog#CheckoutDialog {
-    background-color: #f8f9fa; /* Дуже світло-сірий фон */
+    background-color: #f8f9fa;
 }
 
 QGroupBox {
-    border: none; /* Прибираємо рамку */
-    margin-top: 10px; /* Відступ зверху для заголовка */
-    padding-top: 15px; /* Відступ всередині для вмісту */
-    background-color: #ffffff; /* Білий фон для груп */
-    border-radius: 8px; /* Закруглені кути */
+    border: none;
+    margin-top: 10px;
+    padding-top: 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
 }
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    subcontrol-position: top left; /* Позиція заголовка */
+    subcontrol-position: top left;
     padding: 5px 10px;
-    color: #495057; /* Темно-сірий текст заголовка */
+    color: #495057;
     font-weight: bold;
-    /* background-color: #e9ecef; */ /* Можна додати фон для заголовка */
-    /* border-top-left-radius: 8px; */
-    /* border-top-right-radius: 8px; */
 }
 
 QLabel {
-    color: #343a40; /* Основний колір тексту */
-    padding: 2px; /* Невеликий відступ */
+    color: #343a40;
+    padding: 2px;
 }
 
 QLabel#nameLabel, QLabel#emailLabel {
-    font-weight: normal; /* Звичайний шрифт для значень */
-    color: #212529; /* Трохи темніший текст */
+    font-weight: normal;
+    color: #212529;
 }
 
 QLineEdit, QComboBox {
     padding: 8px 10px;
-    border: 1px solid #ced4da; /* Світло-сіра рамка */
+    border: 1px solid #ced4da;
     border-radius: 4px;
-    background-color: #ffffff; /* Білий фон */
+    background-color: #ffffff;
     color: #495057;
-    min-height: 20px; /* Мінімальна висота */
+    min-height: 20px;
 }
 
 QLineEdit:focus, QComboBox:focus {
-    border-color: #80bdff; /* Синій колір рамки при фокусі */
+    border-color: #80bdff;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Тінь при фокусі (не завжди працює) */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 QComboBox::drop-down {
-    border: none; /* Прибираємо рамку стрілки */
+    border: none;
 }
 
 QComboBox::down-arrow {
-    /* Можна додати свою іконку стрілки */
-    /* image: url(:/icons/down_arrow.png); */
     width: 12px;
     height: 12px;
 }
 
 QLabel#totalAmountLabel {
-    font-size: 14pt; /* Більший розмір шрифту для суми */
+    font-size: 14pt;
     font-weight: bold;
-    color: #007bff; /* Синій колір для акценту */
+    color: #007bff;
     padding-top: 10px;
     padding-bottom: 5px;
 }
@@ -89,38 +84,36 @@ QDialogButtonBox QPushButton {
     min-width: 80px;
 }
 
-/* Стилізація кнопки OK (Confirm) */
-QDialogButtonBox QPushButton[text="OK"] { /* Видалено селектор [text="&OK"] */
-    background-color: #007bff; /* Синій фон */
+QDialogButtonBox QPushButton[text="OK"] {
+    background-color: #007bff;
     color: white;
     border: 1px solid #007bff;
 }
-QDialogButtonBox QPushButton[text="OK"]:hover { /* Видалено селектор [text="&OK"]:hover */
-    background-color: #0056b3; /* Темніший синій при наведенні */
+QDialogButtonBox QPushButton[text="OK"]:hover {
+    background-color: #0056b3;
     border-color: #0056b3;
 }
-QDialogButtonBox QPushButton[text="OK"]:pressed { /* Видалено селектор [text="&OK"]:pressed */
-    background-color: #004085; /* Ще темніший при натисканні */
+QDialogButtonBox QPushButton[text="OK"]:pressed {
+    background-color: #004085;
     border-color: #004085;
 }
 
-/* Стилізація кнопки Cancel */
-QDialogButtonBox QPushButton[text="Cancel"] { /* Видалено селектор [text="&Cancel"] */
-    background-color: #f8f9fa; /* Світлий фон */
-    color: #6c757d; /* Сірий текст */
+QDialogButtonBox QPushButton[text="Cancel"] {
+    background-color: #f8f9fa;
+    color: #6c757d;
     border: 1px solid #ced4da;
 }
-QDialogButtonBox QPushButton[text="Cancel"]:hover { /* Видалено селектор [text="&Cancel"]:hover */
-    background-color: #e2e6ea; /* Трохи темніший фон при наведенні */
+QDialogButtonBox QPushButton[text="Cancel"]:hover {
+    background-color: #e2e6ea;
     border-color: #dae0e5;
 }
-QDialogButtonBox QPushButton[text="Cancel"]:pressed { /* Видалено селектор [text="&Cancel"]:pressed */
-    background-color: #d6dbe0; /* Ще темніший при натисканні */
+QDialogButtonBox QPushButton[text="Cancel"]:pressed {
+    background-color: #d6dbe0;
     border-color: #cfd5db;
 }
 
 Line {
- background-color: #dee2e6; /* Колір лінії */
+ background-color: #dee2e6;
  height: 1px;
 }</string>
   </property>
