@@ -15,6 +15,7 @@
 #include <QLineEdit> // Для on_placeOrderButton_clicked (profileAddressLineEdit)
 #include <QPainter> // Для рисования значка на иконке
 #include <QIcon>    // Для QIcon
+#include "checkoutdialog.h" // Додано для діалогу оформлення
 
 // --- Логіка кошика (Новий дизайн) ---
 
@@ -419,10 +420,10 @@ void MainWindow::removeCartItem(int bookId)
      }
 }
 
-// Слот для кнопки "Оформити замовлення"
+// Слот для кнопки "Оформити замовлення" - Тепер відкриває діалог
 void MainWindow::on_placeOrderButton_clicked()
 {
-    qInfo() << "Place order button clicked.";
+    qInfo() << "Place order button clicked. Opening checkout dialog...";
     if (m_cartItems.isEmpty()) {
         QMessageBox::information(this, tr("Порожній кошик"), tr("Ваш кошик порожній. Додайте товари перед оформленням замовлення."));
         return;
@@ -436,63 +437,102 @@ void MainWindow::on_placeOrderButton_clicked()
         return;
     }
 
-    // --- Отримання даних для замовлення ---
-    // 1. Адреса доставки (беремо з профілю або запитуємо)
+    // --- Отримання профілю користувача для діалогу ---
     CustomerProfileInfo profile = m_dbManager->getCustomerProfileInfo(m_currentCustomerId);
-    QString shippingAddress = profile.found ? profile.address : "";
-    if (shippingAddress.isEmpty()) {
-        // Перевіряємо існування віджетів профілю перед фокусуванням
-        if (!ui->pageProfile || !ui->profileAddressLineEdit) {
-             QMessageBox::warning(this, tr("Адреса доставки"), tr("Будь ласка, вкажіть адресу доставки у вашому профілі перед оформленням замовлення.\n(Помилка: не знайдено поля адреси в інтерфейсі профілю)"));
-             return;
-        }
-        QMessageBox::warning(this, tr("Адреса доставки"), tr("Будь ласка, вкажіть адресу доставки у вашому профілі перед оформленням замовлення."));
-        // Перенаправляємо на сторінку профілю
-        on_navProfileButton_clicked();
-        ui->profileAddressLineEdit->setFocus(); // Встановлюємо фокус на поле адреси
-        setProfileEditingEnabled(true); // Вмикаємо редагування
+    if (!profile.found) {
+        QMessageBox::critical(this, tr("Помилка профілю"), tr("Не вдалося завантажити дані профілю користувача."));
         return;
     }
 
-    // 2. Спосіб оплати (поки що фіксований)
-    QString paymentMethod = tr("Готівка при отриманні"); // Або показати діалог вибору
-
-    // Готуємо дані для createOrder (bookId -> quantity)
-    QMap<int, int> itemsMap;
-    for (auto it = m_cartItems.constBegin(); it != m_cartItems.constEnd(); ++it) {
-        itemsMap.insert(it.key(), it.value().quantity);
+    // --- Розрахунок загальної суми для діалогу ---
+    double currentTotal = 0.0;
+    for (const auto &item : m_cartItems) {
+        currentTotal += item.book.price * item.quantity;
     }
 
+    // --- Створення та показ діалогу ---
+    CheckoutDialog dialog(profile, currentTotal, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        // Користувач підтвердив, отримуємо дані з діалогу
+        QString finalAddress = dialog.getShippingAddress();
+        QString finalPaymentMethod = dialog.getPaymentMethod();
+        qInfo() << "Checkout confirmed. Address:" << finalAddress << "Payment:" << finalPaymentMethod;
 
-    // --- Виклик методу DatabaseManager для створення замовлення ---
-    int newOrderId = -1;
-    bool success = m_dbManager->createOrder(m_currentCustomerId, itemsMap, shippingAddress, paymentMethod, newOrderId);
+        // Викликаємо новий метод для фіналізації замовлення
+        finalizeOrder(finalAddress, finalPaymentMethod);
 
-    if (success && newOrderId > 0) {
-        QMessageBox::information(this, tr("Замовлення оформлено"), tr("Ваше замовлення №%1 успішно оформлено!").arg(newOrderId));
-
-        // --- Очищення кошика в БД ---
-        if (m_dbManager) {
-            if (!m_dbManager->clearCart(m_currentCustomerId)) {
-                 qWarning() << "Failed to clear DB cart for customerId:" << m_currentCustomerId << "after placing order.";
-                 // Не критично, але варто залогувати
-            } else {
-                 qInfo() << "DB cart cleared successfully for customerId:" << m_currentCustomerId;
-            }
-        } else {
-             qWarning() << "on_placeOrderButton_clicked: DatabaseManager is null, cannot clear DB cart.";
-        }
-        // --- Кінець очищення кошика в БД ---
-
-        m_cartItems.clear(); // Очищаємо кошик в пам'яті
-        updateCartIcon(); // Оновлюємо іконку
-        populateCartPage(); // Оновлюємо сторінку кошика (стане порожньою)
-        // Можна перейти на сторінку замовлень
-        on_navOrdersButton_clicked();
     } else {
-        QMessageBox::critical(this, tr("Помилка оформлення"), tr("Не вдалося оформити замовлення. Перевірте журнал помилок або спробуйте пізніше."));
-        qWarning() << "Failed to create order. DB Error:" << m_dbManager->lastError().text();
+        // Користувач скасував
+        qInfo() << "Checkout cancelled by user.";
     }
+}
+
+// Новий слот для фіналізації замовлення після підтвердження в діалозі
+void MainWindow::finalizeOrder(const QString &shippingAddress, const QString &paymentMethod)
+{
+     qInfo() << "Finalizing order. Address:" << shippingAddress << "Payment:" << paymentMethod;
+
+     if (m_cartItems.isEmpty() || !m_dbManager || m_currentCustomerId <= 0) {
+         qWarning() << "Finalize order called with empty cart, no DB manager, or invalid customer ID.";
+         QMessageBox::critical(this, tr("Помилка"), tr("Не вдалося завершити оформлення замовлення через внутрішню помилку."));
+         return;
+     }
+
+     // Готуємо дані для createOrder (bookId -> quantity)
+     QMap<int, int> itemsMap;
+     for (auto it = m_cartItems.constBegin(); it != m_cartItems.constEnd(); ++it) {
+         itemsMap.insert(it.key(), it.value().quantity);
+     }
+
+     // --- Виклик методу DatabaseManager для створення замовлення ---
+     int newOrderId = -1;
+     // Викликаємо оновлений createOrder, який повертає double
+     double orderTotal = m_dbManager->createOrder(m_currentCustomerId, itemsMap, shippingAddress, paymentMethod, newOrderId);
+
+     if (orderTotal >= 0 && newOrderId > 0) { // Перевіряємо, чи не повернулася помилка (-1.0)
+         QMessageBox::information(this, tr("Замовлення оформлено"), tr("Ваше замовлення №%1 на суму %2 грн успішно оформлено!").arg(newOrderId).arg(QString::number(orderTotal, 'f', 2)));
+
+         // --- Нарахування бонусних балів ---
+         // Приклад: 1 бал за кожні 10 грн
+         int pointsToAdd = static_cast<int>(orderTotal / 10.0);
+         if (pointsToAdd > 0) {
+             qInfo() << "Adding" << pointsToAdd << "loyalty points for order total" << orderTotal;
+             if (m_dbManager->addLoyaltyPoints(m_currentCustomerId, pointsToAdd)) {
+                 qInfo() << "Loyalty points added successfully.";
+                 // Можна показати повідомлення користувачу про бали
+                 ui->statusBar->showMessage(tr("Вам нараховано %1 бонусних балів!").arg(pointsToAdd), 4000);
+             } else {
+                 qWarning() << "Failed to add loyalty points for customer ID:" << m_currentCustomerId;
+                 // Не критично для замовлення, але варто залогувати
+             }
+         } else {
+              qInfo() << "No loyalty points to add for order total" << orderTotal;
+         }
+         // --- Кінець нарахування бонусних балів ---
+
+
+         // --- Очищення кошика в БД ---
+         if (!m_dbManager->clearCart(m_currentCustomerId)) {
+             qWarning() << "Failed to clear DB cart for customerId:" << m_currentCustomerId << "after placing order.";
+         } else {
+             qInfo() << "DB cart cleared successfully for customerId:" << m_currentCustomerId;
+         }
+         // --- Кінець очищення кошика в БД ---
+
+         m_cartItems.clear(); // Очищаємо кошик в пам'яті
+         updateCartIcon(); // Оновлюємо іконку
+         populateCartPage(); // Оновлюємо сторінку кошика (стане порожньою)
+         // Можна перейти на сторінку замовлень
+         on_navOrdersButton_clicked();
+
+     } else {
+         QMessageBox::critical(this, tr("Помилка оформлення"), tr("Не вдалося оформити замовлення. Можливо, деяких товарів вже немає в наявності. Перевірте журнал помилок або спробуйте пізніше."));
+         qWarning() << "Failed to create order. DB Error:" << m_dbManager->lastError().text() << "Returned total:" << orderTotal;
+         // Важливо: Не очищаємо кошик, якщо замовлення не створено!
+         // Можливо, варто оновити кошик, щоб показати актуальну кількість товарів, якщо помилка була через наявність
+         loadCartFromDatabase(); // Перезавантажуємо кошик з БД, щоб побачити актуальні дані
+         populateCartPage();
+     }
 }
 
 

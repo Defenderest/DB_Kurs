@@ -74,6 +74,9 @@ public:
     // Новий метод для оновлення адреси користувача
     bool updateCustomerAddress(int customerId, const QString &newAddress);
 
+    // Новий метод для додавання бонусних балів користувачу
+    bool addLoyaltyPoints(int customerId, int pointsToAdd);
+
     // Оновлений метод для отримання пропозицій пошуку (повертає розширену інформацію)
     QList<SearchSuggestionInfo> getSearchSuggestions(const QString &prefix, int limit = 10) const;
 
@@ -86,8 +89,8 @@ public:
     // Новий метод для отримання BookDisplayInfo за ID (для кошика)
     BookDisplayInfo getBookDisplayInfoById(int bookId) const;
 
-    // Новий метод для створення замовлення
-    bool createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId);
+    // Оновлений метод для створення замовлення (повертає загальну суму або -1.0 при помилці)
+    double createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId);
 
     // Новий метод для додавання коментаря
     bool addComment(int bookId, int customerId, const QString &commentText, int rating);

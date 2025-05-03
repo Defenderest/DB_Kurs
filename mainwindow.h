@@ -28,6 +28,7 @@
 
 
 // Forward declarations
+class CheckoutDialog; // Додано forward declaration для діалогу оформлення
 class DatabaseManager;
 class QListWidget;     // Для списків фільтрів
 // class QDoubleSpinBox;  // Замінено на RangeSlider
@@ -100,6 +101,8 @@ private slots:
     void updateUpperPriceLabel(int value);
     // Слот для обробки кліку на кнопку категорії (використовується в лямбдах)
     void applyGenreFilter(const QString &genreName);
+    // Слот для обробки підтвердження замовлення з діалогу
+    void finalizeOrder(const QString &shippingAddress, const QString &paymentMethod);
 
 private:
     // Допоміжні функції для відображення даних

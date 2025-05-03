@@ -132,29 +132,32 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
     return orderInfo;
 }
 
-// Реалізація нового методу для створення замовлення
-bool DatabaseManager::createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId)
+// Реалізація оновленого методу для створення замовлення (повертає double)
+double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId)
 {
     newOrderId = -1;
+    double calculatedTotalAmount = 0.0; // Ініціалізуємо тут
+    const double errorReturnValue = -1.0; // Значення, що повертається при помилці
+
     if (!m_isConnected || !m_db.isOpen()) {
         qWarning() << "Неможливо створити замовлення: немає з'єднання з БД.";
-        return false;
+        return errorReturnValue;
     }
     if (customerId <= 0 || items.isEmpty() || shippingAddress.isEmpty()) {
         qWarning() << "Неможливо створити замовлення: невірний ID користувача, порожній кошик або не вказано адресу.";
-        return false;
+        return errorReturnValue;
     }
 
     // Починаємо транзакцію
     if (!m_db.transaction()) {
         qCritical() << "Не вдалося почати транзакцію для створення замовлення:" << m_db.lastError().text();
-        return false;
+        return errorReturnValue;
     }
     qInfo() << "Транзакція для створення замовлення розпочата...";
 
     QSqlQuery query(m_db); // Основний запит для заголовка, оновлення суми, статусу
     bool success = true;
-    double calculatedTotalAmount = 0.0;
+    // double calculatedTotalAmount = 0.0; // Перенесено вище
     QVariant lastId;
 
     // 1. Створюємо запис в таблиці "order" (поки що з total_amount = 0)
@@ -307,12 +310,12 @@ bool DatabaseManager::createOrder(int customerId, const QMap<int, int> &items, c
     // Завершуємо транзакцію
     if (success) {
         if (m_db.commit()) {
-            qInfo() << "Транзакція створення замовлення ID" << newOrderId << "успішно завершена.";
-            return true;
+            qInfo() << "Транзакція створення замовлення ID" << newOrderId << "успішно завершена. Total:" << calculatedTotalAmount;
+            return calculatedTotalAmount; // Повертаємо розраховану суму
         } else {
             qCritical() << "Помилка при коміті транзакції створення замовлення:" << m_db.lastError().text();
             m_db.rollback(); // Спробувати відкат
-            return false;
+            return errorReturnValue;
         }
     } else {
         qWarning() << "Виникла помилка під час створення замовлення. Відкат транзакції...";
@@ -322,7 +325,7 @@ bool DatabaseManager::createOrder(int customerId, const QMap<int, int> &items, c
             qInfo() << "Транзакція створення замовлення успішно скасована.";
         }
         newOrderId = -1; // Скидаємо ID, оскільки замовлення не створено
-        return false;
+        return errorReturnValue;
     }
 }
 
