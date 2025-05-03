@@ -75,8 +75,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         profiledialog.ui # Додано UI файл діалогу профілю
         checkoutdialog.ui # Додано UI файл діалогу оформлення
         resourses.qrc
-        starratingwidget.h
-        starratingwidget.cpp
+        # starratingwidget.h/cpp removed here, already in PROJECT_SOURCES
+    ) # <-- Added the missing closing parenthesis here
 else()
     # add_executable (стандартный CMake, используется для Qt 5)
     # CMAKE_AUTOUIC и CMAKE_AUTORCC должны автоматически обработать
