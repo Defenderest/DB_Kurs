@@ -68,15 +68,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     # qt_add_executable (рекомендуется для Qt 6)
     # Передаем .ui и .qrc файлы напрямую
     qt_add_executable(untitled
-        MANUAL_FINALIZATION # Нужно, если используем qt_finalize_executable позже
+        #MANUAL_FINALIZATION # Нужно, если используем qt_finalize_executable позже
         ${PROJECT_SOURCES}
         mainwindow.ui
         logindialog.ui # Додано UI файл діалогу входу
         profiledialog.ui # Додано UI файл діалогу профілю
         checkoutdialog.ui # Додано UI файл діалогу оформлення
         resourses.qrc
-        # starratingwidget.h/cpp removed here, already in PROJECT_SOURCES
-    )
+        starratingwidget.h
+        starratingwidget.cpp
 else()
     # add_executable (стандартный CMake, используется для Qt 5)
     # CMAKE_AUTOUIC и CMAKE_AUTORCC должны автоматически обработать
