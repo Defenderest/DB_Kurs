@@ -57,6 +57,7 @@ set(PROJECT_SOURCES
     searchsuggestiondelegate.cpp # Додано файл делегата пошуку
     searchsuggestiondelegate.h
     RangeSlider.cpp
+    database_cart.cpp # Додано файл реалізації кошика
     RangeSlider.h
 )
 
