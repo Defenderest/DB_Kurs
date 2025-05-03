@@ -24,27 +24,28 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Sql Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Sql Widgets)
 
 # --- Список исходных файлов ---
-# Перечисляем .cpp и .h файлы. .ui и .qrc будут добавлены ниже.
+# Перечисляем ТОЛЬКО .cpp файлы. Заголовки (.h) будут найдены автоматически.
+# .ui и .qrc будут добавлены ниже в qt_add_executable.
 set(PROJECT_SOURCES
     main.cpp
     starratingwidget.cpp
-    starratingwidget.h
+    # starratingwidget.h # Removed
     mainwindow.cpp
-    mainwindow.h
+    # mainwindow.h # Removed
     database_connection.cpp # Новий файл
     database_customer.cpp   # Новий файл
     database_book.cpp       # Новий файл
     database_author.cpp     # Новий файл
     database_order.cpp      # Новий файл
     database_comment.cpp    # Новий файл
-    database.h
+    # database.h # Removed
     logindialog.cpp
-    logindialog.h
+    # logindialog.h # Removed
     profiledialog.cpp # Додано новий файл діалогу профілю
-    profiledialog.h
-    datatypes.h       # Додано файл зі структурами даних
+    # profiledialog.h # Removed
+    # datatypes.h # Removed (Header only)
     testdata.cpp      # Додано файл генерації тестових даних
-    testdata.h
+    # testdata.h # Removed
     mainwindow_utils.cpp    # Додано файл з утилітами
     mainwindow_books.cpp    # Додано файл для логіки книг
     mainwindow_authors.cpp  # Додано файл для логіки авторів
@@ -54,12 +55,12 @@ set(PROJECT_SOURCES
     mainwindow_comments.cpp # Додано файл для логіки коментарів
     mainwindow_search.cpp   # Додано файл для логіки пошуку
     searchsuggestiondelegate.cpp # Додано файл делегата пошуку
-    searchsuggestiondelegate.h
+    # searchsuggestiondelegate.h # Removed
     RangeSlider.cpp
     database_cart.cpp
-    RangeSlider.h
+    # RangeSlider.h # Removed
     checkoutdialog.cpp # Додано файл реалізації діалогу оформлення
-    checkoutdialog.h   # Додано файл заголовку діалогу оформлення
+    # checkoutdialog.h # Removed
 )
 
 # --- Создание исполняемого файла ---
