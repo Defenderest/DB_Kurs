@@ -90,37 +90,31 @@ QDialogButtonBox QPushButton {
 }
 
 /* Стилізація кнопки OK (Confirm) */
-QDialogButtonBox QPushButton[text="OK"],
-QDialogButtonBox QPushButton[text="&OK"] {
+QDialogButtonBox QPushButton[text="OK"] { /* Видалено селектор [text="&OK"] */
     background-color: #007bff; /* Синій фон */
     color: white;
     border: 1px solid #007bff;
 }
-QDialogButtonBox QPushButton[text="OK"]:hover,
-QDialogButtonBox QPushButton[text="&OK"]:hover {
+QDialogButtonBox QPushButton[text="OK"]:hover { /* Видалено селектор [text="&OK"]:hover */
     background-color: #0056b3; /* Темніший синій при наведенні */
     border-color: #0056b3;
 }
-QDialogButtonBox QPushButton[text="OK"]:pressed,
-QDialogButtonBox QPushButton[text="&OK"]:pressed {
+QDialogButtonBox QPushButton[text="OK"]:pressed { /* Видалено селектор [text="&OK"]:pressed */
     background-color: #004085; /* Ще темніший при натисканні */
     border-color: #004085;
 }
 
 /* Стилізація кнопки Cancel */
-QDialogButtonBox QPushButton[text="Cancel"],
-QDialogButtonBox QPushButton[text="&Cancel"] {
+QDialogButtonBox QPushButton[text="Cancel"] { /* Видалено селектор [text="&Cancel"] */
     background-color: #f8f9fa; /* Світлий фон */
     color: #6c757d; /* Сірий текст */
     border: 1px solid #ced4da;
 }
-QDialogButtonBox QPushButton[text="Cancel"]:hover,
-QDialogButtonBox QPushButton[text="&Cancel"]:hover {
+QDialogButtonBox QPushButton[text="Cancel"]:hover { /* Видалено селектор [text="&Cancel"]:hover */
     background-color: #e2e6ea; /* Трохи темніший фон при наведенні */
     border-color: #dae0e5;
 }
-QDialogButtonBox QPushButton[text="Cancel"]:pressed,
-QDialogButtonBox QPushButton[text="&Cancel"]:pressed {
+QDialogButtonBox QPushButton[text="Cancel"]:pressed { /* Видалено селектор [text="&Cancel"]:pressed */
     background-color: #d6dbe0; /* Ще темніший при натисканні */
     border-color: #cfd5db;
 }
