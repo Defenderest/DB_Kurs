@@ -23,8 +23,11 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Sql Widgets)
 # Используем найденную версию для последующих команд Qt
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Sql Widgets)
 
+# Добавляем текущую директорию в пути поиска заголовочных файлов ДО определения исполняемого файла
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 # --- Список исходных файлов ---
-# Перечисляем .cpp и .h файлы. .ui и .qrc будут добавлены ниже.
+# Перечисляем ТОЛЬКО .cpp файлы. Заголовки (.h) будут найдены автоматически через include_directories.
 set(PROJECT_SOURCES
     main.cpp
     starratingwidget.cpp
@@ -68,13 +71,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     # Передаем .ui и .qrc файлы напрямую
     qt_add_executable(untitled
         MANUAL_FINALIZATION # Нужно, если используем qt_finalize_executable позже
-        ${PROJECT_SOURCES}
+        ${PROJECT_SOURCES} # Тільки .cpp файли
+        # Заголовки (.h) не передаємо, вони знаходяться через include_directories
+        # UI та QRC файли:
         mainwindow.ui
-        logindialog.ui # Додано UI файл діалогу входу
+        logindialog.ui
         profiledialog.ui
-        checkoutdialog.ui# Додано UI файл діалогу профілю
+        checkoutdialog.ui
         resourses.qrc
-        # starratingwidget.h/cpp removed here, already in PROJECT_SOURCES
     )
 else()
     # add_executable (стандартный CMake, используется для Qt 5)
@@ -130,9 +134,9 @@ if(QT_VERSION_MAJOR EQUAL 6)
 endif()
 
 
-# --- (Опционально, но рекомендуется) Добавление путей для заголовочных файлов ---
-# Если структура проекта сложная, это может помочь IDE и компилятору
-target_include_directories(untitled PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# --- (Опционально) Добавление путей для заголовочных файлов через target_include_directories ---
+# Можна залишити або видалити, оскільки include_directories() вже додано вище.
+# target_include_directories(untitled PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 # --- Додавання залежностей для компіляції (якщо потрібно) ---
