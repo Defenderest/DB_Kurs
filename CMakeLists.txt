@@ -27,11 +27,14 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Sql Widgets)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # --- Список исходных файлов ---
-# Перечисляем ТОЛЬКО .cpp файлы. Заголовки (.h) будут найдены автоматически через include_directories.
+# Перечисляем .cpp та .h файли.
 set(PROJECT_SOURCES
     main.cpp
     starratingwidget.cpp
+    starratingwidget.h
     mainwindow.cpp
+    mainwindow.h
+    database.h # Повертаємо заголовковий файл для DatabaseManager
     database_connection.cpp
     database_customer.cpp
     database_book.cpp
@@ -40,8 +43,12 @@ set(PROJECT_SOURCES
     database_comment.cpp
     database_cart.cpp
     logindialog.cpp
+    logindialog.h
     profiledialog.cpp
+    profiledialog.h
     testdata.cpp
+    testdata.h
+    datatypes.h # Заголовковий файл зі структурами
     mainwindow_utils.cpp
     mainwindow_books.cpp
     mainwindow_authors.cpp
@@ -51,8 +58,11 @@ set(PROJECT_SOURCES
     mainwindow_comments.cpp
     mainwindow_search.cpp
     searchsuggestiondelegate.cpp
+    searchsuggestiondelegate.h
     RangeSlider.cpp
+    RangeSlider.h
     checkoutdialog.cpp
+    checkoutdialog.h
 )
 
 # --- Создание исполняемого файла ---
