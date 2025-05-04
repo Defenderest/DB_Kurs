@@ -118,6 +118,19 @@ install(TARGETS untitled
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+# --- Встановлення SQL файлів ---
+# Копіюємо SQL файли до піддиректорії 'sql' в директорії встановлення виконуваного файлу
+install(FILES
+    sql/schema.sql
+    sql/author_queries.sql
+    sql/book_queries.sql
+    sql/cart_queries.sql
+    sql/comment_queries.sql
+    sql/customer_queries.sql
+    sql/order_queries.sql
+    DESTINATION ${CMAKE_INSTALL_BINDIR}/sql
+)
+
 # --- Финализация для Qt 6 ---
 # (Оставляем как было, парная команда для MANUAL_FINALIZATION)
 if(QT_VERSION_MAJOR EQUAL 6)
