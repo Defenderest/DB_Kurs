@@ -31,39 +31,28 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(PROJECT_SOURCES
     main.cpp
     starratingwidget.cpp
-    starratingwidget.h
     mainwindow.cpp
-    mainwindow.h # Removed
-    database.cpp # Повертаємо цей файл, він був потрібен до реалізації кошика в БД
-    database_connection.cpp # Новий файл
-    database_customer.cpp   # Новий файл
-    database_book.cpp       # Новий файл
-    database_author.cpp     # Новий файл
-    database_order.cpp      # Новий файл
-    database_comment.cpp    # Новий файл
-    database.h # Removed
+    database_connection.cpp
+    database_customer.cpp
+    database_book.cpp
+    database_author.cpp
+    database_order.cpp
+    database_comment.cpp
+    database_cart.cpp
     logindialog.cpp
-    logindialog.h # Removed
-    profiledialog.cpp # Додано новий файл діалогу профілю
-    profiledialog.h # Removed
-    datatypes.h # Removed (Header only)
-    testdata.cpp      # Додано файл генерації тестових даних
-    testdata.h # Removed
-    mainwindow_utils.cpp    # Додано файл з утилітами
-    mainwindow_books.cpp    # Додано файл для логіки книг
-    mainwindow_authors.cpp  # Додано файл для логіки авторів
-    mainwindow_orders.cpp   # Додано файл для логіки замовлень
-    mainwindow_profile.cpp  # Додано файл для логіки профілю
-    mainwindow_cart.cpp     # Додано файл для логіки кошика
-    mainwindow_comments.cpp # Додано файл для логіки коментарів
-    mainwindow_search.cpp   # Додано файл для логіки пошуку
-    searchsuggestiondelegate.cpp # Додано файл делегата пошуку
-    searchsuggestiondelegate.h
+    profiledialog.cpp
+    testdata.cpp
+    mainwindow_utils.cpp
+    mainwindow_books.cpp
+    mainwindow_authors.cpp
+    mainwindow_orders.cpp
+    mainwindow_profile.cpp
+    mainwindow_cart.cpp
+    mainwindow_comments.cpp
+    mainwindow_search.cpp
+    searchsuggestiondelegate.cpp
     RangeSlider.cpp
-    database_cart.cpp # Додано файл реалізації кошика
-    RangeSlider.h # Removed
     checkoutdialog.cpp
-    checkoutdialog.h
 )
 
 # --- Создание исполняемого файла ---
