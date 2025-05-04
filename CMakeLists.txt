@@ -63,6 +63,14 @@ set(PROJECT_SOURCES
     RangeSlider.h
     checkoutdialog.cpp
     checkoutdialog.h
+    # Додаємо SQL файли сюди, щоб IDE їх бачила в дереві проекту
+    sql/schema.sql
+    sql/author_queries.sql
+    sql/book_queries.sql
+    sql/cart_queries.sql
+    sql/comment_queries.sql
+    sql/customer_queries.sql
+    sql/order_queries.sql
 )
 
 # --- Создание исполняемого файла ---
