@@ -455,3 +455,4 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
     qInfo() << "Processed" << orderCount << "orders for customer ID:" << customerId;
     return orders;
 }
+} // Додаємо відсутню дужку

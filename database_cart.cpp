@@ -61,7 +61,7 @@ bool DatabaseManager::addOrUpdateCartItem(int customerId, int bookId, int quanti
     const QString sql = getSqlQuery("AddOrUpdateCartItem");
      if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
-    QSqlQuery query(m_db);
+    // QSqlQuery query(m_db); // Видаляємо повторне оголошення
     if (!query.prepare(sql)) {
         qCritical() << "Помилка підготовки запиту 'AddOrUpdateCartItem':" << query.lastError().text();
         return false;
