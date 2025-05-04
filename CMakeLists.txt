@@ -106,6 +106,12 @@ target_link_libraries(untitled PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
 )
 
+# --- Копирование SQL файлов в директорию сборки ---
+# Это гарантирует, что программа найдет их при запуске из IDE/сборки
+file(COPY sql DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+message(STATUS "Copying SQL files to build directory: ${CMAKE_CURRENT_BINARY_DIR}/sql")
+
+
 # --- Настройки для платформ (macOS/iOS/Windows) ---
 # (Оставляем как было, это стандартный шаблон)
 if(${QT_VERSION} VERSION_LESS 6.1.0 AND (APPLE OR CMAKE_SYSTEM_NAME STREQUAL "iOS"))
