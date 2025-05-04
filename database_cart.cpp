@@ -15,12 +15,19 @@ QMap<int, int> DatabaseManager::getCartItems(int customerId) const
         return cartItems; // Повертаємо порожню мапу
     }
 
+    const QString sql = getSqlQuery("GetCartItemsByCustomerId");
+    if (sql.isEmpty()) return cartItems; // Помилка завантаження запиту
+
     QSqlQuery query(m_db);
-    query.prepare("SELECT book_id, quantity FROM cart_item WHERE customer_id = :customerId");
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetCartItemsByCustomerId':" << query.lastError().text();
+        return cartItems;
+    }
     query.bindValue(":customerId", customerId);
 
+    qInfo() << "Executing SQL 'GetCartItemsByCustomerId' for customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні товарів з корзини для customerId" << customerId << ":" << query.lastError().text();
+        qCritical() << "Помилка при виконанні 'GetCartItemsByCustomerId' для customerId" << customerId << ":" << query.lastError().text();
         return cartItems; // Повертаємо порожню мапу
     }
 
@@ -50,25 +57,23 @@ bool DatabaseManager::addOrUpdateCartItem(int customerId, int bookId, int quanti
     }
 
     QSqlQuery query(m_db);
-    // Використовуємо INSERT ... ON CONFLICT ... UPDATE для атомарного додавання/оновлення
-    // (Потребує PostgreSQL 9.5+ або аналогічної функціональності в інших СУБД)
-    // Для SQLite: INSERT OR REPLACE INTO cart_item (...) VALUES (...);
-    // Або: INSERT INTO cart_item (...) VALUES (...) ON CONFLICT(customer_id, book_id) DO UPDATE SET quantity = excluded.quantity;
-    // Перевірте синтаксис для вашої СУБД! Нижче приклад для PostgreSQL/SQLite.
-    query.prepare(R"(
-        INSERT INTO cart_item (customer_id, book_id, quantity, added_date)
-        VALUES (:customerId, :bookId, :quantity, CURRENT_TIMESTAMP)
-        ON CONFLICT (customer_id, book_id) DO UPDATE SET
-            quantity = EXCLUDED.quantity,
-            added_date = CURRENT_TIMESTAMP;
-    )");
+    // Використовуємо завантажений SQL запит
+    const QString sql = getSqlQuery("AddOrUpdateCartItem");
+     if (sql.isEmpty()) return false; // Помилка завантаження запиту
+
+    QSqlQuery query(m_db);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'AddOrUpdateCartItem':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":customerId", customerId);
     query.bindValue(":bookId", bookId);
     query.bindValue(":quantity", quantity);
 
+    qInfo() << "Executing SQL 'AddOrUpdateCartItem' for customer ID:" << customerId << "Book ID:" << bookId;
     if (!query.exec()) {
-        qCritical() << "Помилка при додаванні/оновленні товару (bookId" << bookId << ", quantity" << quantity
-                   << ") в корзину для customerId" << customerId << ":" << query.lastError().text();
+        qCritical() << "Помилка при виконанні 'AddOrUpdateCartItem' (bookId" << bookId << ", quantity" << quantity
+                   << ") для customerId" << customerId << ":" << query.lastError().text();
         return false;
     }
 
@@ -83,13 +88,20 @@ bool DatabaseManager::removeCartItem(int customerId, int bookId)
         return false;
     }
 
+    const QString sql = getSqlQuery("RemoveCartItem");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
+
     QSqlQuery query(m_db);
-    query.prepare("DELETE FROM cart_item WHERE customer_id = :customerId AND book_id = :bookId");
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'RemoveCartItem':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":customerId", customerId);
     query.bindValue(":bookId", bookId);
 
+    qInfo() << "Executing SQL 'RemoveCartItem' for customer ID:" << customerId << "Book ID:" << bookId;
     if (!query.exec()) {
-        qCritical() << "Помилка при видаленні товару (bookId" << bookId << ") з корзини БД для customerId" << customerId << ":" << query.lastError().text();
+        qCritical() << "Помилка при виконанні 'RemoveCartItem' (bookId" << bookId << ") для customerId" << customerId << ":" << query.lastError().text();
         return false;
     }
 
@@ -108,12 +120,19 @@ bool DatabaseManager::clearCart(int customerId)
         return false;
     }
 
+    const QString sql = getSqlQuery("ClearCartByCustomerId");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
+
     QSqlQuery query(m_db);
-    query.prepare("DELETE FROM cart_item WHERE customer_id = :customerId");
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'ClearCartByCustomerId':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":customerId", customerId);
 
+    qInfo() << "Executing SQL 'ClearCartByCustomerId' for customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при очищенні корзини БД для customerId" << customerId << ":" << query.lastError().text();
+        qCritical() << "Помилка при виконанні 'ClearCartByCustomerId' для customerId" << customerId << ":" << query.lastError().text();
         return false;
     }
 

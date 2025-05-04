@@ -14,23 +14,15 @@ QList<AuthorDisplayInfo> DatabaseManager::getAllAuthorsForDisplay() const
         return authors; // Повертаємо порожній список
     }
 
-    const QString sql = R"(
-        SELECT
-            author_id,
-            first_name,
-            last_name,
-            nationality,
-            image_path
-        FROM author
-        ORDER BY last_name, first_name; -- Сортуємо за прізвищем та ім'ям
-    )";
+    const QString sql = getSqlQuery("GetAllAuthorsForDisplay");
+    if (sql.isEmpty()) return authors; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    qInfo() << "Executing SQL to get authors for display...";
+    qInfo() << "Executing SQL 'GetAllAuthorsForDisplay' to get authors for display...";
     if (!query.exec(sql)) {
-        qCritical() << "Помилка при отриманні списку авторів для відображення:";
+        qCritical() << "Помилка при виконанні 'GetAllAuthorsForDisplay':";
         qCritical() << query.lastError().text();
-        qCritical() << "SQL запит:" << sql;
+        qCritical() << "SQL запит:" << sql; // Показуємо SQL, який намагалися виконати
         return authors; // Повертаємо порожній список у разі помилки
     }
 
@@ -64,25 +56,21 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
     }
 
     // --- Отримання основної інформації про автора ---
-    // Видалено death_date з запиту
-    const QString authorSql = R"(
-        SELECT
-            author_id, first_name, last_name, nationality, image_path, biography, birth_date
-        FROM author
-        WHERE author_id = :authorId
-        LIMIT 1;
-    )";
+    const QString authorSql = getSqlQuery("GetAuthorDetailsById");
+    if (authorSql.isEmpty()) return details; // Помилка завантаження запиту
 
-    // Повертаємо використання prepare/bindValue/exec
     QSqlQuery authorQuery(m_db);
-    authorQuery.prepare(authorSql);
+    if (!authorQuery.prepare(authorSql)) {
+        qCritical() << "Помилка підготовки запиту 'GetAuthorDetailsById':" << authorQuery.lastError().text();
+        return details;
+    }
     authorQuery.bindValue(":authorId", authorId);
 
-    qInfo() << "Executing SQL to get author details for author ID:" << authorId;
+    qInfo() << "Executing SQL 'GetAuthorDetailsById' for author ID:" << authorId;
     if (!authorQuery.exec()) {
-        qCritical() << "Помилка при отриманні деталей автора для author ID '" << authorId << "':";
+        qCritical() << "Помилка при виконанні 'GetAuthorDetailsById' для author ID '" << authorId << "':";
         qCritical() << authorQuery.lastError().text();
-        qCritical() << "SQL запит:" << authorQuery.lastQuery(); // Логуємо запит, який виконав Qt
+        qCritical() << "SQL запит:" << authorQuery.lastQuery();
         return details;
     }
     // --- Кінець повернення до prepare/bindValue/exec ---
@@ -105,27 +93,19 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
     }
 
     // --- Отримання книг цього автора ---
-    // Використовуємо запит, схожий на getBookDisplayInfoById, але фільтруємо за author_id
-    const QString booksSql = R"(
-        SELECT
-            b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre,
-            STRING_AGG(DISTINCT a_other.first_name || ' ' || a_other.last_name, ', ') AS authors -- Збираємо ВСІХ авторів книги
-        FROM book b
-        INNER JOIN book_author ba ON b.book_id = ba.book_id
-        LEFT JOIN book_author ba_other ON b.book_id = ba_other.book_id -- Ще один join для збору всіх авторів
-        LEFT JOIN author a_other ON ba_other.author_id = a_other.author_id
-        WHERE ba.author_id = :authorId -- Фільтруємо за ID потрібного автора
-        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre
-        ORDER BY b.title;
-    )";
+    const QString booksSql = getSqlQuery("GetAuthorBooksForDisplay");
+    if (booksSql.isEmpty()) return details; // Помилка завантаження запиту, але повертаємо те, що вже є
 
     QSqlQuery booksQuery(m_db);
-    booksQuery.prepare(booksSql);
+     if (!booksQuery.prepare(booksSql)) {
+        qCritical() << "Помилка підготовки запиту 'GetAuthorBooksForDisplay':" << booksQuery.lastError().text();
+        return details; // Повертаємо те, що є
+    }
     booksQuery.bindValue(":authorId", authorId);
 
-    qInfo() << "Executing SQL to get books for author ID:" << authorId;
+    qInfo() << "Executing SQL 'GetAuthorBooksForDisplay' for author ID:" << authorId;
     if (!booksQuery.exec()) {
-        qCritical() << "Помилка при отриманні книг для автора ID '" << authorId << "':";
+        qCritical() << "Помилка при виконанні 'GetAuthorBooksForDisplay' для автора ID '" << authorId << "':";
         qCritical() << booksQuery.lastError().text();
         qCritical() << "SQL запит:" << booksQuery.lastQuery();
         // Не повертаємо помилку, просто список книг буде порожнім

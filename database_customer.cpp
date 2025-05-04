@@ -17,19 +17,19 @@ CustomerLoginInfo DatabaseManager::getCustomerLoginInfo(const QString &email) co
         return loginInfo; // Повертаємо порожню структуру
     }
 
-    const QString sql = R"(
-        SELECT customer_id, password_hash
-        FROM customer
-        WHERE email = :email;
-    )";
+    const QString sql = getSqlQuery("GetCustomerLoginInfoByEmail");
+    if (sql.isEmpty()) return loginInfo; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetCustomerLoginInfoByEmail':" << query.lastError().text();
+        return loginInfo;
+    }
     query.bindValue(":email", email);
 
-    qInfo() << "Executing SQL to get login info for email:" << email;
+    qInfo() << "Executing SQL 'GetCustomerLoginInfoByEmail' for email:" << email;
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні даних для входу для email '" << email << "':";
+        qCritical() << "Помилка при виконанні 'GetCustomerLoginInfoByEmail' для email '" << email << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         return loginInfo;
@@ -59,21 +59,19 @@ CustomerProfileInfo DatabaseManager::getCustomerProfileInfo(int customerId) cons
         return profileInfo; // Повертаємо порожню структуру
     }
 
-    const QString sql = R"(
-        SELECT
-            customer_id, first_name, last_name, email, phone, address,
-            join_date, loyalty_program, loyalty_points
-        FROM customer
-        WHERE customer_id = :customerId;
-    )";
+    const QString sql = getSqlQuery("GetCustomerProfileInfoById");
+    if (sql.isEmpty()) return profileInfo; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetCustomerProfileInfoById':" << query.lastError().text();
+        return profileInfo;
+    }
     query.bindValue(":customerId", customerId);
 
-    qInfo() << "Executing SQL to get profile info for customer ID:" << customerId;
+    qInfo() << "Executing SQL 'GetCustomerProfileInfoById' for customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні профілю для customer ID '" << customerId << "':";
+        qCritical() << "Помилка при виконанні 'GetCustomerProfileInfoById' для customer ID '" << customerId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         return profileInfo;
@@ -117,20 +115,20 @@ bool DatabaseManager::registerCustomer(const CustomerRegistrationInfo &regInfo, 
     QByteArray passwordHashBytes = QCryptographicHash::hash(regInfo.password.toUtf8(), QCryptographicHash::Sha256);
     QString passwordHashHex = QString::fromUtf8(passwordHashBytes.toHex());
 
-    const QString sql = R"(
-        INSERT INTO customer (first_name, last_name, email, password_hash, join_date, loyalty_program, loyalty_points)
-        VALUES (:first_name, :last_name, :email, :password_hash, CURRENT_DATE, FALSE, 0)
-        RETURNING customer_id;
-    )";
+    const QString sql = getSqlQuery("RegisterCustomer");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'RegisterCustomer':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":first_name", regInfo.firstName);
     query.bindValue(":last_name", regInfo.lastName);
     query.bindValue(":email", regInfo.email);
     query.bindValue(":password_hash", passwordHashHex);
 
-    qInfo() << "Executing SQL to register new customer with email:" << regInfo.email;
+    qInfo() << "Executing SQL 'RegisterCustomer' for email:" << regInfo.email;
 
     QVariant insertedId;
     // Використовуємо executeInsertQuery, який вже обробляє помилки та логування
@@ -167,21 +165,21 @@ bool DatabaseManager::updateCustomerName(int customerId, const QString &firstNam
         return false; // Ім'я та прізвище не можуть бути порожніми
     }
 
-    const QString sql = R"(
-        UPDATE customer
-        SET first_name = :firstName, last_name = :lastName
-        WHERE customer_id = :customerId;
-    )";
+    const QString sql = getSqlQuery("UpdateCustomerName");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'UpdateCustomerName':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":firstName", firstName);
     query.bindValue(":lastName", lastName);
     query.bindValue(":customerId", customerId);
 
-    qInfo() << "Executing SQL to update name for customer ID:" << customerId;
+    qInfo() << "Executing SQL 'UpdateCustomerName' for customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при оновленні імені/прізвища для customer ID '" << customerId << "':";
+        qCritical() << "Помилка при виконанні 'UpdateCustomerName' для customer ID '" << customerId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
@@ -193,8 +191,14 @@ bool DatabaseManager::updateCustomerName(int customerId, const QString &firstNam
         return true;
     } else {
         // Перевіряємо, чи існує користувач, щоб відрізнити "не знайдено" від "дані не змінилися"
+        const QString checkSql = getSqlQuery("CheckCustomerExistsById");
+        if (checkSql.isEmpty()) return false; // Не можемо перевірити, вважаємо помилкою
+
         QSqlQuery checkQuery(m_db);
-        checkQuery.prepare("SELECT 1 FROM customer WHERE customer_id = :customerId");
+        if (!checkQuery.prepare(checkSql)) {
+             qWarning() << "Failed to prepare 'CheckCustomerExistsById' query during name update check.";
+             return false; // Не можемо перевірити
+        }
         checkQuery.bindValue(":customerId", customerId);
         if (checkQuery.exec() && checkQuery.next()) {
              qInfo() << "Name update query executed, but no rows were affected for customer ID:" << customerId << "(Name likely unchanged)";
@@ -214,21 +218,21 @@ bool DatabaseManager::updateCustomerAddress(int customerId, const QString &newAd
         return false;
     }
 
-    const QString sql = R"(
-        UPDATE customer
-        SET address = :address
-        WHERE customer_id = :customerId;
-    )";
+    const QString sql = getSqlQuery("UpdateCustomerAddress");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'UpdateCustomerAddress':" << query.lastError().text();
+        return false;
+    }
     // Дозволяємо встановлювати NULL, якщо рядок порожній
     query.bindValue(":address", newAddress.isEmpty() ? QVariant(QVariant::String) : newAddress);
     query.bindValue(":customerId", customerId);
 
-    qInfo() << "Executing SQL to update address for customer ID:" << customerId;
+    qInfo() << "Executing SQL 'UpdateCustomerAddress' for customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при оновленні адреси для customer ID '" << customerId << "':";
+        qCritical() << "Помилка при виконанні 'UpdateCustomerAddress' для customer ID '" << customerId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
@@ -240,8 +244,14 @@ bool DatabaseManager::updateCustomerAddress(int customerId, const QString &newAd
         return true;
     } else {
         // Перевіряємо, чи існує користувач
+        const QString checkSql = getSqlQuery("CheckCustomerExistsById");
+        if (checkSql.isEmpty()) return false; // Не можемо перевірити
+
         QSqlQuery checkQuery(m_db);
-        checkQuery.prepare("SELECT 1 FROM customer WHERE customer_id = :customerId");
+         if (!checkQuery.prepare(checkSql)) {
+             qWarning() << "Failed to prepare 'CheckCustomerExistsById' query during address update check.";
+             return false; // Не можемо перевірити
+         }
         checkQuery.bindValue(":customerId", customerId);
          if (checkQuery.exec() && checkQuery.next()) {
             qInfo() << "Address update query executed, but no rows were affected for customer ID:" << customerId << "(Address likely unchanged)";
@@ -262,21 +272,20 @@ bool DatabaseManager::addLoyaltyPoints(int customerId, int pointsToAdd)
     }
 
     // Оновлюємо бали та вмикаємо програму лояльності, якщо вона ще не активна
-    const QString sql = R"(
-        UPDATE customer
-        SET loyalty_points = loyalty_points + :pointsToAdd,
-            loyalty_program = TRUE -- Вмикаємо програму лояльності при нарахуванні балів
-        WHERE customer_id = :customerId;
-    )";
+    const QString sql = getSqlQuery("AddLoyaltyPoints");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'AddLoyaltyPoints':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":pointsToAdd", pointsToAdd);
     query.bindValue(":customerId", customerId);
 
-    qInfo() << "Executing SQL to add" << pointsToAdd << "loyalty points for customer ID:" << customerId;
+    qInfo() << "Executing SQL 'AddLoyaltyPoints' to add" << pointsToAdd << "points for customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при додаванні бонусних балів для customer ID '" << customerId << "':";
+        qCritical() << "Помилка при виконанні 'AddLoyaltyPoints' для customer ID '" << customerId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
@@ -288,8 +297,14 @@ bool DatabaseManager::addLoyaltyPoints(int customerId, int pointsToAdd)
         return true;
     } else {
         // Перевіряємо, чи існує користувач
+        const QString checkSql = getSqlQuery("CheckCustomerExistsById");
+        if (checkSql.isEmpty()) return false; // Не можемо перевірити
+
         QSqlQuery checkQuery(m_db);
-        checkQuery.prepare("SELECT 1 FROM customer WHERE customer_id = :customerId");
+        if (!checkQuery.prepare(checkSql)) {
+             qWarning() << "Failed to prepare 'CheckCustomerExistsById' query during loyalty points update check.";
+             return false; // Не можемо перевірити
+        }
         checkQuery.bindValue(":customerId", customerId);
         if (checkQuery.exec() && checkQuery.next()) {
             qWarning() << "Loyalty points update query executed, but no rows were affected for customer ID:" << customerId << "(Should not happen unless pointsToAdd was 0)";
@@ -311,20 +326,20 @@ bool DatabaseManager::updateCustomerPhone(int customerId, const QString &newPhon
         return false;
     }
 
-    const QString sql = R"(
-        UPDATE customer
-        SET phone = :phone
-        WHERE customer_id = :customerId;
-    )";
+    const QString sql = getSqlQuery("UpdateCustomerPhone");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'UpdateCustomerPhone':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":phone", newPhone.isEmpty() ? QVariant(QVariant::String) : newPhone); // Дозволяємо встановлювати NULL, якщо рядок порожній
     query.bindValue(":customerId", customerId);
 
-    qInfo() << "Executing SQL to update phone for customer ID:" << customerId;
+    qInfo() << "Executing SQL 'UpdateCustomerPhone' for customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при оновленні телефону для customer ID '" << customerId << "':";
+        qCritical() << "Помилка при виконанні 'UpdateCustomerPhone' для customer ID '" << customerId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
@@ -337,8 +352,14 @@ bool DatabaseManager::updateCustomerPhone(int customerId, const QString &newPhon
         return true;
     } else {
          // Перевіряємо, чи існує користувач
+        const QString checkSql = getSqlQuery("CheckCustomerExistsById");
+        if (checkSql.isEmpty()) return false; // Не можемо перевірити
+
         QSqlQuery checkQuery(m_db);
-        checkQuery.prepare("SELECT 1 FROM customer WHERE customer_id = :customerId");
+         if (!checkQuery.prepare(checkSql)) {
+             qWarning() << "Failed to prepare 'CheckCustomerExistsById' query during phone update check.";
+             return false; // Не можемо перевірити
+         }
         checkQuery.bindValue(":customerId", customerId);
          if (checkQuery.exec() && checkQuery.next()) {
             qInfo() << "Phone update query executed, but no rows were affected for customer ID:" << customerId << "(Phone likely unchanged)";

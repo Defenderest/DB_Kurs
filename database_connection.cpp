@@ -8,11 +8,20 @@
 #include <QDate>
 #include <QDateTime>
 #include <QSqlRecord> // Needed for query.record()
-#include <QMap> // Потрібен для createOrder - *Можливо, це включення тут більше не потрібне, якщо createOrder переїде*
+#include <QMap>       // Потрібен для QMap в інших файлах
+#include <QFile>      // Для читання файлів SQL
+#include <QTextStream>// Для читання файлів SQL
+#include <QDir>       // Для роботи з директоріями SQL
 
 // Конструктор і деструктор
 DatabaseManager::DatabaseManager(QObject *parent) : QObject(parent), m_isConnected(false) // Ініціалізуємо m_isConnected
 {
+    // Завантажуємо SQL запити перед усім іншим
+    if (!loadSqlQueries()) {
+        qCritical() << "FATAL: Failed to load SQL queries. Database operations will likely fail.";
+        // Можна тут викинути виняток або встановити прапорець помилки
+    }
+
     if (!QSqlDatabase::isDriverAvailable("QPSQL")) {
         qCritical() << "Error: QPSQL driver for PostgreSQL is not available!";
         qCritical() << "Available drivers:" << QSqlDatabase::drivers();
@@ -73,114 +82,31 @@ bool DatabaseManager::createSchemaTables()
     QSqlQuery query(m_db);
     bool success = true;
 
-    // --- SQL Запросы для создания таблиц (порядок важен!) ---
-    // 1. Удаление существующих таблиц (если нужно начать с чистого листа)
-    const QString dropOrderStatusSQL = R"(DROP TABLE IF EXISTS order_status CASCADE;)";
-    const QString dropOrderItemSQL = R"(DROP TABLE IF EXISTS order_item CASCADE;)";
-    const QString dropCommentSQL = R"(DROP TABLE IF EXISTS comment CASCADE;)"; // Додано видалення comment
-    const QString dropBookAuthorSQL = R"(DROP TABLE IF EXISTS book_author CASCADE;)";
-    const QString dropOrderSQL = R"(DROP TABLE IF EXISTS "order" CASCADE;)"; // Имя в кавычках
-    const QString dropBookSQL = R"(DROP TABLE IF EXISTS book CASCADE;)";
-    const QString dropAuthorSQL = R"(DROP TABLE IF EXISTS author CASCADE;)";
-    const QString dropPublisherSQL = R"(DROP TABLE IF EXISTS publisher CASCADE;)";
-    const QString dropCartItemSQL = R"(DROP TABLE IF EXISTS cart_item CASCADE;)"; // Додано видалення cart_item
-    const QString dropCustomerSQL = R"(DROP TABLE IF EXISTS customer CASCADE;)";
+    // --- SQL Запити для створення таблиць (порядок важен!) ---
+    // 1. Видалення існуючих таблиць (якщо потрібно почати з чистого аркуша)
+    // Використовуємо getSqlQuery для отримання запитів з файлу
+    success &= executeQuery(query, getSqlQuery("DropOrderStatusTable"), "Видалення order_status");
+    if(success) success &= executeQuery(query, getSqlQuery("DropOrderItemTable"),   "Видалення order_item");
+    if(success) success &= executeQuery(query, getSqlQuery("DropCommentTable"),     "Видалення comment");
+    if(success) success &= executeQuery(query, getSqlQuery("DropBookAuthorTable"),  "Видалення book_author");
+    if(success) success &= executeQuery(query, getSqlQuery("DropOrderTable"),       "Видалення \"order\"");
+    if(success) success &= executeQuery(query, getSqlQuery("DropCartItemTable"),    "Видалення cart_item");
+    if(success) success &= executeQuery(query, getSqlQuery("DropBookTable"),        "Видалення book");
+    if(success) success &= executeQuery(query, getSqlQuery("DropAuthorTable"),      "Видалення author");
+    if(success) success &= executeQuery(query, getSqlQuery("DropPublisherTable"),   "Видалення publisher");
+    if(success) success &= executeQuery(query, getSqlQuery("DropCustomerTable"),    "Видалення customer");
 
-
-    success &= executeQuery(query, dropOrderStatusSQL, "Удаление order_status");
-    if(success) success &= executeQuery(query, dropOrderItemSQL,   "Удаление order_item");
-    if(success) success &= executeQuery(query, dropCommentSQL,     "Удаление comment");
-    if(success) success &= executeQuery(query, dropBookAuthorSQL,  "Удаление book_author");
-    if(success) success &= executeQuery(query, dropOrderSQL,       "Удаление \"order\"");
-    if(success) success &= executeQuery(query, dropCartItemSQL,    "Удаление cart_item"); // Додано видалення cart_item
-    if(success) success &= executeQuery(query, dropBookSQL,        "Удаление book");
-    if(success) success &= executeQuery(query, dropAuthorSQL,      "Удаление author");
-    if(success) success &= executeQuery(query, dropPublisherSQL,   "Удаление publisher");
-    if(success) success &= executeQuery(query, dropCustomerSQL,    "Удаление customer");
-
-
-    // 2. Создание таблиц
-    const QString createCustomerSQL = R"(
-        CREATE TABLE customer (
-            customer_id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL,
-            email VARCHAR(255) UNIQUE NOT NULL, phone VARCHAR(30), address TEXT,
-            password_hash VARCHAR(64) NOT NULL, -- Додано поле для хешу пароля (SHA-256 = 64 hex chars)
-            loyalty_program BOOLEAN DEFAULT FALSE, join_date DATE NOT NULL DEFAULT CURRENT_DATE,
-            loyalty_points INTEGER DEFAULT 0 CHECK (loyalty_points >= 0) ); )";
-    if(success) success &= executeQuery(query, createCustomerSQL, "Создание customer");
-
-    const QString createPublisherSQL = R"(
-        CREATE TABLE publisher ( publisher_id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE, contact_info TEXT ); )";
-    if(success) success &= executeQuery(query, createPublisherSQL, "Создание publisher");
-
-    const QString createAuthorSQL = R"(
-        CREATE TABLE author ( author_id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL,
-            birth_date DATE, nationality VARCHAR(100), image_path VARCHAR(512), biography TEXT ); )"; // Додано image_path та biography
-    if(success) success &= executeQuery(query, createAuthorSQL, "Создание author");
-
-    const QString createBookSQL = R"(
-        CREATE TABLE book ( book_id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, isbn VARCHAR(20) UNIQUE,
-            publication_date DATE, publisher_id INTEGER, price NUMERIC(10, 2) CHECK (price >= 0),
-            stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0), description TEXT, language VARCHAR(50), -- Description already exists here, no change needed in CREATE TABLE
-            page_count INTEGER CHECK (page_count > 0),
-            cover_image_path VARCHAR(512),
-            genre VARCHAR(100), -- Додано поле для жанру
-            CONSTRAINT fk_publisher FOREIGN KEY (publisher_id) REFERENCES publisher(publisher_id) ON DELETE SET NULL ); )";
-    if(success) success &= executeQuery(query, createBookSQL, "Создание book");
-
-    const QString createOrderSQL = R"(
-        CREATE TABLE "order" ( order_id SERIAL PRIMARY KEY, customer_id INTEGER,
-            order_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, total_amount NUMERIC(12, 2) CHECK (total_amount >= 0),
-            shipping_address TEXT NOT NULL, payment_method VARCHAR(50),
-            CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE SET NULL ); )";
-    if(success) success &= executeQuery(query, createOrderSQL, "Создание \"order\""); // Имя в кавычках
-
-    const QString createBookAuthorSQL = R"(
-        CREATE TABLE book_author ( book_id INTEGER NOT NULL, author_id INTEGER NOT NULL, role VARCHAR(100),
-            PRIMARY KEY (book_id, author_id),
-            CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
-            CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES author(author_id) ON DELETE CASCADE ); )";
-    if(success) success &= executeQuery(query, createBookAuthorSQL, "Создание book_author");
-
-    const QString createOrderItemSQL = R"(
-        CREATE TABLE order_item ( order_item_id SERIAL PRIMARY KEY, order_id INTEGER NOT NULL, book_id INTEGER NOT NULL,
-            quantity INTEGER NOT NULL CHECK (quantity > 0), price_per_unit NUMERIC(10, 2) NOT NULL CHECK (price_per_unit >= 0),
-            CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES "order"(order_id) ON DELETE CASCADE,
-            CONSTRAINT fk_book FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE RESTRICT ); )";
-    if(success) success &= executeQuery(query, createOrderItemSQL, "Создание order_item");
-
-    const QString createOrderStatusSQL = R"(
-        CREATE TABLE order_status ( order_status_id SERIAL PRIMARY KEY, order_id INTEGER NOT NULL, status VARCHAR(50) NOT NULL,
-            status_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, tracking_number VARCHAR(100),
-            CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES "order"(order_id) ON DELETE CASCADE ); )";
-    if(success) success &= executeQuery(query, createOrderStatusSQL, "Создание order_status");
-
-    const QString createCommentSQL = R"(
-        CREATE TABLE comment (
-            comment_id SERIAL PRIMARY KEY,
-            book_id INTEGER NOT NULL,
-            customer_id INTEGER NOT NULL,
-            comment_text TEXT NOT NULL,
-            comment_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            rating INTEGER CHECK (rating >= 0 AND rating <= 5), -- 0 = no rating, 1-5 stars
-            CONSTRAINT fk_book_comment FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
-            CONSTRAINT fk_customer_comment FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
-        );
-    )";
-    if(success) success &= executeQuery(query, createCommentSQL, "Создание comment");
-
-    const QString createCartItemSQL = R"(
-        CREATE TABLE cart_item (
-            customer_id INTEGER NOT NULL,
-            book_id INTEGER NOT NULL,
-            quantity INTEGER NOT NULL CHECK (quantity > 0),
-            added_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (customer_id, book_id), -- Комбінований первинний ключ
-            CONSTRAINT fk_customer_cart FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
-            CONSTRAINT fk_book_cart FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
-        );
-    )";
-    if(success) success &= executeQuery(query, createCartItemSQL, "Создание cart_item");
+    // 2. Створення таблиць
+    if(success) success &= executeQuery(query, getSqlQuery("CreateCustomerTable"), "Створення customer");
+    if(success) success &= executeQuery(query, getSqlQuery("CreatePublisherTable"), "Створення publisher");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateAuthorTable"), "Створення author");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateBookTable"), "Створення book");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateOrderTable"), "Створення \"order\"");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateBookAuthorTable"), "Створення book_author");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateOrderItemTable"), "Створення order_item");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateOrderStatusTable"), "Створення order_status");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateCommentTable"), "Створення comment");
+    if(success) success &= executeQuery(query, getSqlQuery("CreateCartItemTable"), "Створення cart_item");
 
 
     // 3. Добавление комментариев и индексов (опционально)
@@ -378,4 +304,98 @@ bool DatabaseManager::printAllData() const
 
 
     return overallSuccess; // Возвращаем true, если не было критических ошибок при SELECT
+}
+
+
+// --- Реалізація функцій завантаження SQL ---
+
+// Завантажує всі .sql файли з вказаної директорії
+bool DatabaseManager::loadSqlQueries(const QString& directory)
+{
+    m_sqlQueries.clear(); // Очищуємо попередні запити
+    QDir sqlDir(directory);
+    if (!sqlDir.exists()) {
+        qCritical() << "SQL directory not found:" << sqlDir.absolutePath();
+        return false;
+    }
+
+    qInfo() << "Loading SQL queries from directory:" << sqlDir.absolutePath();
+    QStringList sqlFiles = sqlDir.entryList(QStringList() << "*.sql", QDir::Files);
+    bool allParsed = true;
+
+    for (const QString& fileName : sqlFiles) {
+        QString filePath = sqlDir.absoluteFilePath(fileName);
+        if (!parseSqlFile(filePath)) {
+            qWarning() << "Failed to parse SQL file:" << filePath;
+            allParsed = false; // Продовжуємо завантажувати інші файли
+        }
+    }
+
+    qInfo() << "Loaded" << m_sqlQueries.count() << "SQL queries from" << sqlFiles.count() << "files.";
+    if (!allParsed) {
+         qWarning() << "Some SQL files failed to parse correctly.";
+    }
+    return allParsed; // Повертаємо true, тільки якщо ВСІ файли розпарсились успішно
+}
+
+// Парсить один .sql файл і додає запити до m_sqlQueries
+bool DatabaseManager::parseSqlFile(const QString& filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qCritical() << "Cannot open SQL file for reading:" << filePath << file.errorString();
+        return false;
+    }
+
+    QTextStream in(&file);
+    QString currentQueryName;
+    QString currentQuerySql;
+    int queryCount = 0;
+
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+
+        if (line.startsWith("-- name:")) {
+            // Зберігаємо попередній запит, якщо він був
+            if (!currentQueryName.isEmpty() && !currentQuerySql.isEmpty()) {
+                m_sqlQueries.insert(currentQueryName, currentQuerySql.trimmed());
+                queryCount++;
+                // qInfo() << "Parsed query:" << currentQueryName << "from file:" << filePath;
+            }
+
+            // Починаємо новий запит
+            currentQueryName = line.mid(8).trimmed(); // Видаляємо "-- name:"
+            currentQuerySql.clear();
+
+            if (currentQueryName.isEmpty()) {
+                qWarning() << "Found empty query name after '-- name:' in file:" << filePath << "Line:" << line;
+                // Продовжуємо, але цей запит не буде збережено з порожнім іменем
+            }
+        } else if (!currentQueryName.isEmpty() && !line.startsWith("--") && !line.isEmpty()) {
+            // Додаємо рядок до поточного SQL запиту, ігноруючи порожні рядки та коментарі SQL (--)
+            currentQuerySql += line + "\n";
+        }
+    }
+
+    // Зберігаємо останній запит у файлі
+    if (!currentQueryName.isEmpty() && !currentQuerySql.isEmpty()) {
+        m_sqlQueries.insert(currentQueryName, currentQuerySql.trimmed());
+        queryCount++;
+        // qInfo() << "Parsed query:" << currentQueryName << "from file:" << filePath;
+    }
+
+    file.close();
+    qInfo() << "Parsed" << queryCount << "queries from file:" << filePath;
+    return true;
+}
+
+// Отримує SQL запит за його іменем
+QString DatabaseManager::getSqlQuery(const QString& queryName) const
+{
+    if (!m_sqlQueries.contains(queryName)) {
+        qCritical() << "SQL query not found:" << queryName;
+        // Можна повернути порожній рядок або кинути виняток
+        return QString();
+    }
+    return m_sqlQueries.value(queryName);
 }

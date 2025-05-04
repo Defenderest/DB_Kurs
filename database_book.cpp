@@ -16,31 +16,14 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
         return books; // Повертаємо порожній список
     }
 
-    // Використовуємо LEFT JOIN, щоб отримати книги навіть без авторів або обкладинок
-    // Використовуємо STRING_AGG для об'єднання авторів в один рядок
-    // Додаємо publisher.name
-    const QString sql = R"(
-        SELECT
-            b.book_id,
-            b.title,
-            b.price,
-            b.cover_image_path,
-            b.stock_quantity,
-            b.genre, -- Додано отримання жанру
-            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
-            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
-        FROM book b
-        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
-        LEFT JOIN book_author ba ON b.book_id = ba.book_id
-        LEFT JOIN author a ON ba.author_id = a.author_id
-        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre, p.name -- Додано b.genre в GROUP BY
-        ORDER BY b.title;
-    )";
+    // Використовуємо завантажений SQL запит
+    const QString sql = getSqlQuery("GetAllBooksForDisplay");
+    if (sql.isEmpty()) return books; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    qInfo() << "Executing SQL to get books for display...";
+    qInfo() << "Executing SQL 'GetAllBooksForDisplay' to get books for display...";
     if (!query.exec(sql)) {
-        qCritical() << "Помилка при отриманні списку книг для відображення:";
+        qCritical() << "Помилка при виконанні 'GetAllBooksForDisplay':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << sql;
         return books; // Повертаємо порожній список у разі помилки
@@ -83,23 +66,11 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
         return books;
     }
 
-    // Базовий SQL-запит, схожий на getAllBooksForDisplay
-    QString sql = R"(
-        SELECT DISTINCT -- Використовуємо DISTINCT, оскільки JOIN з авторами може дублювати книги
-            b.book_id,
-            b.title,
-            b.price,
-            b.cover_image_path,
-            b.stock_quantity,
-            b.genre,
-            b.language, -- Додано мову
-            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
-            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
-        FROM book b
-        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
-        LEFT JOIN book_author ba ON b.book_id = ba.book_id
-        LEFT JOIN author a ON ba.author_id = a.author_id
-    )";
+    // Базовий SQL-запит з файлу
+    QString sqlBase = getSqlQuery("GetFilteredBooksForDisplayBase");
+    if (sqlBase.isEmpty()) return books; // Помилка завантаження запиту
+
+    QString sql = sqlBase; // Копіюємо базовий запит
 
     QStringList whereConditions;
     QMap<QString, QVariant> bindValues;
@@ -208,12 +179,13 @@ QStringList DatabaseManager::getAllGenres() const
         return genres;
     }
 
-    const QString sql = "SELECT DISTINCT genre FROM book WHERE genre IS NOT NULL AND genre != '' ORDER BY genre;";
-    QSqlQuery query(m_db);
+    const QString sql = getSqlQuery("GetAllDistinctGenres");
+    if (sql.isEmpty()) return genres; // Помилка завантаження запиту
 
-    qInfo() << "Executing SQL to get all distinct genres...";
+    QSqlQuery query(m_db);
+    qInfo() << "Executing SQL 'GetAllDistinctGenres' to get all distinct genres...";
     if (!query.exec(sql)) {
-        qCritical() << "Помилка при отриманні списку жанрів:";
+        qCritical() << "Помилка при виконанні 'GetAllDistinctGenres':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << sql;
         return genres;
@@ -235,12 +207,13 @@ QStringList DatabaseManager::getAllLanguages() const
         return languages;
     }
 
-    const QString sql = "SELECT DISTINCT language FROM book WHERE language IS NOT NULL AND language != '' ORDER BY language;";
-    QSqlQuery query(m_db);
+    const QString sql = getSqlQuery("GetAllDistinctLanguages");
+     if (sql.isEmpty()) return languages; // Помилка завантаження запиту
 
-    qInfo() << "Executing SQL to get all distinct languages...";
+    QSqlQuery query(m_db);
+    qInfo() << "Executing SQL 'GetAllDistinctLanguages' to get all distinct languages...";
     if (!query.exec(sql)) {
-        qCritical() << "Помилка при отриманні списку мов:";
+        qCritical() << "Помилка при виконанні 'GetAllDistinctLanguages':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << sql;
         return languages;
@@ -263,28 +236,19 @@ BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
         return details; // Повертаємо порожню структуру
     }
 
-    const QString sql = R"(
-        SELECT
-            b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity,
-            b.genre, b.description, b.publication_date, b.isbn, b.page_count, b.language,
-            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
-            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
-        FROM book b
-        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
-        LEFT JOIN book_author ba ON b.book_id = ba.book_id
-        LEFT JOIN author a ON ba.author_id = a.author_id
-        WHERE b.book_id = :bookId
-        GROUP BY b.book_id, p.name, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre, b.description, b.publication_date, b.isbn, b.page_count, b.language -- Групуємо за всіма полями книги та видавця
-        LIMIT 1; -- Очікуємо тільки один результат
-    )";
+    const QString sql = getSqlQuery("GetBookDetailsById");
+    if (sql.isEmpty()) return details; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+     if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetBookDetailsById':" << query.lastError().text();
+        return details;
+    }
     query.bindValue(":bookId", bookId);
 
-    qInfo() << "Executing SQL to get book details for book ID:" << bookId;
+    qInfo() << "Executing SQL 'GetBookDetailsById' for book ID:" << bookId;
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні деталей книги для book ID '" << bookId << "':";
+        qCritical() << "Помилка при виконанні 'GetBookDetailsById' для book ID '" << bookId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         return details;
@@ -333,31 +297,20 @@ BookDisplayInfo DatabaseManager::getBookDisplayInfoById(int bookId) const
         return bookInfo;
     }
 
-    // Запит схожий на getAllBooksForDisplay, але з WHERE b.book_id = :bookId
-    const QString sql = R"(
-        SELECT
-            b.book_id,
-            b.title,
-            b.price,
-            b.cover_image_path,
-            b.stock_quantity,
-            b.genre,
-            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
-        FROM book b
-        LEFT JOIN book_author ba ON b.book_id = ba.book_id
-        LEFT JOIN author a ON ba.author_id = a.author_id
-        WHERE b.book_id = :bookId
-        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre -- Групуємо за ID книги та іншими полями
-        LIMIT 1;
-    )";
+    // Запит з файлу
+    const QString sql = getSqlQuery("GetBookDisplayInfoById");
+    if (sql.isEmpty()) return bookInfo; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetBookDisplayInfoById':" << query.lastError().text();
+        return bookInfo;
+    }
     query.bindValue(":bookId", bookId);
 
-    qInfo() << "Executing SQL to get BookDisplayInfo for book ID:" << bookId;
+    qInfo() << "Executing SQL 'GetBookDisplayInfoById' for book ID:" << bookId;
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні BookDisplayInfo для book ID '" << bookId << "':";
+        qCritical() << "Помилка при виконанні 'GetBookDisplayInfoById' для book ID '" << bookId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         return bookInfo;
@@ -396,37 +349,23 @@ QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, in
         return books;
     }
 
-    // Запит схожий на getAllBooksForDisplay, але з WHERE та LIMIT
-    const QString sql = R"(
-        SELECT
-            b.book_id,
-            b.title,
-            b.price,
-            b.cover_image_path,
-            b.stock_quantity,
-            b.genre,
-            COALESCE(p.name, 'Невідомий видавець') AS publisher_name,
-            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
-        FROM book b
-        LEFT JOIN publisher p ON b.publisher_id = p.publisher_id
-        LEFT JOIN book_author ba ON b.book_id = ba.book_id
-        LEFT JOIN author a ON ba.author_id = a.author_id
-        WHERE b.genre = :genre -- Фільтрація за жанром
-        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre, p.name
-        ORDER BY b.publication_date DESC, b.title -- Сортування (наприклад, новіші спочатку)
-        LIMIT :limit; -- Обмеження кількості
-    )";
+    // Запит з файлу
+    const QString sql = getSqlQuery("GetBooksByGenre");
+    if (sql.isEmpty()) return books; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+     if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetBooksByGenre':" << query.lastError().text();
+        return books;
+    }
     query.bindValue(":genre", genre);
     query.bindValue(":limit", limit > 0 ? limit : 10); // За замовчуванням 10, якщо ліміт недійсний
 
-    qInfo() << "Executing SQL to get books for genre:" << genre << "with limit:" << query.boundValue(":limit").toInt();
+    qInfo() << "Executing SQL 'GetBooksByGenre' for genre:" << genre << "with limit:" << query.boundValue(":limit").toInt();
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні списку книг для жанру '" << genre << "':";
+        qCritical() << "Помилка при виконанні 'GetBooksByGenre' для жанру '" << genre << "':";
         qCritical() << query.lastError().text();
-        qCritical() << "SQL запит:" << query.lastQuery(); // Показуємо запит з підставленими значеннями
+        qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
         return books;
     }
@@ -464,30 +403,25 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
     // Змінено умову: тепер шукаємо з першої літери
     if (!m_isConnected || !m_db.isOpen() || prefix.isEmpty()) {
         // qWarning() << "Неможливо отримати пропозиції: немає з'єднання або префікс порожній.";
+        // qWarning() << "Неможливо отримати пропозиції: немає з'єднання або префікс порожній.";
         return suggestions; // Повертаємо порожній список
     }
 
-    // Оновлений SQL-запит: отримуємо тип, ID, шлях до зображення та ціну (для книг)
-    const QString sql = R"(
-        SELECT 'book' AS type, book_id AS id, title AS display_text, cover_image_path AS image_path, price
-        FROM book
-        WHERE LOWER(title) LIKE LOWER(:prefix) || '%'
-        UNION ALL -- Використовуємо UNION ALL для швидкості, сортування буде в кінці
-        SELECT 'author' AS type, author_id AS id, first_name || ' ' || last_name AS display_text, image_path, 0.0 AS price -- Ціна 0.0 для авторів
-        FROM author
-        WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER(:prefix) || '%'
-        ORDER BY display_text -- Сортуємо за текстом пропозиції
-        LIMIT :total_limit;
-    )";
+    // Запит з файлу
+    const QString sql = getSqlQuery("GetSearchSuggestions");
+    if (sql.isEmpty()) return suggestions; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetSearchSuggestions':" << query.lastError().text();
+        return suggestions;
+    }
     query.bindValue(":prefix", prefix);
     query.bindValue(":total_limit", limit > 0 ? limit : 10); // Загальне обмеження
 
-    qInfo() << "Executing SQL to get rich search suggestions for prefix:" << prefix << "with limit:" << query.boundValue(":total_limit").toInt();
+    qInfo() << "Executing SQL 'GetSearchSuggestions' for prefix:" << prefix << "with limit:" << query.boundValue(":total_limit").toInt();
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні розширених пропозицій пошуку для префікса '" << prefix << "':";
+        qCritical() << "Помилка при виконанні 'GetSearchSuggestions' для префікса '" << prefix << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
@@ -530,34 +464,22 @@ QList<BookDisplayInfo> DatabaseManager::getSimilarBooks(int currentBookId, const
         return books;
     }
 
-    // Запит схожий на getBooksByGenre, але з WHERE b.genre = :genre AND b.book_id != :currentBookId
-    const QString sql = R"(
-        SELECT
-            b.book_id,
-            b.title,
-            b.price,
-            b.cover_image_path,
-            b.stock_quantity,
-            b.genre,
-            STRING_AGG(DISTINCT a.first_name || ' ' || a.last_name, ', ') AS authors
-        FROM book b
-        LEFT JOIN book_author ba ON b.book_id = ba.book_id
-        LEFT JOIN author a ON ba.author_id = a.author_id
-        WHERE b.genre = :genre AND b.book_id != :currentBookId -- Фільтрація за жанром та виключення поточної книги
-        GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre
-        ORDER BY RANDOM() -- Випадкове сортування для різноманітності, або можна інше (напр. publication_date DESC)
-        LIMIT :limit; -- Обмеження кількості
-    )";
+    // Запит з файлу
+    const QString sql = getSqlQuery("GetSimilarBooksByGenre");
+    if (sql.isEmpty()) return books; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetSimilarBooksByGenre':" << query.lastError().text();
+        return books;
+    }
     query.bindValue(":genre", genre);
     query.bindValue(":currentBookId", currentBookId);
     query.bindValue(":limit", limit > 0 ? limit : 5); // За замовчуванням 5
 
-    qInfo() << "Executing SQL to get similar books for genre:" << genre << "excluding book ID:" << currentBookId << "with limit:" << query.boundValue(":limit").toInt();
+    qInfo() << "Executing SQL 'GetSimilarBooksByGenre' for genre:" << genre << "excluding book ID:" << currentBookId << "with limit:" << query.boundValue(":limit").toInt();
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні списку схожих книг для жанру '" << genre << "':";
+        qCritical() << "Помилка при виконанні 'GetSimilarBooksByGenre' для жанру '" << genre << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();

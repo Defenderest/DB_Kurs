@@ -12,6 +12,9 @@
 #include <QDebug>
 #include <QList>    // Потрібно для QList
 #include <QMap>     // Потрібно для QMap
+#include <QFile>    // Для читання файлів
+#include <QTextStream> // Для читання файлів
+#include <QDir>     // Для роботи з директоріями
 #include <QCryptographicHash> // Додано для хешування паролів
 #include "datatypes.h" // Включаємо файл з визначеннями структур
 
@@ -132,6 +135,14 @@ public:
 
     // Вспомогательная функция для выполнения подготовленного INSERT с возвратом ID
     bool executeInsertQuery(QSqlQuery &query, const QString &description, QVariant &insertedId);
+
+private:
+    // Допоміжні функції для завантаження та отримання SQL запитів
+    bool loadSqlQueries(const QString& directory = "sql"); // Завантажує запити з директорії
+    bool parseSqlFile(const QString& filePath);           // Парсить один .sql файл
+    QString getSqlQuery(const QString& queryName) const;   // Отримує запит за іменем
+
+    QMap<QString, QString> m_sqlQueries; // Зберігання завантажених запитів "ім'я" -> "SQL"
 
     // Приватні допоміжні функції генерації даних (якщо вони були тут, їх слід видалити)
     // QDate randomDate(const QDate &minDate, const QDate &maxDate); // Removed

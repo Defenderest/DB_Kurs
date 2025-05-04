@@ -14,20 +14,20 @@ bool DatabaseManager::hasUserCommentedOnBook(int bookId, int customerId) const
         return false; // Повертаємо false, щоб уникнути блокування, якщо є проблема з перевіркою
     }
 
-    const QString sql = R"(
-        SELECT COUNT(*)
-        FROM comment
-        WHERE book_id = :bookId AND customer_id = :customerId;
-    )";
+    const QString sql = getSqlQuery("CheckUserCommentExists");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'CheckUserCommentExists':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":bookId", bookId);
     query.bindValue(":customerId", customerId);
 
-    qInfo() << "Executing SQL to check if customer" << customerId << "commented on book" << bookId;
+    qInfo() << "Executing SQL 'CheckUserCommentExists' for customer" << customerId << "on book" << bookId;
     if (!query.exec()) {
-        qCritical() << "Помилка при перевірці наявності коментаря для book ID '" << bookId << "' та customer ID '" << customerId << "':";
+        qCritical() << "Помилка при виконанні 'CheckUserCommentExists' для book ID '" << bookId << "' та customer ID '" << customerId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         return false; // Повертаємо false при помилці запиту
@@ -61,22 +61,23 @@ bool DatabaseManager::addComment(int bookId, int customerId, const QString &comm
         return false;
     }
 
-    const QString sql = R"(
-        INSERT INTO comment (book_id, customer_id, comment_text, comment_date, rating)
-        VALUES (:book_id, :customer_id, :comment_text, CURRENT_TIMESTAMP, :rating);
-    )";
+    const QString sql = getSqlQuery("AddComment");
+    if (sql.isEmpty()) return false; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'AddComment':" << query.lastError().text();
+        return false;
+    }
     query.bindValue(":book_id", bookId);
     query.bindValue(":customer_id", customerId);
     query.bindValue(":comment_text", commentText.trimmed());
     // Якщо рейтинг 0, вставляємо NULL, інакше - значення рейтингу
     query.bindValue(":rating", (rating == 0) ? QVariant(QVariant::Int) : rating);
 
-    qInfo() << "Executing SQL to add comment for book ID:" << bookId << "by customer ID:" << customerId;
+    qInfo() << "Executing SQL 'AddComment' for book ID:" << bookId << "by customer ID:" << customerId;
     if (!query.exec()) {
-        qCritical() << "Помилка при додаванні коментаря для book ID '" << bookId << "':";
+        qCritical() << "Помилка при виконанні 'AddComment' для book ID '" << bookId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
@@ -96,25 +97,19 @@ QList<CommentDisplayInfo> DatabaseManager::getBookComments(int bookId) const
         return comments;
     }
 
-    const QString sql = R"(
-        SELECT
-            c.comment_text,
-            c.comment_date,
-            c.rating,
-            cust.first_name || ' ' || cust.last_name AS author_name
-        FROM comment c
-        JOIN customer cust ON c.customer_id = cust.customer_id
-        WHERE c.book_id = :bookId
-        ORDER BY c.comment_date DESC; -- Показуємо новіші коментарі першими
-    )";
+    const QString sql = getSqlQuery("GetBookCommentsByBookId");
+    if (sql.isEmpty()) return comments; // Помилка завантаження запиту
 
     QSqlQuery query(m_db);
-    query.prepare(sql);
+    if (!query.prepare(sql)) {
+        qCritical() << "Помилка підготовки запиту 'GetBookCommentsByBookId':" << query.lastError().text();
+        return comments;
+    }
     query.bindValue(":bookId", bookId);
 
-    qInfo() << "Executing SQL to get comments for book ID:" << bookId;
+    qInfo() << "Executing SQL 'GetBookCommentsByBookId' for book ID:" << bookId;
     if (!query.exec()) {
-        qCritical() << "Помилка при отриманні коментарів для book ID '" << bookId << "':";
+        qCritical() << "Помилка при виконанні 'GetBookCommentsByBookId' для book ID '" << bookId << "':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         return comments;
