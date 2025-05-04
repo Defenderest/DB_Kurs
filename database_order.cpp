@@ -307,6 +307,7 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
             }
         }
     }
+    } // <--- Closing brace for the main if(success) block started on line 183
 
 
     // Завершуємо транзакцію
