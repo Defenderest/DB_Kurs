@@ -153,3 +153,27 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
     ui->authorsContainerWidget->updateGeometry();
     // ui->authorsScrollArea->updateGeometry(); // Зазвичай не потрібно
 }
+
+// Метод для завантаження та відображення авторів
+void MainWindow::loadAndDisplayAuthors()
+{
+    if (!m_dbManager || !m_dbManager->isConnected()) {
+        qWarning() << "loadAndDisplayAuthors: Database is not connected.";
+        // Можливо, показати повідомлення користувачу
+        QLabel *errorLabel = new QLabel(tr("Не вдалося підключитися до бази даних для завантаження авторів."), ui->authorsContainerWidget);
+        clearLayout(ui->authorsContainerLayout); // Очистити попередній вміст
+        ui->authorsContainerLayout->addWidget(errorLabel);
+        return;
+    }
+
+    // !!! УВАГА: Передбачається, що існує метод getAllAuthorsForDisplay() в DatabaseManager
+    // Якщо метод називається інакше, виправте наступний рядок
+    QList<AuthorDisplayInfo> authors = m_dbManager->getAllAuthorsForDisplay(); // Замінити на правильний метод
+
+    if (authors.isEmpty()) {
+         qInfo() << "No authors found in the database or failed to load.";
+         // displayAuthors обробить випадок порожнього списку
+    }
+
+    displayAuthors(authors);
+}
