@@ -20,22 +20,20 @@ int main(int argc, char *argv[])
     // 2. Підключаємося до БД
     bool connected = dbManager.connectToDatabase(
         "127.127.126.49",
-        5432,             // Порт
-        "postgres",       // Імя бази даних (перевірте, чи правильне)
-        "postgres",       // Імя користувача
-        "1234"            // Пароль
+        5432,
+        "postgres",
+        "postgres",
+        "1234"
     );
 
     if (!connected) {
         QMessageBox::critical(nullptr, QObject::tr("Помилка підключення до БД"),
                               QObject::tr("Не вдалося підключитися до бази даних.\nДодаток не може продовжити роботу.\n") + dbManager.lastError().text());
         qCritical() << "Database connection failed. Application cannot start.";
-        return 1; // Вихід з помилкою
+        return 1;
     }
-    qInfo() << "Database connection successful.";
 
-    // // --- ТИМЧАСОВО: Створення/Заповнення БД (якщо потрібно при кожному запуску для тестування) ---
-    // // Цей блок можна залишити тут або перенести в окрему логіку ініціалізації
+    // --- Опціонально: Створення/Заповнення БД при першому запуску або для тестування ---
     // if (!dbManager.createSchemaTables()) {
     //     QMessageBox::critical(nullptr, QObject::tr("Помилка створення схеми"),
     //                           QObject::tr("Не вдалося створити таблиці бази даних.\nДивіться логи для деталей."));
