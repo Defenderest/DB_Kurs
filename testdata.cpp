@@ -387,17 +387,13 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
             query.bindValue(":join_date", randomDate(QDate::currentDate().addYears(-5), QDate::currentDate()));
             query.bindValue(":loyalty_points", QRandomGenerator::global()->bounded(0, 501));
 
-            // Генерація та хешування пароля
             QString plainPassword = "password" + query.boundValue(":email").toString();
             QByteArray passwordHashBytes = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
             QString passwordHashHex = QString::fromUtf8(passwordHashBytes.toHex());
             query.bindValue(":password_hash", passwordHashHex);
 
-            // Використовуємо dbManager->executeInsertQuery
             if (dbManager->executeInsertQuery(query, QString("Customer %1").arg(i+1), lastId)) {
                 customerIds.append(lastId.toInt());
-                // Цей рядок виводить email та пароль у лог при генерації даних
-                qDebug() << "Generated customer" << query.boundValue(":email").toString() << "with password:" << plainPassword; // Тільки для тестування!
             } else {
                 success = false;
             }
@@ -406,14 +402,12 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
     }
 
 
-    // 5. "order" (Генерація тестових замовлень)
     if (success && !customerIds.isEmpty()) {
         QString insertOrderSQL = R"(
              INSERT INTO "order" (customer_id, order_date, total_amount, shipping_address, payment_method)
              VALUES (:customer_id, :order_date, :total_amount, :shipping_address, :payment_method)
-             RETURNING order_id; )"; 
+             RETURNING order_id; )";
         if (!query.prepare(insertOrderSQL)) {
-            qCritical() << "Error preparing query for \"order\":" << query.lastError().text(); // Changed log to English
             success = false;
         } else {
             for (int i = 0; i < numberOfRecords && success; ++i) {
@@ -427,7 +421,6 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
                                                          .arg(QRandomGenerator::global()->bounded(1, 51)));
                 query.bindValue(":payment_method", paymentMethods.at(QRandomGenerator::global()->bounded(paymentMethods.size())));
 
-                // Використовуємо dbManager->executeInsertQuery
                 if (dbManager->executeInsertQuery(query, QString("Order %1").arg(i+1), lastId)) {
                     orderIds.append(lastId.toInt());
                 } else {
@@ -436,104 +429,81 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
             }
         }
     } else if (customerIds.isEmpty()) {
-        qWarning() << "Пропуск заповнення 'order', оскільки немає клієнтів (customer).";
     }
 
-    // 6. order_item (Генерація позицій замовлення з РЕАЛЬНИМИ книгами)
     if (success && !orderIds.isEmpty() && !bookIds.isEmpty()) {
-        qInfo() << "Populating table order_item (using real books)...";
         QString insertOrderItemSQL = R"(
              INSERT INTO order_item (order_id, book_id, quantity, price_per_unit)
              VALUES (:order_id, :book_id, :quantity, :price_per_unit);
          )";
         if (!query.prepare(insertOrderItemSQL)) {
-            qCritical() << "Помилка підготовки запиту для order_item:" << query.lastError().text();
             success = false;
         } else {
-            QMap<int, double> orderTotals; // Для пересчета total_amount в заказе
+            QMap<int, double> orderTotals;
             int itemsCreated = 0;
-            for (int orderId : orderIds) { // Для каждого заказа добавим 1-4 позиции
-                int itemsCount = QRandomGenerator::global()->bounded(1, 5); // 1-4 книги в заказе
-                QSet<int> booksInOrder; // Книги в текущем заказе
+            for (int orderId : orderIds) {
+                int itemsCount = QRandomGenerator::global()->bounded(1, 5);
+                QSet<int> booksInOrder;
                 for (int j = 0; j < itemsCount && success; ++j) {
                     int bookId = bookIds.at(QRandomGenerator::global()->bounded(bookIds.size()));
-                    if (booksInOrder.contains(bookId)) continue; // Не додаємо одну й ту саму книгу двічі
+                    if (booksInOrder.contains(bookId)) continue;
 
-                    int quantity = QRandomGenerator::global()->bounded(1, 4); // 1-3 шт.
-                    // Беремо реальну ціну книги зі збереженого списку
+                    int quantity = QRandomGenerator::global()->bounded(1, 4);
                     double price = 0.0;
-                    int bookIndex = bookIds.indexOf(bookId); // Знаходимо індекс книги
+                    int bookIndex = bookIds.indexOf(bookId);
                     if (bookIndex != -1 && bookIndex < bookPrices.size()) {
                         price = bookPrices.at(bookIndex);
                     } else {
-                        qWarning() << "Could not find price for book ID" << bookId << "in order" << orderId << ". Using 0.0.";
                     }
 
 
                     query.bindValue(":order_id", orderId);
-                    query.bindValue(":book_id", bookId); // Використовуємо ID реальної книги
+                    query.bindValue(":book_id", bookId);
                     query.bindValue(":quantity", quantity);
                     query.bindValue(":price_per_unit", price);
 
-                    // Execute the prepared query directly
                     if (query.exec()) {
-                        orderTotals[orderId] += quantity * price; // Sum up the cost
+                        orderTotals[orderId] += quantity * price;
                         booksInOrder.insert(bookId);
                         itemsCreated++;
                     } else {
-                        qCritical().noquote() << QString("Error executing prepared INSERT (OrderItem %1):").arg(itemsCreated + 1);
-                        qCritical() << query.lastError().text();
-                        qCritical() << "Bound values:" << query.boundValues();
-                        success = false; // Any error here is critical
+                        success = false;
                     }
                 }
-                if (itemsCreated >= numberOfRecords * 2.5) break; // Ограничение
+                if (itemsCreated >= numberOfRecords * 2.5) break;
             }
-            qInfo() << "Created" << itemsCreated << "order items."; // Changed log to English
 
-            // Обновляем total_amount в таблице "order"
-            qInfo() << "Updating total_amount in table \"order\"..."; // Changed log to English
             QString updateOrderTotalSQL = R"(UPDATE "order" SET total_amount = :total WHERE order_id = :id;)";
             if (!query.prepare(updateOrderTotalSQL)) {
-                qCritical() << "Error preparing query for updating total_amount:" << query.lastError().text(); // Changed log to English
                 success = false;
             } else {
                 for (auto it = orderTotals.constBegin(); it != orderTotals.constEnd() && success; ++it) {
                     query.bindValue(":total", it.value());
                     query.bindValue(":id", it.key());
-                    // Execute the prepared query directly
                     if (!query.exec()) {
-                         qCritical().noquote() << QString("Error executing prepared UPDATE (Update Order Total %1):").arg(it.key()); // Changed log to English
-                         qCritical() << query.lastError().text();
-                         qCritical() << "Bound values:" << query.boundValues();
-                         success = false; // Changed log to English
+                         success = false;
                     }
                 }
             }
         }
     } else if (bookIds.isEmpty()) {
-         qWarning() << "Skipping order_item population because no books were added.";
     }
 
 
-    // 7. order_status (Генерація статусів замовлень, як раніше)
     if (success && !orderIds.isEmpty()) {
-        qInfo() << "Populating table order_status (generating test data)...";
         QString insertOrderStatusSQL = R"(
             INSERT INTO order_status (order_id, status, status_date, tracking_number)
             VALUES (:order_id, :status, :status_date, :tracking_number);
         )";
         if (!query.prepare(insertOrderStatusSQL)) {
-            qCritical() << "Помилка підготовки запиту для order_status:" << query.lastError().text();
             success = false;
         } else {
             int statusesCreated = 0;
-            for (int orderId : orderIds) { // Для каждого заказа добавим 1-3 статуса
+            for (int orderId : orderIds) {
                 int statusCount = QRandomGenerator::global()->bounded(1, 4);
-                QDateTime lastStatusDate = QDateTime::currentDateTime().addDays(-91); // Начальная дата для статуса
+                QDateTime lastStatusDate = QDateTime::currentDateTime().addDays(-91);
 
-                // Получим дату создания заказа, чтобы статусы были после нее
-                QSqlQuery dateQuery(dbManager->m_db); // Використовуємо з'єднання з dbManager
+                QSqlQuery dateQuery(dbManager->m_db);
                 dateQuery.prepare(R"(SELECT order_date FROM "order" WHERE order_id = :id)");
                 dateQuery.bindValue(":id", orderId);
                 if (dateQuery.exec() && dateQuery.next()) {
@@ -543,47 +513,39 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
 
                 for (int j = 0; j < statusCount && success; ++j) {
                     QString status = orderStatuses.at(QRandomGenerator::global()->bounded(orderStatuses.size()));
-                    QDateTime statusDate = randomDateTime(lastStatusDate.addSecs(3600), // Минимум через час после предыдущего
-                                                          lastStatusDate.addDays(5).addSecs(86400)); // Максимум через 5 дней
+                    QDateTime statusDate = randomDateTime(lastStatusDate.addSecs(3600),
+                                                          lastStatusDate.addDays(5).addSecs(86400));
                     QString tracking = (status == "Надіслано" || status == "Доставлено")
                                            ? QString("59000%1").arg(QRandomGenerator::global()->bounded(10000000, 99999999))
-                                           : QVariant(QVariant::String).toString(); // Пустой трекинг для других статусов
+                                           : QVariant(QVariant::String).toString();
 
                     query.bindValue(":order_id", orderId);
                     query.bindValue(":status", status);
                     query.bindValue(":status_date", statusDate);
-                    query.bindValue(":tracking_number", tracking.isEmpty() ? QVariant(QVariant::String) : tracking); // Pass NULL if empty
+                    query.bindValue(":tracking_number", tracking.isEmpty() ? QVariant(QVariant::String) : tracking);
 
-                    // Execute the prepared query directly
                     if (query.exec()) {
-                        lastStatusDate = statusDate; // Update the last status date
+                        lastStatusDate = statusDate;
                         statusesCreated++;
                     } else {
-                        qCritical().noquote() << QString("Error executing prepared INSERT (OrderStatus %1):").arg(statusesCreated + 1);
-                        qCritical() << query.lastError().text();
-                        qCritical() << "Bound values:" << query.boundValues();
                         success = false;
                     }
                 }
-                if (statusesCreated >= numberOfRecords * 2) break; // Ограничение
+                if (statusesCreated >= numberOfRecords * 2) break;
             }
-            qInfo() << "Created" << statusesCreated << "order statuses."; // Changed log to English
         }
     }
 
-    // 8. comment (Генерація тестових коментарів)
     if (success && !bookIds.isEmpty() && !customerIds.isEmpty()) {
-        qInfo() << "Populating table comment (generating test data)...";
         QString insertCommentSQL = R"(
             INSERT INTO comment (book_id, customer_id, comment_text, comment_date, rating)
             VALUES (:book_id, :customer_id, :comment_text, :comment_date, :rating);
         )";
         if (!query.prepare(insertCommentSQL)) {
-            qCritical() << "Помилка підготовки запиту для comment:" << query.lastError().text();
             success = false;
         } else {
             int commentsCreated = 0;
-            int targetCommentCount = numberOfRecords * 3; // Спробуємо створити більше коментарів
+            int targetCommentCount = numberOfRecords * 3;
             QStringList sampleComments = {
                 "Чудова книга!", "Дуже сподобалось.", "Рекомендую!", "Неймовірна історія.",
                 "Захоплює з перших сторінок.", "Не міг відірватися.", "Варто прочитати.",
