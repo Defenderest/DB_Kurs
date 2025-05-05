@@ -171,18 +171,14 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
     };
 
 
-    // Хранилища для ID (використовуємо Map для зручного пошуку)
     QMap<QString, int> publisherNameToId;
-    QMap<QString, int> authorLastNameToId; // Увага: спрощення, може бути не унікальним!
-    QVector<int> customerIds; // Залишаємо для клієнтів
-    QVector<int> bookIds;     // Буде заповнено реальними ID книг
-    QVector<double> bookPrices; // Зберігаємо ціни для order_item
-    QVector<int> orderIds;    // Залишаємо для замовлень
+    QMap<QString, int> authorLastNameToId;
+    QVector<int> customerIds;
+    QVector<int> bookIds;
+    QVector<double> bookPrices;
+    QVector<int> orderIds;
 
 
-    // --- Заполнение таблиц ---
-
-    // 1. Publishers (Вставка реальних видавців)
     qInfo() << "Populating table publisher with real data...";
     QString insertPublisherSQL = R"(
          INSERT INTO publisher (name, contact_info) VALUES (:name, :contact_info)
@@ -195,15 +191,13 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
         for (PublisherData &pub : publishers) {
             query.bindValue(":name", pub.name);
             query.bindValue(":contact_info", pub.contactInfo);
-            // Використовуємо dbManager->executeInsertQuery
             if (dbManager->executeInsertQuery(query, QString("Publisher %1").arg(pub.name), lastId)) {
                 pub.dbId = lastId.toInt();
                 publisherNameToId[pub.name] = pub.dbId;
             } else {
-                // Перевірка на дублікат (якщо запускаємо повторно без очищення)
                  if (query.lastError().text().contains("duplicate key value violates unique constraint")) {
                     qWarning() << "Publisher" << pub.name << "already exists. Fetching ID...";
-                    QSqlQuery fetchQuery(dbManager->m_db); // Використовуємо з'єднання з dbManager
+                    QSqlQuery fetchQuery(dbManager->m_db);
                     fetchQuery.prepare("SELECT publisher_id FROM publisher WHERE name = :name");
                     fetchQuery.bindValue(":name", pub.name);
                     if (fetchQuery.exec() && fetchQuery.next()) {
@@ -216,21 +210,20 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
                          break;
                     }
                 } else {
-                    success = false; // Інша помилка є критичною
+                    success = false;
                     break;
                 }
             }
         }
     }
 
-    // 2. Authors (Вставка реальних авторів)
     if (success) {
         qInfo() << "Populating table author with real data...";
         QString insertAuthorSQL = R"(
              INSERT INTO author (first_name, last_name, birth_date, nationality, image_path, biography)
              VALUES (:first_name, :last_name, :birth_date, :nationality, :image_path, :biography)
              RETURNING author_id;
-         )"; // Додано image_path та biography
+         )";
         if (!query.prepare(insertAuthorSQL)) {
             qCritical() << "Error preparing query for author:" << query.lastError().text();
             success = false;
@@ -240,16 +233,13 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
                 query.bindValue(":last_name", auth.lastName);
                query.bindValue(":birth_date", auth.birthDate.isValid() ? QVariant(auth.birthDate) : QVariant(QVariant::Date));
                query.bindValue(":nationality", auth.nationality);
-               query.bindValue(":image_path", auth.imagePath.isEmpty() ? QVariant(QVariant::String) : auth.imagePath); // Додано прив'язку image_path
-               query.bindValue(":biography", auth.biography.isEmpty() ? QVariant(QVariant::String) : auth.biography); // Додано прив'язку biography
+               query.bindValue(":image_path", auth.imagePath.isEmpty() ? QVariant(QVariant::String) : auth.imagePath);
+               query.bindValue(":biography", auth.biography.isEmpty() ? QVariant(QVariant::String) : auth.biography);
 
-               // Використовуємо dbManager->executeInsertQuery
                if (dbManager->executeInsertQuery(query, QString("Author %1 %2").arg(auth.firstName, auth.lastName), lastId)) {
                     auth.dbId = lastId.toInt();
-                    // Увага: ключ - прізвище. Якщо є однакові, буде перезаписано!
                     authorLastNameToId[auth.lastName] = auth.dbId;
                 } else {
-                    // Припускаємо, що автори унікальні і помилка вставки є критичною
                     success = false;
                     break;
                 }
@@ -257,10 +247,8 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
         }
     }
 
-    // 3. Books and Book_Author (Вставка реальних книг та зв'язків)
     if (success) {
         qInfo() << "Populating table book and book_author with real data...";
-        // Переконуємось, що 'description' є в списку стовпців
         QString insertBookSQL = R"(
              INSERT INTO book (title, isbn, publication_date, publisher_id, price, stock_quantity, description, language, page_count, cover_image_path, genre)
              VALUES (:title, :isbn, :publication_date, :publisher_id, :price, :stock_quantity, :description, :language, :page_count, :cover_image_path, :genre)
@@ -268,10 +256,10 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
          )";
          QString insertBookAuthorSQL = R"(
              INSERT INTO book_author (book_id, author_id) VALUES (:book_id, :author_id);
-         )"; // Спрощено, без ролі
+         )";
 
-        QSqlQuery bookQuery(dbManager->m_db); // Окремий запит для книг
-        QSqlQuery bookAuthorQuery(dbManager->m_db); // Окремий запит для зв'язків
+        QSqlQuery bookQuery(dbManager->m_db);
+        QSqlQuery bookAuthorQuery(dbManager->m_db);
 
         if (!bookQuery.prepare(insertBookSQL)) {
              qCritical() << "Error preparing query for book:" << bookQuery.lastError().text();
@@ -284,15 +272,13 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
 
         if(success) {
             for (BookData &book : books) {
-                // Знайти ID видавця
                 if (publisherNameToId.contains(book.publisherName)) {
                     book.publisherDbId = publisherNameToId.value(book.publisherName);
                 } else {
                     qWarning() << "Publisher '" << book.publisherName << "' for book '" << book.title << "' not found in the database. Setting publisher_id to NULL.";
-                    book.publisherDbId = -1; // Або інше значення для NULL
+                    book.publisherDbId = -1;
                 }
 
-                // Знайти ID авторів
                 book.authorDbIds.clear();
                 for (const QString &lastName : book.authorLastNames) {
                     if (authorLastNameToId.contains(lastName)) {
@@ -302,64 +288,56 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
                     }
                 }
 
-                // Вставити книгу
                 bookQuery.bindValue(":title", book.title);
                 bookQuery.bindValue(":isbn", book.isbn);
                 bookQuery.bindValue(":publication_date", book.publicationDate.isValid() ? QVariant(book.publicationDate) : QVariant(QVariant::Date));
-                // Обробка NULL для publisher_id
                 if (book.publisherDbId != -1) {
                      bookQuery.bindValue(":publisher_id", book.publisherDbId);
                 } else {
-                     bookQuery.bindValue(":publisher_id", QVariant(QVariant::Int)); // Вставка NULL
+                     bookQuery.bindValue(":publisher_id", QVariant(QVariant::Int));
                 }
                 bookQuery.bindValue(":price", book.price);
                 bookQuery.bindValue(":stock_quantity", book.stockQuantity);
-                bookQuery.bindValue(":description", book.description.isEmpty() ? QVariant(QVariant::String) : book.description); // Прив'язуємо опис (з перевіркою на порожній рядок)
+                bookQuery.bindValue(":description", book.description.isEmpty() ? QVariant(QVariant::String) : book.description);
                 bookQuery.bindValue(":language", book.language);
                 bookQuery.bindValue(":page_count", book.pageCount);
                 bookQuery.bindValue(":cover_image_path", book.coverImagePath.isEmpty() ? QVariant(QVariant::String) : book.coverImagePath);
-                bookQuery.bindValue(":genre", book.genre.isEmpty() ? QVariant(QVariant::String) : book.genre); // Додано прив'язку жанру
+                bookQuery.bindValue(":genre", book.genre.isEmpty() ? QVariant(QVariant::String) : book.genre);
 
-                // Використовуємо dbManager->executeInsertQuery
                 if (dbManager->executeInsertQuery(bookQuery, QString("Book %1").arg(book.title), lastId)) {
                     book.dbId = lastId.toInt();
-                    bookIds.append(book.dbId); // Зберігаємо ID для замовлень
-                    bookPrices.append(book.price); // Зберігаємо ціну
+                    bookIds.append(book.dbId);
+                    bookPrices.append(book.price);
 
-                    // Вставити зв'язки книга-автор
                     if (!book.authorDbIds.isEmpty()) {
                         for (int authorId : book.authorDbIds) {
                             bookAuthorQuery.bindValue(":book_id", book.dbId);
                             bookAuthorQuery.bindValue(":author_id", authorId);
                             if (!bookAuthorQuery.exec()) {
-                                // Перевірка на дублікат зв'язку
                                 if (bookAuthorQuery.lastError().text().contains("duplicate key value violates unique constraint")) {
                                      qWarning() << "Book-author link (" << book.dbId << "," << authorId << ") already exists. Skipping.";
                                 } else {
                                      qCritical() << "Error inserting book_author link:" << bookAuthorQuery.lastError().text();
                                      qCritical() << "Values:" << book.dbId << authorId;
                                      success = false;
-                                     break; // Зупиняємо вставку зв'язків для цієї книги
+                                     break;
                                 }
                             }
                         }
                     }
                 } else {
-                     // Перевірка на дублікат ISBN
                     if (bookQuery.lastError().text().contains("duplicate key value violates unique constraint")) {
                          qWarning() << "Book with ISBN" << book.isbn << "already exists. Skipping insertion.";
-                         // Можна спробувати знайти існуючу книгу і її ID, якщо потрібно
                     } else {
-                        success = false; // Інша помилка критична
+                        success = false;
                     }
                 }
-                if (!success) break; // Зупиняємо весь процес, якщо була помилка
+                if (!success) break;
             }
         }
     }
 
 
-    // 4. Customer (Генерація тестових клієнтів з паролями)
     if (success) {
         QString insertCustomerSQL = R"(
         INSERT INTO customer (first_name, last_name, email, phone, address, password_hash, loyalty_program, join_date, loyalty_points)
