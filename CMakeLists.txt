@@ -71,6 +71,7 @@ set(PROJECT_SOURCES
     sql/comment_queries.sql
     sql/customer_queries.sql
     sql/order_queries.sql
+    sql/functions/calculate_average_rating.sql # Додано файл функції
 )
 
 # --- Создание исполняемого файла ---
@@ -152,6 +153,7 @@ install(FILES
     sql/comment_queries.sql
     sql/customer_queries.sql
     sql/order_queries.sql
+    sql/functions/calculate_average_rating.sql # Додано файл функції
     DESTINATION ${CMAKE_INSTALL_BINDIR}/sql
 )
 
