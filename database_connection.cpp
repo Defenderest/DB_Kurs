@@ -108,8 +108,10 @@ bool DatabaseManager::createSchemaTables()
     if(success) success &= executeQuery(query, getSqlQuery("CreateCommentTable"), "Створення comment");
     if(success) success &= executeQuery(query, getSqlQuery("CreateCartItemTable"), "Створення cart_item");
 
+    // 3. Створення функцій
+    if(success) success &= executeQuery(query, getSqlQuery("CreateCalculateAverageRatingFunction"), "Створення функції calculate_average_book_rating");
 
-    // 3. Добавление комментариев и индексов (опционально)
+    // 4. Добавление комментариев и индексов (опционально)
     // ... (код для комментариев и индексов) ...
 
 
