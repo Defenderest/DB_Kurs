@@ -59,7 +59,7 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
     bool success = true;
     QVariant lastId; // Для зберігання останнього вставленого ID
 
-    // --- Списки для генерації КЛІЄНТІВ та ЗАМОВЛЕНЬ (залишаємо) ---
+    // --- Списки для генерації КЛІЄНТІВ
     QStringList firstNames = {"Олександр", "Андрій", "Сергій", "Володимир", "Дмитро", "Максим", "Іван", "Артем", "Денис", "Віктор", "Олена", "Наталія", "Тетяна", "Юлія", "Ірина", "Анна", "Оксана", "Марія", "Світлана", "Катерина"};
     QStringList lastNames = {"Мельник", "Шевченко", "Коваленко", "Бондаренко", "Бойко", "Ткаченко", "Кравченко", "Ковальчук", "Коваль", "Олійник", "Шевчук", "Поліщук", "Лисенко", "Бондар", "Мороз", "Марченко", "Ткачук", "Павленко", "Савченко", "Іванова"};
     QStringList cities = {"Київ", "Харків", "Одеса", "Дніпро", "Львів", "Запоріжжя", "Кривий Ріг", "Миколаїв", "Вінниця", "Херсон"};
@@ -67,7 +67,6 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
     QStringList orderStatuses = {"Очікує підтвердження", "В обробці", "Комплектується", "Передано до служби доставки", "Надіслано", "Доставлено", "Скасовано"};
     QStringList paymentMethods = {"Карткою онлайн", "Готівкою при отриманні", "Переказ на рахунок"};
 
-    // --- Реальні дані (використовуємо структури з testdata.h) ---
     QList<PublisherData> publishers = {
         {"А-ба-ба-га-ла-ма-га", "Київ, вул. Басейна, 1/2А", -1},
         {"Видавництво Старого Лева", "Львів, вул. Старознесенська, 24-26", -1},
@@ -80,14 +79,12 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
     };
 
     QList<AuthorData> authors = {
-        // Українські класики (3)
         {"Тарас", "Шевченко", QDate(1814, 3, 9), "українець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Taras_Shevchenko.jpg",
          "Тарас Шевченко (1814-1861) – видатний український поет, художник, мислитель і громадський діяч. Народився у кріпацькій родині, завдяки таланту та підтримці викупився з кріпацтва. Навчався в Петербурзькій Академії мистецтв. Його поетична збірка «Кобзар» стала символом українського національного відродження, оспівуючи історію, культуру та прагнення народу до свободи. За свою антицарську діяльність та участь у Кирило-Мефодіївському братстві був засланий на довгі роки солдатом із забороною писати й малювати. Попри це, продовжував таємно творити. Його спадщина включає геніальні поетичні твори, прозу, драматургію та значний доробок у живописі та графіці. Шевченко вважається основоположником нової української літератури та національним пророком.", -1},
         {"Леся", "Українка", QDate(1871, 2, 25), "українка", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Lesia_Ukrainka.jpg",
          "Леся Українка (справжнє ім'я Лариса Косач-Квітка, 1871-1913) – видатна українська письменниця, перекладачка, культурна діячка. Народилася в інтелігентній родині, отримала чудову домашню освіту, знала багато мов. З дитинства хворіла на туберкульоз кісток, що змушувало її багато подорожувати в пошуках лікування, але не зламало її духу. Авторка глибоких поетичних збірок («На крилах пісень», «Думи і мрії», «Відгуки»), драматичних поем («Одержима», «Кассандра», «В катакомбах», «Бояриня») та драми-феєрії «Лісова пісня», яка стала вершиною її творчості. У своїх творах Леся Українка піднімала теми національного визволення, боротьби за соціальну справедливість, ролі митця у суспільстві, сили людського духу. Її творчість відзначається інтелектуалізмом, психологізмом та новаторством.", -1},
         {"Іван", "Франко", QDate(1856, 8, 27), "українець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\Ivan_Franko.jpg",
          "Іван Франко (1856-1916) – видатний український письменник, поет, публіцист, учений, громадський і політичний діяч. Народився в родині коваля на Галичині. Навчався у Львівському та Чернівецькому університетах, здобув ступінь доктора філософії у Відні. Франко – титанічна постать в українській культурі, автор величезної кількості творів у різних жанрах: поезії (збірки «Зів'яле листя», «Мій Ізмарагд», поема «Мойсей»), прози (повісті «Захар Беркут», «Борислав сміється», «Украдене щастя»), драматургії, наукових праць з історії, літературознавства, етнографії. Активно займався політичною діяльністю, був одним із засновників Русько-української радикальної партії. Зазнав переслідувань та арештів з боку австро-угорської влади. Його творчість пронизана ідеями гуманізму, патріотизму та віри в майбутнє українського народу.", -1},
-        // Зарубіжні (9)
         {"George", "Orwell", QDate(1903, 6, 25), "британець", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\George_Orwell.jpg",
          "Джордж Орвелл (справжнє ім'я Ерік Артур Блер, 1903-1950) – видатний англійський письменник і публіцист. Народився в Індії, навчався в Ітоні. Служив у колоніальній поліції в Бірмі, що сформувало його антиімперіалістичні погляди. Брав участь у Громадянській війні в Іспанії на боці республіканців, де був поранений. Світову славу Орвеллу принесли алегорична повість «Колгосп тварин» (1945), що є гострою сатирою на сталінський режим, та роман-антиутопія «1984» (1949), який став пророчим попередженням про небезпеку тоталітаризму, державного контролю та маніпуляції свідомістю. У своїх творах Орвелл послідовно виступав проти будь-яких форм гноблення, захищав принципи демократії, свободи слова та соціальної справедливості. Його роботи справили величезний вплив на світову літературу та політичну думку XX століття.", -1},
         {"J.K.", "Rowling", QDate(1965, 7, 31), "британка", "D:\\projects\\DB_Kurs\\QtAPP\\author_img\\J.K.-Rowling-2021.jpg",
@@ -111,7 +108,6 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
     };
 
     QList<BookData> books = {
-        // Українські класики (6 книг)
         {"Кобзар", "978-966-7047-36-8", QDate(1840, 1, 1), "А-ба-ба-га-ла-ма-га", 300.00, 150,
          "«Кобзар» Тараса Шевченка – це не просто збірка поетичних творів, це серце української літератури та душа нації. Вперше виданий у 1840 році, він став символом боротьби за свободу, національну ідентичність та людську гідність. Книга містить найвідоміші поеми та вірші Шевченка, такі як «Катерина», «Гайдамаки», «Сон», «Заповіт» та багато інших. Кожен рядок пронизаний глибоким патріотизмом, болем за долю України та її народу, вірою у краще майбутнє. Шевченко майстерно змальовує історичні події, життя простих людей, їхні радощі та страждання. Його мова – багата, образна, мелодійна – торкається найглибших струн душі. «Кобзар» – це книга, яка надихала покоління українців на боротьбу, формувала національну свідомість і залишається актуальною й донині. Вона є обов'язковою для прочитання кожному, хто хоче зрозуміти історію, культуру та дух України. Це вічний пам'ятник генію українського народу.",
          "українська", 704, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\kobzar.jpg", {"Шевченко"}, "Класика"},
@@ -130,7 +126,6 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
         {"Украдене щастя", "978-617-569-098-1", QDate(1893, 1, 1), "Видавництво Старого Лева", 170.00, 90,
          "«Украдене щастя» – одна з найсильніших соціально-психологічних драм української літератури, написана Іваном Франком. П'єса розкриває трагічну історію любовного трикутника в галицькому селі кінця XIX століття. Головні герої – Анна, її чоловік Микола Задорожний та її колишній коханий Михайло Гурман – опиняються у вирі складних почуттів, соціальних умовностей та особистих трагедій. Франко майстерно показує, як суспільні норми, бідність та людська підступність руйнують долі та крадуть можливість простого людського щастя. Драма вражає глибиною психологічного аналізу персонажів, їхніх внутрішніх переживань, сумнівів та пристрастей. Кожен герой – це складна особистість зі своєю правдою та своїм болем. Мова твору – жива, народна, сповнена емоцій та драматизму. «Украдене щастя» – це гостра критика соціальної несправедливості та водночас глибоке дослідження людської душі, її прагнення до любові та щастя всупереч усім перешкодам. П'єса залишається актуальною і сьогодні, змушуючи замислитися над вічними питаннями.",
          "українська", 192, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\ukradene_shastia.jpg", {"Франко"}, "Класика"},
-        // Зарубіжні автори (12 книг)
         {"1984", "978-0-452-28423-4", QDate(1949, 6, 8), "Penguin Books", 150.00, 100,
          "«1984» Джорджа Орвелла – це моторошний і пророчий роман-антиутопія, що став класикою світової літератури. Опублікований у 1949 році, він змальовує жахливий світ тоталітарної держави Океанії, де панує всевладний режим на чолі з таємничим Великим Братом. Партія контролює кожен аспект життя громадян, від їхніх дій до думок, використовуючи постійний нагляд через телеекрани, поліцію думок та новомову – мову, створену для обмеження свободи мислення. Головний герой, Вінстон Сміт, працює в Міністерстві Правди, переписуючи історію відповідно до поточної лінії партії. Однак у глибині душі він ненавидить систему і починає вести таємний щоденник, що є смертельно небезпечним злочином. Його бунт, пошук правди та заборонене кохання з Джулією стають центральною темою роману. «1984» – це потужне попередження про небезпеку тоталітаризму, втрату індивідуальності, маніпуляцію інформацією та важливість свободи думки. Книга залишається надзвичайно актуальною, змушуючи замислюватися над сучасними суспільними процесами.",
          "англійська", 328, "D:\\projects\\DB_Kurs\\QtAPP\\cover_img\\1984.jpg", {"Orwell"}, "Наукова фантастика"},
@@ -379,14 +374,12 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
 
     // 4. Customer (Генерація тестових клієнтів з паролями)
     if (success) {
-        qInfo() << "Populating table customer (generating test data with passwords)...";
         QString insertCustomerSQL = R"(
         INSERT INTO customer (first_name, last_name, email, phone, address, password_hash, loyalty_program, join_date, loyalty_points)
         VALUES (:first_name, :last_name, :email, :phone, :address, :password_hash, :loyalty_program, :join_date, :loyalty_points)
         RETURNING customer_id;
-    )"; // Додано password_hash
+    )";
     if (!query.prepare(insertCustomerSQL)) {
-        qCritical() << "Error preparing query for customer:" << query.lastError().text(); // Changed log to English
         success = false;
     } else {
         for (int i = 0; i < numberOfRecords && success; ++i) {
@@ -394,7 +387,7 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
             QString lname = lastNames.at(QRandomGenerator::global()->bounded(lastNames.size()));
             query.bindValue(":first_name", fname);
             query.bindValue(":last_name", lname);
-            query.bindValue(":email", QString("%1.%2.%3@example.com").arg(fname.toLower()).arg(lname.toLower()).arg(i)); // Уникальный email
+            query.bindValue(":email", QString("%1.%2.%3@example.com").arg(fname.toLower()).arg(lname.toLower()).arg(i));
             query.bindValue(":phone", QString("+380%1%2%3").arg(QRandomGenerator::global()->bounded(10, 100))
                                           .arg(QRandomGenerator::global()->bounded(100, 1000))
                                           .arg(QRandomGenerator::global()->bounded(1000, 10000)));
@@ -403,15 +396,15 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
                                             .arg(streets.at(QRandomGenerator::global()->bounded(streets.size())))
                                             .arg(QRandomGenerator::global()->bounded(1, 151))
                                             .arg(QRandomGenerator::global()->bounded(1, 301)));
-            query.bindValue(":loyalty_program", QRandomGenerator::global()->bounded(10) < 3); // ~30% в программе
+            query.bindValue(":loyalty_program", QRandomGenerator::global()->bounded(10) < 3);
             query.bindValue(":join_date", randomDate(QDate::currentDate().addYears(-5), QDate::currentDate()));
             query.bindValue(":loyalty_points", QRandomGenerator::global()->bounded(0, 501));
 
-            // Генерація та хешування пароля (приклад: "password" + email)
+            // Генерація та хешування пароля
             QString plainPassword = "password" + query.boundValue(":email").toString();
             QByteArray passwordHashBytes = QCryptographicHash::hash(plainPassword.toUtf8(), QCryptographicHash::Sha256);
-            QString passwordHashHex = QString::fromUtf8(passwordHashBytes.toHex()); // Перетворюємо в QString
-            query.bindValue(":password_hash", passwordHashHex); // Прив'язуємо QString
+            QString passwordHashHex = QString::fromUtf8(passwordHashBytes.toHex());
+            query.bindValue(":password_hash", passwordHashHex);
 
             // Використовуємо dbManager->executeInsertQuery
             if (dbManager->executeInsertQuery(query, QString("Customer %1").arg(i+1), lastId)) {
@@ -423,18 +416,15 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
             }
         }
     }
-    } // <- Добавлена недостающая скобка для закрытия 'if (success)' для Customer
+    }
 
 
     // 5. "order" (Генерація тестових замовлень)
     if (success && !customerIds.isEmpty()) {
-        qInfo() << "Populating table \"order\" (generating test data)...";
         QString insertOrderSQL = R"(
              INSERT INTO "order" (customer_id, order_date, total_amount, shipping_address, payment_method)
              VALUES (:customer_id, :order_date, :total_amount, :shipping_address, :payment_method)
-             RETURNING order_id;
-         )"; // Added RETURNING
-        // Note the quotes around "order" in the SQL query!
+             RETURNING order_id; )"; 
         if (!query.prepare(insertOrderSQL)) {
             qCritical() << "Error preparing query for \"order\":" << query.lastError().text(); // Changed log to English
             success = false;
@@ -442,7 +432,7 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
             for (int i = 0; i < numberOfRecords && success; ++i) {
                 query.bindValue(":customer_id", customerIds.at(QRandomGenerator::global()->bounded(customerIds.size())));
                 query.bindValue(":order_date", randomDateTime(QDateTime::currentDateTime().addDays(-90), QDateTime::currentDateTime()));
-                query.bindValue(":total_amount", 500); // Сумма будет пересчитана позже, это плейсхолдер
+                query.bindValue(":total_amount", 500);
                 query.bindValue(":shipping_address", QString("%1, %2, буд. %3, Нова Пошта %4")
                                                          .arg(cities.at(QRandomGenerator::global()->bounded(cities.size())))
                                                          .arg(streets.at(QRandomGenerator::global()->bounded(streets.size())))
@@ -625,7 +615,8 @@ bool populateTestData(DatabaseManager *dbManager, int numberOfRecords)
                 query.bindValue(":customer_id", customerId);
                 query.bindValue(":comment_text", commentText);
                 query.bindValue(":comment_date", commentDate);
-                query.bindValue(":rating", rating == 0 ? QVariant(QVariant::Int) : rating); // NULL if 0
+                query.bindValue(":rating", rating == 0 ? QVariant(QVariant::Int) : rating);
+
 
                 if (query.exec()) {
                     commentsCreated++;
