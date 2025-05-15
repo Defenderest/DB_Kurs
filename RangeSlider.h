@@ -5,9 +5,8 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QApplication> // For style metrics
-#include <QStyleOptionSlider> // For style hints
+#include <QStyleOptionSlider>
 
-// Простий діапазонний слайдер
 class RangeSlider : public QWidget
 {
     Q_OBJECT
@@ -38,44 +37,36 @@ public:
 signals:
     void lowerValueChanged(int lower);
     void upperValueChanged(int upper);
-    void rangeChanged(int min, int max); // Сигнал зміни всього діапазону
+    void rangeChanged(int min, int max);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void changeEvent(QEvent* event) override; // Для оновлення стилю
+    void changeEvent(QEvent* event) override;
 
 private:
     enum Handle { NoHandle, LowerHandle, UpperHandle, BothHandles };
 
-    // Геометрія та стан
-    QRectF grooveRect() const; // Область доріжки (змінено на QRectF)
-    QRectF handleRect(Handle handle) const; // Область ручки (змінено на QRectF)
+    QRectF grooveRect() const;
+    QRectF handleRect(Handle handle) const;
     int positionToValue(int pos) const;
     int valueToPosition(int val) const;
-    void updateHoverControl(const QPoint& pos); // Оновлення стану наведення
-    // void triggerAction(QAbstractSlider::SliderAction action, bool fast); // Видалено, не використовується
+    void updateHoverControl(const QPoint& pos);
 
-    // Властивості
     int m_minimum = 0;
-    int m_maximum = 1000; // Значення за замовчуванням
+    int m_maximum = 1000;
     int m_lowerValue = 0;
     int m_upperValue = 1000;
     Qt::Orientation m_orientation;
-    // int m_handleWidth = 16; // Видалено, замінено на m_handleSize
-    qreal m_handleSize = 18.0; // Розмір повзунка (діаметр кола) - додано
-    qreal m_grooveHeight = 6.0; // Висота доріжки - додано
+    qreal m_handleSize = 18.0;
+    qreal m_grooveHeight = 6.0;
 
-    // Стан взаємодії
     Handle m_pressedControl = NoHandle;
     Handle m_hoverControl = NoHandle;
-    int m_clickOffset = 0; // Зсув кліку відносно ручки
-    int m_lastPressedValue = 0; // Для визначення зміни значення при відпусканні
-
-    // Стилізація
-    // QStyleOptionSlider getStyleOption(Handle handle = NoHandle) const; // Видалено, не використовується
+    int m_clickOffset = 0;
+    int m_lastPressedValue = 0;
 };
 
 #endif // RANGESLIDER_H
