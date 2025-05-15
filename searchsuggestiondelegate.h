@@ -9,15 +9,14 @@
 #include <QModelIndex>
 #include <QSize>
 #include <QDebug>
-#include "datatypes.h" // Для SearchSuggestionInfo та ролей
+#include "datatypes.h"
 
-// Визначимо кастомні ролі для передачі даних через модель
 namespace SearchSuggestionRoles {
-    const int TypeRole = Qt::UserRole + 1;      // SearchSuggestionInfo::SuggestionType
-    const int IdRole = Qt::UserRole + 2;        // int (bookId або authorId)
-    const int ImagePathRole = Qt::UserRole + 3; // QString
-    const int PriceRole = Qt::UserRole + 4;     // double (ціна книги)
-    const int DisplayTextRole = Qt::DisplayRole; // Використовуємо стандартну роль для тексту
+    const int TypeRole = Qt::UserRole + 1;
+    const int IdRole = Qt::UserRole + 2;
+    const int ImagePathRole = Qt::UserRole + 3;
+    const int PriceRole = Qt::UserRole + 4;
+    const int DisplayTextRole = Qt::DisplayRole;
 }
 
 class SearchSuggestionDelegate : public QStyledItemDelegate
@@ -31,8 +30,8 @@ public:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 private:
-    int m_imageSize = 40; // Розмір зображення в пікселях
-    int m_padding = 5;    // Відступи
+    int m_imageSize = 40;
+    int m_padding = 5;
 };
 
 #endif // SEARCHSUGGESTIONDELEGATE_H
