@@ -4,21 +4,19 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QVariant>
-#include <QStringList> // Для getSearchSuggestions
-#include <QDate> // Для дат
+#include <QStringList>
+#include <QDate>
 
-// Реалізація нового методу для отримання книг для UI
 QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 {
     QList<BookDisplayInfo> books;
     if (!m_isConnected || !m_db.isOpen()) {
         qWarning() << "Неможливо отримати книги: немає активного з'єднання з БД.";
-        return books; // Повертаємо порожній список
+        return books;
     }
 
-    // Використовуємо завантажений SQL запит
     const QString sql = getSqlQuery("GetAllBooksForDisplay");
-    if (sql.isEmpty()) return books; // Помилка завантаження запиту
+    if (sql.isEmpty()) return books;
 
     QSqlQuery query(m_db);
     qInfo() << "Executing SQL 'GetAllBooksForDisplay' to get books for display...";
@@ -26,7 +24,7 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
         qCritical() << "Помилка при виконанні 'GetAllBooksForDisplay':";
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << sql;
-        return books; // Повертаємо порожній список у разі помилки
+        return books;
     }
 
     qInfo() << "Successfully fetched books. Processing results...";
@@ -39,12 +37,11 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
         bookInfo.coverImagePath = query.value("cover_image_path").toString();
         bookInfo.stockQuantity = query.value("stock_quantity").toInt();
         bookInfo.authors = query.value("authors").toString();
-        bookInfo.genre = query.value("genre").toString(); // Отримуємо жанр
-        bookInfo.found = true; // Книга знайдена, якщо запит її повернув
+        bookInfo.genre = query.value("genre").toString();
+        bookInfo.found = true;
 
-        // Якщо автори відсутні (був LEFT JOIN), перевіряємо на NULL
         if (query.value("authors").isNull()) {
-             bookInfo.authors = ""; // Повертаємо порожній рядок, UI вирішить, що показати
+            bookInfo.authors = "";
         }
 
 
@@ -57,7 +54,6 @@ QList<BookDisplayInfo> DatabaseManager::getAllBooksForDisplay() const
 }
 
 
-// Реалізація нового методу для отримання книг з урахуванням фільтрів
 QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFilterCriteria &criteria) const
 {
     QList<BookDisplayInfo> books;
@@ -66,16 +62,14 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
         return books;
     }
 
-    // Базовий SQL-запит з файлу
     QString sqlBase = getSqlQuery("GetFilteredBooksForDisplayBase");
-    if (sqlBase.isEmpty()) return books; // Помилка завантаження запиту
+    if (sqlBase.isEmpty()) return books;
 
-    QString sql = sqlBase; // Копіюємо базовий запит
+    QString sql = sqlBase;
 
     QStringList whereConditions;
     QMap<QString, QVariant> bindValues;
 
-    // 1. Фільтр за жанрами
     if (!criteria.genres.isEmpty()) {
         QStringList genrePlaceholders;
         for (int i = 0; i < criteria.genres.size(); ++i) {
@@ -86,7 +80,6 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
         whereConditions << QString("b.genre IN (%1)").arg(genrePlaceholders.join(", "));
     }
 
-    // 2. Фільтр за мовами
     if (!criteria.languages.isEmpty()) {
         QStringList langPlaceholders;
         for (int i = 0; i < criteria.languages.size(); ++i) {
@@ -97,29 +90,24 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
         whereConditions << QString("b.language IN (%1)").arg(langPlaceholders.join(", "));
     }
 
-    // 3. Фільтр за мінімальною ціною
     if (criteria.minPrice >= 0.0) {
         whereConditions << "b.price >= :minPrice";
         bindValues[":minPrice"] = criteria.minPrice;
     }
 
-    // 4. Фільтр за максимальною ціною
     if (criteria.maxPrice >= 0.0) {
         whereConditions << "b.price <= :maxPrice";
         bindValues[":maxPrice"] = criteria.maxPrice;
     }
 
-    // 5. Фільтр "тільки в наявності"
     if (criteria.inStockOnly) {
         whereConditions << "b.stock_quantity > 0";
     }
 
-    // Додаємо умови WHERE до основного запиту, якщо вони є
     if (!whereConditions.isEmpty()) {
         sql += "\nWHERE " + whereConditions.join(" AND ");
     }
 
-    // Додаємо GROUP BY та ORDER BY
     sql += R"(
         GROUP BY b.book_id, b.title, b.price, b.cover_image_path, b.stock_quantity, b.genre, b.language, p.name
         ORDER BY b.title;
@@ -128,7 +116,6 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
     QSqlQuery query(m_db);
     query.prepare(sql);
 
-    // Прив'язуємо значення
     for (auto it = bindValues.constBegin(); it != bindValues.constEnd(); ++it) {
         query.bindValue(it.key(), it.value());
     }
@@ -140,7 +127,7 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
     if (!query.exec()) {
         qCritical() << "Помилка при отриманні відфільтрованого списку книг:";
         qCritical() << query.lastError().text();
-        qCritical() << "SQL запит:" << query.lastQuery(); // Показуємо запит з підставленими значеннями
+        qCritical() << "SQL запит:" << query.lastQuery();
         return books;
     }
 
@@ -155,11 +142,11 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
         bookInfo.stockQuantity = query.value("stock_quantity").toInt();
         bookInfo.authors = query.value("authors").toString();
         bookInfo.genre = query.value("genre").toString();
-        // bookInfo.language = query.value("language").toString(); // Поле language не існує в BookDisplayInfo, можливо, його треба додати?
+
         bookInfo.found = true;
 
         if (query.value("authors").isNull()) {
-             bookInfo.authors = "";
+            bookInfo.authors = "";
         }
 
         books.append(bookInfo);
@@ -170,7 +157,6 @@ QList<BookDisplayInfo> DatabaseManager::getFilteredBooksForDisplay(const BookFil
     return books;
 }
 
-// Реалізація методу для отримання всіх унікальних жанрів
 QStringList DatabaseManager::getAllGenres() const
 {
     QStringList genres;
@@ -180,7 +166,7 @@ QStringList DatabaseManager::getAllGenres() const
     }
 
     const QString sql = getSqlQuery("GetAllDistinctGenres");
-    if (sql.isEmpty()) return genres; // Помилка завантаження запиту
+    if (sql.isEmpty()) return genres;
 
     QSqlQuery query(m_db);
     qInfo() << "Executing SQL 'GetAllDistinctGenres' to get all distinct genres...";
@@ -198,7 +184,6 @@ QStringList DatabaseManager::getAllGenres() const
     return genres;
 }
 
-// Реалізація методу для отримання всіх унікальних мов
 QStringList DatabaseManager::getAllLanguages() const
 {
     QStringList languages;
@@ -208,7 +193,7 @@ QStringList DatabaseManager::getAllLanguages() const
     }
 
     const QString sql = getSqlQuery("GetAllDistinctLanguages");
-     if (sql.isEmpty()) return languages; // Помилка завантаження запиту
+    if (sql.isEmpty()) return languages;
 
     QSqlQuery query(m_db);
     qInfo() << "Executing SQL 'GetAllDistinctLanguages' to get all distinct languages...";
@@ -226,21 +211,20 @@ QStringList DatabaseManager::getAllLanguages() const
     return languages;
 }
 
-// Реалізація нового методу для отримання детальної інформації про книгу
 BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
 {
     BookDetailsInfo details;
-    details.found = false; // Явно встановлюємо за замовчуванням
+    details.found = false;
     if (!m_isConnected || !m_db.isOpen() || bookId <= 0) {
         qWarning() << "Неможливо отримати деталі книги: немає з'єднання або невірний bookId.";
-        return details; // Повертаємо порожню структуру
+        return details;
     }
 
     const QString sql = getSqlQuery("GetBookDetailsById");
-    if (sql.isEmpty()) return details; // Помилка завантаження запиту
+    if (sql.isEmpty()) return details;
 
     QSqlQuery query(m_db);
-     if (!query.prepare(sql)) {
+    if (!query.prepare(sql)) {
         qCritical() << "Помилка підготовки запиту 'GetBookDetailsById':" << query.lastError().text();
         return details;
     }
@@ -269,17 +253,16 @@ BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
         details.publisherName = query.value("publisher_name").toString();
         details.authors = query.value("authors").toString();
         if (query.value("authors").isNull()) {
-             details.authors = ""; // Порожній рядок, якщо немає авторів
+            details.authors = "";
         }
         details.found = true;
         qInfo() << "Book details found for book ID:" << bookId;
     } else {
         qInfo() << "Book details not found for book ID:" << bookId;
-        // details.found залишається false
+
     }
 
-    // Отримуємо коментарі до книги (викликаємо метод з database_comment.cpp)
-    // Перевірка на null для m_dbManager не потрібна, бо ми вже всередині класу
+
     details.comments = getBookComments(bookId);
     qInfo() << "Fetched" << details.comments.size() << "comments for book ID:" << bookId;
 
@@ -287,19 +270,17 @@ BookDetailsInfo DatabaseManager::getBookDetails(int bookId) const
     return details;
 }
 
-// Реалізація нового методу для отримання BookDisplayInfo за ID
 BookDisplayInfo DatabaseManager::getBookDisplayInfoById(int bookId) const
 {
-    BookDisplayInfo bookInfo; // found = false за замовчуванням
+    BookDisplayInfo bookInfo;
     bookInfo.found = false;
     if (!m_isConnected || !m_db.isOpen() || bookId <= 0) {
         qWarning() << "Неможливо отримати BookDisplayInfo: немає з'єднання або невірний bookId.";
         return bookInfo;
     }
 
-    // Запит з файлу
     const QString sql = getSqlQuery("GetBookDisplayInfoById");
-    if (sql.isEmpty()) return bookInfo; // Помилка завантаження запиту
+    if (sql.isEmpty()) return bookInfo;
 
     QSqlQuery query(m_db);
     if (!query.prepare(sql)) {
@@ -325,9 +306,9 @@ BookDisplayInfo DatabaseManager::getBookDisplayInfoById(int bookId) const
         bookInfo.authors = query.value("authors").toString();
         bookInfo.genre = query.value("genre").toString();
         if (query.value("authors").isNull()) {
-             bookInfo.authors = "";
+            bookInfo.authors = "";
         }
-        bookInfo.found = true; // Позначаємо, що книгу знайдено
+        bookInfo.found = true;
         qInfo() << "BookDisplayInfo found for book ID:" << bookId;
     } else {
         qInfo() << "BookDisplayInfo not found for book ID:" << bookId;
@@ -336,7 +317,6 @@ BookDisplayInfo DatabaseManager::getBookDisplayInfoById(int bookId) const
     return bookInfo;
 }
 
-// Реалізація нового методу для отримання книг за жанром
 QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, int limit) const
 {
     QList<BookDisplayInfo> books;
@@ -349,17 +329,16 @@ QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, in
         return books;
     }
 
-    // Запит з файлу
     const QString sql = getSqlQuery("GetBooksByGenre");
-    if (sql.isEmpty()) return books; // Помилка завантаження запиту
+    if (sql.isEmpty()) return books;
 
     QSqlQuery query(m_db);
-     if (!query.prepare(sql)) {
+    if (!query.prepare(sql)) {
         qCritical() << "Помилка підготовки запиту 'GetBooksByGenre':" << query.lastError().text();
         return books;
     }
     query.bindValue(":genre", genre);
-    query.bindValue(":limit", limit > 0 ? limit : 10); // За замовчуванням 10, якщо ліміт недійсний
+    query.bindValue(":limit", limit > 0 ? limit : 10);
 
     qInfo() << "Executing SQL 'GetBooksByGenre' for genre:" << genre << "with limit:" << query.boundValue(":limit").toInt();
     if (!query.exec()) {
@@ -383,9 +362,8 @@ QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, in
         bookInfo.genre = query.value("genre").toString();
         bookInfo.found = true;
 
-        // Якщо автори відсутні (був LEFT JOIN), перевіряємо на NULL
         if (query.value("authors").isNull()) {
-             bookInfo.authors = ""; // Повертаємо порожній рядок
+            bookInfo.authors = "";
         }
 
         books.append(bookInfo);
@@ -396,20 +374,17 @@ QList<BookDisplayInfo> DatabaseManager::getBooksByGenre(const QString &genre, in
     return books;
 }
 
-// Оновлена реалізація методу для отримання пропозицій пошуку
 QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString &prefix, int limit) const
 {
     QList<SearchSuggestionInfo> suggestions;
-    // Змінено умову: тепер шукаємо з першої літери
+
     if (!m_isConnected || !m_db.isOpen() || prefix.isEmpty()) {
-        // qWarning() << "Неможливо отримати пропозиції: немає з'єднання або префікс порожній.";
-        // qWarning() << "Неможливо отримати пропозиції: немає з'єднання або префікс порожній.";
-        return suggestions; // Повертаємо порожній список
+
+        return suggestions;
     }
 
-    // Запит з файлу
     const QString sql = getSqlQuery("GetSearchSuggestions");
-    if (sql.isEmpty()) return suggestions; // Помилка завантаження запиту
+    if (sql.isEmpty()) return suggestions;
 
     QSqlQuery query(m_db);
     if (!query.prepare(sql)) {
@@ -417,7 +392,7 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
         return suggestions;
     }
     query.bindValue(":prefix", prefix);
-    query.bindValue(":total_limit", limit > 0 ? limit : 10); // Загальне обмеження
+    query.bindValue(":total_limit", limit > 0 ? limit : 10);
 
     qInfo() << "Executing SQL 'GetSearchSuggestions' for prefix:" << prefix << "with limit:" << query.boundValue(":total_limit").toInt();
     if (!query.exec()) {
@@ -425,7 +400,7 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
         qCritical() << query.lastError().text();
         qCritical() << "SQL запит:" << query.lastQuery();
         qCritical() << "Bound values:" << query.boundValues();
-        return suggestions; // Повертаємо порожній список у разі помилки
+        return suggestions;
     }
 
     qInfo() << "Successfully fetched rich suggestions. Processing results...";
@@ -436,7 +411,7 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
         suggestion.id = query.value("id").toInt();
         suggestion.displayText = query.value("display_text").toString();
         suggestion.imagePath = query.value("image_path").toString();
-        suggestion.price = query.value("price").toDouble(); // Отримуємо ціну
+        suggestion.price = query.value("price").toDouble();
 
         if (typeStr == "book") {
             suggestion.type = SearchSuggestionInfo::Book;
@@ -444,7 +419,7 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
             suggestion.type = SearchSuggestionInfo::Author;
         } else {
             qWarning() << "Unknown suggestion type encountered:" << typeStr;
-            continue; // Пропускаємо невідомий тип
+            continue;
         }
 
         suggestions.append(suggestion);
@@ -455,7 +430,6 @@ QList<SearchSuggestionInfo> DatabaseManager::getSearchSuggestions(const QString 
     return suggestions;
 }
 
-// Реалізація нового методу для отримання схожих книг (за жанром)
 QList<BookDisplayInfo> DatabaseManager::getSimilarBooks(int currentBookId, const QString &genre, int limit) const
 {
     QList<BookDisplayInfo> books;
@@ -464,9 +438,8 @@ QList<BookDisplayInfo> DatabaseManager::getSimilarBooks(int currentBookId, const
         return books;
     }
 
-    // Запит з файлу
     const QString sql = getSqlQuery("GetSimilarBooksByGenre");
-    if (sql.isEmpty()) return books; // Помилка завантаження запиту
+    if (sql.isEmpty()) return books;
 
     QSqlQuery query(m_db);
     if (!query.prepare(sql)) {
@@ -475,7 +448,7 @@ QList<BookDisplayInfo> DatabaseManager::getSimilarBooks(int currentBookId, const
     }
     query.bindValue(":genre", genre);
     query.bindValue(":currentBookId", currentBookId);
-    query.bindValue(":limit", limit > 0 ? limit : 5); // За замовчуванням 5
+    query.bindValue(":limit", limit > 0 ? limit : 5);
 
     qInfo() << "Executing SQL 'GetSimilarBooksByGenre' for genre:" << genre << "excluding book ID:" << currentBookId << "with limit:" << query.boundValue(":limit").toInt();
     if (!query.exec()) {
@@ -500,7 +473,7 @@ QList<BookDisplayInfo> DatabaseManager::getSimilarBooks(int currentBookId, const
         bookInfo.found = true;
 
         if (query.value("authors").isNull()) {
-             bookInfo.authors = "";
+            bookInfo.authors = "";
         }
 
         books.append(bookInfo);
