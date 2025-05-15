@@ -1,71 +1,62 @@
 #include "mainwindow.h"
-#include "./ui_mainwindow.h" // Keep UI include first if it depends on Qt headers
-#include "database.h"      // Include DatabaseManager implementation and BookDisplayInfo struct
-#include <QStatusBar>      // For showing status messages
-#include <QMessageBox>     // For showing error dialogs
-#include <QDebug>          // For logging
-#include <QLabel>          // Для відображення тексту та зображень
-#include <QVBoxLayout>     // Для компонування елементів картки
-#include <QGridLayout>     // Для розміщення карток у сітці
-#include <QPushButton>     // Для кнопки "Додати в кошик" (приклад)
-#include <QPixmap>         // Для роботи з зображеннями
-#include <QFrame>          // Для рамки картки
-#include <QSizePolicy>     // Для налаштування розмірів
-#include <QScrollArea>     // Щоб переконатися, що вміст прокручується
-#include <QPainter>         // Додано для малювання круглої маски
-#include <QBitmap>          // Додано для QBitmap (використовується з QPainter)
-#include <QDate>            // Додано для форматування дати
-#include <QPropertyAnimation> // Додано для анімації
-#include <QEvent>           // Для eventFilter
-#include <QEnterEvent>      // Для подій наведення миші
-#include <QMap>             // Для QMap
-#include <QDateTime>        // Для форматування дати/часу замовлення
-#include <QLocale>          // Для форматування чисел та дат
-#include <QComboBox>        // Додано для QComboBox
-// #include <QGroupBox>        // Більше не потрібен для замовлень
-// #include <QTableWidget>     // Більше не потрібен для замовлень
-// #include <QHeaderView>      // Більше не потрібен для замовлень
-#include <QLineEdit>        // Додано для QLineEdit у профілі
-#include <QCompleter>       // Додано для автодоповнення
-#include <QStringListModel> // Додано для моделі автодоповнення
-#include <QListView>        // Додано для QListView (використовується в автодоповненні)
-#include <QMouseEvent>      // Додано для подій миші
-#include <QTextEdit>        // Додано для QTextEdit (опис книги)
-#include "starratingwidget.h" // Додано для StarRatingWidget
-#include <QCoreApplication> // Додано для applicationDirPath
-#include <QDir>             // Додано для роботи зі шляхами
-// #include <QTableWidget>     // Більше не потрібен для кошика
-#include <QHeaderView>      // Може бути потрібен для інших таблиць
-#include <QSpinBox>         // Додано для зміни кількості в кошику
-#include <QToolButton>      // Додано для кнопки видалення в кошику
-#include <QMap>             // Додано для m_cartItems
-#include <QScrollArea>      // Додано для нового кошика
-#include <QTimer>           // Додано для таймера банера
-#include <QListWidget>      // Додано для списку жанрів/мов у фільтрах
-#include <QDoubleSpinBox>   // Додано для фільтрів ціни
-#include <QCheckBox>        // Додано для фільтра "в наявності"
-#include <QListWidgetItem>  // Для роботи з елементами QListWidget
-#include <QParallelAnimationGroup> // Додано для анімації панелі фільтрів
-// #include <QSlider>          // Більше не потрібен, використовуємо RangeSlider
-#include "RangeSlider.h"     // Додано для RangeSlider
-#include <QFrame>           // Додано для QFrame (панель деталей замовлення)
-#include <QVBoxLayout>      // Додано для QVBoxLayout (в панелі деталей)
-#include <QGridLayout>      // Додано для розміщення кнопки кошика та значка
+#include "./ui_mainwindow.h"
+#include "database.h"
+#include <QStatusBar>
+#include <QMessageBox>
+#include <QDebug>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QPixmap>
+#include <QFrame>
+#include <QSizePolicy>
+#include <QScrollArea>
+#include <QPainter>
+#include <QBitmap>
+#include <QDate>
+#include <QPropertyAnimation>
+#include <QEvent>
+#include <QEnterEvent>
+#include <QMap>
+#include <QDateTime>
+#include <QLocale>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QCompleter>
+#include <QStringListModel>
+#include <QListView>
+#include <QMouseEvent>
+#include <QTextEdit>
+#include "starratingwidget.h"
+#include <QCoreApplication>
+#include <QDir>
+#include <QHeaderView>
+#include <QSpinBox>
+#include <QToolButton>
+#include <QMap>
+#include <QScrollArea>
+#include <QTimer>
+#include <QListWidget>
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+#include <QListWidgetItem>
+#include <QParallelAnimationGroup>
+#include "RangeSlider.h"
+#include <QFrame>
+#include <QVBoxLayout>
+#include <QGridLayout>
 
 MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_dbManager(dbManager) // Ініціалізуємо вказівник переданим значенням
-    , m_currentCustomerId(customerId) // Зберігаємо ID користувача
-    // Видалено ініціалізацію неіснуючих членів:
-    // m_similarBooksContainerWidget, m_similarBooksTitleLabel, m_similarBooksLayout
+    , m_dbManager(dbManager)
+    , m_currentCustomerId(customerId)
 {
     ui->setupUi(this);
 
-    // Явно встановлюємо іконку кошика після setupUi
     if (ui->cartButton) {
         ui->cartButton->setIcon(QIcon("D:/projects/DB_Kurs/QtAPP/untitled/icons/cart.png"));
-        // Переконуємось, що текст порожній (хоча це вже робить updateCartIcon)
         ui->cartButton->setText("");
         qInfo() << "Cart button icon explicitly set in constructor.";
     } else {
@@ -73,146 +64,106 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     }
 
 
-    // Перевіряємо, чи передано менеджер БД
     if (!m_dbManager) {
         qCritical() << "MainWindow: DatabaseManager is null! Cannot function properly.";
         QMessageBox::critical(this, tr("Критична помилка"), tr("Менеджер бази даних не ініціалізовано."));
-        // Можливо, закрити вікно або заблокувати функціонал
         return;
     }
 
-    // Перевіряємо ID користувача
     if (m_currentCustomerId <= 0) {
          qWarning() << "MainWindow: Invalid customer ID received:" << m_currentCustomerId;
-         // Можна показати повідомлення або обмежити функціонал
          ui->statusBar->showMessage(tr("Помилка: Не вдалося визначити користувача."), 0);
     } else {
          ui->statusBar->showMessage(tr("Вітаємо!"), 5000);
          qInfo() << "MainWindow initialized for customer ID:" << m_currentCustomerId;
     }
 
-    // Підключаємо сигнали кнопок навігації до слотів (використовуємо імена з UI)
     connect(ui->navHomeButton, &QPushButton::clicked, this, &MainWindow::on_navHomeButton_clicked);
     connect(ui->navBooksButton, &QPushButton::clicked, this, &MainWindow::on_navBooksButton_clicked);
     connect(ui->navAuthorsButton, &QPushButton::clicked, this, &MainWindow::on_navAuthorsButton_clicked);
     connect(ui->navOrdersButton, &QPushButton::clicked, this, &MainWindow::on_navOrdersButton_clicked);
-    connect(ui->navProfileButton, &QPushButton::clicked, this, &MainWindow::on_navProfileButton_clicked); // Додано з'єднання для кнопки профілю
+    connect(ui->navProfileButton, &QPushButton::clicked, this, &MainWindow::on_navProfileButton_clicked);
 
-    // Підключаємо зміну комбо-боксу статусу замовлень до перезавантаження списку
-    //connect(ui->orderStatusComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::loadAndDisplayOrders);
-
-    // Підключаємо кнопки редагування та збереження профілю
     connect(ui->editProfileButton, &QPushButton::clicked, this, &MainWindow::on_editProfileButton_clicked);
     connect(ui->saveProfileButton, &QPushButton::clicked, this, &MainWindow::on_saveProfileButton_clicked);
 
-    // Підключаємо кнопку кошика в хедері (з'єднання залишається, але кнопка тепер у контейнері)
     connect(ui->cartButton, &QPushButton::clicked, this, &MainWindow::on_cartButton_clicked);
 
-    // --- Налаштування контейнера для кнопки кошика та значка ---
-    // Знаходимо батьківський layout кнопки кошика динамічно
     QWidget* cartButtonParent = ui->cartButton ? ui->cartButton->parentWidget() : nullptr;
     QLayout* parentLayout = cartButtonParent ? cartButtonParent->layout() : nullptr;
 
     if (ui->cartButton && parentLayout) {
         qInfo() << "Found parent layout for cartButton:" << parentLayout->metaObject()->className();
-        // 1. Створюємо контейнер та layout
         QWidget* cartButtonContainer = new QWidget();
         QGridLayout* cartLayout = new QGridLayout(cartButtonContainer);
         cartLayout->setContentsMargins(0, 0, 0, 0);
         cartLayout->setSpacing(0);
 
-        // 2. Створюємо значок (badge label)
-        m_cartBadgeLabel = new QLabel(cartButtonContainer); // Батько - контейнер
+        m_cartBadgeLabel = new QLabel(cartButtonContainer);
         m_cartBadgeLabel->setObjectName("cartBadgeLabel");
-        m_cartBadgeLabel->setFixedSize(16, 16); // Розмір значка
+        m_cartBadgeLabel->setFixedSize(16, 16);
         m_cartBadgeLabel->setStyleSheet(
             "QLabel#cartBadgeLabel {"
             "  background-color: red;"
             "  color: white;"
-            "  border-radius: 8px;" // Половина розміру для круглої форми
+            "  border-radius: 8px;"
             "  font-weight: bold;"
-            "  font-size: 9pt;"     // Розмір шрифту
+            "  font-size: 9pt;"
             "  padding: 0px;"
             "  qproperty-alignment: 'AlignCenter';"
             "}"
         );
-        m_cartBadgeLabel->setText("0"); // Початковий текст
-        m_cartBadgeLabel->hide(); // Сховати спочатку
+        m_cartBadgeLabel->setText("0");
+        m_cartBadgeLabel->hide();
 
-        // 3. Додаємо кнопку та значок до grid layout
-        cartLayout->addWidget(ui->cartButton, 0, 0, 1, 1); // Кнопка займає комірку
-        // Додаємо значок до тієї ж комірки, вирівнюючи по верхньому правому куту
+        cartLayout->addWidget(ui->cartButton, 0, 0, 1, 1);
         cartLayout->addWidget(m_cartBadgeLabel, 0, 0, 1, 1, Qt::AlignTop | Qt::AlignRight);
-        // Невеликий зсув значка вгору та вправо для кращого вигляду
-        m_cartBadgeLabel->setContentsMargins(0, -4, -4, 0); // Від'ємні відступи для зсуву
+        m_cartBadgeLabel->setContentsMargins(0, -4, -4, 0);
 
-        // 4. Замінюємо оригінальну кнопку контейнером у батьківському layout
         int buttonIndex = parentLayout->indexOf(ui->cartButton);
         if (buttonIndex != -1) {
-            // Видаляємо оригінальний віджет кнопки з layout
             QLayoutItem *item = parentLayout->takeAt(buttonIndex);
-            // delete item; // Не видаляємо сам item, віджет кнопки ще потрібен
 
-            // Вставляємо контейнер на те саме місце
-            // Перевіряємо тип layout перед вставкою (можна додати більше типів за потреби)
             if (qobject_cast<QBoxLayout*>(parentLayout)) {
                  qobject_cast<QBoxLayout*>(parentLayout)->insertWidget(buttonIndex, cartButtonContainer);
                  qInfo() << "Replaced cartButton with cartButtonContainer in parent layout (QBoxLayout).";
             } else if (qobject_cast<QGridLayout*>(parentLayout)) {
-                 // Для GridLayout потрібно вказати рядок і стовпець, що складніше визначити динамічно.
-                 // Поки що просто додамо в кінець, якщо це GridLayout.
                  qWarning() << "Parent layout is QGridLayout. Adding container to the end instead of replacing.";
                  parentLayout->addWidget(cartButtonContainer);
             } else {
-                 // Для інших типів layout (або якщо не вдалося визначити) додаємо в кінець
                  qWarning() << "Parent layout type (" << parentLayout->metaObject()->className() << ") not explicitly handled for replacement. Adding container to the end.";
                  parentLayout->addWidget(cartButtonContainer);
             }
         } else {
             qWarning() << "Could not find cartButton in its parent layout to replace it. Adding container to the end.";
-            parentLayout->addWidget(cartButtonContainer); // Додаємо в кінець як запасний варіант
+            parentLayout->addWidget(cartButtonContainer);
         }
     } else {
          qWarning() << "cartButton or its parent layout not found. Cannot create badge container.";
     }
-    // --- Кінець налаштування контейнера кошика ---
 
-    // --- Налаштування кнопки категорії "Художня література" (Іконка більше не встановлюється) ---
-    // Код для встановлення іконки видалено, оскільки кнопки тепер текстові в сітці.
-    // Текст встановлюється в UI.
-    // --- Кінець налаштування кнопки категорії ---
-
-    // Підключаємо кнопку "Оформити замовлення" на сторінці кошика (якщо вона вже існує в UI)
-    // Переконайтесь, що віджет cartPage та placeOrderButton існують у вашому .ui файлі
     if (ui->cartPage && ui->placeOrderButton) {
         connect(ui->placeOrderButton, &QPushButton::clicked, this, &MainWindow::on_placeOrderButton_clicked);
     } else {
         qWarning() << "Cart page or place order button not found in UI. Cannot connect signal.";
     }
 
-    // Зберігаємо оригінальний текст кнопок (без емодзі, беремо з UI)
     m_buttonOriginalText[ui->navHomeButton] = ui->navHomeButton->text();
     m_buttonOriginalText[ui->navBooksButton] = ui->navBooksButton->text();
     m_buttonOriginalText[ui->navAuthorsButton] = ui->navAuthorsButton->text();
     m_buttonOriginalText[ui->navOrdersButton] = ui->navOrdersButton->text();
     m_buttonOriginalText[ui->navProfileButton] = ui->navProfileButton->text();
 
-    // Налаштовуємо анімацію бокової панелі
     setupSidebarAnimation();
 
-    // Встановлюємо фільтр подій на sidebarFrame для відстеження наведення миші
     ui->sidebarFrame->installEventFilter(this);
 
-    // Явно встановлюємо початковий згорнутий стан БЕЗ анімації
-    m_isSidebarExpanded = true; // Потрібно для першого виклику toggleSidebar
-    ui->sidebarFrame->setMaximumWidth(m_collapsedWidth); // Встановлюємо ширину напряму
-    toggleSidebar(false); // Тепер цей виклик оновить стан кнопок і властивостей
+    m_isSidebarExpanded = true;
+    ui->sidebarFrame->setMaximumWidth(m_collapsedWidth);
+    toggleSidebar(false);
 
-    // --- Налаштування сторінки кошика ---
-    // Переконуємось, що layout для елементів кошика існує
     if (!ui->cartItemsLayout) {
         qCritical() << "cartItemsLayout is null! Cart page might not work correctly.";
-        // Можна створити layout динамічно, якщо його немає, але краще виправити UI
         if (ui->cartItemsContainerWidget) {
             QVBoxLayout *layout = new QVBoxLayout(ui->cartItemsContainerWidget);
             layout->setObjectName("cartItemsLayout");
@@ -220,24 +171,19 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
             qWarning() << "Dynamically created cartItemsLayout.";
         }
     } else {
-         // Видаляємо спейсер, який був потрібен для таблиці/порожнього повідомлення
-         QLayoutItem* item = ui->cartItemsLayout->takeAt(0); // Припускаємо, що спейсер перший
+         QLayoutItem* item = ui->cartItemsLayout->takeAt(0);
          if (item && item->spacerItem()) {
              delete item;
              qInfo() << "Removed initial spacer from cartItemsLayout.";
          } else if (item) {
-             // Якщо це не спейсер, повертаємо його назад
              ui->cartItemsLayout->insertItem(0, item);
          }
     }
 
 
-    // --- Завантаження та відображення даних для початкової сторінки (Головна) ---
-    // Переконуємося, що відповідні layout'и існують перед заповненням
-    // (Тепер вони всередині ui->discoverPage)
     qInfo() << "Завантаження даних для головної сторінки...";
     if (ui->classicsRowLayout) {
-        QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8); // Використовуємо getBooksByGenre
+        QList<BookDisplayInfo> classicsBooks = m_dbManager->getBooksByGenre("Класика", 8);
         displayBooksInHorizontalLayout(classicsBooks, ui->classicsRowLayout);
     } else {
         qWarning() << "classicsRowLayout is null!";
@@ -256,21 +202,6 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     }
     qInfo() << "Завершено завантаження даних для головної сторінки.";
 
-    // --- Завантаження даних для інших сторінок (можна зробити ледачим завантаженням при першому відкритті) ---
-    // Завантаження книг для сторінки "Книги" (ui->booksPage) - ТЕПЕР ВИКЛИКАЄТЬСЯ ЧЕРЕЗ loadAndDisplayFilteredBooks()
-    // Цей блок більше не потрібен тут, оскільки початкове завантаження
-    // відбудеться при першому виклику on_navBooksButton_clicked або якщо Головна - стартова.
-    // Якщо Головна - стартова, то книги для неї завантажуються окремо вище.
-    // Якщо Книги - стартова, то loadAndDisplayFilteredBooks() має бути викликаний після setupFilterPanel().
-    // ВИДАЛЕНО: Не викликаємо loadAndDisplayFilteredBooks() тут, щоб уникнути завантаження при старті.
-    // Завантаження відбудеться при першому кліку на кнопку "Книги".
-    // if (ui->contentStackedWidget->currentWidget() == ui->booksPage) {
-    //      qInfo() << "Initial load for Books page...";
-    //      loadAndDisplayFilteredBooks();
-    // }
-
-
-    // Завантаження авторів для сторінки "Автори" (ui->authorsPage)
     if (!ui->authorsContainerLayout) {
         qCritical() << "authorsContainerLayout is null!";
     } else {
@@ -280,68 +211,47 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
              qInfo() << "Автори успішно завантажені.";
         } else {
              qWarning() << "Не вдалося завантажити авторів.";
-             // Повідомлення вже обробляється в displayAuthors
         }
     }
 
-    // Завантаження профілю для сторінки "Профіль" (ui->pageProfile)
-    // (Завантаження відбувається при кліку на кнопку профілю в бічній панелі)
-
-    // Завантаження замовлень (якщо потрібно при старті)
-    // loadAndDisplayOrders();
-
-    // Встановлюємо початковий стан сторінки профілю (не в режимі редагування)
     setProfileEditingEnabled(false);
 
-    // Налаштовуємо автодоповнення для глобального пошуку
     setupSearchCompleter();
 
-    // Блок else для помилки підключення більше не потрібен тут,
-    // оскільки dbManager передається і перевіряється на початку конструктора.
-
-    // Встановлюємо автоматичний банер програмно
     setupAutoBanner();
 
-    // Підключаємо кнопку відправки коментаря
     connect(ui->sendCommentButton, &QPushButton::clicked, this, &MainWindow::on_sendCommentButton_clicked);
 
-    // Налаштування панелі фільтрів
     setupFilterPanel();
 
-    // Ініціалізація таймера для автоматичного застосування фільтрів
     m_filterApplyTimer = new QTimer(this);
-    m_filterApplyTimer->setSingleShot(true); // Таймер спрацьовує один раз
-    m_filterApplyTimer->setInterval(750); // Затримка 750 мс перед застосуванням
+    m_filterApplyTimer->setSingleShot(true);
+    m_filterApplyTimer->setInterval(750);
     connect(m_filterApplyTimer, &QTimer::timeout, this, &MainWindow::applyFiltersWithDelay);
 
 
-    // --- Завантаження корзини з бази даних ---
-    loadCartFromDatabase(); // Викликаємо завантаження корзини
+    loadCartFromDatabase();
 
-    // --- Налаштування ScrollArea для сторінки книг ---
-    QScrollArea* booksScrollArea = ui->booksPage->findChild<QScrollArea*>(); // Знаходимо ScrollArea на сторінці книг
+    QScrollArea* booksScrollArea = ui->booksPage->findChild<QScrollArea*>();
     if (booksScrollArea) {
-        booksScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Вимикаємо горизонтальну прокрутку
-        booksScrollArea->setWidgetResizable(true); // Дозволяємо віджету всередині змінювати розмір
+        booksScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        booksScrollArea->setWidgetResizable(true);
         qInfo() << "Books page ScrollArea horizontal scrollbar disabled.";
     } else {
         qWarning() << "Could not find QScrollArea on the books page!";
     }
 
-    // --- Налаштування ScrollArea для сторінки авторів ---
-    QScrollArea* authorsScrollArea = ui->authorsPage->findChild<QScrollArea*>(); // Знаходимо ScrollArea на сторінці авторів
+    QScrollArea* authorsScrollArea = ui->authorsPage->findChild<QScrollArea*>();
     if (authorsScrollArea) {
-        authorsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Вимикаємо горизонтальну прокрутку
-        authorsScrollArea->setWidgetResizable(true); // Дозволяємо віджету всередині змінювати розмір
+        authorsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        authorsScrollArea->setWidgetResizable(true);
         qInfo() << "Authors page ScrollArea horizontal scrollbar disabled.";
     } else {
         qWarning() << "Could not find QScrollArea on the authors page!";
     }
 
-    // --- Налаштування панелі деталей замовлення ---
-    m_orderDetailsPanel = ui->orderDetailsPanel; // Знаходимо панель з UI
+    m_orderDetailsPanel = ui->orderDetailsPanel;
     if (m_orderDetailsPanel) {
-        // Знаходимо віджети всередині панелі
         m_orderDetailsIdLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsIdLabel");
         m_orderDetailsDateLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsDateLabel");
         m_orderDetailsTotalLabel = m_orderDetailsPanel->findChild<QLabel*>("orderDetailsTotalLabel");
@@ -351,26 +261,21 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         m_orderDetailsStatusLayout = m_orderDetailsPanel->findChild<QVBoxLayout*>("orderDetailsStatusLayout");
         m_closeOrderDetailsButton = m_orderDetailsPanel->findChild<QPushButton*>("closeOrderDetailsButton");
 
-        // Перевірка, чи всі віджети знайдено
         if (!m_orderDetailsIdLabel || !m_orderDetailsDateLabel || !m_orderDetailsTotalLabel ||
             !m_orderDetailsShippingLabel || !m_orderDetailsPaymentLabel || !m_orderDetailsItemsLayout ||
             !m_orderDetailsStatusLayout || !m_closeOrderDetailsButton)
         {
             qWarning() << "MainWindow Constructor: One or more widgets inside orderDetailsPanel not found!";
-            // Можна вимкнути функціонал або показати помилку
-            m_orderDetailsPanel->setEnabled(false); // Наприклад, вимикаємо панель
+            m_orderDetailsPanel->setEnabled(false);
         } else {
-             // Налаштовуємо анімацію
              m_orderDetailsAnimation = new QPropertyAnimation(m_orderDetailsPanel, "maximumWidth", this);
-             m_orderDetailsAnimation->setDuration(300); // Тривалість анімації
+             m_orderDetailsAnimation->setDuration(300);
              m_orderDetailsAnimation->setEasingCurve(QEasingCurve::InOutQuad);
 
-             // Встановлюємо початковий стан (приховано)
              m_orderDetailsPanel->setMaximumWidth(0);
-             m_orderDetailsPanel->setVisible(false); // Явно ховаємо
+             m_orderDetailsPanel->setVisible(false);
              m_isOrderDetailsPanelVisible = false;
 
-             // Підключаємо кнопку закриття
              connect(m_closeOrderDetailsButton, &QPushButton::clicked, this, &MainWindow::hideOrderDetailsPanel);
              qInfo() << "Order details panel initialized successfully.";
         }
@@ -378,8 +283,6 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         qWarning() << "MainWindow Constructor: orderDetailsPanel not found in UI!";
     }
 
-    // --- Підключення кнопок категорій ---
-    // Переконуємось, що віджет категорій існує
     QWidget* categoriesWidget = this->findChild<QWidget*>("categoriesWidget");
     if (categoriesWidget) {
         QPushButton* fictionButton = categoriesWidget->findChild<QPushButton*>("fictionCategoryButton");
@@ -388,25 +291,22 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
         QPushButton* educationButton = categoriesWidget->findChild<QPushButton*>("educationCategoryButton");
 
         if (fictionButton) {
-            // Використовуємо точну назву жанру, як вона буде в списку фільтрів
             connect(fictionButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Художня література"); });
         } else {
             qWarning() << "fictionCategoryButton not found inside categoriesWidget.";
         }
         if (nonFictionButton) {
-            // Уточніть точну назву жанру для "Бізнес та наука" (як вона в БД/фільтрах)
-            // Припустимо, що це "Науково-популярне" або "Бізнес"
-            connect(nonFictionButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Науково-популярне"); }); // Або "Бізнес"
+            connect(nonFictionButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Науково-популярне"); });
         } else {
             qWarning() << "nonFictionCategoryButton not found inside categoriesWidget.";
         }
         if (childrenButton) {
-            connect(childrenButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Дитяча література"); }); // Уточніть назву жанру
+            connect(childrenButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Дитяча література"); });
         } else {
             qWarning() << "childrenCategoryButton not found inside categoriesWidget.";
         }
         if (educationButton) {
-            connect(educationButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Освіта"); }); // Уточніть назву жанру
+            connect(educationButton, &QPushButton::clicked, this, [this](){ applyGenreFilter("Освіта"); });
         } else {
             qWarning() << "educationCategoryButton not found inside categoriesWidget.";
         }
@@ -414,50 +314,26 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     } else {
          qWarning() << "categoriesWidget not found. Cannot connect category button signals.";
     }
-    // --- Кінець підключення кнопок категорій ---
 
 }
 
 MainWindow::~MainWindow()
 {
-    // DatabaseManager будет удален автоматически благодаря установке родителя (this)
-    // Но соединение лучше закрыть явно, если оно еще открыто
     if (m_dbManager) {
         m_dbManager->closeConnection();
-        // delete m_dbManager; // Не нужно, если 'this' был родителем
     }
     delete ui;
-} // Closing brace for destructor
+}
 
-// TODO: Додати метод для завантаження та відображення замовлень
-// void MainWindow::loadAndDisplayOrders() { ... }
-
-
-// --- Реалізація слотів та функцій ---
-
-// Слоти для кнопок навігації
 void MainWindow::on_navHomeButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->discoverPage); // Використовуємо ім'я сторінки з UI
+    ui->contentStackedWidget->setCurrentWidget(ui->discoverPage);
 }
-
-// Тимчасовий слот для кнопки деталей замовлення - ВИДАЛЕНО
-/*
-void MainWindow::showOrderDetailsPlaceholder(int orderId)
-{
-    qInfo() << "View details clicked for order ID:" << orderId;
-    QMessageBox::information(this, tr("Деталі замовлення"), tr("Функціонал перегляду деталей замовлення #%1 ще не реалізовано.").arg(orderId));
-    // Тут буде логіка для відображення деталей замовлення
-    // Наприклад, отримання даних з БД та показ у новому вікні або панелі
-}
-*/
 
 void MainWindow::on_navBooksButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->booksPage); // Використовуємо ім'я сторінки з UI
-    // Скидаємо фільтри та завантажуємо всі книги
-    resetFilters(); // Ця функція скидає критерії, оновлює UI фільтрів і викликає loadAndDisplayFilteredBooks()
-    // Показуємо кнопку фільтра, якщо вона є
+    ui->contentStackedWidget->setCurrentWidget(ui->booksPage);
+    resetFilters();
     if (ui->filterButton) {
         ui->filterButton->show();
     }
@@ -465,52 +341,45 @@ void MainWindow::on_navBooksButton_clicked()
 
 void MainWindow::on_navAuthorsButton_clicked()
 {
-    ui->contentStackedWidget->setCurrentWidget(ui->authorsPage); // Використовуємо ім'я сторінки з UI
-    // Завантажуємо та відображаємо авторів при переході на сторінку
+    ui->contentStackedWidget->setCurrentWidget(ui->authorsPage);
     loadAndDisplayAuthors();
-    // Ховаємо кнопку фільтра, якщо вона видима
     if (ui->filterButton) {
         ui->filterButton->hide();
     }
 }
 
-// Налаштування анімації бокової панелі
 void MainWindow::setupSidebarAnimation()
 {
     m_sidebarAnimation = new QPropertyAnimation(ui->sidebarFrame, "maximumWidth", this);
-    m_sidebarAnimation->setDuration(400); // Трохи збільшено тривалість для плавності
-    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutQuad); // Змінено криву на більш плавну
+    m_sidebarAnimation->setDuration(400);
+    m_sidebarAnimation->setEasingCurve(QEasingCurve::InOutQuad);
 }
 
-// Функція для розгортання/згортання панелі
 void MainWindow::toggleSidebar(bool expand)
 {
     if (m_isSidebarExpanded == expand && m_sidebarAnimation->state() == QAbstractAnimation::Stopped) {
-        return; // Вже в потрібному стані і анімація не йде
+        return;
     }
-     // Якщо анімація ще триває, зупиняємо її перед запуском нової
     if (m_sidebarAnimation->state() == QAbstractAnimation::Running) {
         m_sidebarAnimation->stop();
     }
 
     m_isSidebarExpanded = expand;
 
-    // Оновлюємо текст кнопок
     for (auto it = m_buttonOriginalText.begin(); it != m_buttonOriginalText.end(); ++it) {
         QPushButton *button = it.key();
         const QString &originalText = it.value();
         if (expand) {
-            button->setText(originalText); // Встановлюємо повний текст
-            button->setIcon(button->icon()); // Переконуємось, що іконка є (вона вже має бути встановлена з UI)
-            button->setToolTip(""); // Очистити підказку, коли текст видно
-            button->setProperty("collapsed", false); // Встановлюємо властивість
+            button->setText(originalText);
+            button->setIcon(button->icon());
+            button->setToolTip("");
+            button->setProperty("collapsed", false);
         } else {
-            button->setText(""); // Прибираємо текст
-            button->setIcon(button->icon()); // Залишаємо тільки іконку
-            button->setToolTip(originalText); // Показати текст як підказку
-            button->setProperty("collapsed", true); // Встановлюємо властивість
+            button->setText("");
+            button->setIcon(button->icon());
+            button->setToolTip(originalText);
+            button->setProperty("collapsed", true);
         }
-        // Примусово оновлюємо стиль кнопки
         button->style()->unpolish(button);
         button->style()->polish(button);
     }
@@ -521,108 +390,87 @@ void MainWindow::toggleSidebar(bool expand)
 }
 
 
-// Перехоплення подій для sidebarFrame
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == ui->sidebarFrame) {
         if (event->type() == QEvent::Enter) {
-            // Миша увійшла в область sidebarFrame
-            toggleSidebar(true); // Розгорнути
-            return true; // Подія оброблена
+            toggleSidebar(true);
+            return true;
         } else if (event->type() == QEvent::Leave) {
-            // Миша покинула область sidebarFrame
-            toggleSidebar(false); // Згорнути
-            return true; // Подія оброблена
+            toggleSidebar(false);
+            return true;
         }
     }
-    // --- Обробка кліків на картках книг ---
-    // Перевіряємо, чи об'єкт є QFrame (картка книги) і чи має властивість bookId
     if (qobject_cast<QFrame*>(watched) && watched->property("bookId").isValid()) {
         if (event->type() == QEvent::MouseButtonPress) {
-            // Переконуємось, що це ліва кнопка миші
             QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
             if (mouseEvent->button() == Qt::LeftButton) {
                 int bookId = watched->property("bookId").toInt();
                 qInfo() << "Book card clicked, bookId:" << bookId;
-                showBookDetails(bookId); // Викликаємо слот для показу деталей
-                return true; // Подія оброблена
+                showBookDetails(bookId);
+                return true;
             }
         }
     }
-    // --- Обробка кліків на картках авторів ---
-    // Перевіряємо, чи об'єкт є QFrame і чи має властивість authorId
     else if (qobject_cast<QFrame*>(watched) && watched->property("authorId").isValid()) {
         if (event->type() == QEvent::MouseButtonPress) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
             if (mouseEvent->button() == Qt::LeftButton) {
                 int authorId = watched->property("authorId").toInt();
                 qInfo() << "Author card clicked, authorId:" << authorId;
-                showAuthorDetails(authorId); // Викликаємо слот для показу деталей автора
-                return true; // Подія оброблена
+                showAuthorDetails(authorId);
+                return true;
             }
         }
     }
 
 
-    // Передаємо подію батьківському класу для стандартної обробки
     return QMainWindow::eventFilter(watched, event);
-} // Closing brace for eventFilter
+}
 
-
-// --- Логіка панелі фільтрів ---
 
 void MainWindow::setupFilterPanel()
 {
-    // Перевіряємо наявність панелі та кнопки в UI
     if (!ui->filterPanel || !ui->filterButton) {
         qWarning() << "Filter panel or filter button not found in UI. Filtering disabled.";
         return;
     }
 
-    // Знаходимо віджети фільтрів всередині панелі
     m_genreFilterListWidget = ui->filterPanel->findChild<QListWidget*>("genreFilterListWidget");
     m_languageFilterListWidget = ui->filterPanel->findChild<QListWidget*>("languageFilterListWidget");
 
-    // --- Заміна віджета-заповнювача на RangeSlider ---
-    m_priceRangeSlider = nullptr; // Ініціалізуємо нулем
-    if (ui->priceRangeSlider) { // Перевіряємо наявність віджета-заповнювача з UI
-        // Створюємо новий RangeSlider
-        RangeSlider *actualSlider = new RangeSlider(Qt::Horizontal, this); // 'this' як батько
-        actualSlider->setObjectName("priceRangeSliderInstance"); // Можна дати нове ім'я для стилізації/відладки
-        actualSlider->setMinimumHeight(25); // Встановлюємо мінімальну висоту, як у placeholder
-        actualSlider->setVisible(true); // Явно робимо видимим
+    m_priceRangeSlider = nullptr;
+    if (ui->priceRangeSlider) {
+        RangeSlider *actualSlider = new RangeSlider(Qt::Horizontal, this);
+        actualSlider->setObjectName("priceRangeSliderInstance");
+        actualSlider->setMinimumHeight(25);
+        actualSlider->setVisible(true);
 
         QWidget* placeholderParent = ui->priceRangeSlider->parentWidget();
         if (!placeholderParent) {
              qWarning() << "Placeholder 'priceRangeSlider' has no parent widget!";
-             delete actualSlider; // Видаляємо створений слайдер, бо нема куди його додати
-             m_priceRangeSlider = nullptr; // Ініціалізуємо нулем за замовчуванням
-             delete actualSlider; // Видаляємо створений слайдер, бо нема куди його додати
+             delete actualSlider;
+             m_priceRangeSlider = nullptr;
+             delete actualSlider;
         } else {
-            // Знаходимо безпосередньо QHBoxLayout з ім'ям "priceRangeLayout" всередині filterPanel
             QHBoxLayout *priceRangeLayout = ui->filterPanel->findChild<QHBoxLayout*>("priceRangeLayout");
 
             if (priceRangeLayout) {
-                // Знаходимо індекс віджета-заповнювача в цьому конкретному layout
                 int index = priceRangeLayout->indexOf(ui->priceRangeSlider);
                 if (index != -1) {
-                    // Видаляємо плейсхолдер з layout
                     priceRangeLayout->removeWidget(ui->priceRangeSlider);
 
-                    // Додаємо новий слайдер на те саме місце зі stretch = 1
                     priceRangeLayout->insertWidget(index, actualSlider, 1);
 
-                    m_priceRangeSlider = actualSlider; // Зберігаємо вказівник на реальний слайдер
+                    m_priceRangeSlider = actualSlider;
 
-                    // Тепер безпечно видаляємо віджет-заповнювач (він більше не в layout)
-                    // і обнуляємо вказівник в UI
                     delete ui->priceRangeSlider;
                     ui->priceRangeSlider = nullptr;
 
                     qInfo() << "Successfully replaced placeholder with RangeSlider in priceRangeLayout at index" << index;
                 } else {
                     qWarning() << "Could not find placeholder 'priceRangeSlider' within 'priceRangeLayout'!";
-                    delete actualSlider; // Видаляємо створений слайдер
+                    delete actualSlider;
                     m_priceRangeSlider = nullptr;
                 }
             } else {
@@ -633,113 +481,87 @@ void MainWindow::setupFilterPanel()
         }
     } else {
         qWarning() << "Placeholder widget 'priceRangeSlider' not found in UI!";
-        m_priceRangeSlider = nullptr; // Переконуємось, що вказівник нульовий
+        m_priceRangeSlider = nullptr;
     }
-    // --- Кінець заміни ---
 
-    // Знаходимо мітки для відображення значень ціни
     m_minPriceValueLabel = ui->filterPanel->findChild<QLabel*>("minPriceValueLabel");
     m_maxPriceValueLabel = ui->filterPanel->findChild<QLabel*>("maxPriceValueLabel");
     m_inStockFilterCheckBox = ui->filterPanel->findChild<QCheckBox*>("inStockFilterCheckBox");
     QPushButton *applyButton = ui->filterPanel->findChild<QPushButton*>("applyFiltersButton");
     QPushButton *resetButton = ui->filterPanel->findChild<QPushButton*>("resetFiltersButton");
 
-    // --- Початок діагностики ---
     qDebug() << "Checking filter widgets:";
     qDebug() << "  genreFilterListWidget:" << (m_genreFilterListWidget ? "Found" : "NOT FOUND!");
     qDebug() << "  languageFilterListWidget:" << (m_languageFilterListWidget ? "Found" : "NOT FOUND!");
-    // Оновлена діагностика (перевіряємо, чи вдалося створити та замінити)
     qDebug() << "  priceRangeSlider (Instance created):" << (m_priceRangeSlider ? "OK" : "FAILED! Check UI placeholder and replacement logic.");
     qDebug() << "  minPriceValueLabel:" << (m_minPriceValueLabel ? "Found" : "NOT FOUND!");
     qDebug() << "  maxPriceValueLabel:" << (m_maxPriceValueLabel ? "Found" : "NOT FOUND!");
     qDebug() << "  inStockFilterCheckBox:" << (m_inStockFilterCheckBox ? "Found" : "NOT FOUND!");
     qDebug() << "  applyFiltersButton:" << (applyButton ? "Found" : "NOT FOUND!");
     qDebug() << "  resetFiltersButton:" << (resetButton ? "Found" : "NOT FOUND!");
-    // --- Кінець діагностики ---
 
 
-    // Перевіряємо, чи всі віджети знайдено (оновлено перевірку, додано мітки ціни)
     if (!m_genreFilterListWidget || !m_languageFilterListWidget || !m_priceRangeSlider ||
-        !m_minPriceValueLabel || !m_maxPriceValueLabel || // Додано перевірку міток
+        !m_minPriceValueLabel || !m_maxPriceValueLabel ||
         !m_inStockFilterCheckBox || !applyButton || !resetButton)
     {
         qWarning() << "One or more filter widgets (including price labels) not found inside filterPanel. Filtering might be incomplete.";
-        // Можна вимкнути кнопку фільтра або показати повідомлення
         ui->filterButton->setEnabled(false);
         ui->filterButton->setToolTip(tr("Помилка: віджети фільтрації не знайдено."));
         return;
     }
 
-    // Налаштовуємо анімацію
     m_filterPanelAnimation = new QPropertyAnimation(ui->filterPanel, "maximumWidth", this);
     m_filterPanelAnimation->setDuration(300);
     m_filterPanelAnimation->setEasingCurve(QEasingCurve::InOutQuad);
 
-    // Зберігаємо бажану ширину панелі перед тим, як її приховати
-    m_filterPanelWidth = ui->filterPanel->sizeHint().width(); // Або встановіть фіксоване значення, напр. 250
-    if (m_filterPanelWidth <= 0) { // Запасний варіант, якщо sizeHint() повертає 0
+    m_filterPanelWidth = ui->filterPanel->sizeHint().width();
+    if (m_filterPanelWidth <= 0) {
         m_filterPanelWidth = 250;
         qWarning() << "Filter panel sizeHint width is 0, using default:" << m_filterPanelWidth;
     }
     qDebug() << "Initialized m_filterPanelWidth to:" << m_filterPanelWidth;
 
 
-    // Початковий стан - панель прихована
     ui->filterPanel->setMaximumWidth(0);
     m_isFilterPanelVisible = false;
 
-    // Підключаємо сигнали
     connect(ui->filterButton, &QPushButton::clicked, this, &MainWindow::on_filterButton_clicked);
-    // connect(applyButton, &QPushButton::clicked, this, &MainWindow::applyFilters); // Більше не потрібна кнопка "Застосувати"
     connect(resetButton, &QPushButton::clicked, this, &MainWindow::resetFilters);
 
-    // Приховуємо кнопку "Застосувати", оскільки фільтри застосовуються автоматично
     if (applyButton) {
         applyButton->hide();
     }
 
-    // Підключаємо сигнали віджетів фільтрів до слоту onFilterCriteriaChanged
     if (m_genreFilterListWidget) {
         connect(m_genreFilterListWidget, &QListWidget::itemChanged, this, &MainWindow::onFilterCriteriaChanged);
     }
     if (m_languageFilterListWidget) {
         connect(m_languageFilterListWidget, &QListWidget::itemChanged, this, &MainWindow::onFilterCriteriaChanged);
     }
-    // Видаляємо підключення для SpinBox
-    // if (m_minPriceFilterSpinBox) { ... } // Видалено
-    // if (m_maxPriceFilterSpinBox) { ... } // Видалено
 
-    // Підключаємо сигнали від RangeSlider до загального слоту зміни фільтрів (для таймера)
     if (m_priceRangeSlider) {
-        // Підключаємо сигнали зміни нижнього та верхнього значень до слоту для таймера
         connect(m_priceRangeSlider, &RangeSlider::lowerValueChanged, this, &MainWindow::onFilterCriteriaChanged);
         connect(m_priceRangeSlider, &RangeSlider::upperValueChanged, this, &MainWindow::onFilterCriteriaChanged);
-        // Підключаємо сигнали до слотів для оновлення міток ціни
         connect(m_priceRangeSlider, &RangeSlider::lowerValueChanged, this, &MainWindow::updateLowerPriceLabel);
         connect(m_priceRangeSlider, &RangeSlider::upperValueChanged, this, &MainWindow::updateUpperPriceLabel);
     }
-    // Видаляємо підключення для окремих QSlider
-    // if (m_minPriceSlider) { ... }
-    // if (m_maxPriceSlider) { ... }
 
     if (m_inStockFilterCheckBox) {
         connect(m_inStockFilterCheckBox, &QCheckBox::stateChanged, this, &MainWindow::onFilterCriteriaChanged);
     }
 
 
-    // Завантажуємо дані для фільтрів
     if (m_dbManager) {
-        // Жанри
         QStringList genres = m_dbManager->getAllGenres();
         m_genreFilterListWidget->clear();
         for (const QString &genre : genres) {
             QListWidgetItem *item = new QListWidgetItem(genre, m_genreFilterListWidget);
-            item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // Дозволяємо вибір
-            item->setCheckState(Qt::Unchecked); // Початково не вибрано
+            item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+            item->setCheckState(Qt::Unchecked);
         }
-        m_genreFilterListWidget->setSelectionMode(QAbstractItemView::MultiSelection); // Дозволяємо вибір декількох
+        m_genreFilterListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-        // Мови
         QStringList languages = m_dbManager->getAllLanguages();
         m_languageFilterListWidget->clear();
         for (const QString &lang : languages) {
@@ -749,26 +571,16 @@ void MainWindow::setupFilterPanel()
         }
         m_languageFilterListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-        // Налаштування діапазонів та початкових значень для слайдерів та міток
-        // Припустимо, максимальна ціна 1000 грн (можна отримати з БД)
-        // Налаштування діапазону та початкових значень для RangeSlider
-        // Припустимо, максимальна ціна 1000 грн (можна отримати з БД або встановити константу)
         const int maxPriceValue = 1000;
         const int minPriceValue = 0;
 
         if (m_priceRangeSlider) {
-            m_priceRangeSlider->setRange(minPriceValue, maxPriceValue); // Встановлюємо діапазон
-            m_priceRangeSlider->setLowerValue(minPriceValue); // Початкове нижнє значення
-            m_priceRangeSlider->setUpperValue(maxPriceValue); // Початкове верхнє значення
-            // Встановлюємо початковий текст для міток
+            m_priceRangeSlider->setRange(minPriceValue, maxPriceValue);
+            m_priceRangeSlider->setLowerValue(minPriceValue);
+            m_priceRangeSlider->setUpperValue(maxPriceValue);
             updateLowerPriceLabel(minPriceValue);
             updateUpperPriceLabel(maxPriceValue);
         }
-        // Видаляємо налаштування для окремих QSlider та QLabel
-        // if (m_minPriceSlider) { ... }
-        // if (m_maxPriceSlider) { ... }
-        // if (m_minPriceValueLabel) { ... }
-        // if (m_maxPriceValueLabel) { ... }
 
     } else {
         qWarning() << "DatabaseManager is null, cannot populate filter options.";
@@ -776,23 +588,19 @@ void MainWindow::setupFilterPanel()
         ui->filterButton->setToolTip(tr("Помилка: Немає доступу до бази даних для завантаження фільтрів."));
     }
 
-    // Ховаємо кнопку фільтра спочатку (покажемо при переході на сторінку книг)
     ui->filterButton->hide();
 
-    // --- Додавання стилів для оновлення дизайну ---
     QString filterPanelStyle = R"(
-        QWidget#filterPanel { /* Використовуємо objectName */
-            background-color: #f8f9fa; /* Світлий фон */
-            border-left: 1px solid #dee2e6; /* Тонка ліва межа */
-            border-radius: 8px; /* Додано заокруглення кутів */
-            /* Можна також додати border-top-right-radius: 0px; border-bottom-right-radius: 0px;
-               якщо потрібно заокруглити лише ліві кути */
+        QWidget#filterPanel {
+            background-color: #f8f9fa;
+            border-left: 1px solid #dee2e6;
+            border-radius: 8px;
         }
-        QLabel { /* Стиль для заголовків секцій (якщо вони є QLabel) */
+        QLabel {
             font-weight: bold;
             margin-top: 10px;
             margin-bottom: 5px;
-            color: #000000; /* Змінено на чорний */
+            color: #000000;
         }
         QListWidget {
             border: 1px solid #000000;
@@ -801,53 +609,45 @@ void MainWindow::setupFilterPanel()
             padding: 5px;
         }
         QListWidget::item {
-            padding: 4px 0px; /* Відступи для елементів списку */
-            color: #000000; /* Явно встановлюємо чорний колір для всіх елементів */
+            padding: 4px 0px;
+            color: #000000;
         }
         QListWidget::item:selected {
-            background-color: #e9ecef; /* Колір виділення (якщо використовується selectionMode) */
-            color: #000000; /* Залишаємо чорний */
+            background-color: #e9ecef;
+            color: #000000;
         }
-        QListWidget::indicator:checked { /* Стиль для галочки */
-             image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons//checkbox_checked.png); /* Замініть на шлях до вашої іконки */
-             /* Або використовуйте стандартні: */
-             /* background-color: #000000; */
-             /* border: 1px solid #000000; */
+        QListWidget::indicator:checked {
+             image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons//checkbox_checked.png);
         }
         QListWidget::indicator:unchecked {
-             image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons//checkbox_unchecked.png); /* Замініть на шлях до вашої іконки */
+             image: url(D:/projects/DB_Kurs/QtAPP/untitled/icons//checkbox_unchecked.png);
         }
-        /* Видаляємо стилі для QDoubleSpinBox */
-        /* QDoubleSpinBox { ... } */
-        /* QDoubleSpinBox::up-button, QDoubleSpinBox::down-button { ... } */
-
-        /* Додаємо стилі для QSlider (можна налаштувати) */
         QSlider::groove:horizontal {
             border: 1px solid #bbb;
             background: white;
-            height: 8px; /* Висота канавки */
+            height: 8px;
             border-radius: 4px;
         }
         QSlider::sub-page:horizontal {
-            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #c4c4c4); /* Градієнт для заповненої частини */
-            background: qlineargradient(x1:0, y1:0.2, x2:1, y2:1, stop:0 #5a6268, stop:1 #6c757d); /* Сірий градієнт */
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #c4c4c4);
+            background: qlineargradient(x1:0, y1:0.2, x2:1, y2:1, stop:0 #5a6268, stop:1 #6c757d);
             border: 1px solid #4a5258;
             height: 10px;
             border-radius: 4px;
         }
         QSlider::add-page:horizontal {
-            background: #e9ecef; /* Колір незаповненої частини */
+            background: #e9ecef;
             border: 1px solid #ced4da;
             height: 10px;
             border-radius: 4px;
         }
         QSlider::handle:horizontal {
-            background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8f9fa, stop:1 #dee2e6); /* Світлий градієнт для повзунка */
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f8f9fa, stop:1 #dee2e6);
             border: 1px solid #adb5bd;
-            width: 16px; /* Ширина повзунка */
-            margin-top: -4px; /* Центрування повзунка */
+            width: 16px;
+            margin-top: -4px;
             margin-bottom: -4px;
-            border-radius: 8px; /* Круглий повзунок */
+            border-radius: 8px;
         }
         QSlider::handle:horizontal:hover {
             background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #e9ecef, stop:1 #ced4da);
@@ -855,16 +655,16 @@ void MainWindow::setupFilterPanel()
         }
 
         QCheckBox {
-            spacing: 5px; /* Відстань між галочкою та текстом */
+            spacing: 5px;
             margin-top: 10px;
         }
         QCheckBox::indicator {
             width: 16px;
             height: 16px;
         }
-        QPushButton#resetFiltersButton { /* Стилізуємо кнопку скидання за її objectName */
+        QPushButton#resetFiltersButton {
             background-color: #6c757d;
-            color: #000000; /* Змінено на чорний */
+            color: #000000;
             border: none;
             padding: 8px 15px;
             border-radius: 4px;
@@ -879,12 +679,9 @@ void MainWindow::setupFilterPanel()
     )";
     ui->filterPanel->setStyleSheet(filterPanelStyle);
 
-    // Переконайтесь, що objectName для кнопки скидання встановлено в UI або тут:
     if(resetButton) resetButton->setObjectName("resetFiltersButton");
 
 }
-
-#include <QDebug> // Додаємо для відладки
 
 void MainWindow::on_filterButton_clicked()
 {
@@ -896,48 +693,38 @@ void MainWindow::on_filterButton_clicked()
         return;
     }
 
-    // Stop any currently running animation on this object/property
     if (m_filterPanelAnimation->state() == QAbstractAnimation::Running) {
         qDebug() << "Animation was running. Stopping it.";
         m_filterPanelAnimation->stop();
         qDebug() << "Panel state after stopping: Visible =" << ui->filterPanel->isVisible() << ", Width =" << ui->filterPanel->width();
     }
 
-    // Toggle the desired state
-    bool targetVisibility = !m_isFilterPanelVisible; // Determine the target state *before* changing the member variable
+    bool targetVisibility = !m_isFilterPanelVisible;
 
-    int startWidth = ui->filterPanel->width(); // Capture width *after* stopping any previous animation
+    int startWidth = ui->filterPanel->width();
     int endWidth = targetVisibility ? m_filterPanelWidth : 0;
 
     qDebug() << "Target state: targetVisibility =" << targetVisibility;
     qDebug() << "Animation details: StartWidth =" << startWidth << ", EndWidth =" << endWidth;
 
-    // Set visibility *before* starting the show animation
     if (targetVisibility) {
         qDebug() << "Setting panel visible NOW (before show animation).";
         ui->filterPanel->setVisible(true);
     }
-    // Ensure minimum width is 0
     ui->filterPanel->setMinimumWidth(0);
 
-    // Configure the animation
     m_filterPanelAnimation->setStartValue(startWidth);
     m_filterPanelAnimation->setEndValue(endWidth);
 
-    // Explicitly disconnect any previous connections for the finished signal from this animation to this receiver
-    // This is necessary because UniqueConnection cannot be used with lambdas + context object.
     disconnect(m_filterPanelAnimation, &QPropertyAnimation::finished, this, nullptr);
     qDebug() << "Disconnected previous finished signal connections.";
 
-    // Connect the finished signal handler (without UniqueConnection)
     connect(m_filterPanelAnimation, &QPropertyAnimation::finished, this, [this, targetVisibility]() {
         qDebug() << "--- Animation finished ---";
         qDebug() << "Target state was:" << targetVisibility;
         qDebug() << "Current panel state: Visible =" << ui->filterPanel->isVisible() << ", Width =" << ui->filterPanel->width();
-        qDebug() << "Current state variable: m_isFilterPanelVisible =" << m_isFilterPanelVisible; // Check the state variable
+        qDebug() << "Current state variable: m_isFilterPanelVisible =" << m_isFilterPanelVisible;
 
-        // Hide the panel *after* the hide animation finishes
-        // Check against the captured target state
         if (!targetVisibility) {
              qDebug() << "Setting panel invisible NOW (after hide animation).";
              ui->filterPanel->setVisible(false);
@@ -946,8 +733,6 @@ void MainWindow::on_filterButton_clicked()
              qDebug() << "Show animation finished. Panel should remain visible.";
         }
 
-        // Update the state variable *after* the animation is complete and visibility is set
-        // This ensures the variable reflects the actual final state.
         if (m_isFilterPanelVisible != targetVisibility) {
              qDebug() << "Updating m_isFilterPanelVisible from" << m_isFilterPanelVisible << "to" << targetVisibility;
              m_isFilterPanelVisible = targetVisibility;
@@ -956,35 +741,21 @@ void MainWindow::on_filterButton_clicked()
         }
 
         qDebug() << "--- Finished handler complete ---";
-        // Disconnect the lambda connection after it runs once to avoid potential issues if the animation object is reused.
-        // Note: This disconnect might be too broad if other slots are connected to finished.
-        // A more robust approach might involve QMetaObject::Connection handle if needed.
-        // For now, let's keep it simple. Consider if this disconnect is truly necessary.
-        // It might be safer *not* to disconnect here automatically unless proven necessary.
-        // Let's comment it out for now.
-        // disconnect(sender(), &QPropertyAnimation::finished, this, nullptr);
 
-    } /* Removed Qt::UniqueConnection */);
+    });
 
     qDebug() << "Starting animation...";
     m_filterPanelAnimation->start();
     qDebug() << "Animation state after start:" << m_filterPanelAnimation->state();
 
-    // Update the state variable immediately? No, let the finished handler do it.
-    // m_isFilterPanelVisible = targetVisibility; // Moved to finished lambda
-
-    // Можна змінити іконку кнопки фільтра
-    // ui->filterButton->setIcon(QIcon(targetVisibility ? ":/icons/close_filter.png" : ":/icons/filter.png"));
     qDebug() << "--- Filter button click handler complete ---";
 }
 
 
 void MainWindow::applyFilters()
 {
-    // Збираємо вибрані критерії
-    m_currentFilterCriteria = BookFilterCriteria(); // Скидаємо попередні
+    m_currentFilterCriteria = BookFilterCriteria();
 
-    // Жанри
     if (m_genreFilterListWidget) {
         for (int i = 0; i < m_genreFilterListWidget->count(); ++i) {
             QListWidgetItem *item = m_genreFilterListWidget->item(i);
@@ -994,7 +765,6 @@ void MainWindow::applyFilters()
         }
     }
 
-    // Мови
     if (m_languageFilterListWidget) {
         for (int i = 0; i < m_languageFilterListWidget->count(); ++i) {
             QListWidgetItem *item = m_languageFilterListWidget->item(i);
@@ -1004,26 +774,18 @@ void MainWindow::applyFilters()
         }
     }
 
-    // Ціна (читаємо значення з RangeSlider)
     if (m_priceRangeSlider) {
         m_currentFilterCriteria.minPrice = static_cast<double>(m_priceRangeSlider->lowerValue());
-        // Перевірка, чи значення дорівнює мінімуму слайдера
         if (m_currentFilterCriteria.minPrice == m_priceRangeSlider->minimum()) {
-             m_currentFilterCriteria.minPrice = -1.0; // Ознака "без обмеження"
+             m_currentFilterCriteria.minPrice = -1.0;
         }
 
         m_currentFilterCriteria.maxPrice = static_cast<double>(m_priceRangeSlider->upperValue());
-        // Перевірка, чи значення дорівнює максимуму слайдера
         if (m_currentFilterCriteria.maxPrice == m_priceRangeSlider->maximum()) {
-             m_currentFilterCriteria.maxPrice = -1.0; // Ознака "без обмеження"
+             m_currentFilterCriteria.maxPrice = -1.0;
         }
     }
-    // Видаляємо читання з окремих QSlider
-    // if (m_minPriceSlider) { ... }
-    // if (m_maxPriceSlider) { ... }
 
-
-    // В наявності
     if (m_inStockFilterCheckBox) {
         m_currentFilterCriteria.inStockOnly = m_inStockFilterCheckBox->isChecked();
     }
@@ -1035,18 +797,12 @@ void MainWindow::applyFilters()
             << "MaxPrice:" << m_currentFilterCriteria.maxPrice
             << "InStockOnly:" << m_currentFilterCriteria.inStockOnly;
 
-    // Завантажуємо та відображаємо відфільтровані книги
     loadAndDisplayFilteredBooks();
 
-    // Більше не ховаємо панель автоматично після застосування
-    // if (m_isFilterPanelVisible) {
-    //     on_filterButton_clicked(); // Імітуємо клік для закриття
-    // }
 }
 
 void MainWindow::resetFilters()
 {
-    // Скидаємо значення у віджетах
     if (m_genreFilterListWidget) {
         for (int i = 0; i < m_genreFilterListWidget->count(); ++i) {
             if (QListWidgetItem *item = m_genreFilterListWidget->item(i)) {
@@ -1061,43 +817,29 @@ void MainWindow::resetFilters()
             }
         }
     }
-    // Скидаємо RangeSlider
     if (m_priceRangeSlider) {
-        // Встановлюємо значення на мінімум та максимум діапазону
-        // Встановлюємо значення на мінімум та максимум діапазону
         int minVal = m_priceRangeSlider->minimum();
         int maxVal = m_priceRangeSlider->maximum();
         m_priceRangeSlider->setLowerValue(minVal);
         m_priceRangeSlider->setUpperValue(maxVal);
-        // Сигнали valueChanged будуть випромінені, що викличе onFilterCriteriaChanged -> applyFiltersWithDelay
-        // Явно оновлюємо мітки після скидання
         updateLowerPriceLabel(minVal);
         updateUpperPriceLabel(maxVal);
     }
-    // Видаляємо скидання окремих QSlider та QLabel
-    // if (m_minPriceSlider) { ... }
-    // if (m_maxPriceSlider) { ... }
-    // if (m_minPriceValueLabel && m_minPriceSlider) { ... }
-    // if (m_maxPriceValueLabel && m_maxPriceSlider) { ... }
 
     if (m_inStockFilterCheckBox) {
         m_inStockFilterCheckBox->setChecked(false);
     }
 
-    // Зупиняємо таймер, якщо він був запущений, щоб уникнути застосування старих значень
     if (m_filterApplyTimer && m_filterApplyTimer->isActive()) {
         m_filterApplyTimer->stop();
         qDebug() << "Filter timer stopped due to reset.";
     }
 
-    // Скидаємо збережені критерії
     m_currentFilterCriteria = BookFilterCriteria();
     qInfo() << "Filters reset.";
 
-    // Завантажуємо та відображаємо всі книги (оскільки критерії тепер порожні)
     loadAndDisplayFilteredBooks();
 
-    // Ховаємо панель фільтрів (опціонально)
      if (m_isFilterPanelVisible) {
         on_filterButton_clicked();
     }
@@ -1107,7 +849,6 @@ void MainWindow::loadAndDisplayFilteredBooks()
 {
     if (!m_dbManager) {
         qWarning() << "Cannot load books: DatabaseManager is null.";
-        // Можна показати повідомлення про помилку в UI
         if (ui->booksContainerLayout) {
             clearLayout(ui->booksContainerLayout);
             QLabel *errorLabel = new QLabel(tr("Помилка: Немає доступу до бази даних."), ui->booksContainerWidget);
@@ -1121,43 +862,32 @@ void MainWindow::loadAndDisplayFilteredBooks()
     }
 
     qInfo() << "Loading books with current filters...";
-    // Використовуємо поточні критерії фільтрації
     QList<BookDisplayInfo> books = m_dbManager->getFilteredBooksForDisplay(m_currentFilterCriteria);
 
-    // Відображаємо книги
     displayBooks(books, ui->booksContainerLayout, ui->booksContainerWidget);
 
     if (!books.isEmpty()) {
          ui->statusBar->showMessage(tr("Книги успішно завантажено (%1 знайдено).").arg(books.size()), 4000);
     } else {
          qInfo() << "No books found matching the current filters.";
-         // Повідомлення про "не знайдено" вже обробляється в displayBooks
          ui->statusBar->showMessage(tr("Книг за вашим запитом не знайдено."), 4000);
     }
 }
 
-// Новий слот: викликається при зміні будь-якого фільтра
 void MainWindow::onFilterCriteriaChanged()
 {
     if (m_filterApplyTimer) {
-        // Перезапускаємо таймер при кожній зміні
         m_filterApplyTimer->start();
         qDebug() << "Filter criteria changed, timer (re)started.";
     }
 }
 
-// Новий слот: викликається таймером для застосування фільтрів
 void MainWindow::applyFiltersWithDelay()
 {
     qDebug() << "Timer timed out, applying filters...";
-    applyFilters(); // Викликаємо існуючу логіку застосування
+    applyFilters();
 }
 
-// Видаляємо слоти для окремих QSlider, оскільки використовуємо RangeSlider
-// void MainWindow::onMinPriceSliderChanged(int value) { ... }
-// void MainWindow::onMaxPriceSliderChanged(int value) { ... }
-
-// Нові слоти для оновлення міток ціни
 void MainWindow::updateLowerPriceLabel(int value)
 {
     if (m_minPriceValueLabel) {
@@ -1173,17 +903,10 @@ void MainWindow::updateUpperPriceLabel(int value)
 }
 
 
-// --- Кінець логіки панелі фільтрів ---
-
-
-// --- Логіка автоматичного банера ---
-
-// Нова функція для оновлення зображень банера
 void MainWindow::updateBannerImages()
 {
     QList<QLabel*> bannerLabels = {ui->bannerImageLabel_1, ui->bannerImageLabel_2, ui->bannerImageLabel_3};
 
-    // Перевіряємо, чи шляхи до зображень вже завантажені
     if (m_bannerImagePaths.isEmpty()) {
         qWarning() << "Banner image paths are empty. Cannot update images.";
         return;
@@ -1197,37 +920,29 @@ void MainWindow::updateBannerImages()
                 bannerLabels[i]->setText(tr("Помилка завантаження банера %1").arg(i + 1));
                 bannerLabels[i]->setAlignment(Qt::AlignCenter);
             } else {
-                // Масштабуємо Pixmap до поточного розміру QLabel, зберігаючи пропорції та заповнюючи простір
                 QSize labelSize = bannerLabels[i]->size();
-                // Перевірка на валідний розмір (більше 0)
                 if (labelSize.isValid() && labelSize.width() > 0 && labelSize.height() > 0) {
-                    // Змінюємо режим масштабування на KeepAspectRatio, щоб зображення завжди вміщувалося
                     QPixmap scaledPixmap = bannerPixmap.scaled(labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-                    // Створюємо маску для заокруглення кутів
                     QBitmap mask(scaledPixmap.size());
-                    mask.fill(Qt::color0); // Повністю прозора маска
+                    mask.fill(Qt::color0);
                     QPainter painter(&mask);
                     painter.setRenderHint(QPainter::Antialiasing);
-                    painter.setBrush(Qt::color1); // Непрозорий колір для малювання
-                    painter.drawRoundedRect(scaledPixmap.rect(), 18, 18); // 18px радіус заокруглення
+                    painter.setBrush(Qt::color1);
+                    painter.drawRoundedRect(scaledPixmap.rect(), 18, 18);
                     painter.end();
 
-                    // Застосовуємо маску до зображення
                     scaledPixmap.setMask(mask);
 
                     bannerLabels[i]->setPixmap(scaledPixmap);
                 } else {
-                    // Якщо розмір ще не встановлено, просто встановлюємо оригінальний pixmap
-                    // (заокруглення тут не застосовується, бо розмір невідомий)
-                    // або чекаємо наступного resizeEvent
                     bannerLabels[i]->setPixmap(bannerPixmap);
                     qDebug() << "Banner label" << i+1 << "size is invalid during update:" << labelSize << ". Setting original pixmap.";
                 }
-                bannerLabels[i]->setAlignment(Qt::AlignCenter); // Центруємо зображення
+                bannerLabels[i]->setAlignment(Qt::AlignCenter);
             }
         } else if (bannerLabels[i]) {
-             bannerLabels[i]->setText(tr("Банер %1").arg(i + 1)); // Текст за замовчуванням, якщо шляху немає
+             bannerLabels[i]->setText(tr("Банер %1").arg(i + 1));
              bannerLabels[i]->setAlignment(Qt::AlignCenter);
         }
     }
@@ -1236,38 +951,26 @@ void MainWindow::updateBannerImages()
 
 void MainWindow::setupAutoBanner()
 {
-    // 1. Вкажіть шляхи до ваших трьох зображень банерів у ресурсах
-    m_bannerImagePaths.clear(); // Очищаємо список перед додаванням
+    m_bannerImagePaths.clear();
     m_bannerImagePaths << ":/images/banner1.jpg"
                        << ":/images/banner2.jpg"
                        << ":/images/banner3.jpg";
 
-    // Перевірка кількості банерів (має бути 3, як міток в UI)
-    // Припускаємо, що в UI є 3 QLabel: bannerLabel1, bannerLabel2, bannerLabel3
     const int expectedBannerCount = 3;
     if (m_bannerImagePaths.size() != expectedBannerCount) {
         qWarning() << "Expected" << expectedBannerCount << "banner images, but found" << m_bannerImagePaths.size();
-        // Можна додати обробку помилки, наприклад, не запускати таймер
         return;
     }
 
-    // 2. Початкове завантаження та масштабування зображень відбудеться під час першого resizeEvent.
-    // Тому тут не викликаємо updateBannerImages() або QTimer::singleShot.
-
-    // 3. Налаштовуємо та запускаємо таймер
     m_bannerTimer = new QTimer(this);
     connect(m_bannerTimer, &QTimer::timeout, this, &MainWindow::showNextBanner);
-    m_bannerTimer->start(5000); // Перемикати кожні 5 секунд (5000 мс)
+    m_bannerTimer->start(5000);
 
-    // 4. Збираємо індикатори
     m_bannerIndicators << ui->indicatorDot1 << ui->indicatorDot2 << ui->indicatorDot3;
-    // Перевіряємо, чи кількість індикаторів відповідає кількості банерів
     if (m_bannerIndicators.size() != m_bannerImagePaths.size()) {
         qWarning() << "Mismatch between number of banner images and indicator dots!";
-        // Можливо, варто відключити індикатори або таймер
     }
 
-    // 5. Встановлюємо початковий банер та індикатор
     ui->bannerStackedWidget->setCurrentIndex(m_currentBannerIndex);
     if (!m_bannerIndicators.isEmpty() && m_currentBannerIndex < m_bannerIndicators.size()) {
         m_bannerIndicators[m_currentBannerIndex]->setChecked(true);
@@ -1276,69 +979,39 @@ void MainWindow::setupAutoBanner()
 
 void MainWindow::showNextBanner()
 {
-    if (m_bannerImagePaths.isEmpty() || m_bannerIndicators.isEmpty()) return; // Немає банерів або індикаторів
+    if (m_bannerImagePaths.isEmpty() || m_bannerIndicators.isEmpty()) return;
 
-    // Знімаємо позначку з поточного індикатора
     if (m_currentBannerIndex < m_bannerIndicators.size()) {
         m_bannerIndicators[m_currentBannerIndex]->setChecked(false);
     }
 
-    // Переходимо до наступного індексу
     m_currentBannerIndex = (m_currentBannerIndex + 1) % m_bannerImagePaths.size();
 
-    // Встановлюємо новий банер
     ui->bannerStackedWidget->setCurrentIndex(m_currentBannerIndex);
 
-    // Встановлюємо позначку на новому індикаторі
     if (m_currentBannerIndex < m_bannerIndicators.size()) {
         m_bannerIndicators[m_currentBannerIndex]->setChecked(true);
     }
 }
 
-// --- Кінець логіки автоматичного банера ---
-
-
-// --- Обробка зміни розміру вікна ---
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    // Викликаємо реалізацію базового класу
     QMainWindow::resizeEvent(event);
 
-    // Виводимо новий розмір вікна в консоль відладки
     qDebug() << "Window resized to:" << event->size();
 
-    // Оновлюємо зображення банерів відповідно до нового розміру
     updateBannerImages();
 
-    // Якщо поточна сторінка - "Книги", оновлюємо відображення книг
     if (ui->contentStackedWidget && ui->contentStackedWidget->currentWidget() == ui->booksPage) {
         qDebug() << "Books page is active, triggering layout update via loadAndDisplayFilteredBooks().";
-        // Виклик loadAndDisplayFilteredBooks призведе до виклику displayBooks,
-        // який тепер буде використовувати нову ширину для розрахунку колонок.
         loadAndDisplayFilteredBooks();
     }
-    // Якщо поточна сторінка - "Автори", оновлюємо відображення авторів
     else if (ui->contentStackedWidget && ui->contentStackedWidget->currentWidget() == ui->authorsPage) {
         qDebug() << "Authors page is active, triggering layout update via loadAndDisplayAuthors().";
         loadAndDisplayAuthors();
     }
 }
-// --- Кінець обробки зміни розміру вікна ---
 
-
-// [Визначення функцій setupSearchCompleter та updateSearchSuggestions переміщено до mainwindow_search.cpp]
-
-// --- Логіка кошика (Новий дизайн) ---
-
-// [Визначення функцій createCartItemWidget, on_addToCartButtonClicked, on_cartButton_clicked,
-//  populateCartPage, updateCartTotal, updateCartIcon, updateCartItemQuantity,
-//  removeCartItem, on_placeOrderButton_clicked переміщено до mainwindow_cart.cpp]
-
-// --- Кінець логіки кошика ---
-
-// --- Логіка сторінки деталей автора ---
-
-// Слот для відображення сторінки з деталями автора
 void MainWindow::showAuthorDetails(int authorId)
 {
     qInfo() << "Attempting to show details for author ID:" << authorId;
@@ -1356,7 +1029,6 @@ void MainWindow::showAuthorDetails(int authorId)
          return;
     }
 
-    // Отримуємо деталі автора з бази даних
     AuthorDetailsInfo authorDetails = m_dbManager->getAuthorDetails(authorId);
 
     if (!authorDetails.found) {
@@ -1364,36 +1036,28 @@ void MainWindow::showAuthorDetails(int authorId)
         return;
     }
 
-    // Заповнюємо сторінку даними
     populateAuthorDetailsPage(authorDetails);
 
-    // Зберігаємо ID поточного автора
     m_currentAuthorDetailsId = authorId;
 
-    // Переключаємо StackedWidget на сторінку деталей автора
     ui->contentStackedWidget->setCurrentWidget(ui->authorDetailsPage);
 }
 
-// Заповнення сторінки деталей автора даними
 void MainWindow::populateAuthorDetailsPage(const AuthorDetailsInfo &details)
 {
-    // Перевірка існування віджетів
     if (!ui->authorDetailPhotoLabel || !ui->authorDetailNameLabel || !ui->authorDetailNationalityLabel ||
         !ui->authorDetailBiographyLabel || !ui->authorBooksHeaderLabel || !ui->authorBooksLayout ||
         !ui->authorBooksContainerWidget)
     {
         qWarning() << "populateAuthorDetailsPage: One or more author detail page widgets are null!";
-        // Можна показати повідомлення про помилку
         return;
     }
 
-    // 1. Фото
     QPixmap photoPixmap(details.imagePath);
     if (photoPixmap.isNull() || details.imagePath.isEmpty()) {
-        ui->authorDetailPhotoLabel->setText(tr("👤")); // Іконка
+        ui->authorDetailPhotoLabel->setText(tr("👤"));
         ui->authorDetailPhotoLabel->setStyleSheet("QLabel { background-color: #e0e0e0; color: #555; border-radius: 90px; font-size: 80pt; qproperty-alignment: AlignCenter; border: 1px solid #ccc; }");
     } else {
-        // Масштабуємо та робимо круглим
         QPixmap scaledPixmap = photoPixmap.scaled(ui->authorDetailPhotoLabel->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
         QBitmap mask(scaledPixmap.size());
         mask.fill(Qt::color0);
@@ -1403,51 +1067,34 @@ void MainWindow::populateAuthorDetailsPage(const AuthorDetailsInfo &details)
         painter.end();
         scaledPixmap.setMask(mask);
         ui->authorDetailPhotoLabel->setPixmap(scaledPixmap);
-        ui->authorDetailPhotoLabel->setStyleSheet("QLabel { border-radius: 90px; border: 1px solid #ccc; }"); // Стиль для рамки
+        ui->authorDetailPhotoLabel->setStyleSheet("QLabel { border-radius: 90px; border: 1px solid #ccc; }");
     }
 
-    // 2. Ім'я
     ui->authorDetailNameLabel->setText(details.firstName + " " + details.lastName);
 
-    // 3. Національність та роки життя
     QString nationalityAndYears = details.nationality;
     QString yearsString;
     if (details.birthDate.isValid()) {
         yearsString += QString::number(details.birthDate.year());
-        // Оскільки deathDate видалено, просто показуємо рік народження або нічого
-        // Можна додати логіку, щоб показувати " - дотепер", якщо потрібно,
-        // але без дати смерті це може бути не завжди коректно.
-        // Залишимо поки тільки рік народження.
-        // yearsString += " - " + tr("дотепер"); // Закоментовано
     }
-    // Логіка для випадку, коли відома тільки дата смерті, видалена
 
     if (!nationalityAndYears.isEmpty() && !yearsString.isEmpty()) {
-        nationalityAndYears += " (" + yearsString + ")"; // Додаємо рік народження в дужках
+        nationalityAndYears += " (" + yearsString + ")";
     } else if (!yearsString.isEmpty()) {
-        nationalityAndYears = yearsString; // Якщо національність невідома, показуємо тільки роки
+        nationalityAndYears = yearsString;
     }
-    // Якщо і національність, і роки порожні, показуємо стандартне повідомлення
     ui->authorDetailNationalityLabel->setText(nationalityAndYears.isEmpty() ? tr("(Інформація відсутня)") : nationalityAndYears);
 
 
-    // 4. Біографія
-    // Переконуємось, що wordWrap увімкнено для QLabel в UI або встановлюємо тут
     ui->authorDetailBiographyLabel->setWordWrap(true);
     ui->authorDetailBiographyLabel->setText(details.biography.isEmpty() ? tr("(Біографія відсутня)") : details.biography);
 
-    // 5. Книги автора
     ui->authorBooksHeaderLabel->setText(tr("Книги автора (%1)").arg(details.books.size()));
-    // Використовуємо існуючу функцію displayBooks для відображення книг у сітці
-    // Передаємо відповідний layout та контекстний віджет
     displayBooks(details.books, ui->authorBooksLayout, ui->authorBooksContainerWidget);
 
     qInfo() << "Author details page populated for:" << details.firstName << details.lastName;
 }
 
-// --- Кінець логіки сторінки деталей автора ---
-
-// --- Новий метод для завантаження корзини з БД ---
 void MainWindow::loadCartFromDatabase()
 {
     if (!m_dbManager) {
@@ -1462,38 +1109,32 @@ void MainWindow::loadCartFromDatabase()
     qInfo() << "Завантаження корзини з БД для customerId:" << m_currentCustomerId;
     QMap<int, int> dbCartItems = m_dbManager->getCartItems(m_currentCustomerId);
 
-    m_cartItems.clear(); // Очищаємо поточну корзину в пам'яті
+    m_cartItems.clear();
 
     if (dbCartItems.isEmpty()) {
         qInfo() << "Корзина в БД порожня.";
-        updateCartIcon(); // Оновлюємо іконку (має показати 0)
-        // populateCartPage(); // Не викликаємо тут, щоб не перемикати сторінку
+        updateCartIcon();
         return;
     }
 
-    // Заповнюємо m_cartItems (QMap<int, CartItem>) даними з БД
     int itemsLoaded = 0;
     int itemsSkipped = 0;
     for (auto it = dbCartItems.constBegin(); it != dbCartItems.constEnd(); ++it) {
         int bookId = it.key();
         int quantity = it.value();
 
-        // Отримуємо інформацію про книгу для відображення
         BookDisplayInfo bookInfo = m_dbManager->getBookDisplayInfoById(bookId);
         if (bookInfo.found) {
-            // Перевіряємо, чи достатньо товару на складі
             if (quantity > bookInfo.stockQuantity) {
                 qWarning() << "loadCartFromDatabase: Кількість товару (ID:" << bookId << ") в корзині (" << quantity
                            << ") перевищує наявну на складі (" << bookInfo.stockQuantity << "). Встановлюємо кількість на" << bookInfo.stockQuantity;
                 quantity = bookInfo.stockQuantity;
-                // Оновлюємо кількість в БД, якщо вона змінилася і більше 0
                 if (quantity > 0) {
                     m_dbManager->addOrUpdateCartItem(m_currentCustomerId, bookId, quantity);
                 } else {
-                    // Якщо на складі 0, видаляємо з БД
                     m_dbManager->removeCartItem(m_currentCustomerId, bookId);
                     itemsSkipped++;
-                    continue; // Пропускаємо додавання до m_cartItems
+                    continue;
                 }
             }
 
@@ -1504,7 +1145,6 @@ void MainWindow::loadCartFromDatabase()
             itemsLoaded++;
         } else {
             qWarning() << "loadCartFromDatabase: Не вдалося знайти інформацію для книги з ID" << bookId << ", яка є в корзині БД. Видаляємо з корзини БД.";
-            // Видаляємо неіснуючий товар з корзини БД
             m_dbManager->removeCartItem(m_currentCustomerId, bookId);
             itemsSkipped++;
         }
@@ -1512,70 +1152,50 @@ void MainWindow::loadCartFromDatabase()
 
     qInfo() << "Корзину завантажено з БД. Завантажено:" << itemsLoaded << ", Пропущено/Видалено:" << itemsSkipped;
 
-    // Оновлюємо UI
     updateCartIcon();
-    // Якщо сторінка кошика зараз активна, оновлюємо її
     if (ui->contentStackedWidget->currentWidget() == ui->cartPage) {
         populateCartPage();
     }
 }
-// --- Кінець методу завантаження корзини ---
 
-// --- Реалізація слоту для кнопок категорій ---
 void MainWindow::applyGenreFilter(const QString &genreName)
 {
     qInfo() << "Applying filter for genre:" << genreName;
 
-    // 1. Перемкнути на сторінку книг
     ui->contentStackedWidget->setCurrentWidget(ui->booksPage);
 
-    // 2. Скинути всі фільтри (це також викличе loadAndDisplayFilteredBooks з порожніми критеріями)
-    resetFilters(); // Важливо: resetFilters вже викликає loadAndDisplayFilteredBooks
+    resetFilters();
 
-    // 3. Знайти та встановити прапорець для потрібного жанру
     if (m_genreFilterListWidget) {
         bool genreFound = false;
         for (int i = 0; i < m_genreFilterListWidget->count(); ++i) {
             QListWidgetItem *item = m_genreFilterListWidget->item(i);
             if (item && item->text() == genreName) {
-                // Блокуємо сигнали, щоб уникнути запуску таймера applyFiltersWithDelay
                 m_genreFilterListWidget->blockSignals(true);
                 item->setCheckState(Qt::Checked);
                 m_genreFilterListWidget->blockSignals(false);
                 genreFound = true;
                 qInfo() << "Genre item found and checked:" << genreName;
-                break; // Знайшли потрібний жанр, виходимо з циклу
+                break;
             }
         }
         if (!genreFound) {
             qWarning() << "Genre item not found in filter list:" << genreName;
-            // Можна показати повідомлення користувачу
             QMessageBox::warning(this, tr("Помилка фільтрації"), tr("Жанр '%1' не знайдено у списку фільтрів.").arg(genreName));
-            // Залишаємо сторінку книг з усіма книгами (після resetFilters)
             return;
         }
     } else {
         qWarning() << "applyGenreFilter: m_genreFilterListWidget is null!";
-        return; // Не можемо застосувати фільтр
+        return;
     }
 
-    // 4. Застосувати фільтри (тепер тільки з вибраним жанром)
-    // Не викликаємо applyFilters() або applyFiltersWithDelay() тут напряму,
-    // оскільки зміна стану checkState вище *не* випромінює сигнал itemChanged,
-    // бо ми його заблокували. Потрібно викликати applyFilters() явно.
-    applyFilters(); // Ця функція збере критерії (тільки вибраний жанр) і викличе loadAndDisplayFilteredBooks
+    applyFilters();
 
-    // 5. Переконатися, що кнопка фільтра видима
     if (ui->filterButton) {
         ui->filterButton->show();
     }
 
-    // 6. Переконатися, що панель фільтрів прихована
     if (m_isFilterPanelVisible) {
-        on_filterButton_clicked(); // Імітуємо клік, щоб закрити панель
+        on_filterButton_clicked();
     }
 }
-// --- Кінець реалізації слоту для кнопок категорій ---
-
-
-// --- Кінець реалізації слотів та функцій ---
