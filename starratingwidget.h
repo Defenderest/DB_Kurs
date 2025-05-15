@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QVector>
-#include <QPolygonF> // Додано QPolygonF
+#include <QPolygonF>
 
 class StarRatingWidget : public QWidget
 {
@@ -44,8 +44,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override; // Додано для завершення вибору
-    // void leaveEvent(QEvent *event) override; // Можна додати, якщо потрібно обробляти вихід миші
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
     void paintStar(QPainter *painter, const QRect &rect, bool filled);
@@ -56,9 +55,9 @@ private:
     QColor m_starColor;
     QColor m_emptyStarColor;
     bool m_readOnly;
-    int m_hoverRating; // Для підсвічування при наведенні
-    QVector<QPolygonF> m_stars; // Зберігаємо полігони зірок
-    int m_starSize; // Розмір зірки
+    int m_hoverRating;
+    QVector<QPolygonF> m_stars;
+    int m_starSize;
 };
 
 #endif // STARRATINGWIDGET_H
