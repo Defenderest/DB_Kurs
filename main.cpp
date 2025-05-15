@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <QDebug> // Залишаємо для qWarning/qCritical
+#include <QDebug>
 #include <QMessageBox>
 #include "mainwindow.h"
 #include "logindialog.h"
@@ -14,10 +14,8 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("Patsera_Ihor");
     QApplication::setApplicationVersion("1.0");
 
-    // 1. Створюємо менеджер БД
     DatabaseManager dbManager;
 
-    // 2. Підключаємося до БД
     bool connected = dbManager.connectToDatabase(
         "127.127.126.49",
         5432,
@@ -33,21 +31,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // --- Опціонально: Створення/Заповнення БД при першому запуску або для тестування ---
-    // if (!dbManager.createSchemaTables()) {
-    //     QMessageBox::critical(nullptr, QObject::tr("Помилка створення схеми"),
-    //                           QObject::tr("Не вдалося створити таблиці бази даних.\nДивіться логи для деталей."));
-    //     // return 1;
-    // } else {
-    //     if (!populateTestData(&dbManager, 30)) {
-    //          QMessageBox::warning(nullptr, QObject::tr("Помилка заповнення даних"),
-    //                               QObject::tr("Не вдалося заповнити таблиці тестовими даними.\nДивіться логи для деталей."));
-    //     }
-    // }
-    // --- Кінець опціонального блоку ---
 
-
-    // 3. Створюємо та показуємо діалог входу
     LoginDialog loginDialog(&dbManager);
     int loggedInUserId = -1;
 
@@ -61,15 +45,12 @@ int main(int argc, char *argv[])
              return 1;
         }
 
-        // 4. Створюємо головне вікно
         MainWindow w(&dbManager, loggedInUserId);
         w.show();
 
-        // 5. Запускаємо цикл обробки подій
         return a.exec();
 
     } else {
-        // Користувач скасував вхід або закрив діалог
-        return 0; // Нормальний вихід
+        return 0;
     }
 }
