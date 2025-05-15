@@ -203,10 +203,11 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     qInfo() << "Завершено завантаження даних для головної сторінки.";
 
     // Disable vertical scrollbars for horizontal book lists on the discover page
+    // Attempt to find the QScrollArea containing each horizontal layout
     QScrollArea* classicsScrollArea = qobject_cast<QScrollArea*>(ui->classicsRowLayout->parentWidget()->parentWidget());
     if (classicsScrollArea) {
         classicsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        qInfo() << "Classics row ScrollArea vertical scrollbar disabled.";
+        qInfo() << "Classics row ScrollArea found (" << classicsScrollArea->objectName() << "), vertical scrollbar disabled.";
     } else {
         qWarning() << "Could not find ScrollArea for classicsRowLayout!";
     }
@@ -214,7 +215,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     QScrollArea* fantasyScrollArea = qobject_cast<QScrollArea*>(ui->fantasyRowLayout->parentWidget()->parentWidget());
     if (fantasyScrollArea) {
         fantasyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        qInfo() << "Fantasy row ScrollArea vertical scrollbar disabled.";
+        qInfo() << "Fantasy row ScrollArea found (" << fantasyScrollArea->objectName() << "), vertical scrollbar disabled.";
     } else {
         qWarning() << "Could not find ScrollArea for fantasyRowLayout!";
     }
@@ -222,7 +223,7 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     QScrollArea* nonFictionScrollArea = qobject_cast<QScrollArea*>(ui->nonFictionRowLayout->parentWidget()->parentWidget());
     if (nonFictionScrollArea) {
         nonFictionScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        qInfo() << "Non-Fiction row ScrollArea vertical scrollbar disabled.";
+        qInfo() << "Non-Fiction row ScrollArea found (" << nonFictionScrollArea->objectName() << "), vertical scrollbar disabled.";
     } else {
         qWarning() << "Could not find ScrollArea for nonFictionRowLayout!";
     }
