@@ -9,9 +9,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
+    a.setWindowIcon(QIcon("D:/projects/DB_Kurs/QtAPP/untitled/icons/app_icon.png"));
     QApplication::setApplicationName("Bookstore");
-    QApplication::setOrganizationName("YourCompany");
+    QApplication::setOrganizationName("Patsera_Ihor");
     QApplication::setApplicationVersion("1.0");
 
     // 1. Створюємо менеджер БД
