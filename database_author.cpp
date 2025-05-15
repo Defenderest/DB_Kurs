@@ -5,25 +5,24 @@
 #include <QSqlQuery>
 #include <QVariant>
 
-// Реалізація нового методу для отримання авторів для UI
 QList<AuthorDisplayInfo> DatabaseManager::getAllAuthorsForDisplay() const
 {
     QList<AuthorDisplayInfo> authors;
     if (!m_isConnected || !m_db.isOpen()) {
         qWarning() << "Неможливо отримати авторів: немає активного з'єднання з БД.";
-        return authors; // Повертаємо порожній список
+        return authors;
     }
 
     const QString sql = getSqlQuery("GetAllAuthorsForDisplay");
-    if (sql.isEmpty()) return authors; // Помилка завантаження запиту
+    if (sql.isEmpty()) return authors;
 
     QSqlQuery query(m_db);
     qInfo() << "Executing SQL 'GetAllAuthorsForDisplay' to get authors for display...";
     if (!query.exec(sql)) {
         qCritical() << "Помилка при виконанні 'GetAllAuthorsForDisplay':";
         qCritical() << query.lastError().text();
-        qCritical() << "SQL запит:" << sql; // Показуємо SQL, який намагалися виконати
-        return authors; // Повертаємо порожній список у разі помилки
+        qCritical() << "SQL запит:" << sql;
+        return authors;
     }
 
     qInfo() << "Successfully fetched authors. Processing results...";
@@ -35,7 +34,6 @@ QList<AuthorDisplayInfo> DatabaseManager::getAllAuthorsForDisplay() const
         authorInfo.lastName = query.value("last_name").toString();
         authorInfo.nationality = query.value("nationality").toString();
         authorInfo.imagePath = query.value("image_path").toString();
-        // authorInfo.found = true; // Поле found не визначено в AuthorDisplayInfo
 
         authors.append(authorInfo);
         count++;
@@ -45,7 +43,6 @@ QList<AuthorDisplayInfo> DatabaseManager::getAllAuthorsForDisplay() const
     return authors;
 }
 
-// Реалізація нового методу для отримання детальної інформації про автора
 AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
 {
     AuthorDetailsInfo details;
@@ -55,9 +52,8 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
         return details;
     }
 
-    // --- Отримання основної інформації про автора ---
     const QString authorSql = getSqlQuery("GetAuthorDetailsById");
-    if (authorSql.isEmpty()) return details; // Помилка завантаження запиту
+    if (authorSql.isEmpty()) return details;
 
     QSqlQuery authorQuery(m_db);
     if (!authorQuery.prepare(authorSql)) {
@@ -73,8 +69,6 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
         qCritical() << "SQL запит:" << authorQuery.lastQuery();
         return details;
     }
-    // --- Кінець повернення до prepare/bindValue/exec ---
-
 
     if (authorQuery.next()) {
         details.authorId = authorQuery.value("author_id").toInt();
@@ -84,22 +78,20 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
         details.imagePath = authorQuery.value("image_path").toString();
         details.biography = authorQuery.value("biography").toString();
         details.birthDate = authorQuery.value("birth_date").toDate();
-        // details.deathDate = authorQuery.value("death_date").toDate(); // Видалено, оскільки стовпця немає
         details.found = true;
         qInfo() << "Author details found for author ID:" << authorId;
     } else {
         qInfo() << "Author details not found for author ID:" << authorId;
-        return details; // Якщо автора не знайдено, повертаємо одразу
+        return details;
     }
 
-    // --- Отримання книг цього автора ---
     const QString booksSql = getSqlQuery("GetAuthorBooksForDisplay");
-    if (booksSql.isEmpty()) return details; // Помилка завантаження запиту, але повертаємо те, що вже є
+    if (booksSql.isEmpty()) return details;
 
     QSqlQuery booksQuery(m_db);
      if (!booksQuery.prepare(booksSql)) {
         qCritical() << "Помилка підготовки запиту 'GetAuthorBooksForDisplay':" << booksQuery.lastError().text();
-        return details; // Повертаємо те, що є
+        return details;
     }
     booksQuery.bindValue(":authorId", authorId);
 
@@ -108,7 +100,6 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
         qCritical() << "Помилка при виконанні 'GetAuthorBooksForDisplay' для автора ID '" << authorId << "':";
         qCritical() << booksQuery.lastError().text();
         qCritical() << "SQL запит:" << booksQuery.lastQuery();
-        // Не повертаємо помилку, просто список книг буде порожнім
     } else {
         qInfo() << "Successfully fetched books for author ID:" << authorId << ". Processing results...";
         int count = 0;
@@ -119,9 +110,9 @@ AuthorDetailsInfo DatabaseManager::getAuthorDetails(int authorId) const
             bookInfo.price = booksQuery.value("price").toDouble();
             bookInfo.coverImagePath = booksQuery.value("cover_image_path").toString();
             bookInfo.stockQuantity = booksQuery.value("stock_quantity").toInt();
-            bookInfo.authors = booksQuery.value("authors").toString(); // Всі автори книги
+            bookInfo.authors = booksQuery.value("authors").toString();
             bookInfo.genre = booksQuery.value("genre").toString();
-            bookInfo.found = true; // Книга знайдена
+            bookInfo.found = true;
 
             if (booksQuery.value("authors").isNull()) {
                  bookInfo.authors = "";
