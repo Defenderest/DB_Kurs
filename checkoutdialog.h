@@ -2,9 +2,8 @@
 #define CHECKOUTDIALOG_H
 
 #include <QDialog>
-#include "datatypes.h" // Для CustomerProfileInfo
+#include "datatypes.h"
 
-// Forward declaration для Ui::CheckoutDialog
 namespace Ui {
 class CheckoutDialog;
 }
@@ -20,19 +19,16 @@ public:
     QString getShippingAddress() const;
     QString getPaymentMethod() const;
 
-public slots: // Змінено на public slots, оскільки accept() є публічним слотом QDialog
-    void accept() override; // Додано оголошення для перевизначеного слота
+public slots:
+    void accept() override;
 
 private slots:
-    // Слоти для стандартних кнопок Ok/Cancel (підключаються автоматично або через connect)
-    // void on_confirmButton_clicked(); // Не потрібен, якщо використовуємо accept()
-    // void on_cancelButton_clicked(); // Не потрібен, якщо використовуємо reject()
 
 private:
-    Ui::CheckoutDialog *ui; // Вказівник на UI, згенерований з .ui файлу
+    Ui::CheckoutDialog *ui;
     double m_totalAmount;
 
-    void setupUiElements(const CustomerProfileInfo& customerInfo); // Допоміжна функція для налаштування UI
+    void setupUiElements(const CustomerProfileInfo& customerInfo);
 };
 
 #endif // CHECKOUTDIALOG_H
