@@ -311,15 +311,6 @@ void MainWindow::updateCartIcon()
     if (totalItems > 0) {
         m_cartBadgeLabel->setText(QString::number(totalItems));
         // Можна додати логіку для зміни розміру шрифта, якщо число велике
-        // if (totalItems > 99) {
-        //     QFont font = m_cartBadgeLabel->font();
-        //     font.setPointSize(7); // Менший шрифт для 3+ цифр
-        //     m_cartBadgeLabel->setFont(font);
-        // } else {
-        //     QFont font = m_cartBadgeLabel->font();
-        //     font.setPointSize(9); // Стандартний шрифт
-        //     m_cartBadgeLabel->setFont(font);
-        // }
         m_cartBadgeLabel->show(); // Показуємо значок
         ui->cartButton->setToolTip(tr("Кошик (%1 товар(ів))").arg(totalItems));
         qInfo() << "Cart badge updated. Total items:" << totalItems;
