@@ -202,6 +202,32 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
     }
     qInfo() << "Завершено завантаження даних для головної сторінки.";
 
+    // Disable vertical scrollbars for horizontal book lists on the discover page
+    QScrollArea* classicsScrollArea = qobject_cast<QScrollArea*>(ui->classicsRowLayout->parentWidget()->parentWidget());
+    if (classicsScrollArea) {
+        classicsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        qInfo() << "Classics row ScrollArea vertical scrollbar disabled.";
+    } else {
+        qWarning() << "Could not find ScrollArea for classicsRowLayout!";
+    }
+
+    QScrollArea* fantasyScrollArea = qobject_cast<QScrollArea*>(ui->fantasyRowLayout->parentWidget()->parentWidget());
+    if (fantasyScrollArea) {
+        fantasyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        qInfo() << "Fantasy row ScrollArea vertical scrollbar disabled.";
+    } else {
+        qWarning() << "Could not find ScrollArea for fantasyRowLayout!";
+    }
+
+    QScrollArea* nonFictionScrollArea = qobject_cast<QScrollArea*>(ui->nonFictionRowLayout->parentWidget()->parentWidget());
+    if (nonFictionScrollArea) {
+        nonFictionScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        qInfo() << "Non-Fiction row ScrollArea vertical scrollbar disabled.";
+    } else {
+        qWarning() << "Could not find ScrollArea for nonFictionRowLayout!";
+    }
+
+
     if (!ui->authorsContainerLayout) {
         qCritical() << "authorsContainerLayout is null!";
     } else {
