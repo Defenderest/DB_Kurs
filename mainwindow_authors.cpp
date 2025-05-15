@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QGridLayout>
 #include <QSpacerItem>
+#include <QScrollArea> // Додано для доступу до QScrollArea
 
 QWidget* MainWindow::createAuthorCardWidget(const AuthorDisplayInfo &authorInfo)
 {
@@ -17,7 +18,7 @@ QWidget* MainWindow::createAuthorCardWidget(const AuthorDisplayInfo &authorInfo)
     cardFrame->setFrameShape(QFrame::StyledPanel);
     cardFrame->setFrameShadow(QFrame::Raised);
     cardFrame->setLineWidth(1);
-    cardFrame->setMinimumSize(180, 250);
+    cardFrame->setMinimumSize(180, 250); // Використовуємо цю мінімальну ширину для розрахунків
     cardFrame->setMaximumSize(220, 280);
     cardFrame->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     cardFrame->setStyleSheet("QFrame { background-color: white; border-radius: 8px; }");
@@ -80,23 +81,52 @@ QWidget* MainWindow::createAuthorCardWidget(const AuthorDisplayInfo &authorInfo)
 
 void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
 {
-    const int maxColumns = 5;
-
-     if (!ui->authorsContainerLayout) {
-        qWarning() << "displayAuthors: authorsContainerLayout is null!";
-        QLabel *errorLabel = new QLabel(tr("Помилка: Не вдалося знайти область для відображення авторів."), ui->authorsContainerWidget);
-        errorLabel->setAlignment(Qt::AlignCenter);
-        ui->authorsContainerWidget->setLayout(new QVBoxLayout());
-        ui->authorsContainerWidget->layout()->addWidget(errorLabel);
+    if (!ui->authorsContainerLayout || !ui->authorsContainerWidget) {
+        qWarning() << "displayAuthors: authorsContainerLayout or authorsContainerWidget is null!";
+        if (ui->authorsContainerWidget) {
+             QLabel *errorLabel = new QLabel(tr("Помилка: Не вдалося знайти область для відображення авторів."), ui->authorsContainerWidget);
+             errorLabel->setAlignment(Qt::AlignCenter);
+             if (!ui->authorsContainerWidget->layout()) {
+                 ui->authorsContainerWidget->setLayout(new QVBoxLayout());
+             }
+             clearLayout(ui->authorsContainerWidget->layout());
+             ui->authorsContainerWidget->layout()->addWidget(errorLabel);
+        }
         return;
     }
+
     clearLayout(ui->authorsContainerLayout);
+
+    int availableWidth = 0;
+    QScrollArea* scrollArea = ui->authorsContainerWidget->parentWidget() ? qobject_cast<QScrollArea*>(ui->authorsContainerWidget->parentWidget()) : nullptr;
+    if (scrollArea && scrollArea->viewport()) {
+        availableWidth = scrollArea->viewport()->width();
+        qDebug() << "displayAuthors: Using viewport width:" << availableWidth;
+    } else {
+        availableWidth = ui->authorsContainerWidget->width();
+        qWarning() << "displayAuthors: Could not get scroll area viewport width, using authorsContainerWidget width:" << availableWidth;
+    }
+    availableWidth -= (ui->authorsContainerLayout->contentsMargins().left() + ui->authorsContainerLayout->contentsMargins().right());
+
+    const int cardMinWidth = 180; // Використовуємо мінімальну ширину картки автора
+    int hSpacing = ui->authorsContainerLayout->horizontalSpacing();
+    if (hSpacing < 0) hSpacing = 10; // Default spacing if not set
+
+    int effectiveCardWidth = cardMinWidth + hSpacing;
+    int numColumns = 1;
+    if (effectiveCardWidth > 0 && availableWidth >= cardMinWidth) {
+        numColumns = (availableWidth + hSpacing) / effectiveCardWidth;
+    }
+    numColumns = qMax(1, numColumns);
+    qDebug() << "displayAuthors: Calculated columns:" << numColumns << "(spacing:" << hSpacing << ", cardMinWidth:" << cardMinWidth << ", availableWidth:" << availableWidth << ")";
+
 
     if (authors.isEmpty()) {
         QLabel *noAuthorsLabel = new QLabel(tr("Не вдалося завантажити авторів або їх немає в базі даних."), ui->authorsContainerWidget);
         noAuthorsLabel->setAlignment(Qt::AlignCenter);
         noAuthorsLabel->setWordWrap(true);
-        ui->authorsContainerLayout->addWidget(noAuthorsLabel, 0, 0, 1, maxColumns);
+        ui->authorsContainerLayout->addWidget(noAuthorsLabel, 0, 0, 1, numColumns);
+        ui->authorsContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), 1, 0, 1, numColumns); // Vertical spacer spanning all columns
         return;
     }
 
@@ -108,25 +138,25 @@ void MainWindow::displayAuthors(const QList<AuthorDisplayInfo> &authors)
         if (authorCard) {
             ui->authorsContainerLayout->addWidget(authorCard, row, col);
             col++;
-            if (col >= maxColumns) {
+            if (col >= numColumns) {
                 col = 0;
                 row++;
             }
         }
     }
 
-    for (int c = 0; c < maxColumns; ++c) {
-        ui->authorsContainerLayout->setColumnStretch(c, 1);
+    // Remove old stretch settings
+    for (int c = 0; c < ui->authorsContainerLayout->columnCount(); ++c) {
+        ui->authorsContainerLayout->setColumnStretch(c, 0);
     }
-    ui->authorsContainerLayout->setColumnStretch(maxColumns, 99);
 
-    QLayoutItem* itemV = ui->authorsContainerLayout->itemAtPosition(row + 1, 0);
-    if (itemV && itemV->spacerItem()) { delete ui->authorsContainerLayout->takeAt(ui->authorsContainerLayout->indexOf(itemV)); }
-    QLayoutItem* itemH = ui->authorsContainerLayout->itemAtPosition(0, maxColumns);
-    if (itemH && itemH->spacerItem()) { delete ui->authorsContainerLayout->takeAt(ui->authorsContainerLayout->indexOf(itemH)); }
+    // Add horizontal spacer to push items to the left
+    if (col > 0) { // If the last row is not full
+         ui->authorsContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), row, col, 1, numColumns - col);
+    }
+    // Add vertical spacer to push items to the top
+    ui->authorsContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + (col == 0 ? 0 : 1), 0, 1, numColumns);
 
-    ui->authorsContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, maxColumns);
-    ui->authorsContainerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + 1, 0, 1, maxColumns);
 
     ui->authorsContainerWidget->updateGeometry();
 }
@@ -135,9 +165,13 @@ void MainWindow::loadAndDisplayAuthors()
 {
     if (!m_dbManager || !m_dbManager->isConnected()) {
         qWarning() << "loadAndDisplayAuthors: Database is not connected.";
-        QLabel *errorLabel = new QLabel(tr("Не вдалося підключитися до бази даних для завантаження авторів."), ui->authorsContainerWidget);
-        clearLayout(ui->authorsContainerLayout);
-        ui->authorsContainerLayout->addWidget(errorLabel);
+        if (ui->authorsContainerWidget && ui->authorsContainerLayout) {
+             QLabel *errorLabel = new QLabel(tr("Не вдалося підключитися до бази даних для завантаження авторів."), ui->authorsContainerWidget);
+             clearLayout(ui->authorsContainerLayout);
+             ui->authorsContainerLayout->addWidget(errorLabel);
+        } else {
+             qWarning() << "loadAndDisplayAuthors: Cannot display error, authorsContainerWidget or authorsContainerLayout is null.";
+        }
         return;
     }
 

@@ -13,6 +13,7 @@
 #include <QHBoxLayout>
 #include "starratingwidget.h"
 #include <QLineEdit>
+#include <QScrollArea> // Додано для доступу до QScrollArea
 
 QWidget* MainWindow::createBookCardWidget(const BookDisplayInfo &bookInfo)
 {
@@ -112,7 +113,7 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *
 
     const int cardMinWidth = 200;
     int hSpacing = targetLayout->horizontalSpacing();
-    if (hSpacing < 0) hSpacing = 10;
+    if (hSpacing < 0) hSpacing = 10; // Default spacing if not set
 
     int effectiveCardWidth = cardMinWidth + hSpacing;
     int numColumns = 1;
@@ -120,7 +121,7 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *
         numColumns = (availableWidth + hSpacing) / effectiveCardWidth;
     }
     numColumns = qMax(1, numColumns);
-    qDebug() << "displayBooks: Calculated columns:" << numColumns << "(spacing:" << hSpacing << ", cardMinWidth:" << cardMinWidth << ")";
+    qDebug() << "displayBooks: Calculated columns:" << numColumns << "(spacing:" << hSpacing << ", cardMinWidth:" << cardMinWidth << ", availableWidth:" << availableWidth << ")";
 
     clearLayout(targetLayout);
 
@@ -129,7 +130,7 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *
         noBooksLabel->setAlignment(Qt::AlignCenter);
         noBooksLabel->setWordWrap(true);
         targetLayout->addWidget(noBooksLabel, 0, 0, 1, numColumns);
-        targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), 1, 0);
+        targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), 1, 0, 1, numColumns); // Vertical spacer spanning all columns
         return;
     }
 
@@ -148,19 +149,13 @@ void MainWindow::displayBooks(const QList<BookDisplayInfo> &books, QGridLayout *
         }
     }
 
-    QLayoutItem* item;
-    item = targetLayout->itemAtPosition(row + (col == 0 ? 0 : 1), 0);
-    if (item && item->spacerItem()) {
-        targetLayout->removeItem(item);
-        delete item;
+    // Add horizontal spacer to push items to the left
+    if (col > 0) { // If the last row is not full
+         targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), row, col, 1, numColumns - col);
     }
-    item = targetLayout->itemAtPosition(0, numColumns);
-     if (item && item->spacerItem()) {
-        targetLayout->removeItem(item);
-        delete item;
-    }
+    // Add vertical spacer to push items to the top
+    targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + (col == 0 ? 0 : 1), 0, 1, numColumns);
 
-    targetLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding), row + (col == 0 ? 0 : 1), 0);
 
     parentWidgetContext->updateGeometry();
 }
