@@ -4,23 +4,21 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QVariant>
-#include <QMap> // Для createOrder
-#include <QDateTime> // Для дат
+#include <QMap>
+#include <QDateTime>
 
-// Реалізація нового методу для отримання деталей одного замовлення за ID
 OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
 {
-    OrderDisplayInfo orderInfo; // Повернемо порожню, якщо не знайдено
-    orderInfo.orderId = -1; // Позначка, що не знайдено
+    OrderDisplayInfo orderInfo;
+    orderInfo.orderId = -1;
 
     if (!m_isConnected || !m_db.isOpen() || orderId <= 0) {
         qWarning() << "Неможливо отримати деталі замовлення: немає з'єднання або невірний orderId.";
         return orderInfo;
     }
 
-    // 1. Отримуємо основну інформацію про замовлення
     const QString orderSql = getSqlQuery("GetOrderHeaderById");
-    if (orderSql.isEmpty()) return orderInfo; // Помилка завантаження запиту
+    if (orderSql.isEmpty()) return orderInfo;
 
     QSqlQuery orderQuery(m_db);
     if (!orderQuery.prepare(orderSql)) {
@@ -38,57 +36,46 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
     }
 
     if (orderQuery.next()) {
-        // --- Зміна: Отримуємо дату одразу як рядок ---
         QString dateString = orderQuery.value("order_date").toString();
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        orderInfo.orderDate = QDateTime(); // Ініціалізуємо невалідною датою
+        orderInfo.orderDate = QDateTime();
 
         if (!dateString.isEmpty()) {
-            // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
             orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
-            if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
+            if (!orderInfo.orderDate.isValid()) {
                 orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
             }
-            // Можна додати інші формати, якщо ISO не спрацює, наприклад:
-            // if (!orderInfo.orderDate.isValid()) {
-            //     orderInfo.orderDate = QDateTime::fromString(dateString, "yyyy-MM-dd HH:mm:ss");
-            // }
         }
-        // --- Кінець зміни ---
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
-     // --- Оновлена Відладка дати ---
      qDebug() << "[DEBUG] Order ID:" << orderInfo.orderId
-              << "Raw order_date value (CAST to TEXT in SQL):" << dateString; // Показуємо рядок, отриманий з запиту
+              << "Raw order_date value (CAST to TEXT in SQL):" << dateString;
      qDebug() << "[DEBUG] Parsed QDateTime (after string parse attempts):" << orderInfo.orderDate
               << "Is Valid:" << orderInfo.orderDate.isValid();
      if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
           qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs formats.";
        }
-       // --- Кінець відладки ---
-       orderInfo.found = true; // <<< Set the found flag here!
+       orderInfo.found = true;
         qInfo() << "Order header found for ID:" << orderId;
     } else {
         qWarning() << "Order not found for ID:" << orderId;
-        return orderInfo; // Повертаємо порожню структуру, якщо замовлення не знайдено
+        return orderInfo;
     }
 
-    // 2. Отримуємо позиції для цього замовлення
     const QString itemsSql = getSqlQuery("GetOrderItemsByOrderId");
-    if (itemsSql.isEmpty()) return orderInfo; // Помилка завантаження запиту, повертаємо що є
+    if (itemsSql.isEmpty()) return orderInfo;
 
     QSqlQuery itemQuery(m_db);
     if (!itemQuery.prepare(itemsSql)) {
          qCritical() << "Помилка підготовки запиту 'GetOrderItemsByOrderId':" << itemQuery.lastError().text();
-         return orderInfo; // Повертаємо те, що є
+         return orderInfo;
     }
     itemQuery.bindValue(":orderId", orderId);
     qInfo() << "Executing SQL 'GetOrderItemsByOrderId' for order ID:" << orderId;
     if (!itemQuery.exec()) {
         qCritical() << "Помилка при виконанні 'GetOrderItemsByOrderId' для order ID '" << orderId << "':";
         qCritical() << itemQuery.lastError().text();
-        // Продовжуємо, щоб отримати статуси
     } else {
         while (itemQuery.next()) {
             OrderItemDisplayInfo itemInfo;
@@ -100,14 +87,13 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
         qInfo() << "Fetched" << orderInfo.items.size() << "items for order ID:" << orderId;
     }
 
-    // 3. Отримуємо статуси для цього замовлення
     const QString statusesSql = getSqlQuery("GetOrderStatusesByOrderId");
-    if (statusesSql.isEmpty()) return orderInfo; // Помилка завантаження запиту, повертаємо що є
+    if (statusesSql.isEmpty()) return orderInfo;
 
     QSqlQuery statusQuery(m_db);
      if (!statusQuery.prepare(statusesSql)) {
          qCritical() << "Помилка підготовки запиту 'GetOrderStatusesByOrderId':" << statusQuery.lastError().text();
-         return orderInfo; // Повертаємо те, що є
+         return orderInfo;
      }
     statusQuery.bindValue(":orderId", orderId);
     qInfo() << "Executing SQL 'GetOrderStatusesByOrderId' for order ID:" << orderId;
@@ -128,12 +114,11 @@ OrderDisplayInfo DatabaseManager::getOrderDetailsById(int orderId) const
     return orderInfo;
 }
 
-// Реалізація оновленого методу для створення замовлення (повертає double)
 double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items, const QString &shippingAddress, const QString &paymentMethod, int &newOrderId)
 {
     newOrderId = -1;
-    double calculatedTotalAmount = 0.0; // Ініціалізуємо тут
-    const double errorReturnValue = -1.0; // Значення, що повертається при помилці
+    double calculatedTotalAmount = 0.0;
+    const double errorReturnValue = -1.0;
 
     if (!m_isConnected || !m_db.isOpen()) {
         qWarning() << "Неможливо створити замовлення: немає з'єднання з БД.";
@@ -144,22 +129,19 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
         return errorReturnValue;
     }
 
-    // Починаємо транзакцію
     if (!m_db.transaction()) {
         qCritical() << "Не вдалося почати транзакцію для створення замовлення:" << m_db.lastError().text();
         return errorReturnValue;
     }
     qInfo() << "Транзакція для створення замовлення розпочата...";
 
-    QSqlQuery query(m_db); // Основний запит для заголовка, оновлення суми, статусу
+    QSqlQuery query(m_db);
     bool success = true;
-    // double calculatedTotalAmount = 0.0; // Перенесено вище
     QVariant lastId;
 
-    // 1. Створюємо запис в таблиці "order" (поки що з total_amount = 0)
     const QString insertOrderSQL = getSqlQuery("InsertOrderHeader");
     if (insertOrderSQL.isEmpty()) {
-        success = false; // Помилка завантаження запиту
+        success = false;
     } else if (!query.prepare(insertOrderSQL)) {
         qCritical() << "Помилка підготовки запиту 'InsertOrderHeader':" << query.lastError().text();
         success = false;
@@ -177,7 +159,6 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
         }
     }
 
-    // 2. Додаємо позиції в order_item та розраховуємо суму
     if (success) {
         const QString insertItemSQL = getSqlQuery("InsertOrderItem");
         const QString getBookPriceSQL = getSqlQuery("GetBookPriceAndStockForUpdate");
@@ -187,9 +168,9 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
              qCritical() << "Помилка завантаження SQL запитів для створення позицій замовлення.";
              success = false;
         } else {
-            QSqlQuery itemQuery(m_db); // Окремий запит для вставки позицій
-            QSqlQuery priceQuery(m_db); // Окремий запит для отримання ціни та кількості
-            QSqlQuery updateStockQuery(m_db); // Окремий запит для оновлення кількості
+            QSqlQuery itemQuery(m_db);
+            QSqlQuery priceQuery(m_db);
+            QSqlQuery updateStockQuery(m_db);
 
             if (!itemQuery.prepare(insertItemSQL) || !priceQuery.prepare(getBookPriceSQL) || !updateStockQuery.prepare(updateStockSQL)) {
                 qCritical() << "Помилка підготовки запитів для позицій замовлення, ціни або оновлення кількості:"
@@ -205,7 +186,6 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
                     continue;
                 }
 
-                // Отримуємо актуальну ціну та кількість на складі
                 qInfo() << "Executing SQL 'GetBookPriceAndStockForUpdate' for book ID:" << bookId;
                 priceQuery.bindValue(":book_id", bookId);
                 if (!priceQuery.exec()) {
@@ -218,14 +198,12 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
                     double currentPrice = priceQuery.value(0).toDouble();
                     int currentStock = priceQuery.value(1).toInt();
 
-                    // Перевірка наявності
                     if (quantity > currentStock) {
                          qWarning() << "Недостатньо товару на складі для книги ID" << bookId << "(замовлено:" << quantity << ", на складі:" << currentStock << "). Замовлення скасовано.";
                          success = false;
                          break;
                     }
 
-                    // Зменшуємо кількість на складі АТОМАРНО
                     qInfo() << "Executing SQL 'UpdateBookStock' for book ID:" << bookId << "Quantity:" << quantity;
                     updateStockQuery.bindValue(":quantity", quantity);
                     updateStockQuery.bindValue(":book_id", bookId);
@@ -234,7 +212,6 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
                         success = false;
                         break;
                     }
-                    // Перевіряємо, чи вдалося оновити кількість (чи не змінилася вона між SELECT і UPDATE)
                     if (updateStockQuery.numRowsAffected() == 0) {
                         qWarning() << "Не вдалося виконати 'UpdateBookStock' для книги ID" << bookId << "(можливо, кількість змінилася або недостатньо). Замовлення скасовано.";
                         success = false;
@@ -242,7 +219,6 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
                     }
 
 
-                    // Додаємо позицію
                     itemQuery.bindValue(":order_id", newOrderId);
                     itemQuery.bindValue(":book_id", bookId);
                     itemQuery.bindValue(":quantity", quantity);
@@ -266,11 +242,10 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
         }
     }
 
-    // 3. Оновлюємо total_amount в замовленні
     if (success) {
         const QString updateTotalSQL = getSqlQuery("UpdateOrderTotalAmount");
         if (updateTotalSQL.isEmpty()) {
-            success = false; // Помилка завантаження запиту
+            success = false;
         } else if (!query.prepare(updateTotalSQL)) {
             qCritical() << "Помилка підготовки запиту 'UpdateOrderTotalAmount':" << query.lastError().text();
             success = false;
@@ -287,18 +262,17 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
         }
     }
 
-    // 4. Додаємо початковий статус замовлення
     if (success) {
         const QString insertStatusSQL = getSqlQuery("InsertOrderStatus");
          if (insertStatusSQL.isEmpty()) {
-            success = false; // Помилка завантаження запиту
+            success = false;
         } else if (!query.prepare(insertStatusSQL)) {
             qCritical() << "Помилка підготовки запиту 'InsertOrderStatus':" << query.lastError().text();
             success = false;
         } else {
             qInfo() << "Executing SQL 'InsertOrderStatus' for order ID:" << newOrderId;
             query.bindValue(":order_id", newOrderId);
-            query.bindValue(":status", tr("Нове")); // Початковий статус
+            query.bindValue(":status", tr("Нове"));
             if (!query.exec()) {
                 qCritical() << "Помилка виконання 'InsertOrderStatus' для замовлення ID" << newOrderId << ":" << query.lastError().text();
                 success = false;
@@ -307,17 +281,16 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
             }
         }
     }
-    } // <--- Closing brace for the main if(success) block started on line 183
+    }
 
 
-    // Завершуємо транзакцію
     if (success) {
         if (m_db.commit()) {
             qInfo() << "Транзакція створення замовлення ID" << newOrderId << "успішно завершена. Total:" << calculatedTotalAmount;
-            return calculatedTotalAmount; // Повертаємо розраховану суму
+            return calculatedTotalAmount;
         } else {
             qCritical() << "Помилка при коміті транзакції створення замовлення:" << m_db.lastError().text();
-            m_db.rollback(); // Спробувати відкат
+            m_db.rollback();
             return errorReturnValue;
         }
     } else {
@@ -327,12 +300,11 @@ double DatabaseManager::createOrder(int customerId, const QMap<int, int> &items,
         } else {
             qInfo() << "Транзакція створення замовлення успішно скасована.";
         }
-        newOrderId = -1; // Скидаємо ID, оскільки замовлення не створено
+        newOrderId = -1;
         return errorReturnValue;
     }
 }
 
-// Реалізація нового методу для отримання замовлень користувача
 QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int customerId) const
 {
     QList<OrderDisplayInfo> orders;
@@ -341,9 +313,8 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
         return orders;
     }
 
-    // 1. Отримуємо основну інформацію про замовлення користувача
     const QString ordersSql = getSqlQuery("GetCustomerOrderHeadersByCustomerId");
-    if (ordersSql.isEmpty()) return orders; // Помилка завантаження запиту
+    if (ordersSql.isEmpty()) return orders;
 
     QSqlQuery orderQuery(m_db);
     if (!orderQuery.prepare(ordersSql)) {
@@ -360,20 +331,18 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
         return orders;
     }
 
-    // Підготовлені запити для отримання позицій та статусів (для ефективності)
-    // Використовуємо ті ж самі запити, що й для getOrderDetailsById
     const QString itemsSql = getSqlQuery("GetOrderItemsByOrderId");
     const QString statusesSql = getSqlQuery("GetOrderStatusesByOrderId");
 
     if (itemsSql.isEmpty() || statusesSql.isEmpty()) {
         qCritical() << "Помилка завантаження SQL запитів для позицій або статусів замовлень.";
-        return orders; // Повертаємо те, що встигли зібрати
+        return orders;
     }
 
     QSqlQuery itemQuery(m_db);
     if (!itemQuery.prepare(itemsSql)) {
          qCritical() << "Помилка підготовки запиту 'GetOrderItemsByOrderId' (для списку замовлень):" << itemQuery.lastError().text();
-         return orders; // Повертаємо те, що встигли зібрати
+         return orders;
     }
 
     QSqlQuery statusQuery(m_db);
@@ -383,45 +352,36 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
      }
 
 
-    // 2. Обробляємо кожне замовлення
     qInfo() << "Processing orders for customer ID:" << customerId;
     int orderCount = 0;
     while (orderQuery.next()) {
         OrderDisplayInfo orderInfo;
-        // --- Зміна: Отримуємо дату одразу як рядок ---
         QString dateString = orderQuery.value("order_date").toString();
         orderInfo.orderId = orderQuery.value("order_id").toInt();
-        orderInfo.orderDate = QDateTime(); // Ініціалізуємо невалідною датою
+        orderInfo.orderDate = QDateTime();
 
         if (!dateString.isEmpty()) {
-            // Спробуємо розпарсити рядок у QDateTime, використовуючи ISO формат (з мілісекундами або без)
             orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODateWithMs);
-            if (!orderInfo.orderDate.isValid()) { // Якщо з мілісекундами не вийшло, спробуємо без них
+            if (!orderInfo.orderDate.isValid()) {
                 orderInfo.orderDate = QDateTime::fromString(dateString, Qt::ISODate);
             }
-            // Можна додати інші формати, якщо ISO не спрацює
         }
-        // --- Кінець зміни ---
         orderInfo.totalAmount = orderQuery.value("total_amount").toDouble();
         orderInfo.shippingAddress = orderQuery.value("shipping_address").toString();
         orderInfo.paymentMethod = orderQuery.value("payment_method").toString();
-       // --- Оновлена Відладка дати ---
        qDebug() << "[DEBUG] Customer Order ID:" << orderInfo.orderId
-                << "Raw order_date value (CAST to TEXT in SQL):" << dateString; // Показуємо рядок, отриманий з запиту
+                << "Raw order_date value (CAST to TEXT in SQL):" << dateString;
        qDebug() << "[DEBUG] Parsed QDateTime (after string parse attempts):" << orderInfo.orderDate
                 << "Is Valid:" << orderInfo.orderDate.isValid();
        if (!orderInfo.orderDate.isValid() && !dateString.isEmpty()) {
             qWarning() << "[DEBUG] Failed to parse date string:" << dateString << "using ISODate/ISODateWithMs formats.";
        }
-       // --- Кінець відладки ---
 
-        // 3. Отримуємо позиції для поточного замовлення
         itemQuery.bindValue(":orderId", orderInfo.orderId);
         qInfo() << "Executing SQL 'GetOrderItemsByOrderId' for order ID:" << orderInfo.orderId << "(in list)";
         if (!itemQuery.exec()) {
             qCritical() << "Помилка при виконанні 'GetOrderItemsByOrderId' для order ID '" << orderInfo.orderId << "':";
             qCritical() << itemQuery.lastError().text();
-            // Продовжуємо до наступного замовлення або повертаємо помилку
             continue;
         }
         while (itemQuery.next()) {
@@ -432,13 +392,11 @@ QList<OrderDisplayInfo> DatabaseManager::getCustomerOrdersForDisplay(int custome
             orderInfo.items.append(itemInfo);
         }
 
-        // 4. Отримуємо статуси для поточного замовлення
         statusQuery.bindValue(":orderId", orderInfo.orderId);
         qInfo() << "Executing SQL 'GetOrderStatusesByOrderId' for order ID:" << orderInfo.orderId << "(in list)";
          if (!statusQuery.exec()) {
             qCritical() << "Помилка при виконанні 'GetOrderStatusesByOrderId' для order ID '" << orderInfo.orderId << "':";
             qCritical() << statusQuery.lastError().text();
-            // Продовжуємо
             continue;
         }
         while (statusQuery.next()) {
