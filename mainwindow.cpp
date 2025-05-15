@@ -204,28 +204,58 @@ MainWindow::MainWindow(DatabaseManager *dbManager, int customerId, QWidget *pare
 
     // Disable vertical scrollbars for horizontal book lists on the discover page
     // Attempt to find the QScrollArea containing each horizontal layout
-    QScrollArea* classicsScrollArea = qobject_cast<QScrollArea*>(ui->classicsRowLayout->parentWidget()->parentWidget());
-    if (classicsScrollArea) {
-        classicsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        qInfo() << "Classics row ScrollArea found (" << classicsScrollArea->objectName() << "), vertical scrollbar disabled.";
+    if (ui->classicsRowLayout) {
+        QWidget* parentWidget = ui->classicsRowLayout->parentWidget();
+        if (parentWidget) {
+            qDebug() << "classicsRowLayout parent widget:" << parentWidget->objectName() << "Type:" << parentWidget->metaObject()->className();
+            QScrollArea* classicsScrollArea = qobject_cast<QScrollArea*>(parentWidget->parentWidget());
+            if (classicsScrollArea) {
+                classicsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                qInfo() << "Classics row ScrollArea found (" << classicsScrollArea->objectName() << "), vertical scrollbar disabled.";
+            } else {
+                qWarning() << "Could not find ScrollArea for classicsRowLayout (parent's parent is not ScrollArea). Parent's parent:" << (parentWidget->parentWidget() ? parentWidget->parentWidget()->objectName() : "null") << "Type:" << (parentWidget->parentWidget() ? parentWidget->parentWidget()->metaObject()->className() : "null");
+            }
+        } else {
+            qWarning() << "classicsRowLayout has no parent widget!";
+        }
     } else {
-        qWarning() << "Could not find ScrollArea for classicsRowLayout!";
+        qWarning() << "classicsRowLayout is null, cannot configure scrollbar.";
     }
 
-    QScrollArea* fantasyScrollArea = qobject_cast<QScrollArea*>(ui->fantasyRowLayout->parentWidget()->parentWidget());
-    if (fantasyScrollArea) {
-        fantasyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        qInfo() << "Fantasy row ScrollArea found (" << fantasyScrollArea->objectName() << "), vertical scrollbar disabled.";
+    if (ui->fantasyRowLayout) {
+        QWidget* parentWidget = ui->fantasyRowLayout->parentWidget();
+        if (parentWidget) {
+            qDebug() << "fantasyRowLayout parent widget:" << parentWidget->objectName() << "Type:" << parentWidget->metaObject()->className();
+            QScrollArea* fantasyScrollArea = qobject_cast<QScrollArea*>(parentWidget->parentWidget());
+            if (fantasyScrollArea) {
+                fantasyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                qInfo() << "Fantasy row ScrollArea found (" << fantasyScrollArea->objectName() << "), vertical scrollbar disabled.";
+            } else {
+                qWarning() << "Could not find ScrollArea for fantasyRowLayout (parent's parent is not ScrollArea). Parent's parent:" << (parentWidget->parentWidget() ? parentWidget->parentWidget()->objectName() : "null") << "Type:" << (parentWidget->parentWidget() ? parentWidget->parentWidget()->metaObject()->className() : "null");
+            }
+        } else {
+            qWarning() << "fantasyRowLayout has no parent widget!";
+        }
     } else {
-        qWarning() << "Could not find ScrollArea for fantasyRowLayout!";
+        qWarning() << "fantasyRowLayout is null, cannot configure scrollbar.";
     }
 
-    QScrollArea* nonFictionScrollArea = qobject_cast<QScrollArea*>(ui->nonFictionRowLayout->parentWidget()->parentWidget());
-    if (nonFictionScrollArea) {
-        nonFictionScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        qInfo() << "Non-Fiction row ScrollArea found (" << nonFictionScrollArea->objectName() << "), vertical scrollbar disabled.";
+    if (ui->nonFictionRowLayout) {
+        QWidget* parentWidget = ui->nonFictionRowLayout->parentWidget();
+        if (parentWidget) {
+            qDebug() << "nonFictionRowLayout parent widget:" << parentWidget->objectName() << "Type:" << parentWidget->metaObject()->className();
+            QScrollArea* nonFictionScrollArea = qobject_cast<QScrollArea*>(parentWidget->parentWidget());
+            if (nonFictionScrollArea) {
+                nonFictionScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                qInfo() << "Non-Fiction row ScrollArea found (" << nonFictionScrollArea->objectName() << "), vertical scrollbar disabled.";
+            } else {
+                qWarning() << "Could not find ScrollArea for nonFictionRowLayout (parent's parent is not ScrollArea). Parent's parent:" << (parentWidget->parentWidget() ? parentWidget->parentWidget()->objectName() : "null") << "Type:" << (parentWidget->parentWidget() ? parentWidget->parentWidget()->metaObject()->className() : "null");
+            }
+        } else {
+            qWarning() << "nonFictionRowLayout has no parent widget!";
+        }
     } else {
-        qWarning() << "Could not find ScrollArea for nonFictionRowLayout!";
+        qWarning() << "nonFictionRowLayout is null, cannot configure scrollbar.";
     }
 
 
@@ -1124,7 +1154,7 @@ void MainWindow::populateAuthorDetailsPage(const AuthorDetailsInfo &details)
 
 
     ui->authorDetailBiographyLabel->setWordWrap(true);
-    ui->authorDetailBiographyLabel->setText(details.biography.isEmpty() ? tr("(Біографія відсутня)") : details.biography);
+    ui->authorDetailBiographyLabel->setText(details.biography.isEmpty() ? tr("(Опис відсутній)") : details.biography);
 
     ui->authorBooksHeaderLabel->setText(tr("Книги автора (%1)").arg(details.books.size()));
     displayBooks(details.books, ui->authorBooksLayout, ui->authorBooksContainerWidget);
