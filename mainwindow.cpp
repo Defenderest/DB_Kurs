@@ -657,11 +657,21 @@ void MainWindow::setupFilterPanel()
         QCheckBox {
             spacing: 5px;
             margin-top: 10px;
+            color: #000000; /* Ensure text color is black */
         }
         QCheckBox::indicator {
             width: 16px;
             height: 16px;
+            border: 1px solid #adb5bd; /* Grey border */
+            background-color: white; /* White background */
+            border-radius: 3px; /* Optional: slight rounding */
         }
+        QCheckBox::indicator:checked {
+            border: 1px solid #adb5bd; /* Keep grey border */
+            background-color: #adb5bd; /* Grey background when checked */
+            color: white; /* Attempt to make the checkmark white */
+        }
+
         QPushButton#resetFiltersButton {
             background-color: #6c757d;
             color: #000000;
